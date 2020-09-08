@@ -41,7 +41,7 @@ public class SupplierElement implements HudElement {
     }
     private static Entity cameraEntity() { return client.getCameraEntity(); }
     private static BlockPos blockPos() { return client.getCameraEntity().getBlockPos(); }
-    private static boolean isInNether() { return client.world.getRegistryKey().getValue() == DimensionType.THE_NETHER_ID; }
+    private static boolean isInNether() { return client.world.getRegistryKey().getValue().equals(DimensionType.THE_NETHER_ID)  ; }
     private static LightingProvider serverLighting() { return ComplexData.world.getChunkManager().getLightingProvider(); }
     private static SpawnHelper.Info spawnInfo() { return ComplexData.serverWorld.getChunkManager().getSpawnInfo();}
     private static long toMiB(long bytes) {
@@ -94,7 +94,7 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> BLOCK_Y = () -> Integer.toString(blockPos().getY());
     public static final Supplier<String> BLOCK_Z = () -> Integer.toString(blockPos().getZ());
     public static final Supplier<String> NETHER_X = () -> Integer.toString(isInNether() ? blockPos().getX() * 8 : blockPos().getX() / 8);
-    public static final Supplier<String> NETHER_Z = () -> Integer.toString(isInNether() ? blockPos().getX() * 8 : blockPos().getX() / 8);
+    public static final Supplier<String> NETHER_Z = () -> Integer.toString(isInNether() ? blockPos().getZ() * 8 : blockPos().getZ() / 8);
     public static final Supplier<String> IN_CHUNK_X = () -> Integer.toString(blockPos().getX() & 15);
     public static final Supplier<String> IN_CHUNK_Y = () -> Integer.toString(blockPos().getY() & 15);
     public static final Supplier<String> IN_CHUNK_Z = () -> Integer.toString(blockPos().getZ() & 15);
@@ -165,10 +165,13 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> DISPLAY_WIDTH = () -> Integer.toString(client.getWindow().getFramebufferWidth());
     public static final Supplier<String> DISPLAY_HEIGHT = () -> Integer.toString(client.getWindow().getFramebufferHeight());
     public static final Supplier<String> MODS = () -> Integer.toString(FabricLoader.getInstance().getAllMods().size());
-    public static final Supplier<String> TIME_HOUR_12 = () -> Integer.toString(ComplexData.timeOfDay / 1000 % 12);
-    public static final Supplier<String> TIME_HOUR_24 = () -> String.format("%2d",ComplexData.timeOfDay / 1000);
-    public static final Supplier<String> TIME_MINUTE = () -> String.format("%2d",ComplexData.timeOfDay % 1000 / 60);
-    public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
+    public static final Supplier<String> TIME_HOUR_12 = () -> {
+        int hour = ComplexData.timeOfDay / 1000 % 12;
+        return hour == 0 ? "12" : Integer.toString(hour);
+    };
+    public static final Supplier<String> TIME_HOUR_24 = () -> String.format("%02d",ComplexData.timeOfDay / 1000);
+    public static final Supplier<String> TIME_MINUTE = () -> String.format("%02d",ComplexData.timeOfDay % 1000 / 60);
+    public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay > 12000 ? "am" : "pm";
     //public static final Supplier<String> template = () -> "";
 
     private final Supplier<String> supplier;
