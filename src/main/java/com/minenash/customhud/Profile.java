@@ -194,7 +194,9 @@ public class Profile {
             case "p": return PARTICLES;
             case "dimension": return DIMENSION;
             case "dimension_id": return DIMENSION_ID;
+            case "overworld": return IN_OVERWORLD;
             case "nether": return IN_NETHER;
+            case "end": return IN_END;
             case "force_loaded_chunks":
             case "fc": enabled.world = true; return FORCED_LOADED_CHUNKS;
             case "x": return X;

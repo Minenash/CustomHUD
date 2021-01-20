@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -41,7 +42,7 @@ public class SupplierElement implements HudElement {
     }
     private static Entity cameraEntity() { return client.getCameraEntity(); }
     private static BlockPos blockPos() { return client.getCameraEntity().getBlockPos(); }
-    private static boolean isInNether() { return client.world.getRegistryKey().getValue().equals(DimensionType.THE_NETHER_ID)  ; }
+    private static boolean isInDim(Identifier id) { return client.world.getRegistryKey().getValue().equals(id); }
     private static LightingProvider serverLighting() { return ComplexData.world.getChunkManager().getLightingProvider(); }
     private static SpawnHelper.Info spawnInfo() { return ComplexData.serverWorld.getChunkManager().getSpawnInfo();}
     private static long toMiB(long bytes) {
@@ -79,10 +80,12 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> BUFFER_COUNT = () -> Integer.toString(chunkBuilder().getBufferCount());
     public static final Supplier<String> ENTITIES_RENDERED = () -> Integer.toString(worldRender().getRegularEntityCount());
     public static final Supplier<String> ENTITIES_LOADED = () -> Integer.toString(client.world.getRegularEntityCount());
-    public static final Supplier<String> PARTICLES = () -> client.particleManager.getDebugString();
+    public static final Supplier<String> PARTICLES = client.particleManager::getDebugString;
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
-    public static final Supplier<String> IN_NETHER = () -> Boolean.toString(isInNether());
+    public static final Supplier<String> IN_OVERWORLD = () -> Boolean.toString(isInDim(DimensionType.OVERWORLD_ID));
+    public static final Supplier<String> IN_NETHER = () -> Boolean.toString(isInDim(DimensionType.THE_NETHER_ID));
+    public static final Supplier<String> IN_END = () -> Boolean.toString(isInDim(DimensionType.THE_END_ID));
     public static final Supplier<String> FORCED_LOADED_CHUNKS = () -> {
         World world = ComplexData.world;
         return world instanceof ServerWorld ? Integer.toString(((ServerWorld)world).getForcedChunks().size()) : "0";
@@ -93,8 +96,8 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> BLOCK_X = () -> Integer.toString(blockPos().getX());
     public static final Supplier<String> BLOCK_Y = () -> Integer.toString(blockPos().getY());
     public static final Supplier<String> BLOCK_Z = () -> Integer.toString(blockPos().getZ());
-    public static final Supplier<String> NETHER_X = () -> Integer.toString(isInNether() ? blockPos().getX() * 8 : blockPos().getX() / 8);
-    public static final Supplier<String> NETHER_Z = () -> Integer.toString(isInNether() ? blockPos().getZ() * 8 : blockPos().getZ() / 8);
+    public static final Supplier<String> NETHER_X = () -> Integer.toString(isInDim(DimensionType.THE_NETHER_ID) ? blockPos().getX() * 8 : blockPos().getX() / 8);
+    public static final Supplier<String> NETHER_Z = () -> Integer.toString(isInDim(DimensionType.THE_NETHER_ID) ? blockPos().getZ() * 8 : blockPos().getZ() / 8);
     public static final Supplier<String> IN_CHUNK_X = () -> Integer.toString(blockPos().getX() & 15);
     public static final Supplier<String> IN_CHUNK_Y = () -> Integer.toString(blockPos().getY() & 15);
     public static final Supplier<String> IN_CHUNK_Z = () -> Integer.toString(blockPos().getZ() & 15);
@@ -170,7 +173,7 @@ public class SupplierElement implements HudElement {
         return hour == 0 ? "12" : Integer.toString(hour);
     };
     public static final Supplier<String> TIME_HOUR_24 = () -> String.format("%02d",ComplexData.timeOfDay / 1000);
-    public static final Supplier<String> TIME_MINUTE = () -> String.format("%02d",ComplexData.timeOfDay % 1000 / 60);
+    public static final Supplier<String> TIME_MINUTE = () -> String.format("%02d",ComplexData.timeOfDay % 1000 / (1000/60));
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay > 12000 ? "am" : "pm";
     //public static final Supplier<String> template = () -> "";
 
