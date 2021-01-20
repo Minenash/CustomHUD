@@ -109,6 +109,8 @@ public class ComplexData {
             velocityXYZ = ((int)(changeXYZ*40))/10.0;
         }
 
+
+
     }
 
     public static void reset() {

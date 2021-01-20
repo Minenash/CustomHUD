@@ -177,7 +177,8 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> TIME_HOUR_24 = () -> String.format("%02d",ComplexData.timeOfDay / 1000);
     public static final Supplier<String> TIME_MINUTE = () -> String.format("%02d",ComplexData.timeOfDay % 1000 / (1000/60));
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay > 12000 ? "am" : "pm";
-    //public static final Supplier<String> template = () -> "";
+    public static final Supplier<String> PING = () -> Integer.toString(client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency());
+    //public static final Supplier<String> template = () -> "";client.getCurrentServerEntry().ping
 
     private final Supplier<String> supplier;
 
