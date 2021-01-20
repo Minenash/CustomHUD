@@ -21,6 +21,7 @@ public class Profile {
     private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(, ?([-+]?\\d+))? ?(, ?([-+]?\\d+))?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?TargetRange: ?(\\d+|max) ?==");
     private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("== ?LineSpacing: ?([-+]?\\d+) ?==");
+    private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("== ?Scale: ?(\\d+.?\\d*|.?\\d+) ?==");
     private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("== ?(Back|Fore)groundColou?r: ?(0x|#)?([0-9a-fA-F]+) ?==");
 
     public List<List<HudElement>>[] sections = new List[4];
@@ -31,6 +32,7 @@ public class Profile {
     public int fgColor;
     public int lineSpacing;
     public double targetDistance;
+    public double scale;
 
     public static Profile parseProfile(Path path) {
         List<String> lines;
@@ -56,6 +58,7 @@ public class Profile {
         profile.fgColor = 0xffffffff;
         profile.targetDistance = 20;
         profile.lineSpacing = 2;
+        profile.scale = 1;
 
         int sectionId = -1;
 
@@ -80,6 +83,11 @@ public class Profile {
                 matcher = SPACING_FLAG_PATTERN.matcher(line);
                 if (matcher.matches()) {
                     profile.lineSpacing = Integer.parseInt(matcher.group(1));
+                    continue;
+                }
+                matcher = SCALE_FLAG_PATTERN.matcher(line);
+                if (matcher.matches()) {
+                    profile.scale = Double.parseDouble(matcher.group(1));
                     continue;
                 }
             }

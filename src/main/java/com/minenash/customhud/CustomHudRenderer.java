@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.HudElement;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -24,6 +25,10 @@ public class CustomHudRenderer {
             return;
 
         RenderSystem.pushMatrix();
+
+        if (profile.scale != 1.0)
+            RenderSystem.scaled(profile.scale,profile.scale,0);
+
         for (int i = 0; i < 4; i++) {
             List<List<HudElement>> section = profile.sections[i];
             if (section == null)
