@@ -80,16 +80,13 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> BUFFER_COUNT = () -> Integer.toString(chunkBuilder().getBufferCount());
     public static final Supplier<String> ENTITIES_RENDERED = () -> Integer.toString(worldRender().getRegularEntityCount());
     public static final Supplier<String> ENTITIES_LOADED = () -> Integer.toString(client.world.getRegularEntityCount());
-    public static final Supplier<String> PARTICLES = client.particleManager::getDebugString;
+    public static final Supplier<String> PARTICLES = () -> client.particleManager.getDebugString();
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
     public static final Supplier<String> IN_OVERWORLD = () -> Boolean.toString(isInDim(DimensionType.OVERWORLD_ID));
     public static final Supplier<String> IN_NETHER = () -> Boolean.toString(isInDim(DimensionType.THE_NETHER_ID));
     public static final Supplier<String> IN_END = () -> Boolean.toString(isInDim(DimensionType.THE_END_ID));
-    public static final Supplier<String> FORCED_LOADED_CHUNKS = () -> {
-        World world = ComplexData.world;
-        return world instanceof ServerWorld ? Integer.toString(((ServerWorld)world).getForcedChunks().size()) : "0";
-    };
+    public static final Supplier<String> FORCED_LOADED_CHUNKS = () -> ComplexData.world instanceof ServerWorld ? Integer.toString(((ServerWorld)ComplexData.world).getForcedChunks().size()) : "0";
     public static final Supplier<String> X = () -> String.format("%.3f", cameraEntity().getX());
     public static final Supplier<String> Y = () -> String.format("%.3f", cameraEntity().getY());
     public static final Supplier<String> Z = () -> String.format("%.3f", cameraEntity().getZ());
@@ -107,6 +104,11 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> TARGET_X = () -> ComplexData.targetBlockPos == null ? "" : Integer.toString(ComplexData.targetBlockPos.getX());
     public static final Supplier<String> TARGET_Y = () -> ComplexData.targetBlockPos == null ? "" : Integer.toString(ComplexData.targetBlockPos.getY());
     public static final Supplier<String> TARGET_Z = () -> ComplexData.targetBlockPos == null ? "" : Integer.toString(ComplexData.targetBlockPos.getZ());
+
+    public static final Supplier<String> VELOCITY_XZ = () -> Double.toString(ComplexData.velocityXZ);
+    public static final Supplier<String> VELOCITY_Y = () -> Double.toString(ComplexData.velocityY);
+    public static final Supplier<String> VELOCITY_XYZ = () -> Double.toString(ComplexData.velocityXYZ);
+
     public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();
     public static final Supplier<String> FACING_TOWARDS_XZ = () ->
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";

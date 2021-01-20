@@ -2,6 +2,7 @@ package com.minenash.customhud;
 
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
@@ -28,12 +29,14 @@ public class ComplexData {
     public static String[] sounds = null;
     public static String[] clientChunkCache = null;
     public static int timeOfDay = -1;
+    public static double x1 = 0, y1 = 0, z1 = 0, velocityXZ = 0, velocityY = 0, velocityXYZ = 0;
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     //Chunk Data.
     private static ChunkPos pos = null;
     private static CompletableFuture<WorldChunk> chunkFuture;
+    private static int velocityWaitCounter = 0;
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -88,6 +91,24 @@ public class ComplexData {
                 timeOfDay = 24000 - (-1 * timeOfDay);
         }
 
+        if (profile.enabled.velocity) {
+            if (velocityWaitCounter > 0) {
+                velocityWaitCounter--;
+                return;
+            }
+            velocityWaitCounter = 4;
+            ClientPlayerEntity p = client.player;
+            final double changeXZ = Math.sqrt(Math.pow(Math.abs(p.getX() - x1), 2) + Math.pow(Math.abs(p.getZ() - z1), 2));
+            final double changeY = Math.abs(p.getY() - y1);
+            final double changeXYZ = Math.sqrt(changeXZ*changeXZ + changeY*changeY);
+            x1 = p.getX();
+            y1 = p.getY();
+            z1 = p.getZ();
+            velocityXZ = ((int)(changeXZ*40))/10.0;
+            velocityY = ((int)(changeY*40))/10.0;
+            velocityXYZ = ((int)(changeXYZ*40))/10.0;
+        }
+
     }
 
     public static void reset() {
@@ -99,6 +120,7 @@ public class ComplexData {
         targetBlockPos = null;
         sounds = null;
         clientChunkCache = null;
+        x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
     }
 
     public static class Enabled {
@@ -112,6 +134,7 @@ public class ComplexData {
         public boolean targetBlock = false;
         public boolean clientChunkCache = false;
         public boolean time = false;
+        public boolean velocity = false;
 
     }
 

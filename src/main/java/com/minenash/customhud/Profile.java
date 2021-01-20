@@ -230,6 +230,9 @@ public class Profile {
             case "cy": return CHUNK_Y;
             case "chunk_z":
             case "cz": return CHUNK_Z;
+            case "velocity_xz": enabled.velocity = true; return VELOCITY_XZ;
+            case "velocity_y": enabled.velocity = true; return VELOCITY_Y;
+            case "velocity_xyz": enabled.velocity = true; return VELOCITY_XYZ;
             case "facing": return FACING;
             case "facing_towards_xz": return FACING_TOWARDS_XZ;
             case "facing_towards_pn_word": return FACING_TOWARDS_PN_WORD;
