@@ -31,6 +31,9 @@ public class ComplexData {
     public static int timeOfDay = -1;
     public static double x1 = 0, y1 = 0, z1 = 0, velocityXZ = 0, velocityY = 0, velocityXYZ = 0;
 
+    //Not really complex, but not sure where else to put it
+    public static String address = "";
+
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     //Chunk Data.

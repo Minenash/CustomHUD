@@ -293,6 +293,7 @@ public class Profile {
             case "display_height": return DISPLAY_HEIGHT;
             case "mods": return MODS;
             case "ping": return PING;
+            case "address": return ADDRESS;
             case "hour":
             case "hour12": enabled.time = true; return TIME_HOUR_12;
             case "hour24": enabled.time = true; return TIME_HOUR_24;
