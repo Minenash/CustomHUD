@@ -108,6 +108,9 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> VELOCITY_XZ = () -> Double.toString(ComplexData.velocityXZ);
     public static final Supplier<String> VELOCITY_Y = () -> Double.toString(ComplexData.velocityY);
     public static final Supplier<String> VELOCITY_XYZ = () -> Double.toString(ComplexData.velocityXYZ);
+    public static final Supplier<String> VELOCITY_XZ_KMH = () -> Double.toString(ComplexData.velocityXZ * 3.6);
+    public static final Supplier<String> VELOCITY_Y_KMH = () -> Double.toString(ComplexData.velocityY * 3.6);
+    public static final Supplier<String> VELOCITY_XYZ_KMH = () -> Double.toString(ComplexData.velocityXYZ * 3.6);
 
     public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();
     public static final Supplier<String> FACING_TOWARDS_XZ = () ->

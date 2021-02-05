@@ -241,6 +241,9 @@ public class Profile {
             case "velocity_xz": enabled.velocity = true; return VELOCITY_XZ;
             case "velocity_y": enabled.velocity = true; return VELOCITY_Y;
             case "velocity_xyz": enabled.velocity = true; return VELOCITY_XYZ;
+            case "velocity_xz_kmh": enabled.velocity = true; return VELOCITY_XZ_KMH;
+            case "velocity_y_kmh": enabled.velocity = true; return VELOCITY_Y_KMH;
+            case "velocity_xyz_kmh": enabled.velocity = true; return VELOCITY_XYZ_KMH;
             case "facing": return FACING;
             case "facing_towards_xz": return FACING_TOWARDS_XZ;
             case "facing_towards_pn_word": return FACING_TOWARDS_PN_WORD;
