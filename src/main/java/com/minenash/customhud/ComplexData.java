@@ -89,9 +89,7 @@ public class ComplexData {
             clientChunkCache = client.world.getDebugString().substring(20).split(", ");
 
         if (profile.enabled.time) {
-            timeOfDay = (int) (client.world.getTimeOfDay() % 24000) - 6000;
-            if (timeOfDay < 0)
-                timeOfDay = 24000 - (-1 * timeOfDay);
+            timeOfDay = (int) ((client.world.getTimeOfDay() + 6000) % 24000);
         }
 
         if (profile.enabled.velocity) {

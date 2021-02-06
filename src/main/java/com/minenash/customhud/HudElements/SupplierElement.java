@@ -108,9 +108,9 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> VELOCITY_XZ = () -> Double.toString(ComplexData.velocityXZ);
     public static final Supplier<String> VELOCITY_Y = () -> Double.toString(ComplexData.velocityY);
     public static final Supplier<String> VELOCITY_XYZ = () -> Double.toString(ComplexData.velocityXYZ);
-    public static final Supplier<String> VELOCITY_XZ_KMH = () -> Double.toString(ComplexData.velocityXZ * 3.6);
-    public static final Supplier<String> VELOCITY_Y_KMH = () -> Double.toString(ComplexData.velocityY * 3.6);
-    public static final Supplier<String> VELOCITY_XYZ_KMH = () -> Double.toString(ComplexData.velocityXYZ * 3.6);
+    public static final Supplier<String> VELOCITY_XZ_KMH = () -> String.format("%.1f", ComplexData.velocityXZ * 3.6);
+    public static final Supplier<String> VELOCITY_Y_KMH = () -> String.format("%.1f", ComplexData.velocityY * 3.6);
+    public static final Supplier<String> VELOCITY_XYZ_KMH = () -> String.format("%.1f", ComplexData.velocityXYZ * 3.6);
 
     public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();
     public static final Supplier<String> FACING_TOWARDS_XZ = () ->
@@ -178,7 +178,7 @@ public class SupplierElement implements HudElement {
         return hour == 0 ? "12" : Integer.toString(hour);
     };
     public static final Supplier<String> TIME_HOUR_24 = () -> String.format("%02d",ComplexData.timeOfDay / 1000);
-    public static final Supplier<String> TIME_MINUTE = () -> String.format("%02d",ComplexData.timeOfDay % 1000 / (1000/60));
+    public static final Supplier<String> TIME_MINUTE = () -> String.format("%02d",(int)((ComplexData.timeOfDay % 1000) / (1000/60F)));
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay > 12000 ? "am" : "pm";
     public static final Supplier<String> PING = () -> Integer.toString(client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency());
     public static final Supplier<String> ADDRESS = () -> client.getCurrentServerEntry().address;
