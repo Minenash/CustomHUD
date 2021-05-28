@@ -24,10 +24,10 @@ public class CustomHudRenderer {
         if (profile == null)
             return;
 
-        RenderSystem.pushMatrix();
+        matrix.push();
 
         if (profile.scale != 1.0)
-            RenderSystem.scaled(profile.scale,profile.scale,0);
+            matrix.scale(profile.scale,profile.scale,0);
 
         for (int i = 0; i < 4; i++) {
             List<List<HudElement>> section = profile.sections[i];
@@ -79,7 +79,7 @@ public class CustomHudRenderer {
 
             }
         }
-        RenderSystem.popMatrix();
+        matrix.pop();
     }
 
 

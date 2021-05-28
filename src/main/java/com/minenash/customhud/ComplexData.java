@@ -72,7 +72,7 @@ public class ComplexData {
         }
 
         if (profile.enabled.targetBlock) {
-            HitResult hit =  client.cameraEntity.rayTrace(profile.targetDistance, 0.0F, false);
+            HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, false);
             targetBlockPos = hit.getType() == HitResult.Type.BLOCK ? ((BlockHitResult)hit).getBlockPos() : null;
         }
 
@@ -86,7 +86,7 @@ public class ComplexData {
             sounds = client.getSoundManager().getDebugString().substring(8).replace(" + ", "/").split("/");
 
         if (profile.enabled.clientChunkCache)
-            clientChunkCache = client.world.getDebugString().substring(20).split(", ");
+            clientChunkCache = client.worldRenderer.getChunksDebugString().substring(20).split(", ");
 
         if (profile.enabled.time) {
             timeOfDay = (int) ((client.world.getTimeOfDay() + 6000) % 24000);

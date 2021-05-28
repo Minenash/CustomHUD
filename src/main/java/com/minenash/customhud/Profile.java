@@ -31,8 +31,8 @@ public class Profile {
     public int bgColor;
     public int fgColor;
     public int lineSpacing;
-    public double targetDistance;
-    public double scale;
+    public float targetDistance;
+    public float scale;
 
     public static Profile parseProfile(Path path) {
         List<String> lines;
@@ -87,7 +87,7 @@ public class Profile {
                 }
                 matcher = SCALE_FLAG_PATTERN.matcher(line);
                 if (matcher.matches()) {
-                    profile.scale = Double.parseDouble(matcher.group(1));
+                    profile.scale = Float.parseFloat(matcher.group(1));
                     continue;
                 }
             }

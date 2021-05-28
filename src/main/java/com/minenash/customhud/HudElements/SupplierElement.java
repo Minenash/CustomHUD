@@ -8,8 +8,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.CloudRenderMode;
-import net.minecraft.client.options.Option;
+import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.option.Option;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -119,8 +119,8 @@ public class SupplierElement implements HudElement {
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.SOUTH ? "positive" : "negative";
     public static final Supplier<String> FACING_TOWARDS_PN_SIGN = () ->
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.SOUTH ? "+" : "-";
-    public static final Supplier<String> YAW = () -> String.format("%.1f", MathHelper.wrapDegrees(cameraEntity().yaw));
-    public static final Supplier<String> PITCH = () -> String.format("%.1f", MathHelper.wrapDegrees(cameraEntity().pitch));
+    public static final Supplier<String> YAW = () -> String.format("%.1f", MathHelper.wrapDegrees(cameraEntity().getYaw()));
+    public static final Supplier<String> PITCH = () -> String.format("%.1f", MathHelper.wrapDegrees(cameraEntity().getPitch()));
     public static final Supplier<String> CLIENT_LIGHT = () -> ComplexData.clientChunk.isEmpty() ? "?" :
             Integer.toString(client.world.getChunkManager().getLightingProvider().getLight(blockPos(), 0));
     public static final Supplier<String> CLIENT_LIGHT_SKY = () ->
