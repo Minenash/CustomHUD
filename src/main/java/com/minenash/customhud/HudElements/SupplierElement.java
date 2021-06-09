@@ -22,7 +22,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.SpawnHelper;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.text.WordUtils;
@@ -80,7 +79,7 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> BUFFER_COUNT = () -> Integer.toString(chunkBuilder().getBufferCount());
     public static final Supplier<String> ENTITIES_RENDERED = () -> Integer.toString(worldRender().getRegularEntityCount());
     public static final Supplier<String> ENTITIES_LOADED = () -> Integer.toString(client.world.getRegularEntityCount());
-    public static final Supplier<String> PARTICLES = () -> client.particleManager.getDebugString();
+    public static final Supplier<String> PARTICLES = client.particleManager::getDebugString;
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
     public static final Supplier<String> IN_OVERWORLD = () -> Boolean.toString(isInDim(DimensionType.OVERWORLD_ID));
@@ -179,7 +178,7 @@ public class SupplierElement implements HudElement {
     };
     public static final Supplier<String> TIME_HOUR_24 = () -> String.format("%02d",ComplexData.timeOfDay / 1000);
     public static final Supplier<String> TIME_MINUTE = () -> String.format("%02d",(int)((ComplexData.timeOfDay % 1000) / (1000/60F)));
-    public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay > 12000 ? "am" : "pm";
+    public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
     public static final Supplier<String> PING = () -> Integer.toString(client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency());
     public static final Supplier<String> ADDRESS = () -> client.getCurrentServerEntry().address;
     //public static final Supplier<String> template = () -> "";client.getCurrentServerEntry().ping
