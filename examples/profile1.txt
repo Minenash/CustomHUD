@@ -1,0 +1,10 @@
+&c{fps} fps &r(&a{ping}ms&r)
+
+Facing: &a{facing}&r
+Biome: &a{biome}
+Speed: &a{velocity_xyz} bps
+
+XYZ: &a {bx} {by} {bz}
+{{nether, "Overworld:", "Nether:"}}&a {nx} {nz}
+
+Time: &a{hour12}:{minute} {am_pm}
