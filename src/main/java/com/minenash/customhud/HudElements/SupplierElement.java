@@ -79,7 +79,7 @@ public class SupplierElement implements HudElement {
     public static final Supplier<String> BUFFER_COUNT = () -> Integer.toString(chunkBuilder().getBufferCount());
     public static final Supplier<String> ENTITIES_RENDERED = () -> Integer.toString(worldRender().getRegularEntityCount());
     public static final Supplier<String> ENTITIES_LOADED = () -> Integer.toString(client.world.getRegularEntityCount());
-    public static final Supplier<String> PARTICLES = client.particleManager::getDebugString;
+    public static final Supplier<String> PARTICLES = () -> client.particleManager.getDebugString();
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
     public static final Supplier<String> IN_OVERWORLD = () -> Boolean.toString(isInDim(DimensionType.OVERWORLD_ID));
