@@ -32,10 +32,10 @@ public class CustomHud implements ModInitializer {
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	private static final KeyBinding kb_enable = registerKeyBinding("enable");
-	private static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycleProfiles");
-	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swapToProfile1");
-	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swapToProfile2");
-	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swapToProfile3");
+	private static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycle_profiles");
+	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swap_to_profile1");
+	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swap_to_profile2");
+	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swap_to_profile3");
 
 	private static KeyBinding registerKeyBinding(String binding) {
 		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.custom_hud"));
