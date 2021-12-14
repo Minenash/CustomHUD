@@ -74,7 +74,7 @@ public class ModMenuIntegration implements ModMenuApi {
         public void onClose() {
             CustomHud.justSaved = true;
             CustomHud.saveConfig();
-            MinecraftClient.getInstance().openScreen(parent);
+            MinecraftClient.getInstance().setScreen(parent);
         }
 
         @Override
