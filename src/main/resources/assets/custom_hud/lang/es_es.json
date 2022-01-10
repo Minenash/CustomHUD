@@ -1,0 +1,16 @@
+{
+  "category.custom_hud": "Custom Hud",
+  "key.custom_hud.enable": "Activar/Desactivar",
+  "key.custom_hud.cycle_profiles": "Cambiar Perfiles",
+  "key.custom_hud.swap_to_profile1": "Cambiar al Perfil 1",
+  "key.custom_hud.swap_to_profile2": "Cambiar al Perfil 2",
+  "key.custom_hud.swap_to_profile3": "Cambiar al Perfil 3",
+  "gui.custom_hud.profile_updated": "Perfil CustomHud %d Actualizado",
+  "config.custom_hud.enabled": "Activado",
+  "config.custom_hud.disabled": "Desactivado",
+  "config.custom_hud.done": "Hecho",
+  "config.custom_hud.open_profile": "Abrir Perfil %d",
+  "config.custom_hud.title": "CustomHUD",
+  "config.custom_hud.enable.label": "Activar/Desactivar este Mod",
+  "config.custom_hud.active_profile.label": "Perfil Activo"
+}
