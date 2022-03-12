@@ -1,6 +1,8 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.NewHudElements.supplier.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -160,17 +162,23 @@ public class Profile {
                 elements.add(new ConditionalElement(conditional, positive, negative));
             }
             else {
-                Supplier<String> supplier = getSupplier(part.substring(1, part.length() - 1), enabled);
-                if (supplier != null)
-                    elements.add(new SupplierElement(supplier));
-                else
-                    CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
+//                HudElement2 element = getSupplierElement(part.substring(1, part.length() - 1), enabled);
+//                if (element != null)
+//                    elements.add(element);
+//                else
+//                    CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
+//                
+//                Supplier<String> supplier = getSupplier(part.substring(1, part.length() - 1), enabled);
+//                if (supplier != null)
+//                    elements.add(new SupplierElement(supplier));
+//                else
+//                    CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
             }
         }
 
         return elements;
     }
-
+    
     private static Supplier<String> getSupplier(String element, ComplexData.Enabled enabled) {
         switch (element) {
             case "fps": return FPS;
