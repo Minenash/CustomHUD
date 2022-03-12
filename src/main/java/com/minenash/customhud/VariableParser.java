@@ -1,5 +1,6 @@
 package com.minenash.customhud;
 
+import com.minenash.customhud.HudElements.FormattedElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.supplier.*;
 
@@ -22,6 +23,9 @@ public class VariableParser {
 
         Flags flags = getFlags(parts);
         HudElement raw = getRawSupplierElement(parts[0], enabled, flags.precision);
+
+        if (flags.anyUsed())
+            return new FormattedElement(raw, flags);
         
         return raw;
     }
@@ -65,9 +69,11 @@ public class VariableParser {
 
         for (int i = 1; i < parts.length; i++) {
             switch (parts[i]) {
-                case "-uc", "-uppercase" -> flags.uppercase = true;
-                case "-lc", "-lowercase" -> flags.lowercase = true;
-                case "-sc", "-smallcaps" -> flags.smallcaps = true;
+                case "-uc", "-uppercase" -> flags.textCase = Flags.TextCase.UPPER;
+                case "-lc", "-lowercase" -> flags.textCase = Flags.TextCase.LOWER;
+                case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
+                case "-sc", "-smallcaps" -> flags.smallCaps = true;
+                case "-nd", "-nodashes" -> flags.noDelimiters = true;
                 default -> {
                     Matcher matcher = precision.matcher(parts[i]);
                     if (matcher.matches())
