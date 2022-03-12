@@ -3,7 +3,7 @@ package com.minenash.customhud;
 import com.minenash.customhud.HudElements.ConditionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.RealTimeElement;
-import com.minenash.customhud.HudElements.StringElement2;
+import com.minenash.customhud.HudElements.StringElement;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -138,7 +138,7 @@ public class Profile {
                 continue;
 
             if (!part.startsWith("{"))
-                elements.add(new StringElement2(part));
+                elements.add(new StringElement(part));
 
             else if (part.startsWith("{real_time:"))
                 elements.add(new RealTimeElement(new SimpleDateFormat(part.substring(11,part.length()-1))));

@@ -7,8 +7,8 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElements.TIME_HOUR_24;
-import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElements.TIME_MINUTE;
+import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.TIME_HOUR_24;
+import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.TIME_MINUTE;
 import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.IntegerSupplierElement.*;
@@ -49,9 +49,9 @@ public class VariableParser {
         if (entry != null)
             return precision == -1 ? new DecimalSupplierElement(entry) : new DecimalSupplierElement(entry, precision);
 
-        SpecialSupplierElements.Entry entry2 = getSpecialSupplierElements(name, enabled);
+        SpecialSupplierElement.Entry entry2 = getSpecialSupplierElements(name, enabled);
         if (entry2 != null)
-            return new SpecialSupplierElements(entry2);
+            return new SpecialSupplierElement(entry2);
 
         return null;
     }
@@ -214,7 +214,7 @@ public class VariableParser {
         };
     }
 
-    private static SpecialSupplierElements.Entry getSpecialSupplierElements(String element, ComplexData.Enabled enabled) {
+    private static SpecialSupplierElement.Entry getSpecialSupplierElements(String element, ComplexData.Enabled enabled) {
         switch (element) {
             case "hour24": { enabled.time = true; return TIME_HOUR_24; }
             case "minute": { enabled.time = true; return TIME_MINUTE; }

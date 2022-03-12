@@ -1,10 +1,10 @@
 package com.minenash.customhud.HudElements;
 
-public class StringElement2 implements HudElement {
+public class StringElement implements HudElement {
 
     private final String str;
 
-    public StringElement2(String str) {
+    public StringElement(String str) {
         this.str = str;
     }
 

@@ -5,7 +5,7 @@ import com.minenash.customhud.HudElements.HudElement;
 
 import java.util.function.Supplier;
 
-public class SpecialSupplierElements implements HudElement {
+public class SpecialSupplierElement implements HudElement {
 
     public static final Entry TIME_HOUR_24 = of( () -> String.format("%02d", ComplexData.timeOfDay / 1000),
                                                  () -> ComplexData.timeOfDay / 1000,
@@ -22,7 +22,7 @@ public class SpecialSupplierElements implements HudElement {
 
     private final Entry entry;
 
-    public SpecialSupplierElements(Entry entry) {
+    public SpecialSupplierElement(Entry entry) {
         this.entry = entry;
     }
 
