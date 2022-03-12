@@ -17,7 +17,7 @@ import static com.minenash.customhud.NewHudElements.supplier.BooleanSupplierElem
 
 public class VariableParser {
 
-    private static HudElement2 getSupplierElement(String inside, ComplexData.Enabled enabled) {
+    public static HudElement2 getSupplierElement(String inside, ComplexData.Enabled enabled) {
         String[] parts = inside.split(" ");
 
         Flags flags = getFlags(parts);
