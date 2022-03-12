@@ -6,6 +6,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -44,6 +45,15 @@ public class StringSupplierElement implements HudElement {
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.SOUTH ? "+" : "-";
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
+
+    public static final Supplier<String> ITEM = () -> I18n.translate(client.player.getMainHandStack().getItem().getTranslationKey());
+    public static final Supplier<String> ITEM_ID = () -> client.player.getMainHandStack().getItem().toString();
+    public static final Supplier<String> OFFHAND_ITEM = () -> I18n.translate(client.player.getOffHandStack().getItem().getTranslationKey());
+    public static final Supplier<String> OFFHAND_ITEM_ID = () -> client.player.getOffHandStack().getItem().toString();
+    public static final Supplier<String> TARGET_BLOCK = () -> I18n.translate(ComplexData.targetBlock.getTranslationKey());
+    public static final Supplier<String> TARGET_BLOCK_ID = () -> Registry.BLOCK.getId(ComplexData.targetBlock).toString();
+    //TODO: Item Name
+    //public static final Supplier<String> ITEM_NAME = () -> client.player.getMainHandStack().getItem().getName().;
 
 
 

@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.mojang.datafixers.DataFixUtils;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -9,6 +10,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -26,6 +28,7 @@ public class ComplexData {
     public static LocalDifficulty localDifficulty = null;
     public static World world = null;
     public static BlockPos targetBlockPos = null;
+    public static Block targetBlock = null;
     public static String[] sounds = null;
     public static String[] clientChunkCache = null;
     public static int timeOfDay = -1;
@@ -74,6 +77,7 @@ public class ComplexData {
         if (profile.enabled.targetBlock) {
             HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, false);
             targetBlockPos = hit.getType() == HitResult.Type.BLOCK ? ((BlockHitResult)hit).getBlockPos() : null;
+            targetBlock = world.getBlockState(targetBlockPos).getBlock();
         }
 
         if (profile.enabled.world)

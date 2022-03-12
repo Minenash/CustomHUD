@@ -40,6 +40,9 @@ public class DecimalSupplierElement implements HudElement {
     public static final Entry CLAMPED_LOCAL_DIFFICULTY = of( () -> ComplexData.localDifficulty.getClampedLocalDifficulty(), 2);
     public static final Entry MOOD = of( () -> client.player.getMoodPercentage() * 100.0F, 0);
 
+    public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
+    public static final Entry OFFHAND_ITEM_DURABILITY_PERCENT = of( () -> client.player.getOffHandStack().getDamage() / (float) client.player.getOffHandStack().getMaxDamage() * 100, 0);
+
     public static final Entry DAY = of( () -> client.world.getTimeOfDay() / 24000L, 0);
 
     public static final Entry TPS = of( () -> {

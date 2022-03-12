@@ -102,6 +102,12 @@ public class VariableParser {
             case "address" -> ADDRESS;
             case "java_version" -> JAVA_VERSION;
             case "server_brand" -> SERVER_BRAND;
+            case "item" -> ITEM;
+            case "item_id" -> ITEM_ID;
+            case "offhand_item", "oitem" -> OFFHAND_ITEM;
+            case "offhand_item_id", "oitem_id" -> OFFHAND_ITEM_ID;
+            case "target_block" -> {enabled.targetBlock = true; yield TARGET_BLOCK;}
+            case "target_block_id" -> {enabled.targetBlock = true; yield TARGET_BLOCK_ID;}
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
             default -> null;
         };
@@ -170,6 +176,10 @@ public class VariableParser {
             case "display_height" -> DISPLAY_HEIGHT;
             case "mods" -> MODS;
             case "ping" -> PING;
+            case "item_durability", "item_dur" -> ITEM_DURABILITY;
+            case "item_max_durability", "item_max_dur" -> ITEM_MAX_DURABILITY;
+            case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
+            case "offhand_item_max_durability", "oitem_max_dur" -> OFFHAND_ITEM_MAX_DURABILITY;
             case "hour12" -> { enabled.time = true; yield TIME_HOUR_12; }
             default -> null;
         };
@@ -214,6 +224,8 @@ public class VariableParser {
             case "total_memory" -> TOTAL_MEMORY;
             case "allocated_percentage" -> ALLOCATED_PERCENTAGE;
             case "allocated" -> ALLOCATED;
+            case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
+            case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
             case "local_difficulty" -> { enabled.localDifficulty = true; yield LOCAL_DIFFICULTY; }
             case "clamped_local_difficulty" -> { enabled.localDifficulty = true; yield CLAMPED_LOCAL_DIFFICULTY; }
             default -> null;
