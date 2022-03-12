@@ -1,7 +1,7 @@
-package com.minenash.customhud.NewHudElements.supplier;
+package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.mixin.ChunkBuilderAccess;
 import com.minenash.customhud.mixin.MinecraftClientAccess;
 import com.minenash.customhud.mixin.WorldRendererAccess;
@@ -19,7 +19,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 
 import java.util.function.Supplier;
 
-public class IntegerSupplierElement implements HudElement2 {
+public class IntegerSupplierElement implements HudElement {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static WorldRendererAccess worldRender() {

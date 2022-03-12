@@ -1,8 +1,8 @@
-package com.minenash.customhud.NewHudElements;
+package com.minenash.customhud.HudElements;
 
 import java.util.function.Supplier;
 
-public interface HudElement2 {
+public interface HudElement {
 
     String getString();
     Number getNumber();

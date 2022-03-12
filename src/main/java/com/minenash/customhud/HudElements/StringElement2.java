@@ -1,6 +1,6 @@
-package com.minenash.customhud.NewHudElements;
+package com.minenash.customhud.HudElements;
 
-public class StringElement2 implements HudElement2 {
+public class StringElement2 implements HudElement {
 
     private final String str;
 

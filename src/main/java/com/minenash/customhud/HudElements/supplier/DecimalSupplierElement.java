@@ -1,7 +1,7 @@
-package com.minenash.customhud.NewHudElements.supplier;
+package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -10,7 +10,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 import java.util.function.Supplier;
 
-public class DecimalSupplierElement implements HudElement2 {
+public class DecimalSupplierElement implements HudElement {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final Runtime runtime = Runtime.getRuntime();

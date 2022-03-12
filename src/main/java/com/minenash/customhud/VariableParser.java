@@ -1,33 +1,33 @@
 package com.minenash.customhud;
 
-import com.minenash.customhud.NewHudElements.HudElement2;
-import com.minenash.customhud.NewHudElements.supplier.*;
+import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.supplier.*;
 
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.minenash.customhud.NewHudElements.supplier.SpecialSupplierElements.TIME_HOUR_24;
-import static com.minenash.customhud.NewHudElements.supplier.SpecialSupplierElements.TIME_MINUTE;
-import static com.minenash.customhud.NewHudElements.supplier.StringSupplierElement.*;
-import static com.minenash.customhud.NewHudElements.supplier.StringIntSupplierElement.*;
-import static com.minenash.customhud.NewHudElements.supplier.IntegerSupplierElement.*;
-import static com.minenash.customhud.NewHudElements.supplier.DecimalSupplierElement.*;
-import static com.minenash.customhud.NewHudElements.supplier.BooleanSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElements.TIME_HOUR_24;
+import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElements.TIME_MINUTE;
+import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.IntegerSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.DecimalSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
 
 public class VariableParser {
 
-    public static HudElement2 getSupplierElement(String inside, ComplexData.Enabled enabled) {
+    public static HudElement getSupplierElement(String inside, ComplexData.Enabled enabled) {
         String[] parts = inside.split(" ");
 
         Flags flags = getFlags(parts);
-        HudElement2 raw = getRawSupplierElement(parts[0], enabled, flags.precision);
+        HudElement raw = getRawSupplierElement(parts[0], enabled, flags.precision);
         
         return raw;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static HudElement2 getRawSupplierElement(String name, ComplexData.Enabled enabled, int precision) {
+    private static HudElement getRawSupplierElement(String name, ComplexData.Enabled enabled, int precision) {
 
         Supplier supplier = getStringSupplier(name, enabled);
         if (supplier != null)

@@ -1,13 +1,13 @@
-package com.minenash.customhud.NewHudElements;
+package com.minenash.customhud.HudElements;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class RealTimeElement2 implements HudElement2 {
+public class RealTimeElement implements HudElement {
 
     private final SimpleDateFormat formatter;
 
-    public RealTimeElement2(SimpleDateFormat formatter) {
+    public RealTimeElement(SimpleDateFormat formatter) {
         this.formatter = formatter;
     }
 

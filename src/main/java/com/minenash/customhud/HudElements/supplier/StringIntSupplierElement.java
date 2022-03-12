@@ -1,12 +1,12 @@
-package com.minenash.customhud.NewHudElements.supplier;
+package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.function.Supplier;
 
-public class StringIntSupplierElement implements HudElement2 {
+public class StringIntSupplierElement implements HudElement {
 
     public static final Supplier<String> PARTICLES = () -> MinecraftClient.getInstance().particleManager.getDebugString();
 

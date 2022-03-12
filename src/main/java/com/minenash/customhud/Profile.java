@@ -1,9 +1,9 @@
 package com.minenash.customhud;
 
-import com.minenash.customhud.NewHudElements.ConditionalElement2;
-import com.minenash.customhud.NewHudElements.HudElement2;
-import com.minenash.customhud.NewHudElements.RealTimeElement2;
-import com.minenash.customhud.NewHudElements.StringElement2;
+import com.minenash.customhud.HudElements.ConditionalElement;
+import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.RealTimeElement;
+import com.minenash.customhud.HudElements.StringElement2;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +23,7 @@ public class Profile {
     private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("== ?Scale: ?(\\d+.?\\d*|.?\\d+) ?==");
     private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("== ?(Back|Fore)groundColou?r: ?(0x|#)?([0-9a-fA-F]+) ?==");
 
-    public List<List<HudElement2>>[] sections = new List[4];
+    public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
     public int[][] offsets = new int[4][2];
 
@@ -122,7 +122,7 @@ public class Profile {
         return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
     }
 
-    public static List<HudElement2> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
+    public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
         List<String> parts = new ArrayList<>();
 
         Matcher matcher = LINE_PARING_PATTERN.matcher(str == null ? "" : str);
@@ -131,7 +131,7 @@ public class Profile {
             parts.add(matcher.group(2));
         }
 
-        List<HudElement2> elements = new ArrayList<>();
+        List<HudElement> elements = new ArrayList<>();
 
         for (String part : parts) {
             if (part == null || part.isEmpty())
@@ -141,7 +141,7 @@ public class Profile {
                 elements.add(new StringElement2(part));
 
             else if (part.startsWith("{real_time:"))
-                elements.add(new RealTimeElement2(new SimpleDateFormat(part.substring(11,part.length()-1))));
+                elements.add(new RealTimeElement(new SimpleDateFormat(part.substring(11,part.length()-1))));
 
             else if (part.startsWith("{{")) {
                 Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(part.substring(2,part.length()-2));
@@ -149,19 +149,19 @@ public class Profile {
                     CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
                     continue;
                 }
-                HudElement2 conditional = VariableParser.getSupplierElement(args.group(1),enabled);
+                HudElement conditional = VariableParser.getSupplierElement(args.group(1),enabled);
                 if (conditional == null) {
                     CustomHud.LOGGER.warn("[Cond] Unknown Variable " + args.group(1) + " on line " + debugLine);
                     continue;
                 }
-                List<HudElement2> positive = parseElements(args.group(2), debugLine,enabled);
-                List<HudElement2> negative = args.groupCount() > 2 ? parseElements(args.group(4), debugLine,enabled) : new ArrayList<>();
-                elements.add(new ConditionalElement2(conditional, positive, negative));
+                List<HudElement> positive = parseElements(args.group(2), debugLine,enabled);
+                List<HudElement> negative = args.groupCount() > 2 ? parseElements(args.group(4), debugLine,enabled) : new ArrayList<>();
+                elements.add(new ConditionalElement(conditional, positive, negative));
             }
 
 
             else {
-                HudElement2 element = VariableParser.getSupplierElement(part.substring(1, part.length() - 1), enabled);
+                HudElement element = VariableParser.getSupplierElement(part.substring(1, part.length() - 1), enabled);
                 if (element != null)
                     elements.add(element);
                 else

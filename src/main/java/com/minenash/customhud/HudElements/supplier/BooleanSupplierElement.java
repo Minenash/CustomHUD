@@ -1,13 +1,13 @@
-package com.minenash.customhud.NewHudElements.supplier;
+package com.minenash.customhud.HudElements.supplier;
 
-import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.function.Supplier;
 
-public class BooleanSupplierElement implements HudElement2 {
+public class BooleanSupplierElement implements HudElement {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static boolean isInDim(Identifier id) { return client.world.getRegistryKey().getValue().equals(id); }

@@ -1,6 +1,6 @@
 package com.minenash.customhud;
 
-import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -28,15 +28,15 @@ public class CustomHudRenderer {
             matrix.scale(profile.scale,profile.scale,0);
 
         for (int i = 0; i < 4; i++) {
-            List<List<HudElement2>> section = profile.sections[i];
+            List<List<HudElement>> section = profile.sections[i];
             if (section == null)
                 continue;
 
             int y = (i == 0 || i == 1 ? 3 : client.getWindow().getScaledHeight() - 3 - section.size()*(9 + profile.lineSpacing)) + profile.offsets[i][1];
 
-            for(List<HudElement2> elements : section) {
+            for(List<HudElement> elements : section) {
                 StringBuilder builder = new StringBuilder();
-                for (HudElement2 e : elements)
+                for (HudElement e : elements)
                     builder.append(e.getString());
 
                 String line = builder.toString().replaceAll("\\s+$", "");

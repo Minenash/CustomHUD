@@ -1,7 +1,7 @@
-package com.minenash.customhud.NewHudElements.supplier;
+package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.function.Supplier;
 
-public class StringSupplierElement implements HudElement2 {
+public class StringSupplierElement implements HudElement {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static Entity cameraEntity() { return client.getCameraEntity(); }

@@ -1,11 +1,11 @@
-package com.minenash.customhud.NewHudElements.supplier;
+package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.NewHudElements.HudElement2;
+import com.minenash.customhud.HudElements.HudElement;
 
 import java.util.function.Supplier;
 
-public class SpecialSupplierElements implements HudElement2 {
+public class SpecialSupplierElements implements HudElement {
 
     public static final Entry TIME_HOUR_24 = of( () -> String.format("%02d", ComplexData.timeOfDay / 1000),
                                                  () -> ComplexData.timeOfDay / 1000,

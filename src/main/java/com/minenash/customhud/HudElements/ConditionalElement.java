@@ -1,14 +1,14 @@
-package com.minenash.customhud.NewHudElements;
+package com.minenash.customhud.HudElements;
 
 import java.util.List;
 
-public class ConditionalElement2 implements HudElement2 {
+public class ConditionalElement implements HudElement {
 
-    private final HudElement2 conditional;
-    private final List<HudElement2> positive;
-    private final List<HudElement2> negative;
+    private final HudElement conditional;
+    private final List<HudElement> positive;
+    private final List<HudElement> negative;
 
-    public ConditionalElement2(HudElement2 conditional, List<HudElement2> positive, List<HudElement2> negative) {
+    public ConditionalElement(HudElement conditional, List<HudElement> positive, List<HudElement> negative) {
         this.conditional = conditional;
         this.positive = positive;
         this.negative = negative;
