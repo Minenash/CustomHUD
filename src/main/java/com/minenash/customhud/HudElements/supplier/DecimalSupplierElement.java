@@ -52,6 +52,7 @@ public class DecimalSupplierElement implements HudElement {
         return ms_tics < 50 ? 20 : 1000/ms_tics;
     }, 0);
 
+    public static final Entry CPU_USAGE = of( () -> ComplexData.cpuLoad, 0);
     public static final Entry MEMORY_USED_PERCENTAGE = of( () -> (runtime.totalMemory() - runtime.freeMemory())*100D / runtime.maxMemory(), 0);
     public static final Entry MEMORY_USED = of( () -> toMiB(runtime.totalMemory() - runtime.freeMemory()), 0);
     public static final Entry TOTAL_MEMORY = of( () -> toMiB(runtime.maxMemory()), 0);

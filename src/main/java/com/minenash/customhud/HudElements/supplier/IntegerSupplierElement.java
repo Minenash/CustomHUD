@@ -46,6 +46,7 @@ public class IntegerSupplierElement implements HudElement {
     public static final Supplier<Integer> FPS = MinecraftClientAccess::getCurrentFps;
     public static final Supplier<Integer> MAX_FPS = () -> client.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? null : client.options.maxFps;
     public static final Supplier<Integer> BIOME_BLEND = () -> client.options.biomeBlendRadius;
+    public static final Supplier<Integer> SIMULATION_DISTANCE = () -> client.options.simulationDistance;
 
     public static final Supplier<Integer> PACKETS_SENT = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsSent();
     public static final Supplier<Integer> PACKETS_RECEIVED = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsReceived();
@@ -65,17 +66,28 @@ public class IntegerSupplierElement implements HudElement {
     public static final Supplier<Integer> BLOCK_X = () -> blockPos().getX();
     public static final Supplier<Integer> BLOCK_Y = () -> blockPos().getY();
     public static final Supplier<Integer> BLOCK_Z = () -> blockPos().getZ();
-    public static final Supplier<Integer> TARGET_X = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getX();
-    public static final Supplier<Integer> TARGET_Y = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getY();
-    public static final Supplier<Integer> TARGET_Z = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getZ();
+    public static final Supplier<Integer> TARGET_BLOCK_X = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getX();
+    public static final Supplier<Integer> TARGET_BLOCK_Y = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getY();
+    public static final Supplier<Integer> TARGET_BLOCK_Z = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getZ();
+    public static final Supplier<Integer> TARGET_FLUID_X = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getX();
+    public static final Supplier<Integer> TARGET_FLUID_Y = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getY();
+    public static final Supplier<Integer> TARGET_FLUID_Z = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getZ();
+    public static final Supplier<Integer> TARGET_ENTITY_X = () -> client.targetedEntity == null ? null : client.targetedEntity.getBlockX();
+    public static final Supplier<Integer> TARGET_ENTITY_Y = () -> client.targetedEntity == null ? null : client.targetedEntity.getBlockY();
+    public static final Supplier<Integer> TARGET_ENTITY_Z = () -> client.targetedEntity == null ? null : client.targetedEntity.getBlockZ();
 
-    //TODO: Make these Decimal
+    //TODO: Make these Decimal ^ and v
     public static final Supplier<Integer> IN_CHUNK_X = () -> blockPos().getX() & 15;
     public static final Supplier<Integer> IN_CHUNK_Y = () -> blockPos().getY() & 15;
     public static final Supplier<Integer> IN_CHUNK_Z = () -> blockPos().getZ() & 15;
     public static final Supplier<Integer> CHUNK_X = () -> blockPos().getX() >> 4;
     public static final Supplier<Integer> CHUNK_Y = () -> blockPos().getY() >> 4;
     public static final Supplier<Integer> CHUNK_Z = () -> blockPos().getZ() >> 4;
+    public static final Supplier<Integer> REGION_X = () -> blockPos().getX() >> 9;
+    public static final Supplier<Integer> REGION_Z = () -> blockPos().getZ() >> 9;
+    public static final Supplier<Integer> REGION_RELATIVE_X = () -> blockPos().getX() >> 4 & 0x1F;
+    public static final Supplier<Integer> REGION_RELATIVE_Z = () -> blockPos().getZ() >> 4 & 0x1F;
+
 
     public static final Supplier<Integer> CLIENT_LIGHT = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getChunkManager().getLightingProvider().getLight(blockPos(), 0);
     public static final Supplier<Integer> CLIENT_LIGHT_SKY = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getLightLevel(LightType.SKY, blockPos());

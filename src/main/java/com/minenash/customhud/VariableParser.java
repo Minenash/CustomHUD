@@ -97,6 +97,8 @@ public class VariableParser {
             case "facing_towards_pn_sign" -> FACING_TOWARDS_PN_SIGN;
             case "biome" -> BIOME;
             case "biome_id" -> BIOME_ID;
+            case "target_entity" -> TARGET_ENTITY;
+            case "target_entity_id" -> TARGET_ENTITY_ID;
             case "address" -> ADDRESS;
             case "java_version" -> JAVA_VERSION;
             case "server_brand" -> SERVER_BRAND;
@@ -124,6 +126,7 @@ public class VariableParser {
             case "max_fps" -> MAX_FPS;
             case "biome_blend" -> BIOME_BLEND;
             case "ms_ticks" -> MS_TICKS;
+            case "simulation_distance", "sd" -> SIMULATION_DISTANCE;
             case "packets_sent", "tx" -> PACKETS_SENT;
             case "packets_received", "rx" -> PACKETS_RECEIVED;
             case "chunks_rendered" -> CHUNKS_RENDERED;
@@ -138,15 +141,25 @@ public class VariableParser {
             case "block_x", "bx" -> BLOCK_X;
             case "block_y", "by" -> BLOCK_Y;
             case "block_z", "bz" -> BLOCK_Z;
-            case "target_x", "tbx" -> { enabled.targetBlock = true; yield TARGET_X; }
-            case "target_y", "tby" -> { enabled.targetBlock = true; yield TARGET_Y; }
-            case "target_z", "tbz" -> { enabled.targetBlock = true; yield TARGET_Z; }
+            case "target_block_x", "target_x", "tbx" -> { enabled.world = true; enabled.targetBlock = true; yield TARGET_BLOCK_X; }
+            case "target_block_y", "target_y", "tby" -> { enabled.world = true; enabled.targetBlock = true; yield TARGET_BLOCK_Y; }
+            case "target_block_z", "target_z", "tbz" -> { enabled.world = true; enabled.targetBlock = true; yield TARGET_BLOCK_Z; }
+            case "target_fluid_x", "tfx" -> { enabled.world = true; enabled.targetFluid = true; yield TARGET_FLUID_X; }
+            case "target_fluid_y", "tfy" -> { enabled.world = true; enabled.targetFluid = true; yield TARGET_FLUID_Y; }
+            case "target_fluid_z", "tfz" -> { enabled.world = true; enabled.targetFluid = true; yield TARGET_FLUID_Z; }
+            case "target_entity_x", "tex" -> TARGET_ENTITY_X;
+            case "target_entity_y", "tey" -> TARGET_ENTITY_Y;
+            case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
             case "in_chunk_x", "icx" -> IN_CHUNK_X;
             case "in_chunk_y", "icy" -> IN_CHUNK_Y;
             case "in_chunk_z", "icz" -> IN_CHUNK_Z;
             case "chunk_x", "cx" -> CHUNK_X;
             case "chunk_y", "cy" -> CHUNK_Y;
             case "chunk_z", "cz" -> CHUNK_Z;
+            case "region_x", "rex" -> REGION_X;
+            case "region_z", "rez" -> REGION_Z;
+            case "region_relative_x", "rrx" -> REGION_RELATIVE_X;
+            case "region_relative_z", "rrz" -> REGION_RELATIVE_Z;
             case "client_light", "light" -> { enabled.clientChunk = true; yield CLIENT_LIGHT; }
             case "client_light_sky", "light_sky" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_SKY; }
             case "client_light_block", "light_block" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_BLOCK; }
@@ -218,6 +231,7 @@ public class VariableParser {
             case "total_memory" -> TOTAL_MEMORY;
             case "allocated_percentage" -> ALLOCATED_PERCENTAGE;
             case "allocated" -> ALLOCATED;
+            case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
             case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
             case "local_difficulty" -> { enabled.localDifficulty = true; yield LOCAL_DIFFICULTY; }
@@ -232,6 +246,8 @@ public class VariableParser {
             case "minute": { enabled.time = true; return TIME_MINUTE; }
             case "target_block": {enabled.world = true; enabled.targetBlock = true; return TARGET_BLOCK;}
             case "target_block_id": {enabled.world = true; enabled.targetBlock = true; return TARGET_BLOCK_ID;}
+            case "target_fluid": {enabled.world = true; enabled.targetFluid = true; return TARGET_FLUID;}
+            case "target_fluid_id": {enabled.world = true; enabled.targetFluid = true; return TARGET_FLUID_ID;}
             case "item": return ITEM;
             case "item_id": return ITEM_ID;
             case "offhand_item", "oitem": return OFFHAND_ITEM;

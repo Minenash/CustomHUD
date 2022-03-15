@@ -1,22 +1,23 @@
 package com.minenash.customhud;
 
 import com.mojang.datafixers.DataFixUtils;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +32,8 @@ public class ComplexData {
     public static World world = null;
     public static BlockPos targetBlockPos = null;
     public static BlockState targetBlock = null;
+    public static BlockPos targetFluidPos = null;
+    public static FluidState targetFluid = null;
     public static String[] sounds = null;
     public static String[] clientChunkCache = null;
     public static int timeOfDay = -1;
@@ -46,6 +49,10 @@ public class ComplexData {
     private static ChunkPos pos = null;
     private static CompletableFuture<WorldChunk> chunkFuture;
     private static int velocityWaitCounter = 0;
+
+    private static CentralProcessor cpu = null;
+    private static long[] prevTicks = null;
+    public static double cpuLoad = 0;
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -93,6 +100,19 @@ public class ComplexData {
             }
         }
 
+        if (profile.enabled.targetFluid) {
+            HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, true);
+
+            if (hit.getType() == HitResult.Type.BLOCK) {
+                targetFluidPos = ((BlockHitResult)hit).getBlockPos();
+                targetFluid = world.getFluidState(targetFluidPos);
+            }
+            else {
+                targetBlockPos = null;
+                targetBlock = AIR_BLOCK_STATE;
+            }
+        }
+
         if (profile.enabled.localDifficulty)
             localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getMoonSize());
 
@@ -124,7 +144,14 @@ public class ComplexData {
             velocityXYZ = ((int)(changeXYZ*40))/10.0;
         }
 
-
+        if (profile.enabled.cpu) {
+            if (cpu == null) {
+                cpu = new SystemInfo().getHardware().getProcessor();
+                prevTicks = new long[CentralProcessor.TickType.values().length];
+            }
+            cpuLoad = cpu.getSystemCpuLoadBetweenTicks( prevTicks ) * 100;
+            prevTicks = cpu.getSystemCpuLoadTicks();
+        }
 
     }
 
@@ -134,7 +161,6 @@ public class ComplexData {
         serverWorld = null;
         localDifficulty = null;
         world = null;
-        targetBlockPos = null;
         sounds = null;
         clientChunkCache = null;
         x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
@@ -149,9 +175,11 @@ public class ComplexData {
         public boolean world = false;
         public boolean sound = false;
         public boolean targetBlock = false;
+        public boolean targetFluid = false;
         public boolean clientChunkCache = false;
         public boolean time = false;
         public boolean velocity = false;
+        public boolean cpu = false;
 
     }
 

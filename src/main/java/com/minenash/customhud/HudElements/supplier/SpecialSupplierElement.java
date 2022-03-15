@@ -6,9 +6,10 @@ import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.function.Supplier;
 
@@ -31,6 +32,14 @@ public class SpecialSupplierElement implements HudElement {
     public static final Entry TARGET_BLOCK_ID = of( () -> Registry.BLOCK.getId(ComplexData.targetBlock.getBlock()).toString(),
                                                     () -> Block.getRawIdFromState(ComplexData.targetBlock),
                                                     () -> !ComplexData.targetBlock.isAir());
+
+    public static final Entry TARGET_FLUID = of( () -> WordUtils.capitalize(Registry.FLUID.getId(ComplexData.targetFluid.getFluid()).getPath().replace('_',' ')),
+                                                 () -> Fluid.STATE_IDS.getRawId(ComplexData.targetFluid),
+                                                 () -> !ComplexData.targetFluid.isEmpty());
+
+    public static final Entry TARGET_FLUID_ID = of( () -> Registry.FLUID.getId(ComplexData.targetFluid.getFluid()).toString(),
+                                                    () -> Fluid.STATE_IDS.getRawId(ComplexData.targetFluid),
+                                                    () -> !ComplexData.targetFluid.isEmpty());
 
     public static final Entry ITEM = of( () -> I18n.translate(client.player.getMainHandStack().getItem().getTranslationKey()),
                                          () -> Item.getRawId(client.player.getMainHandStack().getItem()),
