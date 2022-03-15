@@ -40,6 +40,7 @@ public class ComplexData {
     public static String address = "";
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final BlockState AIR_BLOCK_STATE = Blocks.AIR.getDefaultState();
 
     //Chunk Data.
     private static ChunkPos pos = null;
@@ -88,7 +89,7 @@ public class ComplexData {
             }
             else {
                 targetBlockPos = null;
-                targetBlock = Blocks.AIR.getDefaultState();
+                targetBlock = AIR_BLOCK_STATE;
             }
         }
 
