@@ -2,6 +2,8 @@ package com.minenash.customhud;
 
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -28,7 +30,7 @@ public class ComplexData {
     public static LocalDifficulty localDifficulty = null;
     public static World world = null;
     public static BlockPos targetBlockPos = null;
-    public static Block targetBlock = null;
+    public static BlockState targetBlock = null;
     public static String[] sounds = null;
     public static String[] clientChunkCache = null;
     public static int timeOfDay = -1;
@@ -74,14 +76,21 @@ public class ComplexData {
             serverChunk = chunkFuture.getNow(null);
         }
 
-        if (profile.enabled.targetBlock) {
-            HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, false);
-            targetBlockPos = hit.getType() == HitResult.Type.BLOCK ? ((BlockHitResult)hit).getBlockPos() : null;
-            targetBlock = world.getBlockState(targetBlockPos).getBlock();
-        }
-
         if (profile.enabled.world)
             world = DataFixUtils.orElse(Optional.ofNullable(client.getServer()).flatMap((integratedServer) -> Optional.ofNullable(integratedServer.getWorld(client.world.getRegistryKey()))), client.world);
+
+        if (profile.enabled.targetBlock) {
+            HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, false);
+
+            if (hit.getType() == HitResult.Type.BLOCK) {
+                targetBlockPos = ((BlockHitResult)hit).getBlockPos();
+                targetBlock = world.getBlockState(targetBlockPos);
+            }
+            else {
+                targetBlockPos = null;
+                targetBlock = Blocks.AIR.getDefaultState();
+            }
+        }
 
         if (profile.enabled.localDifficulty)
             localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getMoonSize());

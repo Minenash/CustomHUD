@@ -8,8 +8,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.TIME_HOUR_24;
-import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.TIME_MINUTE;
+import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.IntegerSupplierElement.*;
@@ -60,7 +59,7 @@ public class VariableParser {
         return null;
     }
 
-    private static final Pattern precision = Pattern.compile("-p\\d+");
+    private static final Pattern precision = Pattern.compile("-p(\\d+)");
     private static Flags getFlags(String[] parts) {
         Flags flags = new Flags();
 
@@ -90,7 +89,6 @@ public class VariableParser {
             case "client_version" -> CLIENT_VERSION;
             case "modded_name" -> MODDED_NAME;
             case "graphics_mode" -> GRAPHICS_MODE;
-            case "clouds" -> CLOUDS;
             case "dimension" -> DIMENSION;
             case "dimension_id" -> DIMENSION_ID;
             case "facing" -> FACING;
@@ -102,12 +100,6 @@ public class VariableParser {
             case "address" -> ADDRESS;
             case "java_version" -> JAVA_VERSION;
             case "server_brand" -> SERVER_BRAND;
-            case "item" -> ITEM;
-            case "item_id" -> ITEM_ID;
-            case "offhand_item", "oitem" -> OFFHAND_ITEM;
-            case "offhand_item_id", "oitem_id" -> OFFHAND_ITEM_ID;
-            case "target_block" -> {enabled.targetBlock = true; yield TARGET_BLOCK;}
-            case "target_block_id" -> {enabled.targetBlock = true; yield TARGET_BLOCK_ID;}
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
             default -> null;
         };
@@ -120,6 +112,8 @@ public class VariableParser {
             case "overworld" -> IN_OVERWORLD;
             case "nether" -> IN_NETHER;
             case "end" -> IN_END;
+            case "item_has_durability", "item_has_dur" -> ITEM_HAS_DURABILITY;
+            case "offhand_item_has_durability", "oitem_has_dur" -> OFFHAND_ITEM_HAS_DURABILITY;
             default -> null;
         };
     }
@@ -236,6 +230,13 @@ public class VariableParser {
         switch (element) {
             case "hour24": { enabled.time = true; return TIME_HOUR_24; }
             case "minute": { enabled.time = true; return TIME_MINUTE; }
+            case "target_block": {enabled.world = true; enabled.targetBlock = true; return TARGET_BLOCK;}
+            case "target_block_id": {enabled.world = true; enabled.targetBlock = true; return TARGET_BLOCK_ID;}
+            case "item": return ITEM;
+            case "item_id": return ITEM_ID;
+            case "offhand_item", "oitem": return OFFHAND_ITEM;
+            case "offhand_item_id", "oitem_id": return OFFHAND_ITEM_ID;
+            case "clouds": return CLOUDS;
             default: return null;
         }
     }

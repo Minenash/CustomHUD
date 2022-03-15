@@ -49,7 +49,7 @@ public class CustomHudRenderer {
                     if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
                         int width = client.textRenderer.getWidth(line);
                         int x = (left ? 5 : client.getWindow().getScaledWidth() - 3 - width) + profile.offsets[i][0];
-                        DrawableHelper.fill(matrix, x - 2, y, x + width + (left ? 0 : 1), y + 9 + profile.lineSpacing, profile.bgColor);
+                        DrawableHelper.fill(matrix, x - 2, y, x + width + 1, y + 9 + profile.lineSpacing, profile.bgColor);
                         client.textRenderer.drawWithShadow(matrix, line, x, y + (profile.lineSpacing/2) + 1, profile.fgColor);
                     }
                     else {

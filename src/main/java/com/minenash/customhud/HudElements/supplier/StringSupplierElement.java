@@ -24,15 +24,14 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> VERSION = () -> SharedConstants.getGameVersion().getName();
     public static final Supplier<String> CLIENT_VERSION = client::getGameVersion;
     public static final Supplier<String> MODDED_NAME = ClientBrandRetriever::getClientModName;
-    public static final Supplier<String> GRAPHICS_MODE = () -> client.options.graphicsMode.toString().substring(1);
-    public static final Supplier<String> CLOUDS = () -> client.options.cloudRenderMode == CloudRenderMode.OFF ? "off" : (client.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds");
+    public static final Supplier<String> GRAPHICS_MODE = () -> client.options.graphicsMode.toString();
     public static final Supplier<String> SERVER_BRAND = () -> client.player.getServerBrand();
     public static final Supplier<String> ADDRESS = () -> client.getCurrentServerEntry().address;
 
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
-    public static final Supplier<String> BIOME = () -> WordUtils.capitalize(client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(blockPos())).getPath().replace("_", " "));
-    public static final Supplier<String> BIOME_ID = () -> client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(client.world.getBiome(blockPos())).toString();
+    public static final Supplier<String> BIOME = () -> WordUtils.capitalize(client.world.getBiome(blockPos()).getKey().get().getValue().getPath().replace("_", " "));
+    public static final Supplier<String> BIOME_ID = () -> client.world.getBiome(blockPos()).getKey().get().getValue().toString();
 
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
@@ -46,12 +45,6 @@ public class StringSupplierElement implements HudElement {
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
 
-    public static final Supplier<String> ITEM = () -> I18n.translate(client.player.getMainHandStack().getItem().getTranslationKey());
-    public static final Supplier<String> ITEM_ID = () -> client.player.getMainHandStack().getItem().toString();
-    public static final Supplier<String> OFFHAND_ITEM = () -> I18n.translate(client.player.getOffHandStack().getItem().getTranslationKey());
-    public static final Supplier<String> OFFHAND_ITEM_ID = () -> client.player.getOffHandStack().getItem().toString();
-    public static final Supplier<String> TARGET_BLOCK = () -> I18n.translate(ComplexData.targetBlock.getTranslationKey());
-    public static final Supplier<String> TARGET_BLOCK_ID = () -> Registry.BLOCK.getId(ComplexData.targetBlock).toString();
     //TODO: Item Name
     //public static final Supplier<String> ITEM_NAME = () -> client.player.getMainHandStack().getItem().getName().;
 
@@ -71,7 +64,6 @@ public class StringSupplierElement implements HudElement {
     @Override
     public Number getNumber() {
         try {
-            ;
             return supplier.get().length();
         }
         catch (Exception e) {

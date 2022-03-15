@@ -62,7 +62,7 @@ public class ModMenuIntegration implements ModMenuApi {
             }
 
             this.addDrawableChild(new ButtonWidget(mid - 100,this.height - 28,200,20,
-                    new TranslatableText("config.custom_hud.done"), (button) -> onClose()));
+                    new TranslatableText("config.custom_hud.done"), (button) -> close()));
 
         }
 
@@ -71,7 +71,7 @@ public class ModMenuIntegration implements ModMenuApi {
         }
 
         @Override
-        public void onClose() {
+        public void close() {
             CustomHud.justSaved = true;
             CustomHud.saveConfig();
             MinecraftClient.getInstance().setScreen(parent);

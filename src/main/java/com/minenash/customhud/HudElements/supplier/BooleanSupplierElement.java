@@ -19,6 +19,9 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> IN_NETHER = () -> isInDim(DimensionType.THE_NETHER_ID);
     public static final Supplier<Boolean> IN_END = () -> isInDim(DimensionType.THE_END_ID);
 
+    public static final Supplier<Boolean> ITEM_HAS_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() > 0;
+    public static final Supplier<Boolean> OFFHAND_ITEM_HAS_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() > 0;
+
     private final Supplier<Boolean> supplier;
 
     public BooleanSupplierElement(Supplier<Boolean> supplier) {
