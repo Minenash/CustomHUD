@@ -1,0 +1,16 @@
+{
+  "category.custom_hud": "Custom Hud",
+  "key.custom_hud.enable": "Etkinleştir/Devre Dışı Bırak",
+  "key.custom_hud.cycle_profiles": "Profil Değiştir",
+  "key.custom_hud.swap_to_profile1": "Profil 1'e geç",
+  "key.custom_hud.swap_to_profile2": "Profil 2'ye geç",
+  "key.custom_hud.swap_to_profile3": "Profil 3'e geç",
+  "gui.custom_hud.profile_updated": "CustomHud Profil %d Güncellendi",
+  "config.custom_hud.enabled": "Etkin",
+  "config.custom_hud.disabled": "Devre Dışı",
+  "config.custom_hud.done": "Tamam",
+  "config.custom_hud.open_profile": "%d. Profili Düzenle",
+  "config.custom_hud.title": "CustomHUD",
+  "config.custom_hud.enable.label": "Bu modu etkinleştir/devre dışı bırak",
+  "config.custom_hud.active_profile.label": "Mevcut Aktif Profil"
+}
