@@ -4,6 +4,10 @@ import com.minenash.customhud.HudElements.ConditionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.RealTimeElement;
 import com.minenash.customhud.HudElements.StringElement;
+import com.minenash.customhud.HudElements.supplier.StatElement;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -142,6 +146,20 @@ public class Profile {
 
             else if (part.startsWith("{real_time:"))
                 elements.add(new RealTimeElement(new SimpleDateFormat(part.substring(11,part.length()-1))));
+
+            else if (part.startsWith("{stat:")) {
+                String[] iparts = part.substring(1, part.length()-1).split(" ");
+                String stat = iparts[0].substring(5);
+
+                Identifier statId = Registry.CUSTOM_STAT.get(new Identifier(stat));
+                if (Stats.CUSTOM.hasStat(statId)) {
+                    elements.add(new StatElement(Stats.CUSTOM.getOrCreateStat(statId), VariableParser.getFlags(iparts)));
+                }
+                else
+                    System.out.println("Stat " + stat + " on line " + debugLine);
+
+
+            }
 
             else if (part.startsWith("{{")) {
                 Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(part.substring(2,part.length()-2));

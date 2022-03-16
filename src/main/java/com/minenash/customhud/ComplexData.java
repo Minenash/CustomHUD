@@ -6,6 +6,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
@@ -153,7 +154,16 @@ public class ComplexData {
             prevTicks = cpu.getSystemCpuLoadTicks();
         }
 
+        if (profile.enabled.updateStats) {
+            if (System.currentTimeMillis() - lastStatUpdate >= 500) {
+                client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
+                lastStatUpdate = System.currentTimeMillis();
+            }
+        }
+
     }
+
+    static long lastStatUpdate = 0;
 
     public static void reset() {
         clientChunk = null;
@@ -180,6 +190,7 @@ public class ComplexData {
         public boolean time = false;
         public boolean velocity = false;
         public boolean cpu = false;
+        public boolean updateStats = false;
 
     }
 

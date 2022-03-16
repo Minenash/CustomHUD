@@ -4,6 +4,7 @@ import com.minenash.customhud.HudElements.FormattedElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.supplier.*;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +22,7 @@ public class VariableParser {
         String[] parts = inside.split(" ");
 
         Flags flags = getFlags(parts);
-        HudElement raw = getRawSupplierElement(parts[0], enabled, flags.precision);
+        HudElement raw = getRawSupplierElement(parts[0], enabled, flags.precision, flags.scale);
 
         if (flags.anyUsed())
             return new FormattedElement(raw, flags);
@@ -30,7 +31,7 @@ public class VariableParser {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static HudElement getRawSupplierElement(String name, ComplexData.Enabled enabled, int precision) {
+    private static HudElement getRawSupplierElement(String name, ComplexData.Enabled enabled, int precision, double scale) {
 
         Supplier supplier = getStringSupplier(name, enabled);
         if (supplier != null)
@@ -50,7 +51,7 @@ public class VariableParser {
 
         DecimalSupplierElement.Entry entry = getDecimalSupplier(name, enabled);
         if (entry != null)
-            return precision == -1 ? new DecimalSupplierElement(entry) : new DecimalSupplierElement(entry, precision);
+            return precision == -1 ? new DecimalSupplierElement(entry, scale) : new DecimalSupplierElement(entry, precision, scale);
 
         SpecialSupplierElement.Entry entry2 = getSpecialSupplierElements(name, enabled);
         if (entry2 != null)
@@ -60,7 +61,8 @@ public class VariableParser {
     }
 
     private static final Pattern precision = Pattern.compile("-p(\\d+)");
-    private static Flags getFlags(String[] parts) {
+    private static final Pattern scale = Pattern.compile("-s((\\d+)\\/(\\d+)|\\d+(\\.\\d+)?)");
+    public static Flags getFlags(String[] parts) {
         Flags flags = new Flags();
 
         if (parts.length <= 1)
@@ -75,8 +77,17 @@ public class VariableParser {
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
                 default -> {
                     Matcher matcher = precision.matcher(parts[i]);
-                    if (matcher.matches())
+                    if (matcher.matches()) {
                         flags.precision = Integer.parseInt(matcher.group(1));
+                        continue;
+                    }
+                    matcher = scale.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        if (parts[i].contains("/"))
+                            flags.scale = Integer.parseInt(matcher.group(2)) / (double) Integer.parseInt(matcher.group(3));
+                        else
+                            flags.scale = Double.parseDouble(matcher.group(1));
+                    }
                 }
             }
         }

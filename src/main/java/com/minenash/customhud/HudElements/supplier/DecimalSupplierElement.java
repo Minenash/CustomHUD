@@ -66,21 +66,24 @@ public class DecimalSupplierElement implements HudElement {
 
     private final Supplier<Number> supplier;
     private final int precision;
+    private final double scale;
 
-    public DecimalSupplierElement(Entry entry) {
+    public DecimalSupplierElement(Entry entry, double scale) {
         this.supplier = entry.supplier;
         this.precision = entry.precision;
+        this.scale = scale;
     }
 
-    public DecimalSupplierElement(Entry entry, int precision) {
+    public DecimalSupplierElement(Entry entry, int precision, double scale) {
         this.supplier = entry.supplier;
         this.precision = precision;
+        this.scale = scale;
     }
 
     @Override
     public String getString() {
         try {
-            return String.format("%."+ precision +"f", supplier.get().doubleValue());
+            return String.format("%."+ precision +"f", supplier.get().doubleValue() * scale);
         }
         catch (Exception _e) {
             return "-";
