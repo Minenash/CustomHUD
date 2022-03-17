@@ -25,7 +25,7 @@ public class StatElement implements HudElement {
 
     @Override
     public String getString() {
-        return String.format("%."+ flags.precision +"f", get() * flags.scale);
+        return flags.formatted ? stat.format(get()) : String.format("%."+ flags.precision +"f", get() * flags.scale);
     }
 
     @Override

@@ -7,8 +7,11 @@ public class Flags {
     public TextCase textCase = null;
     public boolean smallCaps = false;
     public boolean noDelimiters = false;
+
     public int precision = -1;
     public double scale = 1;
+
+    public boolean formatted = false;
 
     public boolean anyUsed() {
         return textCase != null || smallCaps || noDelimiters;

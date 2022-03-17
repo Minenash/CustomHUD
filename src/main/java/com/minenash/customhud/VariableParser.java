@@ -75,6 +75,7 @@ public class VariableParser {
                 case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
                 case "-sc", "-smallcaps" -> flags.smallCaps = true;
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
+                case "-f", "formatted" -> flags.formatted = true;
                 default -> {
                     Matcher matcher = precision.matcher(parts[i]);
                     if (matcher.matches()) {

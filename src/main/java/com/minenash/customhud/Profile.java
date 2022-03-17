@@ -154,6 +154,7 @@ public class Profile {
                 Identifier statId = Registry.CUSTOM_STAT.get(new Identifier(stat));
                 if (Stats.CUSTOM.hasStat(statId)) {
                     elements.add(new StatElement(Stats.CUSTOM.getOrCreateStat(statId), VariableParser.getFlags(iparts)));
+                    enabled.updateStats = true;
                 }
                 else
                     System.out.println("Stat " + stat + " on line " + debugLine);
