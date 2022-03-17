@@ -47,9 +47,10 @@ public class CustomHudRenderer {
                     boolean left = i == 0 || i == 2;
 
                     if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
+                       // System.out.println(i + ": " + profile.width[i]);
                         int width = client.textRenderer.getWidth(line);
                         int x = (left ? 5 : client.getWindow().getScaledWidth() - 3 - width) + profile.offsets[i][0];
-                        DrawableHelper.fill(matrix, x - 2, y, x + width + 1, y + 9 + profile.lineSpacing, profile.bgColor);
+                        DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
                         client.textRenderer.drawWithShadow(matrix, line, x, y + (profile.lineSpacing/2) + 1, profile.fgColor);
                     }
                     else {
@@ -64,7 +65,7 @@ public class CustomHudRenderer {
 
                         int totalWidth = parts.stream().map(e -> client.textRenderer.getWidth(e.getKey())).mapToInt(Integer::intValue).sum();
                         int baseX = (left ? 5 : client.getWindow().getScaledWidth() - 3 - totalWidth) + profile.offsets[i][0];
-                        DrawableHelper.fill(matrix, baseX - 2, y, baseX + totalWidth + (left ? 0 : 1), y + 9 + profile.lineSpacing, profile.bgColor);
+                        DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
 
                         int xOffset = 0;
                         for (Map.Entry<String,Integer> part : parts) {
@@ -78,6 +79,11 @@ public class CustomHudRenderer {
             }
         }
         matrix.pop();
+    }
+
+    private static int lineLength(Profile profile, int section, int base_width) {
+        //System.out.println(profile.width[section]);
+        return profile.width[section] != -1? profile.width[section] : base_width;
     }
 
 
