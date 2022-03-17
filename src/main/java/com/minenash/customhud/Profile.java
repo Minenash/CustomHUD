@@ -1,10 +1,9 @@
 package com.minenash.customhud;
 
-import com.minenash.customhud.HudElements.ConditionalElement;
-import com.minenash.customhud.HudElements.HudElement;
-import com.minenash.customhud.HudElements.RealTimeElement;
-import com.minenash.customhud.HudElements.StringElement;
-import com.minenash.customhud.HudElements.supplier.StatElement;
+import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.HudElements.stats.CustomStatElement;
+import com.minenash.customhud.HudElements.stats.TypedStatElement;
+import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -150,16 +149,37 @@ public class Profile {
             else if (part.startsWith("{stat:")) {
                 String[] iparts = part.substring(1, part.length()-1).split(" ");
                 String stat = iparts[0].substring(5);
+                Flags flags = VariableParser.getFlags(iparts);
+
+//                if (stat.startsWith("mined:")) {
+//                    Block block = Registry.BLOCK.get( new Identifier( stat.substring(6) ));
+//                    if (block != Blocks.AIR) {
+//                        elements.add(new GenericStatElement(Stats.MINED, block, flags));
+//                        enabled.updateStats = true;
+//                    }
+//                    else
+//
+//                    continue;
+//                }
+
+                if ( stat("mined:",   Stats.MINED,   Registry.BLOCK, stat, flags, elements, enabled, debugLine) ||
+                     stat("crafted:", Stats.CRAFTED, Registry.ITEM,  stat, flags, elements, enabled, debugLine) ||
+                     stat("used:",    Stats.USED,    Registry.ITEM,  stat, flags, elements, enabled, debugLine) ||
+                     stat("broken:",  Stats.BROKEN,  Registry.ITEM,  stat, flags, elements, enabled, debugLine) ||
+                     stat("dropped:", Stats.DROPPED, Registry.ITEM,  stat, flags, elements, enabled, debugLine) ||
+                     stat("picked_up:", Stats.PICKED_UP, Registry.ITEM, stat, flags, elements, enabled, debugLine) ||
+                     stat("killed:",    Stats.KILLED,    Registry.ENTITY_TYPE, stat, flags, elements, enabled, debugLine) ||
+                     stat("killed_by:", Stats.KILLED_BY, Registry.ENTITY_TYPE, stat, flags, elements, enabled, debugLine)
+                   )
+                    continue;
 
                 Identifier statId = Registry.CUSTOM_STAT.get(new Identifier(stat));
                 if (Stats.CUSTOM.hasStat(statId)) {
-                    elements.add(new StatElement(Stats.CUSTOM.getOrCreateStat(statId), VariableParser.getFlags(iparts)));
+                    elements.add(new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), flags));
                     enabled.updateStats = true;
                 }
                 else
-                    System.out.println("Stat " + stat + " on line " + debugLine);
-
-
+                    System.out.println("Unknown stat " + stat + " on line " + debugLine);
             }
 
             else if (part.startsWith("{{")) {
@@ -189,6 +209,21 @@ public class Profile {
         }
 
         return elements;
+    }
+
+    private static boolean stat(String prefix, StatType type, Registry registry, String stat, Flags flags, List<HudElement> elements, ComplexData.Enabled enabled, int debugLine) {
+        if (!stat.startsWith(prefix))
+            return false;
+
+        Optional<?> entry = registry.getOrEmpty( new Identifier(stat.substring(prefix.length())) );
+        if (entry.isPresent()) {
+            elements.add(new TypedStatElement(type, entry.get(), flags));
+            enabled.updateStats = true;
+        }
+        else
+            System.out.println("Unknown value " + stat.substring(prefix.length()) + " on line " + debugLine);
+
+        return true;
     }
 
 }

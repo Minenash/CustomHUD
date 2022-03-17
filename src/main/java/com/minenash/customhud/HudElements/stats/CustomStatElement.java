@@ -1,4 +1,4 @@
-package com.minenash.customhud.HudElements.supplier;
+package com.minenash.customhud.HudElements.stats;
 
 import com.minenash.customhud.Flags;
 import com.minenash.customhud.HudElements.HudElement;
@@ -6,17 +6,16 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.stat.Stat;
 import net.minecraft.util.Identifier;
 
-public class StatElement implements HudElement {
+public class CustomStatElement implements HudElement {
 
     private final Stat<Identifier> stat;
     private final Flags flags;
 
-    public StatElement(Stat<Identifier> stat, Flags flags) {
+    public CustomStatElement(Stat<Identifier> stat, Flags flags) {
         this.stat = stat;
         this.flags = flags;
         if (flags.precision == -1)
             flags.precision = 0;
-        System.out.println("SCALE: " + flags.scale);
     }
 
     private int get() {
