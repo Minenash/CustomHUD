@@ -1,5 +1,6 @@
 package com.minenash.customhud;
 
+import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -162,6 +163,8 @@ public class ComplexData {
                 lastStatUpdate = System.currentTimeMillis();
             }
         }
+
+        CustomHudRegistry.runComplexData();
 
     }
 

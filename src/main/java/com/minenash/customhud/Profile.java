@@ -3,6 +3,7 @@ package com.minenash.customhud;
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
+import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
@@ -209,13 +210,14 @@ public class Profile {
                     Matcher keyMatcher = registryKey.matcher(part);
                     if (keyMatcher.matches()) {
                         element = CustomHudRegistry.get(keyMatcher.group(1), part);
+
                         if (element != null)
                             elements.add(element);
                         else
-                            CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
+                            CustomHud.LOGGER.warn("[I] Unknown Variable " + part + " on line " + debugLine);
                     }
                     else
-                        CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
+                        CustomHud.LOGGER.warn("[O] Unknown Variable " + part + " on line " + debugLine);
                 }
             }
         }
