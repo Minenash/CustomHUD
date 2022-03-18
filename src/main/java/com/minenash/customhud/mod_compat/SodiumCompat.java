@@ -1,13 +1,10 @@
 package com.minenash.customhud.mod_compat;
 
-import com.minenash.customhud.HudElements.supplier.IntegerSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringIntSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
 import me.jellysquid.mods.sodium.client.SodiumClientMod;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
-import me.jellysquid.mods.sodium.client.util.NativeBuffer;
 
-import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -26,8 +23,6 @@ public class SodiumCompat {
     public static final Supplier<String> MEMORY_USED = () -> debugLines.get(2).substring(15, debugLines.get(2).length() - 4).split("/")[0];
     public static final Supplier<String> MEMORY_ALLOCATED = () -> debugLines.get(2).substring(15, debugLines.get(2).length() - 4).split("/")[1];
 
-    public static final Supplier<Integer> MEMORY_OFF_HEAP = () -> (int)(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed() + NativeBuffer.getTotalAllocated())/1024/1024;
-
     public static void registerCompat() {
 
         registerElement("sodium_version", (_str) -> new StringSupplierElement(VERSION));
@@ -37,7 +32,6 @@ public class SodiumCompat {
         registerElement("sodium_buffer_objects", (_str) -> new StringIntSupplierElement(BUFFER_OBJECTS));
         registerElement("sodium_memory_used", (_str) -> new StringIntSupplierElement(MEMORY_USED));
         registerElement("sodium_memory_allocated", (_str) -> new StringIntSupplierElement(MEMORY_ALLOCATED));
-        registerElement("sodium_memory_off_heap", (_str) -> new IntegerSupplierElement(MEMORY_OFF_HEAP));
 
         registerComplexData(() -> {
             SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();

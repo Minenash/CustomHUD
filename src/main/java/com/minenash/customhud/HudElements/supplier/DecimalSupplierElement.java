@@ -2,12 +2,14 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
+import me.jellysquid.mods.sodium.client.util.NativeBuffer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
 
+import java.lang.management.ManagementFactory;
 import java.util.function.Supplier;
 
 public class DecimalSupplierElement implements HudElement {
@@ -58,6 +60,7 @@ public class DecimalSupplierElement implements HudElement {
     public static final Entry TOTAL_MEMORY = of( () -> toMiB(runtime.maxMemory()), 0);
     public static final Entry ALLOCATED_PERCENTAGE = of( () -> runtime.totalMemory() * 100 / runtime.maxMemory(), 0);
     public static final Entry ALLOCATED = of( () -> toMiB(runtime.totalMemory()), 0);
+    public static final Entry OFF_HEAP = of( () -> toMiB(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed() + NativeBuffer.getTotalAllocated()), 0);
 
     public record Entry(Supplier<Number> supplier, int precision) {}
     public static Entry of(Supplier<Number> supplier, int precision) {
