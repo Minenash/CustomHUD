@@ -27,7 +27,6 @@ public class CustomHudRenderer {
 
         matrix.push();
         font = profile.font;
-        //System.out.println(font);
 
         if (profile.scale != 1.0)
             matrix.scale(profile.scale,profile.scale,0);
@@ -37,7 +36,7 @@ public class CustomHudRenderer {
             if (section == null)
                 continue;
 
-            int y = (i == 0 || i == 1 ? 3 : client.getWindow().getScaledHeight() - 3 - section.size()*(9 + profile.lineSpacing)) + profile.offsets[i][1];
+            int y = (i == 0 || i == 1 ? 3 : (int)(client.getWindow().getScaledHeight()*(1/profile.scale)) - 6 - section.size()*(9 + profile.lineSpacing)) + profile.offsets[i][1];
 
             for(List<HudElement> elements : section) {
                 StringBuilder builder = new StringBuilder();
@@ -53,7 +52,7 @@ public class CustomHudRenderer {
 
                     if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
                         int width = client.textRenderer.getWidth(line);
-                        int x = (left ? 5 : client.getWindow().getScaledWidth() - 3 - width) + profile.offsets[i][0];
+                        int x = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - width) + profile.offsets[i][0];
                         DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
                         client.textRenderer.drawWithShadow(matrix, line, x, y + (profile.lineSpacing/2) + 1, profile.fgColor);
                     }
@@ -68,7 +67,7 @@ public class CustomHudRenderer {
                         }
 
                         int totalWidth = parts.stream().map(e -> client.textRenderer.getWidth(e.getKey())).mapToInt(Integer::intValue).sum();
-                        int baseX = (left ? 5 : client.getWindow().getScaledWidth() - 3 - totalWidth) + profile.offsets[i][0];
+                        int baseX = (left ? 5 : (int)(client.getWindow().getScaledHeight()*(1/profile.scale)) - 3 - totalWidth) + profile.offsets[i][0];
                         DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
 
                         int xOffset = 0;
