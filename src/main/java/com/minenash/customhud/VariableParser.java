@@ -236,7 +236,7 @@ public class VariableParser {
             case "yaw" -> YAW;
             case "pitch" -> PITCH;
             case "day" -> DAY;
-            case "mode" -> MOOD;
+            case "mood" -> MOOD;
             case "tps" -> TPS;
             case "memory_used_percentage" -> MEMORY_USED_PERCENTAGE;
             case "memory_used" -> MEMORY_USED;

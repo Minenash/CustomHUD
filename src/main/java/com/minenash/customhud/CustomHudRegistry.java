@@ -21,7 +21,8 @@ public class CustomHudRegistry implements Iterable<Map.Entry<String, Function<St
     }
 
     public static HudElement get(String key, String variable) {
-        return registry.get(key).apply(variable);
+        Function<String,HudElement> function = registry.get(key);
+        return function == null ? null : function.apply(variable);
     }
 
     public static boolean has(String key) {
