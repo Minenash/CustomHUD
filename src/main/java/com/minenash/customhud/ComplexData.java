@@ -120,8 +120,8 @@ public class ComplexData {
         if (profile.enabled.sound)
             sounds = client.getSoundManager().getDebugString().substring(8).replace(" + ", "/").split("/");
 
-        if (profile.enabled.clientChunkCache)
-            clientChunkCache = client.worldRenderer.getChunksDebugString().substring(20).split(", ");
+//      if (profile.enabled.clientChunkCache)
+//          clientChunkCache = client.worldRenderer.getChunksDebugString().substring(20).split(", ");
 
         if (profile.enabled.time) {
             timeOfDay = (int) ((client.world.getTimeOfDay() + 6000) % 24000);
@@ -188,11 +188,11 @@ public class ComplexData {
         public boolean sound = false;
         public boolean targetBlock = false;
         public boolean targetFluid = false;
-        public boolean clientChunkCache = false;
         public boolean time = false;
         public boolean velocity = false;
         public boolean cpu = false;
         public boolean updateStats = false;
+//      public boolean clientChunkCache = false;
 
     }
 

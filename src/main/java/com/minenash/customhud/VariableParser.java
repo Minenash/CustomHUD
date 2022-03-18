@@ -211,9 +211,9 @@ public class VariableParser {
             case "max_streaming_sonds", "max_sounds": enabled.sound = true; return MAX_STREAMING_SOUNDS;
             case "static_sounds": enabled.sound = true; return STATIC_SOUNDS;
             case "max_static_sounds": enabled.sound = true; return MAX_STATIC_SOUNDS;
-            case "client_chunk_cache_capacity": enabled.clientChunkCache = true; return CLIENT_CHUNK_CACHE_CAPACITY;
-            case "client_chunk_cache": enabled.clientChunkCache = true; return CLIENT_CHUNK_CACHE;
-            case "server_chunk_cache": enabled.serverWorld = true; return SERVER_CHUNK_CACHE;
+//          case "client_chunk_cache_capacity": enabled.clientChunkCache = true; return CLIENT_CHUNK_CACHE_CAPACITY;
+//          case "client_chunk_cache": enabled.clientChunkCache = true; return CLIENT_CHUNK_CACHE;
+//          case "server_chunk_cache": enabled.serverWorld = true; return SERVER_CHUNK_CACHE;
             default: return null;
         }
     }

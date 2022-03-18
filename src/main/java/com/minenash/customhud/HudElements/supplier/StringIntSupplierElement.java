@@ -15,9 +15,9 @@ public class StringIntSupplierElement implements HudElement {
     public static final Supplier<String> STATIC_SOUNDS = () -> ComplexData.sounds[2];
     public static final Supplier<String> MAX_STATIC_SOUNDS = () -> ComplexData.sounds[3];
 
-    public static final Supplier<String> CLIENT_CHUNK_CACHE_CAPACITY = () -> ComplexData.clientChunkCache[0];
-    public static final Supplier<String> CLIENT_CHUNK_CACHE = () -> ComplexData.clientChunkCache[1];
-    public static final Supplier<String> SERVER_CHUNK_CACHE = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.getDebugString().substring(18);
+//  public static final Supplier<String> CLIENT_CHUNK_CACHE_CAPACITY = () -> ComplexData.clientChunkCache[0];
+//  public static final Supplier<String> CLIENT_CHUNK_CACHE = () -> ComplexData.clientChunkCache[1];
+//  public static final Supplier<String> SERVER_CHUNK_CACHE = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.getDebugString().substring(18);
 
     private final Supplier<String> supplier;
 
