@@ -20,7 +20,7 @@ public class Profile {
 
     private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{.*?}}|&?\\{.*?})?");
     private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"(, ?\"(.*?)\")?");
-    private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(, ?([-+]?\\d+))? ?(, ?([-+]?\\d+))? ?(, ?([-+]?\\d+))?==");
+    private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(, ?([-+]?\\d+))? ?(, ?([-+]?\\d+))? ?(, ?(\\d+))? ?(, ?HideOnChat: ?(true|false))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?TargetRange: ?(\\d+|max) ?==");
     private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("== ?LineSpacing: ?([-+]?\\d+) ?==");
     private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("== ?Scale: ?(\\d+.?\\d*|.?\\d+) ?==");
@@ -31,6 +31,7 @@ public class Profile {
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
     public int[][] offsets = new int[4][2];
     public int[] width = new int[4];
+    public boolean[] hideOnChat = new boolean[4];
 
     public int bgColor;
     public int fgColor;
@@ -38,6 +39,7 @@ public class Profile {
     public float targetDistance;
     public float scale;
     public Identifier font;
+
 
     public static Profile parseProfile(Path path) {
         List<String> lines;
@@ -114,6 +116,7 @@ public class Profile {
                 profile.offsets[sectionId][0] = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
                 profile.offsets[sectionId][1] = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : 0;
                 profile.width[sectionId]      = matcher.group(7) != null ? Integer.parseInt(matcher.group(7)) : -1;
+                profile.hideOnChat[sectionId] = matcher.group(9) != null && Boolean.parseBoolean(matcher.group(9));
 
                 continue;
             }

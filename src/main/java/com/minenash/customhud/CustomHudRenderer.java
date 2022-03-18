@@ -3,6 +3,7 @@ package com.minenash.customhud;
 import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
@@ -25,6 +26,8 @@ public class CustomHudRenderer {
         if (profile == null)
             return;
 
+        boolean isChatOpen = client.currentScreen instanceof ChatScreen;
+
         matrix.push();
         font = profile.font;
 
@@ -33,7 +36,7 @@ public class CustomHudRenderer {
 
         for (int i = 0; i < 4; i++) {
             List<List<HudElement>> section = profile.sections[i];
-            if (section == null)
+            if (section == null || (profile.hideOnChat[i] && isChatOpen))
                 continue;
 
             int y = (i == 0 || i == 1 ? 3 : (int)(client.getWindow().getScaledHeight()*(1/profile.scale)) - 6 - section.size()*(9 + profile.lineSpacing)) + profile.offsets[i][1];
