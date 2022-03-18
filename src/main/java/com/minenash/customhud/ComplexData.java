@@ -151,7 +151,7 @@ public class ComplexData {
                 prevTicks = new long[CentralProcessor.TickType.values().length];
             }
             double load = cpu.getSystemCpuLoadBetweenTicks( prevTicks ) * 100;
-            if (load >= 1)
+            if (load > 0)
                 cpuLoad = load;
             prevTicks = cpu.getSystemCpuLoadTicks();
         }
