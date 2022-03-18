@@ -83,7 +83,11 @@ public class DecimalSupplierElement implements HudElement {
     @Override
     public String getString() {
         try {
-            return String.format("%."+ precision +"f", supplier.get().doubleValue() * scale);
+            if (precision == 0)
+                return Integer.toString((int)(supplier.get().doubleValue() * scale));
+
+            double exponent = Math.pow(10, precision);
+            return Double.toString( (int)(supplier.get().doubleValue() * scale * exponent) / exponent );
         }
         catch (Exception _e) {
             return "-";
