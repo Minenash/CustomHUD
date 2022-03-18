@@ -4,7 +4,6 @@ import com.minenash.customhud.HudElements.FormattedElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.supplier.*;
 
-import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +21,7 @@ public class VariableParser {
         String[] parts = inside.split(" ");
 
         Flags flags = getFlags(parts);
-        HudElement raw = getRawSupplierElement(parts[0], enabled, flags.precision, flags.scale);
+        HudElement raw = getRawSupplierElement(parts[0], enabled, flags);
 
         if (flags.anyUsed())
             return new FormattedElement(raw, flags);
@@ -31,7 +30,7 @@ public class VariableParser {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static HudElement getRawSupplierElement(String name, ComplexData.Enabled enabled, int precision, double scale) {
+    private static HudElement getRawSupplierElement(String name, ComplexData.Enabled enabled, Flags flags) {
 
         Supplier supplier = getStringSupplier(name, enabled);
         if (supplier != null)
@@ -51,7 +50,7 @@ public class VariableParser {
 
         DecimalSupplierElement.Entry entry = getDecimalSupplier(name, enabled);
         if (entry != null)
-            return precision == -1 ? new DecimalSupplierElement(entry, scale) : new DecimalSupplierElement(entry, precision, scale);
+            return flags.precision == -1 ? new DecimalSupplierElement(entry, flags.scale) : new DecimalSupplierElement(entry, flags.precision, flags.scale);
 
         SpecialSupplierElement.Entry entry2 = getSpecialSupplierElements(name, enabled);
         if (entry2 != null)
@@ -61,7 +60,7 @@ public class VariableParser {
     }
 
     private static final Pattern precision = Pattern.compile("-p(\\d+)");
-    private static final Pattern scale = Pattern.compile("-s((\\d+)\\/(\\d+)|\\d+(\\.\\d+)?)");
+    private static final Pattern scale = Pattern.compile("-s((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
     public static Flags getFlags(String[] parts) {
         Flags flags = new Flags();
 

@@ -5,11 +5,15 @@
   "compatibilityLevel": "JAVA_16",
   "client": [
     "ChunkBuilderAccess",
+    "InGameHudMixin",
     "MinecraftClientAccess",
     "WorldRendererAccess",
-    "InGameHudMixin"
+    "fonts.TextRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "fonts.TextHandlerMixin"
+  ]
 }

@@ -4,6 +4,7 @@ import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -15,6 +16,8 @@ public class CustomHudRenderer {
     private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("([^{}&]*)(&\\{(#|0x)?([0-9a-fA-F]*)})?");
     private static final Pattern CONTAINS_HEX_COLOR_PATTERN = Pattern.compile(".*&\\{(#|0x)?[0-9a-fA-F]*}.*");
 
+    public static Identifier font;
+
 
     public static void render(MatrixStack matrix) {
 
@@ -23,6 +26,8 @@ public class CustomHudRenderer {
             return;
 
         matrix.push();
+        font = profile.font;
+        //System.out.println(font);
 
         if (profile.scale != 1.0)
             matrix.scale(profile.scale,profile.scale,0);
@@ -47,7 +52,6 @@ public class CustomHudRenderer {
                     boolean left = i == 0 || i == 2;
 
                     if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
-                       // System.out.println(i + ": " + profile.width[i]);
                         int width = client.textRenderer.getWidth(line);
                         int x = (left ? 5 : client.getWindow().getScaledWidth() - 3 - width) + profile.offsets[i][0];
                         DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
@@ -78,11 +82,11 @@ public class CustomHudRenderer {
 
             }
         }
+        font = null;
         matrix.pop();
     }
 
     private static int lineLength(Profile profile, int section, int base_width) {
-        //System.out.println(profile.width[section]);
         return profile.width[section] != -1? profile.width[section] : base_width;
     }
 

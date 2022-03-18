@@ -25,6 +25,7 @@ public class Profile {
     private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("== ?LineSpacing: ?([-+]?\\d+) ?==");
     private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("== ?Scale: ?(\\d+.?\\d*|.?\\d+) ?==");
     private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("== ?(Back|Fore)groundColou?r: ?(0x|#)?([0-9a-fA-F]+) ?==");
+    private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("== ?Font: ?(\\w*:?\\w+) ?==");
 
     public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
@@ -36,6 +37,7 @@ public class Profile {
     public int lineSpacing;
     public float targetDistance;
     public float scale;
+    public Identifier font;
 
     public static Profile parseProfile(Path path) {
         List<String> lines;
@@ -62,6 +64,7 @@ public class Profile {
         profile.targetDistance = 20;
         profile.lineSpacing = 2;
         profile.scale = 1;
+        profile.font = null;
 
         int sectionId = -1;
 
@@ -91,6 +94,11 @@ public class Profile {
                 matcher = SCALE_FLAG_PATTERN.matcher(line);
                 if (matcher.matches()) {
                     profile.scale = Float.parseFloat(matcher.group(1));
+                    continue;
+                }
+                matcher = FONT_FLAG_PATTERN.matcher(line);
+                if (matcher.matches()) {
+                    profile.font = new Identifier(matcher.group(1));
                     continue;
                 }
             }
@@ -190,18 +198,29 @@ public class Profile {
                 elements.add(new ConditionalElement(conditional, positive, negative));
             }
 
-
             else {
                 HudElement element = VariableParser.getSupplierElement(part.substring(1, part.length() - 1), enabled);
                 if (element != null)
                     elements.add(element);
-                else
-                    CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
+                else {
+                    Matcher keyMatcher = registryKey.matcher(part);
+                    if (keyMatcher.matches()) {
+                        element = CustomHudRegistry.get(keyMatcher.group(1), part);
+                        if (element != null)
+                            elements.add(element);
+                        else
+                            CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
+                    }
+                    else
+                        CustomHud.LOGGER.warn("Unknown Variable " + part + " on line " + debugLine);
+                }
             }
         }
 
         return elements;
     }
+
+    private static final Pattern registryKey = Pattern.compile("\\{(\\w+).*}");
 
     private static boolean stat(String prefix, StatType type, Registry registry, String stat, Flags flags, List<HudElement> elements, ComplexData.Enabled enabled, int debugLine) {
         if (!stat.startsWith(prefix))
