@@ -243,7 +243,7 @@ public class VariableParser {
             case "memory_total" -> TOTAL_MEMORY;
             case "memory_allocated_percentage" -> ALLOCATED_PERCENTAGE;
             case "memory_allocated" -> ALLOCATED;
-            case "memory_off_Heap" -> OFF_HEAP;
+            case "memory_off_heap" -> OFF_HEAP;
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
             case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;

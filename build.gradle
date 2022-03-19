@@ -33,11 +33,13 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
+	modImplementation "maven.modrinth:iris:${project.iris_version}"
 	modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") {
 		exclude module: "fabric-api"
 	}
 
-	implementation "org.joml:joml:1.10.2"
+	implementation "org.joml:joml:1.10.2" //sodium
+	modRuntime "org.anarres:jcpp:1.4.14" //iris
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.

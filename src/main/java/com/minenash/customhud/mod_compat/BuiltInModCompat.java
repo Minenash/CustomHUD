@@ -4,11 +4,10 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class BuiltInModCompat {
 
-
-
     public static void register() {
 
         if (has("sodium")) SodiumCompat.registerCompat();
+        if (has("iris")) IrisCompat.registerCompat();
 
     }
 
