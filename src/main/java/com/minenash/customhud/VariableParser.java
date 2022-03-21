@@ -1,9 +1,21 @@
 package com.minenash.customhud;
 
-import com.minenash.customhud.HudElements.FormattedElement;
-import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.HudElements.stats.CustomStatElement;
+import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
+import com.minenash.customhud.conditionals.Conditional;
+import com.minenash.customhud.conditionals.ConditionalParser;
+import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import net.minecraft.stat.StatType;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +29,120 @@ import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement
 
 public class VariableParser {
 
-    public static HudElement getSupplierElement(String inside, ComplexData.Enabled enabled) {
+    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{.*?}}|&?\\{.*?})?");
+    private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"(, ?\"(.*?)\")?");
+
+    public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
+        List<String> parts = new ArrayList<>();
+
+        Matcher matcher = LINE_PARING_PATTERN.matcher(str == null ? "" : str);
+        while (matcher.find()) {
+            parts.add(matcher.group(1));
+            parts.add(matcher.group(2));
+        }
+
+        List<HudElement> elements = new ArrayList<>();
+
+        for (String part : parts) {
+            HudElement element = parseElement(part, debugLine, enabled);
+            if (element != null)
+                elements.add(element);
+        }
+
+        return elements;
+    }
+
+    public static HudElement parseElement(String part, int debugLine, ComplexData.Enabled enabled) {
+        if (part == null || part.isEmpty())
+            return null;
+
+        if (!part.startsWith("{"))
+            return new StringElement(part);
+
+        if (part.startsWith("{real_time:"))
+            return new RealTimeElement(new SimpleDateFormat(part.substring(11,part.length()-1)));
+
+        if (part.startsWith("{stat:")) {
+            String[] iparts = part.substring(1, part.length()-1).split(" ");
+            String stat = iparts[0].substring(5);
+            Flags flags = VariableParser.getFlags(iparts);
+
+            HudElement element = stat("mined:",   Stats.MINED,   Registry.BLOCK, stat, flags, enabled, debugLine);
+            if (element == null) element = stat("crafted:", Stats.CRAFTED, Registry.ITEM,  stat, flags, enabled, debugLine);
+            if (element == null) element = stat("used:",    Stats.USED,    Registry.ITEM,  stat, flags, enabled, debugLine);
+            if (element == null) element = stat("broken:",  Stats.BROKEN,  Registry.ITEM,  stat, flags, enabled, debugLine);
+            if (element == null) element = stat("dropped:", Stats.DROPPED, Registry.ITEM,  stat, flags, enabled, debugLine);
+            if (element == null) element = stat("picked_up:", Stats.PICKED_UP, Registry.ITEM, stat, flags, enabled, debugLine);
+            if (element == null) element = stat("killed:",    Stats.KILLED,    Registry.ENTITY_TYPE, stat, flags, enabled, debugLine);
+            if (element == null) element = stat("killed_by:", Stats.KILLED_BY, Registry.ENTITY_TYPE, stat, flags, enabled, debugLine);
+
+            if (element != null)
+                return element;
+
+            Identifier statId = Registry.CUSTOM_STAT.get(new Identifier(stat));
+            if (Stats.CUSTOM.hasStat(statId)) {
+                enabled.updateStats = true;
+                return new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), flags);
+            }
+            else
+                System.out.println("Unknown stat " + stat + " on line " + debugLine);
+        }
+
+        else if (part.startsWith("{{")) {
+            Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(part.substring(2,part.length()-2));
+            if (!args.matches()) {
+                CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
+                return null;
+            }
+            Conditional conditional = ConditionalParser.parseConditional(args.group(1), debugLine, enabled);
+            if (conditional == null) {
+                CustomHud.LOGGER.warn("[Cond] Unknown Variable " + args.group(1) + " on line " + debugLine);
+                return null;
+            }
+            List<HudElement> positive = parseElements(args.group(2), debugLine,enabled);
+            List<HudElement> negative = args.groupCount() > 2 ? parseElements(args.group(4), debugLine,enabled) : new ArrayList<>();
+            return new ConditionalElement(conditional, positive, negative);
+        }
+
+        else {
+            HudElement element = VariableParser.getSupplierElement(part.substring(1, part.length() - 1), enabled);
+            if (element != null)
+                return element;
+            else {
+                Matcher keyMatcher = registryKey.matcher(part);
+                if (keyMatcher.matches()) {
+                    element = CustomHudRegistry.get(keyMatcher.group(1), part);
+
+                    if (element != null)
+                        return element;
+                    else
+                        CustomHud.LOGGER.warn("[I] Unknown Variable " + part + " on line " + debugLine);
+                }
+                else
+                    CustomHud.LOGGER.warn("[O] Unknown Variable " + part + " on line " + debugLine);
+            }
+        }
+        return null;
+    }
+
+    private static final Pattern registryKey = Pattern.compile("\\{(\\w+).*}");
+
+    private static HudElement stat(String prefix, StatType type, Registry registry, String stat, Flags flags, ComplexData.Enabled enabled, int debugLine) {
+        if (!stat.startsWith(prefix))
+            return null;
+
+        Optional<?> entry = registry.getOrEmpty( new Identifier(stat.substring(prefix.length())) );
+        if (entry.isPresent()) {
+            enabled.updateStats = true;
+            return new TypedStatElement(type, entry.get(), flags);
+        }
+        else
+            System.out.println("Unknown value " + stat.substring(prefix.length()) + " on line " + debugLine);
+
+        return null;
+    }
+
+    private static HudElement getSupplierElement(String inside, ComplexData.Enabled enabled) {
         String[] parts = inside.split(" ");
 
         Flags flags = getFlags(parts);
@@ -211,9 +336,6 @@ public class VariableParser {
             case "max_streaming_sonds", "max_sounds": enabled.sound = true; return MAX_STREAMING_SOUNDS;
             case "static_sounds": enabled.sound = true; return STATIC_SOUNDS;
             case "max_static_sounds": enabled.sound = true; return MAX_STATIC_SOUNDS;
-//          case "client_chunk_cache_capacity": enabled.clientChunkCache = true; return CLIENT_CHUNK_CACHE_CAPACITY;
-//          case "client_chunk_cache": enabled.clientChunkCache = true; return CLIENT_CHUNK_CACHE;
-//          case "server_chunk_cache": enabled.serverWorld = true; return SERVER_CHUNK_CACHE;
             default: return null;
         }
     }
