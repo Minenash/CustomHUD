@@ -229,13 +229,10 @@ public class VariableParser {
             case "version" -> VERSION;
             case "client_version" -> CLIENT_VERSION;
             case "modded_name" -> MODDED_NAME;
-            case "graphics_mode" -> GRAPHICS_MODE;
             case "dimension" -> DIMENSION;
             case "dimension_id" -> DIMENSION_ID;
             case "facing" -> FACING;
             case "facing_towards_xz" -> FACING_TOWARDS_XZ;
-            case "facing_towards_pn_word" -> FACING_TOWARDS_PN_WORD;
-            case "facing_towards_pn_sign" -> FACING_TOWARDS_PN_SIGN;
             case "biome" -> BIOME;
             case "biome_id" -> BIOME_ID;
             case "target_entity" -> TARGET_ENTITY;
@@ -393,6 +390,9 @@ public class VariableParser {
             case "offhand_item", "oitem": return OFFHAND_ITEM;
             case "offhand_item_id", "oitem_id": return OFFHAND_ITEM_ID;
             case "clouds": return CLOUDS;
+            case "graphics_mode": return GRAPHICS_MODE;
+            case "facing_towards_pn_word": return FACING_TOWARDS_PN_WORD;
+            case "facing_towards_pn_sign": return FACING_TOWARDS_PN_SIGN;
             default: return null;
         }
     }

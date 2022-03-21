@@ -5,9 +5,12 @@ import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -16,6 +19,10 @@ import java.util.function.Supplier;
 public class SpecialSupplierElement implements HudElement {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static boolean isFacingEastOrSouth() {
+        Direction dir = client.getCameraEntity().getHorizontalFacing();
+        return dir == Direction.EAST || dir == Direction.SOUTH;
+    }
 
     public static final Entry TIME_HOUR_24 = of( () -> String.format("%02d", ComplexData.timeOfDay / 1000),
                                                  () -> ComplexData.timeOfDay / 1000,
@@ -57,9 +64,21 @@ public class SpecialSupplierElement implements HudElement {
                                                     () -> Item.getRawId(client.player.getOffHandStack().getItem()),
                                                     () -> !client.player.getOffHandStack().isEmpty());
 
-    public static final Entry CLOUDS = of( () -> client.options.cloudRenderMode == CloudRenderMode.OFF ? "off" : (client.options.cloudRenderMode == CloudRenderMode.FAST ? "fast-clouds" : "fancy-clouds"),
+    public static final Entry GRAPHICS_MODE = of( () -> client.options.graphicsMode.toString(),
+                                                  () -> client.options.graphicsMode == GraphicsMode.FAST ? 0 : (client.options.graphicsMode == GraphicsMode.FANCY ? 1 : 2),
+                                                  () -> true);
+
+    public static final Entry CLOUDS = of( () -> client.options.cloudRenderMode == CloudRenderMode.OFF ? "off" : (client.options.cloudRenderMode == CloudRenderMode.FAST ? "fast" : "fancy"),
                                            () -> client.options.cloudRenderMode == CloudRenderMode.OFF ? 0 : (client.options.cloudRenderMode == CloudRenderMode.FAST ? 1 : 2),
                                            () -> client.options.cloudRenderMode != CloudRenderMode.OFF);
+
+    public static final Entry FACING_TOWARDS_PN_WORD = of( () -> isFacingEastOrSouth() ? "+" : "-",
+            () -> isFacingEastOrSouth() ? 1 : 0,
+            SpecialSupplierElement::isFacingEastOrSouth);
+
+    public static final Entry FACING_TOWARDS_PN_SIGN = of( () -> isFacingEastOrSouth() ? "positive" : "negative",
+            () -> isFacingEastOrSouth() ? 1 : 0,
+            SpecialSupplierElement::isFacingEastOrSouth);
 
     public record Entry(Supplier<String> stringSupplier, Supplier<Number> numberSupplier, Supplier<Boolean> booleanSupplier) {}
     public static Entry of(Supplier<String> stringSupplier, Supplier<Number> numberSupplier, Supplier<Boolean> booleanSupplier) {

@@ -23,7 +23,6 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> VERSION = () -> SharedConstants.getGameVersion().getName();
     public static final Supplier<String> CLIENT_VERSION = client::getGameVersion;
     public static final Supplier<String> MODDED_NAME = ClientBrandRetriever::getClientModName;
-    public static final Supplier<String> GRAPHICS_MODE = () -> client.options.graphicsMode.toString();
     public static final Supplier<String> SERVER_BRAND = () -> client.player.getServerBrand();
     public static final Supplier<String> ADDRESS = () -> client.getCurrentServerEntry().address;
 
@@ -40,10 +39,6 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();
     public static final Supplier<String> FACING_TOWARDS_XZ = () ->
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";
-    public static final Supplier<String> FACING_TOWARDS_PN_WORD = () ->
-            cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.SOUTH ? "positive" : "negative";
-    public static final Supplier<String> FACING_TOWARDS_PN_SIGN = () ->
-            cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.SOUTH ? "+" : "-";
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
 
