@@ -136,7 +136,6 @@ public class ConditionalParser {
 
     private static Conditional getConditional(List<Token> tokens) {
         List<List<Token>> ors = split(tokens, TokenType.OR);
-        System.out.println("ORS: " + ors);
         List<Conditional> conditionals = new ArrayList<>();
         for (var or : ors)
             conditionals.add(getAndConditional(or));
