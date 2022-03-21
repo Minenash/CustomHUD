@@ -29,8 +29,9 @@ import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement
 
 public class VariableParser {
 
-    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{.*?}}|&?\\{.*?})?");
+    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{.*?, ?([\"']).*?\\3 ?}}|&?\\{.*?})?");
     private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"(, ?\"(.*?)\")?");
+    private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'(, ?'(.*?)')?");
 
     public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
         List<String> parts = new ArrayList<>();
@@ -89,14 +90,18 @@ public class VariableParser {
         }
 
         else if (part.startsWith("{{")) {
-            Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(part.substring(2,part.length()-2));
+            String inside = part.substring(2, part.length() - 2);
+            Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(inside);
+            if (!args.matches()) {
+                args = CONDITIONAL_PARSING_ALT_PATTERN.matcher(inside);
+            }
             if (!args.matches()) {
                 CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
                 return null;
             }
             Conditional conditional = ConditionalParser.parseConditional(args.group(1), debugLine, enabled);
             if (conditional == null) {
-                CustomHud.LOGGER.warn("[Cond] Unknown Variable " + args.group(1) + " on line " + debugLine);
+                CustomHud.LOGGER.warn("[Cond] Unknown Conditional " + args.group(1) + " on line " + debugLine);
                 return null;
             }
             List<HudElement> positive = parseElements(args.group(2), debugLine,enabled);
@@ -278,12 +283,12 @@ public class VariableParser {
             case "block_x", "bx" -> BLOCK_X;
             case "block_y", "by" -> BLOCK_Y;
             case "block_z", "bz" -> BLOCK_Z;
-            case "target_block_x", "target_x", "tbx" -> { enabled.world = true; enabled.targetBlock = true; yield TARGET_BLOCK_X; }
-            case "target_block_y", "target_y", "tby" -> { enabled.world = true; enabled.targetBlock = true; yield TARGET_BLOCK_Y; }
-            case "target_block_z", "target_z", "tbz" -> { enabled.world = true; enabled.targetBlock = true; yield TARGET_BLOCK_Z; }
-            case "target_fluid_x", "tfx" -> { enabled.world = true; enabled.targetFluid = true; yield TARGET_FLUID_X; }
-            case "target_fluid_y", "tfy" -> { enabled.world = true; enabled.targetFluid = true; yield TARGET_FLUID_Y; }
-            case "target_fluid_z", "tfz" -> { enabled.world = true; enabled.targetFluid = true; yield TARGET_FLUID_Z; }
+            case "target_block_x", "target_x", "tbx" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_X; }
+            case "target_block_y", "target_y", "tby" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Y; }
+            case "target_block_z", "target_z", "tbz" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Z; }
+            case "target_fluid_x", "tfx" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_X; }
+            case "target_fluid_y", "tfy" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_Y; }
+            case "target_fluid_z", "tfz" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_Z; }
             case "target_entity_x", "tex" -> TARGET_ENTITY_X;
             case "target_entity_y", "tey" -> TARGET_ENTITY_Y;
             case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
@@ -300,8 +305,8 @@ public class VariableParser {
             case "client_light", "light" -> { enabled.clientChunk = true; yield CLIENT_LIGHT; }
             case "client_light_sky", "light_sky" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_SKY; }
             case "client_light_block", "light_block" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_BLOCK; }
-            case "server_light_sky" -> { enabled.world = true; enabled.serverChunk = true; yield SERVER_LIGHT_SKY; }
-            case "server_light_block" -> { enabled.world = true; enabled.serverChunk = true; yield SERVER_LIGHT_BLOCK; }
+            case "server_light_sky" -> { enabled.world = enabled.serverChunk = true; yield SERVER_LIGHT_SKY; }
+            case "server_light_block" -> { enabled.world = enabled.serverChunk = true; yield SERVER_LIGHT_BLOCK; }
             case "client_height_map_surface", "chs" -> { enabled.clientChunk = true; yield CLIENT_HEIGHT_MAP_SURFACE; }
             case "client_height_map_motion_blocking", "chm" -> { enabled.clientChunk = true; yield CLIENT_HEIGHT_MAP_MOTION_BLOCKING; }
             case "server_height_map_surface", "shs" -> { enabled.serverChunk = true; yield SERVER_HEIGHT_MAP_SURFACE; }
@@ -369,8 +374,8 @@ public class VariableParser {
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
             case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
-            case "local_difficulty" -> { enabled.localDifficulty = true; yield LOCAL_DIFFICULTY; }
-            case "clamped_local_difficulty" -> { enabled.localDifficulty = true; yield CLAMPED_LOCAL_DIFFICULTY; }
+            case "local_difficulty" -> { enabled.localDifficulty = enabled.world = true; yield LOCAL_DIFFICULTY; }
+            case "clamped_local_difficulty" -> { enabled.localDifficulty = enabled.world = true; yield CLAMPED_LOCAL_DIFFICULTY; }
             default -> null;
         };
     }
@@ -379,10 +384,10 @@ public class VariableParser {
         switch (element) {
             case "hour24": { enabled.time = true; return TIME_HOUR_24; }
             case "minute": { enabled.time = true; return TIME_MINUTE; }
-            case "target_block": {enabled.world = true; enabled.targetBlock = true; return TARGET_BLOCK;}
-            case "target_block_id": {enabled.world = true; enabled.targetBlock = true; return TARGET_BLOCK_ID;}
-            case "target_fluid": {enabled.world = true; enabled.targetFluid = true; return TARGET_FLUID;}
-            case "target_fluid_id": {enabled.world = true; enabled.targetFluid = true; return TARGET_FLUID_ID;}
+            case "target_block": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK;}
+            case "target_block_id": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK_ID;}
+            case "target_fluid": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID;}
+            case "target_fluid_id": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID_ID;}
             case "item": return ITEM;
             case "item_id": return ITEM_ID;
             case "offhand_item", "oitem": return OFFHAND_ITEM;

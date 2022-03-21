@@ -2,6 +2,7 @@ package com.minenash.customhud.conditionals;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.StringElement;
 import com.minenash.customhud.VariableParser;
 
 import java.util.ArrayList;
@@ -21,7 +22,10 @@ public class ConditionalParser {
     public static Conditional parseConditional(String input, int debugLine, ComplexData.Enabled enabled) {
         List<Token> tokens = getTokens(input, debugLine, enabled);
         System.out.println("---------------");
-        return getConditional(tokens);
+        Conditional c = getConditional(tokens);
+        c.printTree(0);
+        System.out.println();
+        return c;
     }
 
     private static List<Token> getTokens(String original, int debugLine, ComplexData.Enabled enabled) {
@@ -81,18 +85,21 @@ public class ConditionalParser {
             }
             else if (isVar(c)) {
                 StringBuilder builder = new StringBuilder();
+                builder.append('{');
                 while (i < chars.length && isVar(chars[i])) {
                     builder.append(chars[i]);
                     i++;
                 }
+                builder.append('}');
                 tokens.add(new Token(TokenType.VARIABLE, VariableParser.parseElement(builder.toString(), debugLine, enabled)));
+                continue;
             }
             i++;
 
         }
 
         for (Token token : tokens)
-            System.out.println(token);
+            System.out.println("[A]" + token);
 
         int start = -1;
         for (int i = 0; i < tokens.size(); i++) {
@@ -110,7 +117,7 @@ public class ConditionalParser {
 
         System.out.println("---------------");
         for (Token token : tokens)
-            System.out.println(token);
+            System.out.println("[B]" + token);
         return tokens;
 
     }
@@ -129,6 +136,7 @@ public class ConditionalParser {
 
     private static Conditional getConditional(List<Token> tokens) {
         List<List<Token>> ors = split(tokens, TokenType.OR);
+        System.out.println("ORS: " + ors);
         List<Conditional> conditionals = new ArrayList<>();
         for (var or : ors)
             conditionals.add(getAndConditional(or));
@@ -149,6 +157,8 @@ public class ConditionalParser {
     @SuppressWarnings("unchecked")
     private static Conditional getComparisonConditional(List<Token> tokens) {
 
+        System.out.println(tokens.size());
+        System.out.println(tokens);
         if (tokens.size() == 1) {
             Token token = tokens.get(0);
             switch (token.type) {
@@ -164,14 +174,14 @@ public class ConditionalParser {
         boolean checkBool = false;
         HudElement left = switch (tokens.get(0).type()) {
             case VARIABLE -> (HudElement) tokens.get(0).value();
-            case STRING -> new SudoHudElements.Str((String)tokens.get(0).value());
+            case STRING -> new StringElement((String)tokens.get(0).value());
             case NUMBER -> new SudoHudElements.Num((Number)tokens.get(0).value());
             case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(0).value());}
             default -> throw new IllegalStateException("Unexpected value: " + tokens.get(0).type());
         };
         HudElement right = switch (tokens.get(2).type()) {
             case VARIABLE -> (HudElement) tokens.get(2).value();
-            case STRING -> new SudoHudElements.Str((String)tokens.get(2).value());
+            case STRING -> new StringElement((String)tokens.get(2).value());
             case NUMBER -> new SudoHudElements.Num((Number)tokens.get(2).value());
             case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(2).value());}
             default -> throw new IllegalStateException("Unexpected value: " + tokens.get(2).type());

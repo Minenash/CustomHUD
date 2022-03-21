@@ -1,6 +1,7 @@
 package com.minenash.customhud.mod_compat;
 
 //import com.minenash.customhud.mixin.mod_compat.iris.ShadowRenderAccessor;
+import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringIntSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
 import net.coderbot.iris.Iris;
@@ -15,6 +16,7 @@ public class IrisCompat {
     private static final String[] shaderPackInfo = new String[2];
 
     public static final Supplier<String> VERSION = Iris::getVersion;
+    public static final Supplier<Boolean> ENABLED = () -> !off();
     public static final Supplier<String> SHADERPACK = () -> off() ? null : Iris.getCurrentPackName();
     public static final Supplier<String> SHADERPACK_PROFILE = () -> shaderPackInfo[0];
     public static final Supplier<String> SHADERPACK_CHANGES = () -> shaderPackInfo[1];
@@ -38,13 +40,14 @@ public class IrisCompat {
     public static void registerCompat() {
 
         registerElement("iris_version", (_str) -> new StringSupplierElement(VERSION));
+        registerElement("iris_enabled", (_str) -> new BooleanSupplierElement(ENABLED));
         registerElement("iris_shaderpack", (_str) -> new StringSupplierElement(SHADERPACK));
         registerElement("iris_shaderpack_profile", (_str) -> new StringSupplierElement(SHADERPACK_PROFILE));
         registerElement("iris_shaderpack_changes", (_str) -> new StringIntSupplierElement(SHADERPACK_CHANGES));
 
         registerComplexData(() -> {
             if (off()) {
-                shaderPackInfo[0] = shaderPackInfo[1] = shaderPackInfo[2] = null;
+                shaderPackInfo[0] = shaderPackInfo[1] = null;
                 return;
             }
             String info = Iris.getCurrentPack().get().getProfileInfo();

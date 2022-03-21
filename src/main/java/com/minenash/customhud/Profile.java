@@ -22,7 +22,7 @@ public class Profile {
     public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
     public int[][] offsets = new int[4][2];
-    public int[] width = new int[4];
+    public int[] width = new int[]{-1,-1,-1,-1};
     public boolean[] hideOnChat = new boolean[4];
 
     public int bgColor;

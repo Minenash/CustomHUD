@@ -40,22 +40,4 @@ public class SudoHudElements {
         }
     }
 
-    public record Str(String str) implements HudElement {
-
-        @Override
-        public String getString() {
-            return str;
-        }
-
-        @Override
-        public Number getNumber() {
-            return str.length();
-        }
-
-        @Override
-        public boolean getBoolean() {
-            return str.length() > 0;
-        }
-    }
-
 }
