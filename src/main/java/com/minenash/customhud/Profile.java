@@ -12,12 +12,13 @@ import java.util.regex.Pattern;
 
 public class Profile {
 
-    private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(, ?([-+]?\\d+))? ?(, ?([-+]?\\d+))? ?(, ?(\\d+))? ?(, ?HideOnChat: ?(true|false))? ?==");
+    private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?TargetRange: ?(\\d+|max) ?==");
     private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("== ?LineSpacing: ?([-+]?\\d+) ?==");
     private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("== ?Scale: ?(\\d+.?\\d*|.?\\d+) ?==");
     private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("== ?(Back|Fore)groundColou?r: ?(0x|#)?([0-9a-fA-F]+) ?==");
     private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("== ?Font: ?(\\w*:?\\w+) ?==");
+    private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("== ?TextShadow: (true|false)==");
 
     public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
@@ -31,6 +32,7 @@ public class Profile {
     public float targetDistance;
     public float scale;
     public Identifier font;
+    public boolean textShadow;
 
 
     public static Profile parseProfile(Path path) {
@@ -59,6 +61,7 @@ public class Profile {
         profile.lineSpacing = 2;
         profile.scale = 1;
         profile.font = null;
+        profile.textShadow = true;
 
         int sectionId = -1;
 
@@ -95,6 +98,11 @@ public class Profile {
                     profile.font = new Identifier(matcher.group(1));
                     continue;
                 }
+                matcher = TEXT_SHADOW_FLAG_PATTERN.matcher(line);
+                if (matcher.matches()) {
+                    profile.textShadow = Boolean.parseBoolean(matcher.group(1));
+                    continue;
+                }
             }
             Matcher matcher = SECTION_DECORATION_PATTERN.matcher(line);
             if (matcher.matches()) {
@@ -105,10 +113,10 @@ public class Profile {
                     case "bottomleft" -> sectionId = 2;
                     case "bottomright" -> sectionId = 3;
                 }
-                profile.offsets[sectionId][0] = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
-                profile.offsets[sectionId][1] = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : 0;
-                profile.width[sectionId]      = matcher.group(7) != null ? Integer.parseInt(matcher.group(7)) : -1;
-                profile.hideOnChat[sectionId] = matcher.group(9) != null && Boolean.parseBoolean(matcher.group(9));
+                profile.offsets[sectionId][0] = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+                profile.offsets[sectionId][1] = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
+                profile.width[sectionId]      = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : -1;
+                profile.hideOnChat[sectionId] = matcher.group(4) != null && Boolean.parseBoolean(matcher.group(4));
 
                 continue;
             }

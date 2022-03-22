@@ -57,7 +57,7 @@ public class CustomHudRenderer {
                         int width = client.textRenderer.getWidth(line);
                         int x = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - width) + profile.offsets[i][0];
                         DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
-                        client.textRenderer.drawWithShadow(matrix, line, x, y + (profile.lineSpacing/2) + 1, profile.fgColor);
+                        drawText(profile, matrix, line, x, y + (profile.lineSpacing/2) + 1, profile.fgColor);
                     }
                     else {
                         List<Map.Entry<String,Integer>> parts = new ArrayList<>();
@@ -75,7 +75,7 @@ public class CustomHudRenderer {
 
                         int xOffset = 0;
                         for (Map.Entry<String,Integer> part : parts) {
-                            client.textRenderer.drawWithShadow(matrix, part.getKey(), baseX + xOffset, y + (profile.lineSpacing/2) + 1, part.getValue());
+                            drawText(profile, matrix, part.getKey(), baseX + xOffset, y + (profile.lineSpacing/2) + 1, part.getValue());
                             xOffset += client.textRenderer.getWidth(part.getKey());
                         }
                     }
@@ -90,6 +90,13 @@ public class CustomHudRenderer {
 
     private static int lineLength(Profile profile, int section, int base_width) {
         return profile.width[section] != -1? profile.width[section] : base_width;
+    }
+
+    private static void drawText(Profile profile, MatrixStack matrix, String line, float x, float y, int color) {
+        if (profile.textShadow)
+            client.textRenderer.drawWithShadow(matrix, line, x, y, color);
+        else
+            client.textRenderer.draw(matrix, line, x, y, color);
     }
 
 

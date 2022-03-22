@@ -204,7 +204,7 @@ public class VariableParser {
                 case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
                 case "-sc", "-smallcaps" -> flags.smallCaps = true;
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
-                case "-f", "formatted" -> flags.formatted = true;
+                case "-f", "-formatted" -> flags.formatted = true;
                 default -> {
                     Matcher matcher = precision.matcher(parts[i]);
                     if (matcher.matches()) {
@@ -316,6 +316,8 @@ public class VariableParser {
             case "ambient_mobs" -> { enabled.serverWorld = true; yield AMBIENT_MOBS; }
             case "water_creatures" -> { enabled.serverWorld = true; yield WATER_CREATURES; }
             case "water_ambient_mobs" -> { enabled.serverWorld = true; yield WATER_AMBIENT_MOBS; }
+            case "underground_water_creature" -> { enabled.serverWorld = true; yield UNDERGROUND_WATER_CREATURE; }
+            case "axolotls" -> { enabled.serverWorld = true; yield AXOLOTLS; }
             case "misc_mobs" -> { enabled.serverWorld = true; yield MISC_MOBS; }
             case "java_bit" -> JAVA_BIT;
             case "display_width" -> DISPLAY_WIDTH;
@@ -335,7 +337,7 @@ public class VariableParser {
         switch (element) {
             case "particles", "p": return PARTICLES;
             case "streaming_sounds", "sounds": enabled.sound = true; return STREAMING_SOUNDS;
-            case "max_streaming_sonds", "max_sounds": enabled.sound = true; return MAX_STREAMING_SOUNDS;
+            case "max_streaming_sounds", "max_sounds": enabled.sound = true; return MAX_STREAMING_SOUNDS;
             case "static_sounds": enabled.sound = true; return STATIC_SOUNDS;
             case "max_static_sounds": enabled.sound = true; return MAX_STATIC_SOUNDS;
             default: return null;

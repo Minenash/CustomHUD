@@ -111,6 +111,8 @@ public class IntegerSupplierElement implements HudElement {
     public static final Supplier<Integer> AMBIENT_MOBS = () -> spawn(SpawnGroup.AMBIENT);
     public static final Supplier<Integer> WATER_CREATURES = () -> spawn(SpawnGroup.WATER_CREATURE);
     public static final Supplier<Integer> WATER_AMBIENT_MOBS = () -> spawn(SpawnGroup.WATER_AMBIENT);
+    public static final Supplier<Integer> UNDERGROUND_WATER_CREATURE = () -> spawn(SpawnGroup.UNDERGROUND_WATER_CREATURE);
+    public static final Supplier<Integer> AXOLOTLS = () -> spawn(SpawnGroup.AXOLOTLS);
     public static final Supplier<Integer> MISC_MOBS = () -> spawn(SpawnGroup.MISC);
 
     public static final Supplier<Integer> JAVA_BIT = () -> client.is64Bit() ? 64 : 32;
@@ -162,7 +164,7 @@ public class IntegerSupplierElement implements HudElement {
     public boolean getBoolean() {
         try {
             Integer value = supplier.get();
-            return value != null && value != 0;
+            return value != null && value > 0;
         }
         catch (Exception e) {
             return false;
