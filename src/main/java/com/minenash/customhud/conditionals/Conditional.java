@@ -47,8 +47,8 @@ public interface Conditional {
     record Comparison(HudElement left, HudElement right, ConditionalParser.Conditionals comparison, boolean checkBool) implements Conditional {
         public boolean getValue() {
             return switch (comparison) {
-                case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : left.getString().equals(right.getString());
-                case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : !left.getString().equals(right.getString());
+                case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : left instanceof SudoHudElements.Num || right instanceof SudoHudElements.Num ? left.getNumber().doubleValue() == right.getNumber().doubleValue() : left.getString().equals(right.getString());
+                case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : left instanceof SudoHudElements.Num || right instanceof SudoHudElements.Num ? left.getNumber().doubleValue() != right.getNumber().doubleValue() : !left.getString().equals(right.getString());
 
                 case LESS_THAN -> left.getNumber().doubleValue() < right.getNumber().doubleValue();
                 case GREATER_THAN -> left.getNumber().doubleValue() > right.getNumber().doubleValue();

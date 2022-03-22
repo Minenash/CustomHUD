@@ -20,12 +20,18 @@ public class ConditionalParser {
     }
 
     public static Conditional parseConditional(String input, int debugLine, ComplexData.Enabled enabled) {
-        List<Token> tokens = getTokens(input, debugLine, enabled);
-        Conditional c = getConditional(tokens);
-        System.out.println("Tree for Conditional on line " + debugLine + ":");
-        c.printTree(0);
-        System.out.println();
-        return c;
+        try {
+            List<Token> tokens = getTokens(input, debugLine, enabled);
+            Conditional c = getConditional(tokens);
+            System.out.println("Tree for Conditional on line " + debugLine + ":");
+            c.printTree(0);
+            System.out.println();
+            return c;
+        }
+        catch (Exception e) {
+            System.out.println("Conditional Couldn't Be Parsed: " + e.getMessage());
+            return new Conditional.Literal(true);
+        }
     }
 
     private static List<Token> getTokens(String original, int debugLine, ComplexData.Enabled enabled) {

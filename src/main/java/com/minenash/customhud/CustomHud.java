@@ -15,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.Objects;
 
@@ -48,10 +50,22 @@ public class CustomHud implements ModInitializer {
 
 		for (int i = 1; i <=3; i++ )
 			profiles[i-1] = Profile.parseProfile(getProfilePath(i));
+
+		try {
+			Path path = getProfilePath(1);
+			if (Files.newBufferedReader(path).readLine() == null) {
+				try (OutputStream writer = Files.newOutputStream(path); InputStream input = getClass().getClassLoader().getResourceAsStream("assets/custom_hud/exampleProfile.txt")) {
+					input.transferTo(writer);
+				}
+				CustomHud.profiles[0] = Profile.parseProfile(path);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		try {
 			profileWatcher = FileSystems.getDefault().newWatchService();
 			CONFIG_FOLDER.register(profileWatcher, StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY);
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
