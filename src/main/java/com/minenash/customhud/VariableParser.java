@@ -316,7 +316,7 @@ public class VariableParser {
             case "ambient_mobs" -> { enabled.serverWorld = true; yield AMBIENT_MOBS; }
             case "water_creatures" -> { enabled.serverWorld = true; yield WATER_CREATURES; }
             case "water_ambient_mobs" -> { enabled.serverWorld = true; yield WATER_AMBIENT_MOBS; }
-            case "underground_water_creature" -> { enabled.serverWorld = true; yield UNDERGROUND_WATER_CREATURE; }
+            case "underground_water_creatures" -> { enabled.serverWorld = true; yield UNDERGROUND_WATER_CREATURE; }
             case "axolotls" -> { enabled.serverWorld = true; yield AXOLOTLS; }
             case "misc_mobs" -> { enabled.serverWorld = true; yield MISC_MOBS; }
             case "java_bit" -> JAVA_BIT;
