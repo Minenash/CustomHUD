@@ -21,8 +21,8 @@ public class ConditionalParser {
 
     public static Conditional parseConditional(String input, int debugLine, ComplexData.Enabled enabled) {
         List<Token> tokens = getTokens(input, debugLine, enabled);
-        System.out.println("---------------");
         Conditional c = getConditional(tokens);
+        System.out.println("Tree for Conditional on line " + debugLine + ":");
         c.printTree(0);
         System.out.println();
         return c;
@@ -98,8 +98,8 @@ public class ConditionalParser {
 
         }
 
-        for (Token token : tokens)
-            System.out.println("[A]" + token);
+//        for (Token token : tokens)
+//            System.out.println("[A]" + token);
 
         int start = -1;
         for (int i = 0; i < tokens.size(); i++) {
@@ -115,9 +115,9 @@ public class ConditionalParser {
 
         }
 
-        System.out.println("---------------");
-        for (Token token : tokens)
-            System.out.println("[B]" + token);
+//        System.out.println("---------------");
+//        for (Token token : tokens)
+//            System.out.println("[B]" + token);
         return tokens;
 
     }
@@ -156,8 +156,8 @@ public class ConditionalParser {
     @SuppressWarnings("unchecked")
     private static Conditional getComparisonConditional(List<Token> tokens) {
 
-        System.out.println(tokens.size());
-        System.out.println(tokens);
+//        System.out.println(tokens.size());
+//        System.out.println(tokens);
         if (tokens.size() == 1) {
             Token token = tokens.get(0);
             switch (token.type) {

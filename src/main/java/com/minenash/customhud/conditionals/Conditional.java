@@ -86,7 +86,7 @@ public interface Conditional {
         public void printTree(int indent) {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
-            System.out.println("- BooleanVariable: " + variable.getString());
+            System.out.println("- BooleanVariable");
         }
     }
 
