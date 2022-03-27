@@ -5,7 +5,9 @@ import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringIntSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
 import net.coderbot.iris.Iris;
+import net.coderbot.iris.shaderpack.ShaderPack;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static com.minenash.customhud.mod_compat.CustomHudRegistry.registerComplexData;
@@ -46,14 +48,17 @@ public class IrisCompat {
         registerElement("iris_shaderpack_changes", (_str) -> new StringIntSupplierElement(SHADERPACK_CHANGES));
 
         registerComplexData(() -> {
-            if (off()) {
-                shaderPackInfo[0] = shaderPackInfo[1] = null;
-                return;
+            Optional<ShaderPack> pack = Iris.getCurrentPack();
+            if (!off() && pack.isPresent()) {
+                String info = pack.get().getProfileInfo();
+                int indexOfPParenthesis = info.indexOf("(+");
+                shaderPackInfo[0] = info.substring(9, indexOfPParenthesis);
+                shaderPackInfo[1] = info.substring(indexOfPParenthesis + 2, info.indexOf(" option"));
             }
-            String info = Iris.getCurrentPack().get().getProfileInfo();
-            int indexOfPParenthesis = info.indexOf("(+");
-            shaderPackInfo[0] = info.substring(9, indexOfPParenthesis);
-            shaderPackInfo[1] = info.substring(indexOfPParenthesis + 2, info.indexOf(" option"));
+            else {
+                shaderPackInfo[0] = null;
+                shaderPackInfo[1] = null;
+            }
 
         });
 
