@@ -19,7 +19,7 @@ https://github.com/Minenash/CustomHUD/wiki
 Mem: &e{memory_used_percentage}%&f of &e{memory_total}
 CPU Usage: &e{cpu}%
 Packets: &e{tx} {rx}
-{{tps, "TPS: &e{tps}", ""Ping: &e{ping}"}}
+{{tps, "TPS: &e{tps}", "Ping: &e{ping}"}}
 
 {{target_block|target_fluid|target_entity, "&nTargets"}}
 {{target_block, "&e{target_block} &f| &c{tbx}, &a{tby}, &b{tbz}&f [Block]"}}
