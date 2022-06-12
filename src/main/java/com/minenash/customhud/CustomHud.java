@@ -9,11 +9,10 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -206,7 +205,7 @@ public class CustomHud implements ModInitializer {
 						CustomHud.profiles[profile - 1] = Profile.parseProfile(original);
 						LOGGER.info("Updated Profile " + profile);
 						if (MinecraftClient.getInstance().player != null)
-							MinecraftClient.getInstance().player.sendMessage(new TranslatableText("gui.custom_hud.profile_updated", profile), true);
+							MinecraftClient.getInstance().player.sendMessage(Text.translatable("gui.custom_hud.profile_updated", profile), true);
 						break;
 					}
 				}

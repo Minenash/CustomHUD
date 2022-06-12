@@ -7,7 +7,7 @@ import com.minenash.customhud.mixin.MinecraftClientAccess;
 import com.minenash.customhud.mixin.WorldRendererAccess;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -44,15 +44,15 @@ public class IntegerSupplierElement implements HudElement {
 
 
     public static final Supplier<Integer> FPS = MinecraftClientAccess::getCurrentFps;
-    public static final Supplier<Integer> MAX_FPS = () -> client.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? null : client.options.maxFps;
-    public static final Supplier<Integer> BIOME_BLEND = () -> client.options.biomeBlendRadius;
-    public static final Supplier<Integer> SIMULATION_DISTANCE = () -> client.options.simulationDistance;
+    public static final Supplier<Integer> MAX_FPS = () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FRAMERATE ? null : client.options.getMaxFps().getValue();
+    public static final Supplier<Integer> BIOME_BLEND = () -> client.options.getBiomeBlendRadius().getValue();
+    public static final Supplier<Integer> SIMULATION_DISTANCE = () -> client.options.getSimulationDistance().getValue();
 
     public static final Supplier<Integer> PACKETS_SENT = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsSent();
     public static final Supplier<Integer> PACKETS_RECEIVED = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsReceived();
     public static final Supplier<Integer> CHUNKS_RENDERED = () -> worldRender().getCompletedChunks();
     public static final Supplier<Integer> CHUNKS_LOADED = () -> worldRender().getChunks().chunks.length;
-    public static final Supplier<Integer> RENDER_DISTANCE = () -> client.options.viewDistance;
+    public static final Supplier<Integer> RENDER_DISTANCE = () -> client.options.getViewDistance().getValue();
     public static final Supplier<Integer> QUEUED_TASKS = () -> chunkBuilder().getQueuedTaskCount();
     public static final Supplier<Integer> UPLOAD_QUEUE = () -> chunkBuilder().getUploadQueue().size();
     public static final Supplier<Integer> BUFFER_COUNT = () -> chunkBuilder().getBufferCount();
