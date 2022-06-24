@@ -64,13 +64,13 @@ public class SpecialSupplierElement implements HudElement {
                                                     () -> Item.getRawId(client.player.getOffHandStack().getItem()),
                                                     () -> !client.player.getOffHandStack().isEmpty());
 
-    public static final Entry GRAPHICS_MODE = of( () -> client.options.graphicsMode.toString(),
-                                                  () -> client.options.graphicsMode == GraphicsMode.FAST ? 0 : (client.options.graphicsMode == GraphicsMode.FANCY ? 1 : 2),
+    public static final Entry GRAPHICS_MODE = of( () -> client.options.getGraphicsMode().getValue().toString(),
+                                                  () -> client.options.getGraphicsMode().getValue() == GraphicsMode.FAST ? 0 : (client.options.getGraphicsMode().getValue() == GraphicsMode.FANCY ? 1 : 2),
                                                   () -> true);
 
-    public static final Entry CLOUDS = of( () -> client.options.cloudRenderMode == CloudRenderMode.OFF ? "off" : (client.options.cloudRenderMode == CloudRenderMode.FAST ? "fast" : "fancy"),
-                                           () -> client.options.cloudRenderMode == CloudRenderMode.OFF ? 0 : (client.options.cloudRenderMode == CloudRenderMode.FAST ? 1 : 2),
-                                           () -> client.options.cloudRenderMode != CloudRenderMode.OFF);
+    public static final Entry CLOUDS = of( () -> client.options.getCloudRenderMode() == CloudRenderMode.OFF ? "off" : (client.options.getCloudRenderMode() == CloudRenderMode.FAST ? "fast" : "fancy"),
+                                           () -> client.options.getCloudRenderMode() == CloudRenderMode.OFF ? 0 : (client.options.getCloudRenderMode() == CloudRenderMode.FAST ? 1 : 2),
+                                           () -> client.options.getCloudRenderMode() != CloudRenderMode.OFF);
 
     public static final Entry FACING_TOWARDS_PN_WORD = of( () -> isFacingEastOrSouth() ? "positive" : "negative",
             () -> isFacingEastOrSouth() ? 1 : 0,
