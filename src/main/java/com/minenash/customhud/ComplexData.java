@@ -56,6 +56,7 @@ public class ComplexData {
     private static CentralProcessor cpu = null;
     private static long[] prevTicks = null;
     public static double cpuLoad = 0;
+    public static double gpuLoad = 0;
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -195,6 +196,7 @@ public class ComplexData {
         public boolean time = false;
         public boolean velocity = false;
         public boolean cpu = false;
+        public boolean gpu = false;
         public boolean updateStats = false;
 //      public boolean clientChunkCache = false;
 

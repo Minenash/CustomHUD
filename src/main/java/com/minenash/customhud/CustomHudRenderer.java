@@ -79,7 +79,6 @@ public class CustomHudRenderer {
                             continue;
                         }
 
-
                         int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - totalWidth) + profile.offsets[i][0];
                         DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
 

@@ -8,12 +8,11 @@
     "InGameHudMixin",
     "MinecraftClientAccess",
     "WorldRendererAccess",
-    "fonts.TextRendererMixin"
+    "fonts.TextRendererMixin",
+    "MinecraftClientMixin",
+    "fonts.TextHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "fonts.TextHandlerMixin"
-  ]
+  }
 }

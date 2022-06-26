@@ -8,7 +8,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 import java.lang.management.ManagementFactory;
 import java.util.function.Supplier;
@@ -56,6 +55,7 @@ public class DecimalSupplierElement implements HudElement {
     }, 0);
 
     public static final Entry CPU_USAGE = of( () -> ComplexData.cpuLoad, 0);
+    public static final Entry GPU_USAGE = of( () -> ComplexData.gpuLoad, 0);
     public static final Entry MEMORY_USED_PERCENTAGE = of( () -> (runtime.totalMemory() - runtime.freeMemory())*100D / runtime.maxMemory(), 0);
     public static final Entry MEMORY_USED = of( () -> toMiB(runtime.totalMemory() - runtime.freeMemory()), 0);
     public static final Entry TOTAL_MEMORY = of( () -> toMiB(runtime.maxMemory()), 0);
