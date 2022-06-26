@@ -7,6 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
@@ -110,8 +111,8 @@ public class ComplexData {
                 targetFluid = world.getFluidState(targetFluidPos);
             }
             else {
-                targetBlockPos = null;
-                targetBlock = AIR_BLOCK_STATE;
+                targetFluidPos = null;
+                targetFluid = Fluids.EMPTY.getDefaultState();
             }
         }
 
