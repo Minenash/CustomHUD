@@ -82,8 +82,9 @@ public class ConditionalParser {
                     builder.append(chars[i++]);
                 tokens.add(new Token(TokenType.STRING, builder.toString()));
             }
-            else if (isNum(c)) {
+            else if (isNum(c) || c == '-') {
                 StringBuilder builder = new StringBuilder();
+                builder.append(chars[i++]);
                 while (i < chars.length && isNum(chars[i]))
                     builder.append(chars[i++]);
                 tokens.add(new Token(TokenType.NUMBER, Double.parseDouble(builder.toString())));
@@ -132,7 +133,7 @@ public class ConditionalParser {
         return c == '.' || (c >= '0' && c <= '9');
     }
     private static boolean isVar(char c) {
-        return c == ':' || c == '_' || (c >= 'a' && c <= 'z');
+        return c == ':' || c == '_' || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
     }
     private static void reduceList(List<Token> original, int start, int end) {
         original.set(start, new Token(TokenType.FULL_PREN, new ArrayList<>(original.subList(start+1, end))));

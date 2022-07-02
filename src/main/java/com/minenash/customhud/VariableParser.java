@@ -328,7 +328,7 @@ public class VariableParser {
             case "item_max_durability", "item_max_dur" -> ITEM_MAX_DURABILITY;
             case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
             case "offhand_item_max_durability", "oitem_max_dur" -> OFFHAND_ITEM_MAX_DURABILITY;
-            case "hour12" -> { enabled.time = true; yield TIME_HOUR_12; }
+            case "hour12", "hour" -> { enabled.time = true; yield TIME_HOUR_12; }
             default -> null;
         };
     }
