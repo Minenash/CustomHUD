@@ -239,6 +239,8 @@ public class VariableParser {
             case "target_entity_id" -> TARGET_ENTITY_ID;
             case "address" -> ADDRESS;
             case "java_version" -> JAVA_VERSION;
+            case "cpu_name" -> CPU_NAME;
+            case "gpu_name" -> GPU_NAME;
             case "server_brand" -> SERVER_BRAND;
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
             default -> null;
@@ -320,8 +322,11 @@ public class VariableParser {
             case "axolotls" -> { enabled.serverWorld = true; yield AXOLOTLS; }
             case "misc_mobs" -> { enabled.serverWorld = true; yield MISC_MOBS; }
             case "java_bit" -> JAVA_BIT;
+            case "cpu_cores" -> CPU_CORES;
+            case "cpu_threads" -> CPU_THREADS;
             case "display_width" -> DISPLAY_WIDTH;
             case "display_height" -> DISPLAY_HEIGHT;
+            case "display_refresh_rate" -> DISPLAY_REFRESH_RATE;
             case "mods" -> MODS;
             case "ping" -> PING;
             case "item_durability", "item_dur" -> ITEM_DURABILITY;

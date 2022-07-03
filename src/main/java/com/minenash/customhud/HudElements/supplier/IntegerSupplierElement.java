@@ -5,6 +5,7 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.mixin.ChunkBuilderAccess;
 import com.minenash.customhud.mixin.MinecraftClientAccess;
 import com.minenash.customhud.mixin.WorldRendererAccess;
+import com.mojang.blaze3d.platform.GLX;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
@@ -117,9 +118,12 @@ public class IntegerSupplierElement implements HudElement {
     public static final Supplier<Integer> MISC_MOBS = () -> spawn(SpawnGroup.MISC);
 
     public static final Supplier<Integer> JAVA_BIT = () -> client.is64Bit() ? 64 : 32;
+    public static final Supplier<Integer> CPU_CORES = () -> ComplexData.cpu.getPhysicalProcessorCount();
+    public static final Supplier<Integer> CPU_THREADS = () -> ComplexData.cpu.getLogicalProcessorCount();
 
     public static final Supplier<Integer> DISPLAY_WIDTH = () -> client.getWindow().getFramebufferWidth();
     public static final Supplier<Integer> DISPLAY_HEIGHT = () -> client.getWindow().getFramebufferHeight();
+    public static final Supplier<Integer> DISPLAY_REFRESH_RATE = () -> GLX._getRefreshRate(client.getWindow());
     public static final Supplier<Integer> MODS = () -> FabricLoader.getInstance().getAllMods().size();
     public static final Supplier<Integer> PING = () -> client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency();
 

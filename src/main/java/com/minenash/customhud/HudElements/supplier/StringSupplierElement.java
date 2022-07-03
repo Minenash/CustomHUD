@@ -2,6 +2,7 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
+import com.mojang.blaze3d.platform.GlDebugInfo;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -41,6 +42,8 @@ public class StringSupplierElement implements HudElement {
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
+    public static final Supplier<String> CPU_NAME = () -> ComplexData.cpu.getProcessorIdentifier().getName();
+    public static final Supplier<String> GPU_NAME = () -> GlDebugInfo.getRenderer().substring(0, GlDebugInfo.getRenderer().indexOf('/'));
 
     //TODO: Item Name
     //public static final Supplier<String> ITEM_NAME = () -> client.player.getMainHandStack().getItem().getName().;

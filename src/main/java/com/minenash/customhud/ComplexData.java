@@ -19,8 +19,11 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GLX11;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
+import oshi.hardware.GraphicsCard;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -53,8 +56,8 @@ public class ComplexData {
     private static CompletableFuture<WorldChunk> chunkFuture;
     private static int velocityWaitCounter = 0;
 
-    private static CentralProcessor cpu = null;
-    private static long[] prevTicks = null;
+    public static final CentralProcessor cpu = new SystemInfo().getHardware().getProcessor();
+    private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
     public static double cpuLoad = 0;
     public static double gpuLoad = 0;
 
@@ -149,10 +152,6 @@ public class ComplexData {
         }
 
         if (profile.enabled.cpu) {
-            if (cpu == null) {
-                cpu = new SystemInfo().getHardware().getProcessor();
-                prevTicks = new long[CentralProcessor.TickType.values().length];
-            }
             double load = cpu.getSystemCpuLoadBetweenTicks( prevTicks ) * 100;
             if (load > 0)
                 cpuLoad = load;
