@@ -32,6 +32,9 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> BIOME = () -> WordUtils.capitalize(client.world.getBiome(blockPos()).getKey().get().getValue().getPath().replace("_", " "));
     public static final Supplier<String> BIOME_ID = () -> client.world.getBiome(blockPos()).getKey().get().getValue().toString();
 
+    private static final String[] moon_phases = new String[]{"full moon", "waning gibbous", "last quarter", "waning crescent", "new moon", "waxing crescent", "first quarter", "waxing gibbous"};
+    public static final Supplier<String> MOON_PHASE_WORD = () -> ComplexData.clientChunk.isEmpty() ? null : moon_phases[client.world.getMoonPhase()];
+
     public static final Supplier<String> TARGET_ENTITY = () -> client.targetedEntity == null ? null : I18n.translate(client.targetedEntity.getType().getTranslationKey());
     public static final Supplier<String> TARGET_ENTITY_ID = () -> client.targetedEntity == null ? null : Registry.ENTITY_TYPE.getId(client.targetedEntity.getType()).toString();
 

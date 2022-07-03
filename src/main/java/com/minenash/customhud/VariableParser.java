@@ -235,6 +235,7 @@ public class VariableParser {
             case "facing_towards_xz" -> FACING_TOWARDS_XZ;
             case "biome" -> BIOME;
             case "biome_id" -> BIOME_ID;
+            case "moon_phase_word" -> { enabled.clientChunk = true; yield MOON_PHASE_WORD; }
             case "target_entity" -> TARGET_ENTITY;
             case "target_entity_id" -> TARGET_ENTITY_ID;
             case "address" -> ADDRESS;
@@ -313,7 +314,6 @@ public class VariableParser {
             case "server_height_map_motion_blocking", "shm" -> { enabled.serverChunk = true; yield SERVER_HEIGHT_MAP_MOTION_BLOCKING; }
             case "server_height_map_motion_blocking_no_leaves", "shml" -> { enabled.serverChunk = true; yield SERVER_HEIGHT_MAP_MOTION_BLOCKING_NO_LEAVES; }
             case "moon_phase" -> { enabled.clientChunk = true; yield MOON_PHASE; }
-
             case "spawn_chunks", "sc" -> { enabled.serverWorld = true; yield SPAWN_CHUNKS; }
             case "monsters" -> { enabled.serverWorld = true; yield MONSTERS; }
             case "creatures" -> { enabled.serverWorld = true; yield CREATURES; }
