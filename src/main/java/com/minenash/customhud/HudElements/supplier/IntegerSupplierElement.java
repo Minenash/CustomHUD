@@ -104,6 +104,8 @@ public class IntegerSupplierElement implements HudElement {
     public static final Supplier<Integer> SERVER_HEIGHT_MAP_MOTION_BLOCKING = () -> chunk(ComplexData.serverChunk, Heightmap.Type.MOTION_BLOCKING);
     public static final Supplier<Integer> SERVER_HEIGHT_MAP_MOTION_BLOCKING_NO_LEAVES = () -> chunk(ComplexData.serverChunk, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
 
+    public static final Supplier<Integer> MOON_PHASE = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getMoonPhase();
+
     public static final Supplier<Integer> SPAWN_CHUNKS = () -> {
         SpawnHelper.Info info = ComplexData.serverWorld.getChunkManager().getSpawnInfo();
         return info == null ? null : info.getSpawningChunkCount();

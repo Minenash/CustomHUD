@@ -312,6 +312,8 @@ public class VariableParser {
             case "server_height_map_ocean_floor", "sho" -> { enabled.serverChunk = true; yield SERVER_HEIGHT_MAP_OCEAN_FLOOR; }
             case "server_height_map_motion_blocking", "shm" -> { enabled.serverChunk = true; yield SERVER_HEIGHT_MAP_MOTION_BLOCKING; }
             case "server_height_map_motion_blocking_no_leaves", "shml" -> { enabled.serverChunk = true; yield SERVER_HEIGHT_MAP_MOTION_BLOCKING_NO_LEAVES; }
+            case "moon_phase" -> { enabled.clientChunk = true; yield MOON_PHASE; }
+
             case "spawn_chunks", "sc" -> { enabled.serverWorld = true; yield SPAWN_CHUNKS; }
             case "monsters" -> { enabled.serverWorld = true; yield MONSTERS; }
             case "creatures" -> { enabled.serverWorld = true; yield CREATURES; }
