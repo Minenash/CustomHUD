@@ -23,12 +23,12 @@
     "modmenu": ["com.minenash.customhud.ModMenuIntegration"]
   },
   "mixins": [
-    "modid.mixins.json"
+    "custom_hud.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",
-    "minecraft": ">=1.16.2"
+    "minecraft": ">=1.16.5"
   }
 }
