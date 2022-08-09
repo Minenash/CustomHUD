@@ -41,6 +41,7 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
     public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();
+    public static final Supplier<String> FACING_SHORT = () -> FACING.get().substring(0, 1).toUpperCase();
     public static final Supplier<String> FACING_TOWARDS_XZ = () ->
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";
 
