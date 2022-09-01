@@ -232,6 +232,7 @@ public class VariableParser {
             case "dimension" -> DIMENSION;
             case "dimension_id" -> DIMENSION_ID;
             case "facing" -> FACING;
+            case "facing_short" -> FACING_SHORT;
             case "facing_towards_xz" -> FACING_TOWARDS_XZ;
             case "biome" -> BIOME;
             case "biome_id" -> BIOME_ID;
