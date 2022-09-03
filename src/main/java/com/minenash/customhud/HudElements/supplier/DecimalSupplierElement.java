@@ -18,7 +18,7 @@ public class DecimalSupplierElement implements HudElement {
     private static final Runtime runtime = Runtime.getRuntime();
 
     private static Entity cameraEntity() { return client.getCameraEntity(); }
-    private static boolean inNether() {return client.world.getRegistryKey().getValue().equals(World.NETHER);}
+    private static boolean inNether() { return client.world.getRegistryKey().getValue().equals(World.NETHER.getValue()); }
     private static double toMiB(long bytes) { return bytes / 1024D / 1024L; }
 
     public static final Entry X = of( () -> cameraEntity().getX(), 3);
