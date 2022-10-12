@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.Direction;
@@ -52,6 +51,10 @@ public class SpecialSupplierElement implements HudElement {
                                          () -> Item.getRawId(client.player.getMainHandStack().getItem()),
                                          () -> !client.player.getMainHandStack().isEmpty());
 
+    public static final Entry ITEM_NAME = of( () -> client.player.getMainHandStack().getName().getString(),
+            () -> client.player.getMainHandStack().getName().getString().length(),
+            () -> !client.player.getMainHandStack().isEmpty());
+
     public static final Entry ITEM_ID = of( () -> Registry.ITEM.getId(client.player.getMainHandStack().getItem()).toString(),
                                             () -> Item.getRawId(client.player.getMainHandStack().getItem()),
                                             () -> !client.player.getMainHandStack().isEmpty());
@@ -59,6 +62,10 @@ public class SpecialSupplierElement implements HudElement {
     public static final Entry OFFHAND_ITEM = of( () -> I18n.translate(client.player.getOffHandStack().getItem().getTranslationKey()),
                                                  () -> Item.getRawId(client.player.getOffHandStack().getItem()),
                                                  () -> !client.player.getOffHandStack().isEmpty());
+
+    public static final Entry OFFHAND_ITEM_NAME = of( () -> client.player.getOffHandStack().getName().getString(),
+            () -> client.player.getOffHandStack().getName().getString().length(),
+            () -> !client.player.getOffHandStack().isEmpty());
 
     public static final Entry OFFHAND_ITEM_ID = of( () -> Registry.ITEM.getId(client.player.getOffHandStack().getItem()).toString(),
                                                     () -> Item.getRawId(client.player.getOffHandStack().getItem()),

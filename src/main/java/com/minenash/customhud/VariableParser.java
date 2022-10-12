@@ -60,10 +60,17 @@ public class VariableParser {
         if (!part.startsWith("{"))
             return new StringElement(part);
 
-        if (part.startsWith("{real_time:"))
-            return new RealTimeElement(new SimpleDateFormat(part.substring(11,part.length()-1)));
+        if (part.startsWith("{real_time:")) {
+            try {
+                return new RealTimeElement(new SimpleDateFormat(part.substring(11,part.length()-1)));
+            }
+            catch (IllegalArgumentException e) {
+                System.out.println("Malformed Time Format on line " + debugLine + ": " + e.getMessage());
+            }
+        }
 
-        if (part.startsWith("{stat:")) {
+
+        else if (part.startsWith("{stat:")) {
             String[] iparts = part.substring(1, part.length()-1).split(" ");
             String stat = iparts[0].substring(5);
             Flags flags = VariableParser.getFlags(iparts);
@@ -397,8 +404,10 @@ public class VariableParser {
             case "target_fluid": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID;}
             case "target_fluid_id": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID_ID;}
             case "item": return ITEM;
+            case "item_name": return ITEM_NAME;
             case "item_id": return ITEM_ID;
             case "offhand_item", "oitem": return OFFHAND_ITEM;
+            case "offhand_item_name": return OFFHAND_ITEM_NAME;
             case "offhand_item_id", "oitem_id": return OFFHAND_ITEM_ID;
             case "clouds": return CLOUDS;
             case "graphics_mode": return GRAPHICS_MODE;
