@@ -7,9 +7,12 @@ import com.minenash.customhud.HudElements.supplier.*;
 import com.minenash.customhud.conditionals.Conditional;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.registry.Registry;
 
 import java.text.SimpleDateFormat;
@@ -94,6 +97,23 @@ public class VariableParser {
             }
             else
                 System.out.println("Unknown stat " + stat + " on line " + debugLine);
+        }
+
+        else if (part.startsWith("{itemcount:")) {
+            String inside = part.substring(11, part.length()-1);
+
+            try {
+                Item item = Registry.ITEM.get(new Identifier(inside));
+                if (item == Items.AIR)
+                    System.out.println("Unknown item id " + inside + " on line " + debugLine);
+                else
+                    return new ItemCountElement(item);
+            }
+            catch (InvalidIdentifierException e) {
+                System.out.println("Unknown item id " + inside + " on line " + debugLine);
+            }
+
+
         }
 
         else if (part.startsWith("{{")) {
