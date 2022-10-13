@@ -134,6 +134,9 @@ public class IntegerSupplierElement implements HudElement {
     public static final Supplier<Integer> OFFHAND_ITEM_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() - client.player.getOffHandStack().getDamage();
     public static final Supplier<Integer> OFFHAND_ITEM_MAX_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage();
 
+    public static final Supplier<Integer> LCPS = () -> ComplexData.clicksPerSeconds[0];
+    public static final Supplier<Integer> RCPS = () -> ComplexData.clicksPerSeconds[1];
+
     public static final Supplier<Integer> TIME_HOUR_12 = () -> {
         int hour = ComplexData.timeOfDay / 1000 % 12;
         return hour == 0 ? 12 : hour;

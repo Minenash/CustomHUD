@@ -368,6 +368,8 @@ public class VariableParser {
             case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
             case "offhand_item_max_durability", "oitem_max_dur" -> OFFHAND_ITEM_MAX_DURABILITY;
             case "hour12", "hour" -> { enabled.time = true; yield TIME_HOUR_12; }
+            case "lcps" -> { enabled.clicksPerSeconds = true; yield LCPS; }
+            case "rcps" -> { enabled.clicksPerSeconds = true; yield RCPS; }
             default -> null;
         };
     }

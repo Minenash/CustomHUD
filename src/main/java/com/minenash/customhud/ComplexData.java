@@ -19,11 +19,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GLX11;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
-import oshi.hardware.GraphicsCard;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -55,15 +52,18 @@ public class ComplexData {
     private static ChunkPos pos = null;
     private static CompletableFuture<WorldChunk> chunkFuture;
     private static int velocityWaitCounter = 0;
+    private static int cpsWaitCounter = 0;
 
     public static final CentralProcessor cpu = new SystemInfo().getHardware().getProcessor();
     private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
     public static double cpuLoad = 0;
     public static double gpuLoad = 0;
 
+    public static int[] clicksSoFar = new int[]{0,0};
+    public static int[] clicksPerSeconds = new int[]{0,0};
+
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
-
         if (profile.enabled.serverWorld) {
             IntegratedServer integratedServer = client.getServer();
             serverWorld = integratedServer != null ? integratedServer.getWorld(client.world.getRegistryKey()) : null;
@@ -133,10 +133,11 @@ public class ComplexData {
             timeOfDay = (int) ((client.world.getTimeOfDay() + 6000) % 24000);
         }
 
+        velocity:
         if (profile.enabled.velocity) {
             if (velocityWaitCounter > 0) {
                 velocityWaitCounter--;
-                return;
+                break velocity;
             }
             velocityWaitCounter = 4;
             ClientPlayerEntity p = client.player;
@@ -165,6 +166,20 @@ public class ComplexData {
             }
         }
 
+
+        cps:
+        if (profile.enabled.clicksPerSeconds) {
+            if (cpsWaitCounter > 0) {
+                cpsWaitCounter--;
+                break cps;
+            }
+            cpsWaitCounter = 19;
+            clicksPerSeconds[0] = clicksSoFar[0];
+            clicksPerSeconds[1] = clicksSoFar[1];
+            clicksSoFar[0] = 0;
+            clicksSoFar[1] = 0;
+        }
+
         CustomHudRegistry.runComplexData();
 
     }
@@ -180,6 +195,7 @@ public class ComplexData {
         sounds = null;
         clientChunkCache = null;
         x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
+        clicksPerSeconds[0] = clicksPerSeconds[1] = 0;
     }
 
     public static class Enabled {
@@ -197,6 +213,7 @@ public class ComplexData {
         public boolean cpu = false;
         public boolean gpu = false;
         public boolean updateStats = false;
+        public boolean clicksPerSeconds = false;
 //      public boolean clientChunkCache = false;
 
     }
