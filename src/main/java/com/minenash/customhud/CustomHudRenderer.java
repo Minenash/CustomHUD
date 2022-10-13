@@ -52,11 +52,15 @@ public class CustomHudRenderer {
                 if (!line.isEmpty()) {
                     if (line.contains("\\n")) {
                         String[] innerLines = line.split("\\\\n");
-                        for (String innerLine : innerLines)
-                            y += renderLine(matrix, innerLine, profile, i, y) + 9 + profile.lineSpacing;
+                        for (String innerLine : innerLines) {
+                            renderLine(matrix, innerLine, profile, i, y);
+                            y += 9 + profile.lineSpacing;
+                        }
+                        if (line.endsWith("\\n"))
+                            y += 9 + profile.lineSpacing;
                         continue;
                     }
-                    y+= renderLine(matrix, line, profile, i, y);
+                    renderLine(matrix, line, profile, i, y);
 
                 }
                 y += 9 + profile.lineSpacing;
@@ -67,14 +71,14 @@ public class CustomHudRenderer {
         matrix.pop();
     }
 
-    private static int renderLine(MatrixStack matrix, String line, Profile profile, int i, int y) {
+    private static void renderLine(MatrixStack matrix, String line, Profile profile, int i, int y) {
         boolean left = i == 0 || i == 2;
 
         if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
             int width = client.textRenderer.getWidth(line);
-            if (width == 0) {
-                return y + 9 + profile.lineSpacing;
-            }
+            if (width == 0)
+                return;
+
             int x = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - width) + profile.offsets[i][0];
             DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
             drawText(profile, matrix, line, x, y + (profile.lineSpacing/2) + 1, profile.fgColor);
@@ -90,9 +94,8 @@ public class CustomHudRenderer {
             }
 
             int totalWidth = parts.stream().map(e -> client.textRenderer.getWidth(e.getKey())).mapToInt(Integer::intValue).sum();
-            if (totalWidth == 0) {
-                return y + 9 + profile.lineSpacing;
-            }
+            if (totalWidth == 0)
+                return;
 
             int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - totalWidth) + profile.offsets[i][0];
             DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
@@ -103,7 +106,6 @@ public class CustomHudRenderer {
                 xOffset += client.textRenderer.getWidth(part.getKey());
             }
         }
-        return 0;
     }
 
     private static int lineLength(Profile profile, int section, int base_width) {

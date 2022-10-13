@@ -1,6 +1,8 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.conditionals.Conditional;
+import com.minenash.customhud.conditionals.ConditionalParser;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
@@ -20,6 +22,9 @@ public class Profile {
     private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("== ?Font: ?(\\w*:?\\w+) ?==");
     private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("== ?TextShadow: ?(true|false)==");
 
+    private static final Pattern IF_PATTERN = Pattern.compile("=if ?, ?(.+)=");
+    private static final Pattern ELSE_ENDIF__PATTERN = Pattern.compile("=(else|endif)=");
+
     public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
     public int[][] offsets = new int[4][2];
@@ -33,6 +38,8 @@ public class Profile {
     public float scale;
     public Identifier font;
     public boolean textShadow;
+
+    private Stack<ConditionalElement.MultiLineBuilder> tempIfStack = new Stack<>();
 
 
     public static Profile parseProfile(Path path) {
@@ -124,13 +131,47 @@ public class Profile {
                 sectionId = 0;
             }
 
-            profile.sections[sectionId].add(VariableParser.parseElements(line, i + 1,profile.enabled));
+            matcher = IF_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled)));
+                continue;
+            }
+
+            matcher = ELSE_ENDIF__PATTERN.matcher(line);
+            if (matcher.matches()) {
+                if (matcher.group(1).equals("else")) {
+                    profile.tempIfStack.peek().elseSection();
+                }
+                else {
+                    List<HudElement> c = Collections.singletonList(profile.tempIfStack.pop().build());
+                    if (profile.tempIfStack.empty())
+                        profile.sections[sectionId].add(c);
+                    else
+                        profile.tempIfStack.peek().add(c);
+                }
+                continue;
+            }
+
+            if (profile.tempIfStack.empty())
+                profile.sections[sectionId].add(VariableParser.parseElements(line, i + 1,profile.enabled));
+            else
+                profile.tempIfStack.peek().add(VariableParser.parseElements(line, i + 1,profile.enabled));
         }
+
+        while (!profile.tempIfStack.empty()) {
+            List<HudElement> c = Collections.singletonList(profile.tempIfStack.pop().build());
+            if (profile.tempIfStack.empty())
+                profile.sections[sectionId].add(c);
+            else
+                profile.tempIfStack.peek().add(c);
+        }
+        profile.tempIfStack = null;
 
         for (int i = 0; i < 4; i++) {
             if (profile.sections[i].isEmpty())
                 profile.sections[i] = null;
         }
+
         return profile;
     }
 
