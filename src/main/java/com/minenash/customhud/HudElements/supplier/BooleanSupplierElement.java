@@ -24,6 +24,11 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> IN_NETHER = () -> isInDim(World.NETHER.getValue());
     public static final Supplier<Boolean> IN_END = () -> isInDim(World.END.getValue());
 
+    public static final Supplier<Boolean> SPRINTING = () -> client.player.isSprinting() && !client.player.isSwimming();
+    public static final Supplier<Boolean> SNEAKING = () -> client.player.isSneaking();
+    public static final Supplier<Boolean> SWIMMING = () -> client.player.isSwimming();
+    public static final Supplier<Boolean> ON_GROUND = () -> client.player.isOnGround();
+
     public static final Supplier<Boolean> IS_SLIME_CHUNK = () -> ChunkRandom.getSlimeRandom(blockPos().getX() >> 4, blockPos().getZ() >> 4, ((StructureWorldAccess)ComplexData.world).getSeed(), 987234911L).nextInt(10) == 0;
 
     public static final Supplier<Boolean> ITEM_HAS_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() > 0;

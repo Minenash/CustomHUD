@@ -283,6 +283,10 @@ public class VariableParser {
             case "overworld" -> IN_OVERWORLD;
             case "nether" -> IN_NETHER;
             case "end" -> IN_END;
+            case "sprinting" -> SPRINTING;
+            case "sneaking" -> SNEAKING;
+            case "swimming" -> SWIMMING;
+            case "on_ground" -> ON_GROUND;
             case "slime_chunk" -> IS_SLIME_CHUNK;
             case "item_has_durability", "item_has_dur" -> ITEM_HAS_DURABILITY;
             case "offhand_item_has_durability", "oitem_has_dur" -> OFFHAND_ITEM_HAS_DURABILITY;
