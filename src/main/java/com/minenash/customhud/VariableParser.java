@@ -140,24 +140,26 @@ public class VariableParser {
         else if (part.startsWith("item:")) {
             int firstCollinIndex = part.indexOf(':', 6);
 
-            Pair<HudElement,String> variable = firstCollinIndex == -1?
+            Pair<HudElement,String> element = firstCollinIndex == -1?
                     ItemElement.create(part.substring(5), "", flags) :
                     ItemElement.create(part.substring(5,firstCollinIndex), part.substring(firstCollinIndex+1), flags);
 
-            if (variable.getRight() != null) {
-                CustomHud.LOGGER.warn(variable.getRight() + " on line " + debugLine);
+            if (element.getRight() != null) {
+                CustomHud.LOGGER.warn(element.getRight() + " on line " + debugLine);
                 return null;
             }
-
-            return variable.getLeft();
+            return element.getLeft();
         }
 
         else if (part.startsWith("s:") || part.startsWith("setting:")) {
             String setting = part.substring(part.indexOf(':') + 1).toLowerCase();
-            HudElement element = SettingsElement.create(setting, flags);
-            if (element != null)
-                return element;
-            CustomHud.LOGGER.warn("Unknown Setting " + setting + " on line " + debugLine);
+            Pair<HudElement,String> element = SettingsElement.create(setting, flags);
+
+            if (element.getRight() != null) {
+                CustomHud.LOGGER.warn(element.getRight() + " on line " + debugLine);
+                return null;
+            }
+            return element.getLeft();
         }
 
         else {
