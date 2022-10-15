@@ -3,6 +3,7 @@ package com.minenash.customhud.mixin;
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.CustomHud;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.RunArgs;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.util.profiler.Recorder;
@@ -10,7 +11,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
@@ -38,6 +41,11 @@ public class MinecraftClientMixin {
             ComplexData.clicksSoFar[1]++;
 
         return p;
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    public void init(RunArgs args, CallbackInfo ci) {
+        CustomHud.loadProfiles();
     }
 
 }

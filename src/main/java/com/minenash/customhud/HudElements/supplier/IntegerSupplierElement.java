@@ -129,10 +129,10 @@ public class IntegerSupplierElement implements HudElement {
     public static final Supplier<Integer> MODS = () -> FabricLoader.getInstance().getAllMods().size();
     public static final Supplier<Integer> PING = () -> client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency();
 
-    public static final Supplier<Integer> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
-    public static final Supplier<Integer> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();
-    public static final Supplier<Integer> OFFHAND_ITEM_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() - client.player.getOffHandStack().getDamage();
-    public static final Supplier<Integer> OFFHAND_ITEM_MAX_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage();
+    @Deprecated public static final Supplier<Integer> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
+    @Deprecated public static final Supplier<Integer> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();
+    @Deprecated public static final Supplier<Integer> OFFHAND_ITEM_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() - client.player.getOffHandStack().getDamage();
+    @Deprecated public static final Supplier<Integer> OFFHAND_ITEM_MAX_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage();
 
     public static final Supplier<Integer> LCPS = () -> ComplexData.clicksPerSeconds[0];
     public static final Supplier<Integer> RCPS = () -> ComplexData.clicksPerSeconds[1];

@@ -49,9 +49,6 @@ public class CustomHud implements ModInitializer {
 	public void onInitialize() {
 		BuiltInModCompat.register();
 
-		for (int i = 1; i <=3; i++ )
-			profiles[i-1] = Profile.parseProfile(getProfilePath(i));
-
 		try {
 			Path path = getProfilePath(1);
 			if (Files.newBufferedReader(path).readLine() == null) {
@@ -73,6 +70,11 @@ public class CustomHud implements ModInitializer {
 		loadConfig();
 
 		ClientTickEvents.END_CLIENT_TICK.register(CustomHud::onTick);
+	}
+
+	public static void loadProfiles() {
+		for (int i = 1; i <=3; i++ )
+			profiles[i-1] = Profile.parseProfile(getProfilePath(i));
 	}
 
 	private static ComplexData.Enabled previousEnabled = ComplexData.Enabled.DISABLED;

@@ -13,6 +13,7 @@ import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 import java.text.SimpleDateFormat;
@@ -63,9 +64,32 @@ public class VariableParser {
         if (!part.startsWith("{"))
             return new StringElement(part);
 
-        if (part.startsWith("{real_time:")) {
+        part = part.substring(1, part.length()-1);
+
+        if (part.startsWith("{")) {
+            part = part.substring(1, part.length() - 1);
+            Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(part);
+            if (!args.matches()) {
+                args = CONDITIONAL_PARSING_ALT_PATTERN.matcher(part);
+            }
+            if (!args.matches()) {
+                CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
+                return null;
+            }
+            Conditional conditional = ConditionalParser.parseConditional(args.group(1), debugLine, enabled);
+            List<HudElement> positive = parseElements(args.group(2), debugLine,enabled);
+            List<HudElement> negative = args.groupCount() > 2 ? parseElements(args.group(4), debugLine,enabled) : new ArrayList<>();
+            return new ConditionalElement(conditional, positive, negative);
+        }
+
+        String[] flagParts = part.split(" ");
+        Flags flags = getFlags(flagParts);
+        part = flagParts[0];
+
+
+        if (part.startsWith("real_time:")) {
             try {
-                return new RealTimeElement(new SimpleDateFormat(part.substring(11,part.length()-1)));
+                return new RealTimeElement(new SimpleDateFormat(part.substring(10)));
             }
             catch (IllegalArgumentException e) {
                 System.out.println("Malformed Time Format on line " + debugLine + ": " + e.getMessage());
@@ -73,10 +97,8 @@ public class VariableParser {
         }
 
 
-        else if (part.startsWith("{stat:")) {
-            String[] iparts = part.substring(1, part.length()-1).split(" ");
-            String stat = iparts[0].substring(5);
-            Flags flags = VariableParser.getFlags(iparts);
+        else if (part.startsWith("stat:")) {
+            String stat = part.substring(5);
 
             HudElement element = stat("mined:",   Stats.MINED,   Registry.BLOCK, stat, flags, enabled, debugLine);
             if (element == null) element = stat("crafted:", Stats.CRAFTED, Registry.ITEM,  stat, flags, enabled, debugLine);
@@ -99,47 +121,50 @@ public class VariableParser {
                 System.out.println("Unknown stat " + stat + " on line " + debugLine);
         }
 
-        else if (part.startsWith("{itemcount:")) {
-            String inside = part.substring(11, part.length()-1);
+        else if (part.startsWith("itemcount:")) {
+            part = part.substring(10);
 
             try {
-                Item item = Registry.ITEM.get(new Identifier(inside));
+                Item item = Registry.ITEM.get(new Identifier(part));
                 if (item == Items.AIR)
-                    System.out.println("Unknown item id " + inside + " on line " + debugLine);
+                    System.out.println("Unknown item id " + part + " on line " + debugLine);
                 else
                     return new ItemCountElement(item);
             }
             catch (InvalidIdentifierException e) {
-                System.out.println("Unknown item id " + inside + " on line " + debugLine);
+                System.out.println("Unknown item id " + part + " on line " + debugLine);
             }
-
 
         }
 
-        else if (part.startsWith("{{")) {
-            String inside = part.substring(2, part.length() - 2);
-            Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(inside);
-            if (!args.matches()) {
-                args = CONDITIONAL_PARSING_ALT_PATTERN.matcher(inside);
-            }
-            if (!args.matches()) {
-                CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
+        else if (part.startsWith("item:")) {
+            int firstCollinIndex = part.indexOf(':', 6);
+
+            Pair<HudElement,String> variable = firstCollinIndex == -1?
+                    ItemElement.create(part.substring(5), "", flags) :
+                    ItemElement.create(part.substring(5,firstCollinIndex), part.substring(firstCollinIndex+1), flags);
+
+            if (variable.getRight() != null) {
+                CustomHud.LOGGER.warn(variable.getRight() + " on line " + debugLine);
                 return null;
             }
-            Conditional conditional = ConditionalParser.parseConditional(args.group(1), debugLine, enabled);
-            if (conditional == null) {
-                CustomHud.LOGGER.warn("[Cond] Unknown Conditional " + args.group(1) + " on line " + debugLine);
-                return null;
-            }
-            List<HudElement> positive = parseElements(args.group(2), debugLine,enabled);
-            List<HudElement> negative = args.groupCount() > 2 ? parseElements(args.group(4), debugLine,enabled) : new ArrayList<>();
-            return new ConditionalElement(conditional, positive, negative);
+
+            return variable.getLeft();
+        }
+
+        else if (part.startsWith("s:") || part.startsWith("setting:")) {
+            String setting = part.substring(part.indexOf(':') + 1).toLowerCase();
+            HudElement element = SettingsElement.create(setting, flags);
+            if (element != null)
+                return element;
+            CustomHud.LOGGER.warn("Unknown Setting " + setting + " on line " + debugLine);
         }
 
         else {
-            HudElement element = VariableParser.getSupplierElement(part.substring(1, part.length() - 1), enabled);
-            if (element != null)
-                return element;
+            HudElement element = getSupplierElement(part, enabled, flags);
+            if (element != null) {
+                return flags.anyUsed() ? new FormattedElement(element, flags) : element;
+            }
             else {
                 Matcher keyMatcher = registryKey.matcher(part);
                 if (keyMatcher.matches()) {
@@ -157,9 +182,9 @@ public class VariableParser {
         return null;
     }
 
-    private static final Pattern registryKey = Pattern.compile("\\{(\\w+).*}");
+    private static final Pattern registryKey = Pattern.compile("(\\w+).*");
 
-    private static HudElement stat(String prefix, StatType type, Registry registry, String stat, Flags flags, ComplexData.Enabled enabled, int debugLine) {
+    private static HudElement stat(String prefix, StatType<?> type, Registry<?> registry, String stat, Flags flags, ComplexData.Enabled enabled, int debugLine) {
         if (!stat.startsWith(prefix))
             return null;
 
@@ -174,20 +199,8 @@ public class VariableParser {
         return null;
     }
 
-    private static HudElement getSupplierElement(String inside, ComplexData.Enabled enabled) {
-        String[] parts = inside.split(" ");
-
-        Flags flags = getFlags(parts);
-        HudElement raw = getRawSupplierElement(parts[0], enabled, flags);
-
-        if (flags.anyUsed())
-            return new FormattedElement(raw, flags);
-        
-        return raw;
-    }
-
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static HudElement getRawSupplierElement(String name, ComplexData.Enabled enabled, Flags flags) {
+    private static HudElement getSupplierElement(String name, ComplexData.Enabled enabled, Flags flags) {
 
         Supplier supplier = getStringSupplier(name, enabled);
         if (supplier != null)

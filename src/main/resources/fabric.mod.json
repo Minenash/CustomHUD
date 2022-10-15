@@ -25,7 +25,7 @@
   "mixins": [
     "customhud.mixins.json"
   ],
-
+  "accessWidener": "customhud.accesswidener",
   "depends": {
     "fabricloader": ">=0.12.12",
     "fabric": "*",

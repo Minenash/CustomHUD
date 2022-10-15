@@ -7,12 +7,15 @@
     "ChunkBuilderAccess",
     "InGameHudMixin",
     "MinecraftClientAccess",
-    "WorldRendererAccess",
-    "fonts.TextRendererMixin",
     "MinecraftClientMixin",
-    "fonts.TextHandlerMixin"
+    "WorldRendererAccess",
+    "fonts.TextHandlerMixin",
+    "fonts.TextRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "GameOptionsInvoker"
+  ]
 }
