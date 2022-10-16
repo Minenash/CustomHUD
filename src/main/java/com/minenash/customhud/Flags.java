@@ -13,7 +13,12 @@ public class Flags {
 
     public boolean formatted = false;
 
-    public boolean anyUsed() {
+    public int iconWidth = 11;
+    public boolean iconShowCount = false;
+    public boolean iconShowDur = false;
+    public boolean iconShowCooldown = false;
+
+    public boolean anyTextUsed() {
         return textCase != null || smallCaps || noDelimiters;
     }
 

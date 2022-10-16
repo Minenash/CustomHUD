@@ -1,6 +1,7 @@
 package com.minenash.customhud.HudElements;
 
 import com.minenash.customhud.Flags;
+import com.minenash.customhud.HudElements.icon.SlotItemIconElement;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
@@ -12,7 +13,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.function.Function;
 
-public class ItemElement implements HudElement {
+public class SlotItemElement implements HudElement {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static ItemStack stack(int slot) {return client.player.getStackReference(slot).get();}
@@ -54,24 +55,22 @@ public class ItemElement implements HudElement {
         if (slot > 35 && slot < 98 || slot > 103)
             return new Pair<>(null, "That slot is not available to the player: " + slotString);
 
-        ItemElement element = switch (method) {
-            case "" -> new ItemElement(slot, NAME, RAW_ID, IS_STACK_EMPTY);
-            case "id" -> new ItemElement(slot, ID, RAW_ID, IS_STACK_EMPTY);
-            case "name" -> new ItemElement(slot, CUSTOM_NAME, CUSTOM_NAME_LENGTH, HAS_CUSTOM_NAME);
-            case "dur","durability" -> new ItemElement(slot, DURABILITY_STR, DURABILITY_NUM, HAS_DURABILITY);
-            case "max_dur","max_durability" -> new ItemElement(slot, MAX_DURABILITY_STR, MAX_DURABILITY_NUM, HAS_MAX_DURABILITY);
-            case "dur_per","durability_percentage" -> new ItemElement(slot, DURABILITY_PERCENT_STR, DURABILITY_PERCENT_NUM, HAS_MAX_DURABILITY);
+        HudElement element = switch (method) {
+            case "" -> new SlotItemElement(slot, NAME, RAW_ID, IS_STACK_EMPTY);
+            case "id" -> new SlotItemElement(slot, ID, RAW_ID, IS_STACK_EMPTY);
+            case "name" -> new SlotItemElement(slot, CUSTOM_NAME, CUSTOM_NAME_LENGTH, HAS_CUSTOM_NAME);
+            case "dur","durability" -> new SlotItemElement(slot, DURABILITY_STR, DURABILITY_NUM, HAS_DURABILITY);
+            case "max_dur","max_durability" -> new SlotItemElement(slot, MAX_DURABILITY_STR, MAX_DURABILITY_NUM, HAS_MAX_DURABILITY);
+            case "dur_per","durability_percentage" -> new SlotItemElement(slot, DURABILITY_PERCENT_STR, DURABILITY_PERCENT_NUM, HAS_MAX_DURABILITY, flags.precision == -1? 0 : flags.precision << 8);
+            case "icon" -> new SlotItemIconElement(slot, flags);
             default -> null;
         };
 
         if (element == null)
             return new Pair<>(null, "Unknown property: " + method);
 
-        if (flags.anyUsed())
+        if (flags.anyTextUsed())
             return new Pair<>(new FormattedElement(element, flags), null);
-
-        if (element.str == DURABILITY_PERCENT_STR)
-            element.precision = flags.precision == -1? 0 : flags.precision << 8;
 
         return new Pair<>(element, null);
 
@@ -94,16 +93,20 @@ public class ItemElement implements HudElement {
     }
 
 
-    private int precision = -1;
+    private int precision;
     private final int slot;
     private final Function<Integer, String> str;
     private final Function<Integer, Number> num;
     private final Function<Integer, Boolean> bool;
-    public ItemElement(int slot, Function<Integer, String> str, Function<Integer, Number> num, Function<Integer, Boolean> bool) {
+    public SlotItemElement(int slot, Function<Integer, String> str, Function<Integer, Number> num, Function<Integer, Boolean> bool) {
+        this(slot, str, num, bool, -1);
+    }
+    public SlotItemElement(int slot, Function<Integer, String> str, Function<Integer, Number> num, Function<Integer, Boolean> bool, int precision) {
         this.slot = slot;
         this.str = str;
         this.num = num;
         this.bool = bool;
+        this.precision = precision;
     }
 
     @Override

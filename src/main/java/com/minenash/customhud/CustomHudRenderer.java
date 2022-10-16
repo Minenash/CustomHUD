@@ -1,9 +1,21 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.icon.IconElement;
+import com.minenash.customhud.HudElements.icon.ItemIconElement;
+import com.minenash.customhud.mixin.MinecraftClientAccess;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
@@ -42,25 +54,27 @@ public class CustomHudRenderer {
             int y = (i == 0 || i == 1 ? 3 : (int)(client.getWindow().getScaledHeight()*(1/profile.scale)) - 6 - section.size()*(9 + profile.lineSpacing)) + profile.offsets[i][1];
 
             for(List<HudElement> elements : section) {
+
                 StringBuilder builder = new StringBuilder();
                 for (HudElement e : elements)
                     builder.append(e.getString());
 
                 String line = builder.toString().replaceAll("\\s+$", "");
+
                 if (line.isEmpty() && !elements.isEmpty())
                     continue;
                 if (!line.isEmpty()) {
                     if (line.contains("\\n")) {
                         String[] innerLines = line.split("\\\\n");
                         for (String innerLine : innerLines) {
-                            renderLine(matrix, innerLine, profile, i, y);
+                            renderLine(matrix, innerLine, profile, i, y, elements);
                             y += 9 + profile.lineSpacing;
                         }
                         if (line.endsWith("\\n"))
                             y += 9 + profile.lineSpacing;
                         continue;
                     }
-                    renderLine(matrix, line, profile, i, y);
+                    renderLine(matrix, line, profile, i, y, elements);
 
                 }
                 y += 9 + profile.lineSpacing;
@@ -71,10 +85,36 @@ public class CustomHudRenderer {
         matrix.pop();
     }
 
-    private static void renderLine(MatrixStack matrix, String line, Profile profile, int i, int y) {
+    private static void renderWithIcons(MatrixStack matrix, String line, Profile profile, int i, int y, boolean left, List<HudElement> icons) {
+        String[] parts = line.split("\uFFFE", -1);
+        int[] widths = new int[parts.length];
+        int totalWidth = 0;
+        for (int j = 0; j < parts.length; j++)
+            totalWidth += (widths[j] = client.textRenderer.getWidth(parts[j]));
+        for (HudElement icon : icons)
+            totalWidth += ((IconElement)icon).getWidth() + 1;
+
+        int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - totalWidth) + profile.offsets[i][0];
+        DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
+
+        int xOffset = parts[0].length() != 0 ? 0 : ((IconElement)icons.get(0)).render(baseX, y) + 1;
+        for (int j = xOffset == 0 ? 0 : 1; j < parts.length; j++) {
+            drawText(profile, matrix, parts[j], baseX + xOffset, y + (profile.lineSpacing/2) + 1, profile.fgColor);
+            xOffset += widths[j];
+            if (j < icons.size())
+                xOffset += ((IconElement)icons.get(j)).render(baseX + xOffset, y) + 1;
+        }
+
+
+    }
+
+    private static void renderLine(MatrixStack matrix, String line, Profile profile, int i, int y, List<HudElement> elements) {
         boolean left = i == 0 || i == 2;
 
-        if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
+        if (line.contains("\uFFFE"))
+            renderWithIcons(matrix, line, profile, i, y, left, elements.stream().filter( e -> e instanceof IconElement ).toList());
+
+        else if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
             int width = client.textRenderer.getWidth(line);
             if (width == 0)
                 return;

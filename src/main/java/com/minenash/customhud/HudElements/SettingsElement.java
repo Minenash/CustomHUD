@@ -6,7 +6,6 @@ import com.minenash.customhud.mixin.GameOptionsAccessor;
 import com.minenash.customhud.mixin.KeyBindingAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.*;
-import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Pair;
@@ -75,7 +74,7 @@ public class SettingsElement {
             };
             if (element == null)
                 return new Pair<>(null,"Unknown setting: " + setting);
-            return new Pair<>(flags.anyUsed() ? new FormattedElement(element, flags) : element, null);
+            return new Pair<>(flags.anyTextUsed() ? new FormattedElement(element, flags) : element, null);
         }
 
         if (setting.startsWith("key."))
@@ -124,7 +123,7 @@ public class SettingsElement {
                 String str = (String) option.getValue();
                 return str.isEmpty() ? "Default" : str;
             });
-            return flags.anyUsed() ? new FormattedElement(element, flags) : element;
+            return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;
         }
         if (option.getValue() instanceof TranslatableOption) {
             final int falseValue = getFalseValue((TranslatableOption) option.getValue());

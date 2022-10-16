@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.HudElements.icon.ItemIconElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
@@ -8,6 +9,7 @@ import com.minenash.customhud.conditionals.Conditional;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
@@ -121,13 +123,16 @@ public class VariableParser {
                 System.out.println("Unknown stat " + stat + " on line " + debugLine);
         }
 
-        else if (part.startsWith("itemcount:")) {
-            part = part.substring(10);
+        else if (part.startsWith("itemcount:") || part.startsWith("icon:")) {
+            boolean isIcon = part.startsWith("icon:");
+            part = part.substring(part.indexOf(':')+1);
 
             try {
                 Item item = Registry.ITEM.get(new Identifier(part));
                 if (item == Items.AIR)
                     System.out.println("Unknown item id " + part + " on line " + debugLine);
+                else if (isIcon)
+                    return new ItemIconElement(new ItemStack(item), (float) flags.scale, 11);
                 else
                     return new ItemCountElement(item);
             }
@@ -141,8 +146,8 @@ public class VariableParser {
             int firstCollinIndex = part.indexOf(':', 6);
 
             Pair<HudElement,String> element = firstCollinIndex == -1?
-                    ItemElement.create(part.substring(5), "", flags) :
-                    ItemElement.create(part.substring(5,firstCollinIndex), part.substring(firstCollinIndex+1), flags);
+                    SlotItemElement.create(part.substring(5), "", flags) :
+                    SlotItemElement.create(part.substring(5,firstCollinIndex), part.substring(firstCollinIndex+1), flags);
 
             if (element.getRight() != null) {
                 CustomHud.LOGGER.warn(element.getRight() + " on line " + debugLine);
@@ -165,7 +170,7 @@ public class VariableParser {
         else {
             HudElement element = getSupplierElement(part, enabled, flags);
             if (element != null) {
-                return flags.anyUsed() ? new FormattedElement(element, flags) : element;
+                return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;
             }
             else {
                 Matcher keyMatcher = registryKey.matcher(part);
@@ -231,8 +236,10 @@ public class VariableParser {
         return null;
     }
 
+
     private static final Pattern precision = Pattern.compile("-p(\\d+)");
     private static final Pattern scale = Pattern.compile("-s((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
+    private static final Pattern width = Pattern.compile("-w(\\d+)");
     public static Flags getFlags(String[] parts) {
         Flags flags = new Flags();
 
@@ -241,13 +248,21 @@ public class VariableParser {
 
         for (int i = 1; i < parts.length; i++) {
             switch (parts[i]) {
+                // Text
                 case "-uc", "-uppercase" -> flags.textCase = Flags.TextCase.UPPER;
                 case "-lc", "-lowercase" -> flags.textCase = Flags.TextCase.LOWER;
                 case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
                 case "-sc", "-smallcaps" -> flags.smallCaps = true;
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
+                // Stat
                 case "-f", "-formatted" -> flags.formatted = true;
+                // Slot Icons
+                case "-rich" -> flags.iconShowCount = flags.iconShowDur = flags.iconShowCooldown = true;
+                case "-count" -> flags.iconShowCount = true;
+                case "-dur" -> flags.iconShowDur = true;
+                case "-cooldown" -> flags.iconShowCooldown = true;
                 default -> {
+                    //Decimals
                     Matcher matcher = precision.matcher(parts[i]);
                     if (matcher.matches()) {
                         flags.precision = Integer.parseInt(matcher.group(1));
@@ -259,6 +274,12 @@ public class VariableParser {
                             flags.scale = Integer.parseInt(matcher.group(2)) / (double) Integer.parseInt(matcher.group(3));
                         else
                             flags.scale = Double.parseDouble(matcher.group(1));
+                        continue;
+                    }
+                    //Icons
+                    matcher = width.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        flags.iconWidth = Integer.parseInt(matcher.group(1));
                     }
                 }
             }
