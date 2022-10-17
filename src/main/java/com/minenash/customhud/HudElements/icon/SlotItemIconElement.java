@@ -42,11 +42,11 @@ public class SlotItemIconElement extends IconElement {
     }
 
     @Override
-    public int getWidth() {
+    public int getTextureWidth() {
         return getStack().isEmpty() ? 0 : width;
     }
 
-    public int render(int x, int y) {
+    public int render(MatrixStack matrix, int x, int y) {
         ItemStack stack = getStack();
         if (stack == null || stack.isEmpty())
             return 0;
@@ -58,7 +58,7 @@ public class SlotItemIconElement extends IconElement {
         if (showCooldown)
             renderCooldown(stack, x, y);
 
-        return getWidth();
+        return getTextureWidth();
     }
 
     private void renderCount(int count, int x, int y) {

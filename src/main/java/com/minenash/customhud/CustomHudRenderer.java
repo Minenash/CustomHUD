@@ -2,20 +2,9 @@ package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.IconElement;
-import com.minenash.customhud.HudElements.icon.ItemIconElement;
-import com.minenash.customhud.mixin.MinecraftClientAccess;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
@@ -92,17 +81,17 @@ public class CustomHudRenderer {
         for (int j = 0; j < parts.length; j++)
             totalWidth += (widths[j] = client.textRenderer.getWidth(parts[j]));
         for (HudElement icon : icons)
-            totalWidth += ((IconElement)icon).getWidth() + 1;
+            totalWidth += ((IconElement)icon).getTextureWidth() + 1;
 
         int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - totalWidth) + profile.offsets[i][0];
         DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
 
-        int xOffset = parts[0].length() != 0 ? 0 : ((IconElement)icons.get(0)).render(baseX, y) + 1;
+        int xOffset = parts[0].length() != 0 ? 0 : ((IconElement)icons.get(0)).render(matrix, baseX, y) + 1;
         for (int j = xOffset == 0 ? 0 : 1; j < parts.length; j++) {
             drawText(profile, matrix, parts[j], baseX + xOffset, y + (profile.lineSpacing/2) + 1, profile.fgColor);
             xOffset += widths[j];
             if (j < icons.size())
-                xOffset += ((IconElement)icons.get(j)).render(baseX + xOffset, y) + 1;
+                xOffset += ((IconElement)icons.get(j)).render(matrix, baseX + xOffset, y) + 1;
         }
 
 

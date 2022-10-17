@@ -93,7 +93,7 @@ public class SlotItemElement implements HudElement {
     }
 
 
-    private int precision;
+    private final int precision;
     private final int slot;
     private final Function<Integer, String> str;
     private final Function<Integer, Number> num;

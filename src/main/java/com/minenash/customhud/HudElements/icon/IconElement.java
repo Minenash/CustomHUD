@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 public abstract class IconElement implements HudElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
-    public abstract int render(int x, int y);
-    public abstract int getWidth();
+    public abstract int render(MatrixStack stack, int x, int y);
+    public abstract int getTextureWidth();
 
     @Override
     public String getString() {
@@ -30,7 +30,7 @@ public abstract class IconElement implements HudElement {
 
     public void renderItemStack(int x, int y, ItemStack stack, float scale) {
         BakedModel model = client.getItemRenderer().getModel(stack, null, null, 0);
-        ((MinecraftClientAccess)client).getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
+        client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);

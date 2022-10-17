@@ -1,6 +1,7 @@
 package com.minenash.customhud.HudElements.icon;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -29,11 +30,11 @@ public class ItemIconElement extends IconElement {
     }
 
     @Override
-    public int getWidth() {
+    public int getTextureWidth() {
         return width;
     }
 
-    public int render(int x, int y) {
+    public int render(MatrixStack matrix, int x, int y) {
         renderItemStack(x, y, stack, scale);
         return width;
     }

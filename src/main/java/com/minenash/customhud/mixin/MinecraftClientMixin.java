@@ -2,6 +2,7 @@ package com.minenash.customhud.mixin;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.CustomHud;
+import net.fabricmc.loader.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.option.GameOptions;

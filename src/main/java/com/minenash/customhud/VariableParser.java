@@ -2,6 +2,7 @@ package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.icon.ItemIconElement;
+import com.minenash.customhud.HudElements.icon.TextureIconElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
@@ -123,23 +124,30 @@ public class VariableParser {
                 System.out.println("Unknown stat " + stat + " on line " + debugLine);
         }
 
-        else if (part.startsWith("itemcount:") || part.startsWith("icon:")) {
-            boolean isIcon = part.startsWith("icon:");
+        else if (part.startsWith("icon:")) {
+            part = part.substring(part.indexOf(':')+1);
+
+            Item item = Registry.ITEM.get(new Identifier(part));
+            if (item != Items.AIR)
+                return new ItemIconElement(new ItemStack(item), (float) flags.scale, 11);
+
+            return new TextureIconElement(new Identifier(part + ".png"), flags);
+
+        }
+
+        else if (part.startsWith("itemcount:")) {
             part = part.substring(part.indexOf(':')+1);
 
             try {
                 Item item = Registry.ITEM.get(new Identifier(part));
                 if (item == Items.AIR)
                     System.out.println("Unknown item id " + part + " on line " + debugLine);
-                else if (isIcon)
-                    return new ItemIconElement(new ItemStack(item), (float) flags.scale, 11);
                 else
                     return new ItemCountElement(item);
             }
             catch (InvalidIdentifierException e) {
                 System.out.println("Unknown item id " + part + " on line " + debugLine);
             }
-
         }
 
         else if (part.startsWith("item:")) {
