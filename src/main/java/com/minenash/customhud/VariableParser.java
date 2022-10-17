@@ -85,7 +85,7 @@ public class VariableParser {
         }
 
         String[] flagParts = part.split(" ");
-        Flags flags = getFlags(flagParts);
+        Flags flags = Flags.parse(flagParts);
         part = flagParts[0];
 
 
@@ -234,57 +234,6 @@ public class VariableParser {
             return new SpecialSupplierElement(entry2);
 
         return null;
-    }
-
-
-    private static final Pattern precision = Pattern.compile("-p(\\d+)");
-    private static final Pattern scale = Pattern.compile("-s((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
-    private static final Pattern width = Pattern.compile("-w(\\d+)");
-    public static Flags getFlags(String[] parts) {
-        Flags flags = new Flags();
-
-        if (parts.length <= 1)
-            return flags;
-
-        for (int i = 1; i < parts.length; i++) {
-            switch (parts[i]) {
-                // Text
-                case "-uc", "-uppercase" -> flags.textCase = Flags.TextCase.UPPER;
-                case "-lc", "-lowercase" -> flags.textCase = Flags.TextCase.LOWER;
-                case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
-                case "-sc", "-smallcaps" -> flags.smallCaps = true;
-                case "-nd", "-nodashes" -> flags.noDelimiters = true;
-                // Stat
-                case "-f", "-formatted" -> flags.formatted = true;
-                // Slot Icons
-                case "-rich" -> flags.iconShowCount = flags.iconShowDur = flags.iconShowCooldown = true;
-                case "-count" -> flags.iconShowCount = true;
-                case "-dur" -> flags.iconShowDur = true;
-                case "-cooldown" -> flags.iconShowCooldown = true;
-                default -> {
-                    //Decimals
-                    Matcher matcher = precision.matcher(parts[i]);
-                    if (matcher.matches()) {
-                        flags.precision = Integer.parseInt(matcher.group(1));
-                        continue;
-                    }
-                    matcher = scale.matcher(parts[i]);
-                    if (matcher.matches()) {
-                        if (parts[i].contains("/"))
-                            flags.scale = Integer.parseInt(matcher.group(2)) / (double) Integer.parseInt(matcher.group(3));
-                        else
-                            flags.scale = Double.parseDouble(matcher.group(1));
-                        continue;
-                    }
-                    //Icons
-                    matcher = width.matcher(parts[i]);
-                    if (matcher.matches()) {
-                        flags.iconWidth = Integer.parseInt(matcher.group(1));
-                    }
-                }
-            }
-        }
-        return flags;
     }
 
     private static Supplier<String> getStringSupplier(String element, ComplexData.Enabled enabled) {
@@ -460,7 +409,8 @@ public class VariableParser {
     private static SpecialSupplierElement.Entry getSpecialSupplierElements(String element, ComplexData.Enabled enabled) {
         switch (element) {
             case "hour24": { enabled.time = true; return TIME_HOUR_24; }
-            case "minute": { enabled.time = true; return TIME_MINUTE; }
+            case "minute": { enabled.time = true; return TIME_MINUTES; }
+            case "second": { enabled.time = true; return TIME_SECONDS; }
             case "target_block": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK;}
             case "target_block_id": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK_ID;}
             case "target_fluid": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID;}

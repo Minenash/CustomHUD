@@ -1,5 +1,8 @@
 package com.minenash.customhud;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Flags {
 
     public enum TextCase {UPPER, LOWER, TITLE}
@@ -20,6 +23,56 @@ public class Flags {
 
     public boolean anyTextUsed() {
         return textCase != null || smallCaps || noDelimiters;
+    }
+
+    private static final Pattern PRECISION_PATTERN = Pattern.compile("-p(\\d+)");
+    private static final Pattern SCALE_PATTERN = Pattern.compile("-s((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
+    private static final Pattern WIDTH_PATTERN = Pattern.compile("-w(\\d+)");
+    public static Flags parse(String[] parts) {
+        Flags flags = new Flags();
+
+        if (parts.length <= 1)
+            return flags;
+
+        for (int i = 1; i < parts.length; i++) {
+            switch (parts[i]) {
+                // Text
+                case "-uc", "-uppercase" -> flags.textCase = Flags.TextCase.UPPER;
+                case "-lc", "-lowercase" -> flags.textCase = Flags.TextCase.LOWER;
+                case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
+                case "-sc", "-smallcaps" -> flags.smallCaps = true;
+                case "-nd", "-nodashes" -> flags.noDelimiters = true;
+                // Stat
+                case "-f", "-formatted" -> flags.formatted = true;
+                // Slot Icons
+                case "-rich" -> flags.iconShowCount = flags.iconShowDur = flags.iconShowCooldown = true;
+                case "-count" -> flags.iconShowCount = true;
+                case "-dur" -> flags.iconShowDur = true;
+                case "-cooldown" -> flags.iconShowCooldown = true;
+                default -> {
+                    //Decimals
+                    Matcher matcher = PRECISION_PATTERN.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        flags.precision = Integer.parseInt(matcher.group(1));
+                        continue;
+                    }
+                    matcher = SCALE_PATTERN.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        if (parts[i].contains("/"))
+                            flags.scale = Integer.parseInt(matcher.group(2)) / (double) Integer.parseInt(matcher.group(3));
+                        else
+                            flags.scale = Double.parseDouble(matcher.group(1));
+                        continue;
+                    }
+                    //Icons
+                    matcher = WIDTH_PATTERN.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        flags.iconWidth = Integer.parseInt(matcher.group(1));
+                    }
+                }
+            }
+        }
+        return flags;
     }
 
 }

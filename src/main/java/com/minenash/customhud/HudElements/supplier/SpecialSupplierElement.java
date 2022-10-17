@@ -27,9 +27,13 @@ public class SpecialSupplierElement implements HudElement {
                                                  () -> ComplexData.timeOfDay / 1000,
                                                  () -> ComplexData.timeOfDay / 1000 >= 12);
 
-    public static final Entry TIME_MINUTE = of( () -> String.format("%02d",(int)((ComplexData.timeOfDay % 1000) / (1000/60F))),
+    public static final Entry TIME_MINUTES = of( () -> String.format("%02d",(int)((ComplexData.timeOfDay % 1000) / (1000/60F))),
                                                 () -> (int)((ComplexData.timeOfDay % 1000) / (1000/60F)),
                                                 () -> (int)((ComplexData.timeOfDay % 1000) / (1000/60F)) != 0);
+
+    public static final Entry TIME_SECONDS = of( () -> String.format("%02d",(int)((ComplexData.timeOfDay % 1000) % (1000/60F) * 3.6F)),
+            () -> (int)((ComplexData.timeOfDay % 1000) % (1000/60F) * 3.6F),
+            () -> (int)((ComplexData.timeOfDay % 1000) % (1000/60F) * 3.6F) != 0);
 
     public static final Entry TARGET_BLOCK = of( () -> I18n.translate(ComplexData.targetBlock.getBlock().getTranslationKey()),
                                                  () -> Block.getRawIdFromState(ComplexData.targetBlock),
