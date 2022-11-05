@@ -2,6 +2,7 @@ package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.conditionals.ConditionalParser;
+import com.minenash.customhud.conditionals.Operation;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class Profile {
     private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("== ?TextShadow: ?(true|false)==");
 
     private static final Pattern IF_PATTERN = Pattern.compile("=if ?, ?(.+)=");
-    private static final Pattern ELSE_ENDIF__PATTERN = Pattern.compile("=(else|endif)=");
+    private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?, ?(.+)=");
 
     public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
@@ -132,22 +133,27 @@ public class Profile {
 
             matcher = IF_PATTERN.matcher(line);
             if (matcher.matches()) {
-                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled)));
+                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder());
+                profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled));
                 continue;
             }
 
-            matcher = ELSE_ENDIF__PATTERN.matcher(line);
+            matcher = ELSEIF_PATTERN.matcher(line);
             if (matcher.matches()) {
-                if (matcher.group(1).equals("else")) {
-                    profile.tempIfStack.peek().elseSection();
-                }
-                else {
-                    List<HudElement> c = Collections.singletonList(profile.tempIfStack.pop().build());
-                    if (profile.tempIfStack.empty())
-                        profile.sections[sectionId].add(c);
-                    else
-                        profile.tempIfStack.peek().add(c);
-                }
+                profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled));
+                continue;
+            }
+
+            if (line.equals("=else=")) {
+                profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
+                continue;
+            }
+            if (line.equals("=endif=")) {
+                List<HudElement> c = Collections.singletonList(profile.tempIfStack.pop().build());
+                if (profile.tempIfStack.empty())
+                    profile.sections[sectionId].add(c);
+                else
+                    profile.tempIfStack.peek().add(c);
                 continue;
             }
 

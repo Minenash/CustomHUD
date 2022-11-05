@@ -21,6 +21,8 @@ public class ConditionalParser {
     }
 
     public static Operation parseConditional(String input, int debugLine, ComplexData.Enabled enabled) {
+        if (input.isBlank() || input.equals(",") || input.equals(", "))
+            return new Operation.Literal(1);
         try {
             List<Token> tokens = getTokens(input, debugLine, enabled);
             Operation c = getConditional(tokens);

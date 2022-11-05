@@ -6,7 +6,6 @@ import com.minenash.customhud.HudElements.icon.TextureIconElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
-import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import net.minecraft.item.Item;
@@ -37,8 +36,8 @@ import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement
 public class VariableParser {
 
     private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{.*?, ?([\"']).*?\\3 ?}}|&?\\{.*?})?");
-    private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"(, ?\"(.*?)\")?");
-    private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'(, ?'(.*?)')?");
+    private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"");
+    private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
 
     public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
         List<String> parts = new ArrayList<>();
@@ -60,6 +59,15 @@ public class VariableParser {
         return elements;
     }
 
+    private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, int debugLine, ComplexData.Enabled enabled) {
+        List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
+        while (args.find()) {
+//            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
+            pairs.add(new ConditionalElement.ConditionalPair(ConditionalParser.parseConditional(args.group(1), debugLine, enabled), parseElements(args.group(2), debugLine, enabled)));
+        }
+        return pairs;
+    }
+
     public static HudElement parseElement(String part, int debugLine, ComplexData.Enabled enabled) {
         if (part == null || part.isEmpty())
             return null;
@@ -71,18 +79,15 @@ public class VariableParser {
 
         if (part.startsWith("{")) {
             part = part.substring(1, part.length() - 1);
-            Matcher args = CONDITIONAL_PARSING_PATTERN.matcher(part);
-            if (!args.matches()) {
-                args = CONDITIONAL_PARSING_ALT_PATTERN.matcher(part);
-            }
-            if (!args.matches()) {
+
+            List<ConditionalElement.ConditionalPair> pairs = parseConditional(CONDITIONAL_PARSING_PATTERN.matcher(part), debugLine, enabled);
+            if (pairs.isEmpty())
+                pairs = parseConditional(CONDITIONAL_PARSING_ALT_PATTERN.matcher(part), debugLine, enabled);
+            if (pairs.isEmpty()) {
                 CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
                 return null;
             }
-            Operation conditional = ConditionalParser.parseConditional(args.group(1), debugLine, enabled);
-            List<HudElement> positive = parseElements(args.group(2), debugLine,enabled);
-            List<HudElement> negative = args.groupCount() > 2 ? parseElements(args.group(4), debugLine,enabled) : new ArrayList<>();
-            return new ConditionalElement(conditional, positive, negative);
+            return new ConditionalElement(pairs);
         }
 
         String[] flagParts = part.split(" ");

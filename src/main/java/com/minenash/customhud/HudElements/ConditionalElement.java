@@ -4,68 +4,77 @@ import com.minenash.customhud.conditionals.Operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ConditionalElement implements HudElement {
 
-    private final Operation conditional;
-    private final List<HudElement> positive;
-    private final List<HudElement> negative;
+    public record ConditionalPair(Operation conditional, List<HudElement> ifTrue) {}
 
-    public ConditionalElement(Operation conditional, List<HudElement> positive, List<HudElement> negative) {
-        this.conditional = conditional;
-        this.positive = positive;
-        this.negative = negative;
+    private final List<ConditionalPair> pairs;
+
+    public ConditionalElement(List<ConditionalPair> pairs) {
+        this.pairs = pairs;
     }
 
     @Override
     public String getString() {
+        List<HudElement> elements = null;
+        for (ConditionalPair pair : pairs) {
+            if (pair.conditional.getValue() != 0) {
+                elements = pair.ifTrue;
+                break;
+            }
+        }
+
         StringBuilder builder = new StringBuilder();
-        (conditional.getValue() != 0? positive : negative).forEach(e -> builder.append(e.getString()));
+        if (elements != null)
+            elements.forEach(e -> builder.append(e.getString()));
         return builder.toString();
     }
 
     @Override
     public Number getNumber() {
-        return conditional.getValue();
+        for (int i = 0; i < pairs.size(); i++)
+            if (pairs.get(i).conditional.getValue() != 0)
+                return i+1;
+        return 0;
     }
 
     @Override
     public boolean getBoolean() {
-        return conditional.getValue() != 0;
+        for (ConditionalPair pair : pairs)
+            if (pair.conditional.getValue() != 0)
+                return true;
+        return false;
     }
 
     public static class MultiLineBuilder {
-        private final Operation conditional;
-        private final List<HudElement> positive = new ArrayList<>();
-        private final List<HudElement> negative = new ArrayList<>();
+        private final List<ConditionalPair> pairs = new ArrayList<>();
 
-        private boolean elseSection = false;
+        private Operation conditional = null;
+        private List<HudElement> elements = new ArrayList<>();
 
-        public MultiLineBuilder(Operation conditional) {
+        public void setConditional(Operation conditional) {
+            if (this.conditional != null) {
+                pairs.add(new ConditionalPair(this.conditional, elements));
+                elements = new ArrayList<>();
+            }
             this.conditional = conditional;
         }
 
         public void add(List<HudElement> elements) {
-            if (elseSection) {
-                negative.addAll(elements);
-                negative.add(new StringElement("\\n"));
-            }
-            else {
-                positive.addAll(elements);
-                positive.add(new StringElement("\\n"));
-            }
-        }
-
-        public void elseSection() {
-            elseSection = true;
+            this.elements.addAll(elements);
+            this.elements.add(new StringElement("\\n"));
         }
 
         public ConditionalElement build() {
-            if (positive.size() > 0)
-                positive.remove(positive.size()-1);
-            if (negative.size() > 0)
-                negative.remove(positive.size()-1);
-            return new ConditionalElement(conditional, positive, negative);
+            pairs.add(new ConditionalPair(conditional, elements));
+
+            for (ConditionalPair pair : pairs)
+                if (pair.ifTrue.size() > 0)
+                    pair.ifTrue.remove(pair.ifTrue.size() - 1);
+
+           return new ConditionalElement(pairs);
         }
 
     }
