@@ -4,17 +4,17 @@ import com.minenash.customhud.HudElements.HudElement;
 
 import java.util.List;
 
-public interface Conditional {
+public interface Operation {
 
-    boolean getValue();
+    int getValue();
     void printTree(int indent);
 
-    record Or(List<Conditional> elements) implements Conditional {
-        public boolean getValue() {
-            for (Conditional element : elements)
-                if (element.getValue())
-                    return true;
-            return false;
+    record Or(List<Operation> elements) implements Operation {
+        public int getValue() {
+            for (Operation element : elements)
+                if (element.getValue() > 0)
+                    return 1;
+            return 0;
         }
 
         @Override
@@ -22,17 +22,17 @@ public interface Conditional {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
             System.out.println("- Or: ");
-            for (Conditional elem : elements)
+            for (Operation elem : elements)
                 elem.printTree(indent + 2);
         }
     }
 
-    record And(List<Conditional> elements) implements Conditional {
-        public boolean getValue() {
-            for (Conditional element : elements)
-                if (!element.getValue())
-                    return false;
-            return true;
+    record And(List<Operation> elements) implements Operation {
+        public int getValue() {
+            for (Operation element : elements)
+                if (element.getValue() == 0)
+                    return 0;
+            return 1;
         }
 
         @Override
@@ -40,12 +40,16 @@ public interface Conditional {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
             System.out.println("- And:");
-            for (Conditional elem : elements)
+            for (Operation elem : elements)
                 elem.printTree(indent+2);
         }
     }
-    record Comparison(HudElement left, HudElement right, ConditionalParser.Conditionals comparison, boolean checkBool, boolean checkNum) implements Conditional {
-        public boolean getValue() {
+    record Comparison(HudElement left, HudElement right, ConditionalParser.Comparison comparison, boolean checkBool, boolean checkNum) implements Operation {
+        public int getValue() {
+            return getValueInternal() ? 1 : 0;
+        }
+
+        public boolean getValueInternal() {
             return switch (comparison) {
                 case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : checkNum ? left.getNumber().doubleValue() == right.getNumber().doubleValue() : left.getString().equals(right.getString());
                 case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : checkNum ? left.getNumber().doubleValue() != right.getNumber().doubleValue() : !left.getString().equals(right.getString());
@@ -57,16 +61,34 @@ public interface Conditional {
             };
         }
 
+
         @Override
         public void printTree(int indent) {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
-            String bool = (comparison == ConditionalParser.Conditionals.EQUALS || comparison == ConditionalParser.Conditionals.NOT_EQUALS) && checkBool ? "BOOL_" : "";
+            String bool = (comparison == ConditionalParser.Comparison.EQUALS || comparison == ConditionalParser.Comparison.NOT_EQUALS) && checkBool ? "BOOL_" : "";
             System.out.println("- Conditional(" + bool + comparison + "): " + left.getString() + ", " + right.getString());
         }
     }
-    record Literal(boolean value) implements Conditional {
-        public boolean getValue() {
+
+    record MathOperation(HudElement left, HudElement right, ConditionalParser.MathOperator operation, boolean checkBool, boolean checkNum) implements Operation {
+        public int getValue() {
+            return switch (operation) {
+                default -> 0;
+            };
+        }
+
+
+        @Override
+        public void printTree(int indent) {
+            for (int i = 0; i < indent; i++)
+                System.out.print(" ");
+            //TODO
+        }
+    }
+
+    record Literal(int value) implements Operation {
+        public int getValue() {
             return value;
         }
 
@@ -77,9 +99,9 @@ public interface Conditional {
             System.out.println("- Literal: " + value);
         }
     }
-    record BooleanVariable(HudElement variable) implements Conditional {
-        public boolean getValue() {
-            return variable.getBoolean();
+    record BooleanVariable(HudElement variable) implements Operation {
+        public int getValue() {
+            return variable.getBoolean() ? 1 : 0;
         }
 
         @Override

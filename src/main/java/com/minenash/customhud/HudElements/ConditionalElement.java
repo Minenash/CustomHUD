@@ -1,17 +1,17 @@
 package com.minenash.customhud.HudElements;
 
-import com.minenash.customhud.conditionals.Conditional;
+import com.minenash.customhud.conditionals.Operation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConditionalElement implements HudElement {
 
-    private final Conditional conditional;
+    private final Operation conditional;
     private final List<HudElement> positive;
     private final List<HudElement> negative;
 
-    public ConditionalElement(Conditional conditional, List<HudElement> positive, List<HudElement> negative) {
+    public ConditionalElement(Operation conditional, List<HudElement> positive, List<HudElement> negative) {
         this.conditional = conditional;
         this.positive = positive;
         this.negative = negative;
@@ -20,28 +20,28 @@ public class ConditionalElement implements HudElement {
     @Override
     public String getString() {
         StringBuilder builder = new StringBuilder();
-        (conditional.getValue() ? positive : negative).forEach(e -> builder.append(e.getString()));
+        (conditional.getValue() != 0? positive : negative).forEach(e -> builder.append(e.getString()));
         return builder.toString();
     }
 
     @Override
     public Number getNumber() {
-        return conditional.getValue() ? 1 : 0;
+        return conditional.getValue();
     }
 
     @Override
     public boolean getBoolean() {
-        return conditional.getValue();
+        return conditional.getValue() != 0;
     }
 
     public static class MultiLineBuilder {
-        private final Conditional conditional;
+        private final Operation conditional;
         private final List<HudElement> positive = new ArrayList<>();
         private final List<HudElement> negative = new ArrayList<>();
 
         private boolean elseSection = false;
 
-        public MultiLineBuilder(Conditional conditional) {
+        public MultiLineBuilder(Operation conditional) {
             this.conditional = conditional;
         }
 

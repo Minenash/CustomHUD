@@ -1,7 +1,6 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
-import com.minenash.customhud.conditionals.Conditional;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import net.minecraft.util.Identifier;
 

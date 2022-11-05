@@ -6,7 +6,7 @@ import com.minenash.customhud.HudElements.icon.TextureIconElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
-import com.minenash.customhud.conditionals.Conditional;
+import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import net.minecraft.item.Item;
@@ -79,7 +79,7 @@ public class VariableParser {
                 CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
                 return null;
             }
-            Conditional conditional = ConditionalParser.parseConditional(args.group(1), debugLine, enabled);
+            Operation conditional = ConditionalParser.parseConditional(args.group(1), debugLine, enabled);
             List<HudElement> positive = parseElements(args.group(2), debugLine,enabled);
             List<HudElement> negative = args.groupCount() > 2 ? parseElements(args.group(4), debugLine,enabled) : new ArrayList<>();
             return new ConditionalElement(conditional, positive, negative);

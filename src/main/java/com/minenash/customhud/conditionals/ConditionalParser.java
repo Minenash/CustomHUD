@@ -10,8 +10,9 @@ import java.util.List;
 
 public class ConditionalParser {
 
-    enum TokenType { START_PREN, END_PREN, FULL_PREN, AND, OR, COMPARISON, NUMBER, STRING, BOOLEAN, VARIABLE }
-    enum Conditionals { LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUALS, EQUALS, NOT_EQUALS }
+    enum TokenType { START_PREN, END_PREN, FULL_PREN, AND, OR, MATH, COMPARISON, NUMBER, STRING, BOOLEAN, VARIABLE }
+    enum Comparison { LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUALS, EQUALS, NOT_EQUALS }
+    enum MathOperator { ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD }
 
     record Token(TokenType type, Object value) {
         public String toString() {
@@ -19,10 +20,10 @@ public class ConditionalParser {
         }
     }
 
-    public static Conditional parseConditional(String input, int debugLine, ComplexData.Enabled enabled) {
+    public static Operation parseConditional(String input, int debugLine, ComplexData.Enabled enabled) {
         try {
             List<Token> tokens = getTokens(input, debugLine, enabled);
-            Conditional c = getConditional(tokens);
+            Operation c = getConditional(tokens);
             System.out.println("Tree for Conditional on line " + debugLine + ":");
             c.printTree(0);
             System.out.println();
@@ -30,7 +31,7 @@ public class ConditionalParser {
         }
         catch (Exception e) {
             System.out.println("Conditional Couldn't Be Parsed: " + e.getMessage());
-            return new Conditional.Literal(true);
+            return new Operation.Literal(1);
         }
     }
 
@@ -45,23 +46,28 @@ public class ConditionalParser {
             else if (c == ')') tokens.add(new Token(TokenType.END_PREN, null));
             else if (c == '|') tokens.add(new Token(TokenType.OR, null));
             else if (c == '&') tokens.add(new Token(TokenType.AND, null));
-            else if (c == '=') tokens.add(new Token(TokenType.COMPARISON, Conditionals.EQUALS));
+            else if (c == '=') tokens.add(new Token(TokenType.COMPARISON, Comparison.EQUALS));
+            else if (c == '+') tokens.add(new Token(TokenType.MATH, MathOperator.ADD));
+            else if (c == '*') tokens.add(new Token(TokenType.MATH, MathOperator.MULTIPLY));
+            else if (c == '/') tokens.add(new Token(TokenType.MATH, MathOperator.DIVIDE));
+            else if (c == '%') tokens.add(new Token(TokenType.MATH, MathOperator.MOD));
+            else if (c == '-' && i+1 < chars.length && !isNum(chars[i+1])) tokens.add(new Token(TokenType.MATH, MathOperator.SUBTRACT));
             else if (c == '!') {
                 if (i + 1 == chars.length || chars[i + 1] != '=')
                     throw new IllegalStateException();
-                tokens.add(new Token(TokenType.COMPARISON, Conditionals.NOT_EQUALS));
+                tokens.add(new Token(TokenType.COMPARISON, Comparison.NOT_EQUALS));
                 i += 2;
                 continue;
             }
             else if (c == '>') {
                 boolean hasEqual =  i + 1 != chars.length && chars[i + 1] == '=';
-                tokens.add(new Token(TokenType.COMPARISON, hasEqual ? Conditionals.GREATER_THAN_OR_EQUALS : Conditionals.GREATER_THAN));
+                tokens.add(new Token(TokenType.COMPARISON, hasEqual ? Comparison.GREATER_THAN_OR_EQUALS : Comparison.GREATER_THAN));
                 i += hasEqual ? 2 : 1;
                 continue;
             }
             else if (c == '<') {
                 boolean hasEqual =  i + 1 != chars.length && chars[i + 1] == '=';
-                tokens.add(new Token(TokenType.COMPARISON, hasEqual ? Conditionals.LESS_THAN_OR_EQUAL : Conditionals.LESS_THAN));
+                tokens.add(new Token(TokenType.COMPARISON, hasEqual ? Comparison.LESS_THAN_OR_EQUAL : Comparison.LESS_THAN));
                 i += hasEqual ? 2 : 1;
                 continue;
             }
@@ -141,36 +147,33 @@ public class ConditionalParser {
             original.remove(end);
     }
 
-    private static Conditional getConditional(List<Token> tokens) {
+    private static Operation getConditional(List<Token> tokens) {
         List<List<Token>> ors = split(tokens, TokenType.OR);
-        List<Conditional> conditionals = new ArrayList<>();
+        List<Operation> conditionals = new ArrayList<>();
         for (var or : ors)
             conditionals.add(getAndConditional(or));
 
-        return conditionals.size() == 1 ? conditionals.get(0) : new Conditional.Or(conditionals);
+        return conditionals.size() == 1 ? conditionals.get(0) : new Operation.Or(conditionals);
 
     }
 
-    private static Conditional getAndConditional(List<Token> tokens) {
+    private static Operation getAndConditional(List<Token> tokens) {
         List<List<Token>> ands = split(tokens, TokenType.AND);
-        List<Conditional> conditionals = new ArrayList<>();
+        List<Operation> conditionals = new ArrayList<>();
         for (var and : ands)
-            conditionals.add(getComparisonConditional(and));
+            conditionals.add(getComparisonOperation(and));
 
-        return conditionals.size() == 1 ? conditionals.get(0) : new Conditional.And(conditionals);
+        return conditionals.size() == 1 ? conditionals.get(0) : new Operation.And(conditionals);
     }
 
     @SuppressWarnings("unchecked")
-    private static Conditional getComparisonConditional(List<Token> tokens) {
-
-//        System.out.println(tokens.size());
-//        System.out.println(tokens);
+    private static Operation getComparisonOperation(List<Token> tokens) {
         if (tokens.size() == 1) {
             Token token = tokens.get(0);
             switch (token.type) {
                 case FULL_PREN: return getConditional( (List<Token>) token.value());
-                case BOOLEAN: return new Conditional.Literal( (Boolean) token.value());
-                case VARIABLE: return new Conditional.BooleanVariable( (HudElement) token.value());
+                case BOOLEAN: return new Operation.Literal( (Integer) token.value());
+                case VARIABLE: return new Operation.BooleanVariable( (HudElement) token.value());
             }
             throw new IllegalStateException("Unexpected value: " + tokens.get(0).type());
         }
@@ -194,7 +197,41 @@ public class ConditionalParser {
             default -> throw new IllegalStateException("Unexpected value: " + tokens.get(2).type());
         };
 
-        return new Conditional.Comparison(left, right, (Conditionals) tokens.get(1).value(), checkBool, checkNum);
+        return new Operation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
+    }
+
+    //TODO
+    private static Operation getMathOperation(List<Token> tokens) {
+        if (tokens.size() == 1) {
+            Token token = tokens.get(0);
+            switch (token.type) {
+                case FULL_PREN: return getConditional( (List<Token>) token.value());
+                case BOOLEAN: return new Operation.Literal( (Integer) token.value());
+                case VARIABLE: return new Operation.BooleanVariable( (HudElement) token.value());
+            }
+            throw new IllegalStateException("Unexpected value: " + tokens.get(0).type());
+        }
+        if (tokens.size() != 3 || tokens.get(1).type() != TokenType.COMPARISON)
+            throw new IllegalStateException(tokens.size() != 3? "Wrong number of tokens" : "Unexpected value: " + tokens.get(1).type());
+
+        boolean checkBool = false;
+        boolean checkNum = false;
+        HudElement left = switch (tokens.get(0).type()) {
+            case VARIABLE -> (HudElement) tokens.get(0).value();
+            case STRING -> new StringElement((String)tokens.get(0).value());
+            case NUMBER -> { checkNum = true; yield new SudoHudElements.Num((Number)tokens.get(0).value()); }
+            case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(0).value());}
+            default -> throw new IllegalStateException("Unexpected value: " + tokens.get(0).type());
+        };
+        HudElement right = switch (tokens.get(2).type()) {
+            case VARIABLE -> (HudElement) tokens.get(2).value();
+            case STRING -> new StringElement((String)tokens.get(2).value());
+            case NUMBER -> { checkNum = true; yield new SudoHudElements.Num((Number)tokens.get(2).value()); }
+            case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(2).value());}
+            default -> throw new IllegalStateException("Unexpected value: " + tokens.get(2).type());
+        };
+
+        return new Operation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
     }
 
     private static List<List<Token>> split(List<Token> tokens, TokenType type) {
