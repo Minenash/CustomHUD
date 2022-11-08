@@ -15,13 +15,12 @@ public class SlotItemIconElement extends IconElement {
 
     private final int slot;
     private final boolean showCount, showDur, showCooldown;
-    private final float scale;
     private final int width;
 
     public SlotItemIconElement(int slot, Flags flags) {
+        super(flags);
         this.slot = slot;
-        this.scale = (float) flags.scale;
-        this.width = flags.iconWidth;
+        this.width = flags.iconWidth != -1 ? flags.iconWidth : (int)(11*scale);;
         this.showCount = flags.iconShowCount;
         this.showDur = flags.iconShowDur;
         this.showCooldown = flags.iconShowCooldown;
@@ -42,7 +41,7 @@ public class SlotItemIconElement extends IconElement {
     }
 
     @Override
-    public int getTextureWidth() {
+    public int getTextWidth() {
         return getStack().isEmpty() ? 0 : width;
     }
 
@@ -50,7 +49,9 @@ public class SlotItemIconElement extends IconElement {
         ItemStack stack = getStack();
         if (stack == null || stack.isEmpty())
             return 0;
-        renderItemStack(x, y, stack, scale);
+        x += shiftX;
+        y += shiftY;
+        renderItemStack(x, y, stack);
         if (showCount)
             renderCount(stack.getCount(), x, y);
         if (showDur)
@@ -58,7 +59,7 @@ public class SlotItemIconElement extends IconElement {
         if (showCooldown)
             renderCooldown(stack, x, y);
 
-        return getTextureWidth();
+        return getTextWidth();
     }
 
     private void renderCount(int count, int x, int y) {

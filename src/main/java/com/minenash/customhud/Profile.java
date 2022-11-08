@@ -3,7 +3,6 @@ package com.minenash.customhud;
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.conditionals.Operation;
-import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,11 +15,8 @@ public class Profile {
 
     private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?TargetRange: ?(\\d+|max) ?==");
-    private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("== ?LineSpacing: ?([-+]?\\d+) ?==");
-    private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("== ?Scale: ?(\\d+.?\\d*|.?\\d+) ?==");
-    private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("== ?(Back|Fore)groundColou?r: ?(0x|#)?([0-9a-fA-F]+) ?==");
-    private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("== ?Font: ?(\\w*:?\\w+) ?==");
-    private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("== ?TextShadow: ?(true|false)==");
+    private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
+    private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
 
     private static final Pattern IF_PATTERN = Pattern.compile("=if ?, ?(.+)=");
     private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?, ?(.+)=");
@@ -31,16 +27,11 @@ public class Profile {
     public int[] width = new int[]{-1,-1,-1,-1};
     public boolean[] hideOnChat = new boolean[4];
 
-    public int bgColor;
-    public int fgColor;
-    public int lineSpacing;
-    public float targetDistance;
-    public float scale;
-    public Identifier font;
-    public boolean textShadow;
+    public HudTheme baseTheme = HudTheme.defaults();
+    public float targetDistance = 20;
+
 
     private Stack<ConditionalElement.MultiLineBuilder> tempIfStack = new Stack<>();
-
 
     public static Profile parseProfile(Path path) {
         List<String> lines;
@@ -62,15 +53,9 @@ public class Profile {
             profile.sections[i] = new ArrayList<>();
             profile.offsets[i] = new int[2];
         }
-        profile.bgColor = 0x44000000;
-        profile.fgColor = 0xffffffff;
-        profile.targetDistance = 20;
-        profile.lineSpacing = 2;
-        profile.scale = 1;
-        profile.font = null;
-        profile.textShadow = true;
 
         int sectionId = -1;
+        HudTheme localTheme = profile.baseTheme.copy();
 
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i).replaceAll("&([0-9a-fk-or])", "§$1");
@@ -82,38 +67,14 @@ public class Profile {
                     profile.targetDistance = matcher.group(1).equals("max") ? 725 : Integer.parseInt(matcher.group(1));
                     continue;
                 }
-                matcher = COLOR_FLAG_PATTERN.matcher(line);
-                if (matcher.matches()) {
-                    if (matcher.group(1).equals("Fore"))
-                        profile.fgColor = parseHexNumber(matcher.group(3));
-                    else
-                        profile.bgColor = parseHexNumber(matcher.group(3));
+                matcher = GLOBAL_THEME_PATTERN.matcher(line);
+                if (matcher.matches() && profile.baseTheme.parse(matcher.group(1)))
                     continue;
-                }
-                matcher = SPACING_FLAG_PATTERN.matcher(line);
-                if (matcher.matches()) {
-                    profile.lineSpacing = Integer.parseInt(matcher.group(1));
-                    continue;
-                }
-                matcher = SCALE_FLAG_PATTERN.matcher(line);
-                if (matcher.matches()) {
-                    profile.scale = Float.parseFloat(matcher.group(1));
-                    continue;
-                }
-                matcher = FONT_FLAG_PATTERN.matcher(line);
-                if (matcher.matches()) {
-                    profile.font = new Identifier(matcher.group(1));
-                    continue;
-                }
-                matcher = TEXT_SHADOW_FLAG_PATTERN.matcher(line);
-                if (matcher.matches()) {
-                    profile.textShadow = Boolean.parseBoolean(matcher.group(1));
-                    continue;
-                }
+
             }
             Matcher matcher = SECTION_DECORATION_PATTERN.matcher(line);
             if (matcher.matches()) {
-
+                localTheme = profile.baseTheme.copy();
                 switch (matcher.group(1).toLowerCase()) {
                     case "topleft" -> sectionId = 0;
                     case "topright" -> sectionId = 1;
@@ -129,6 +90,23 @@ public class Profile {
             }
             if (sectionId == -1) {
                 sectionId = 0;
+            }
+
+            matcher = LOCAL_THEME_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                if ( localTheme.parse(matcher.group(1)) ) {
+                    List<HudElement> cte = Collections.singletonList(new ChangeThemeElement(localTheme));
+
+                    int lastElement = profile.sections[sectionId].size()-1;
+                    if (lastElement == -1)
+                        profile.sections[sectionId].add(cte);
+                    List<HudElement> elements = profile.sections[sectionId].get(lastElement);
+                    if (!elements.isEmpty() && elements.get(0) instanceof ChangeThemeElement)
+                        profile.sections[sectionId].set(lastElement, cte);
+                    else
+                        profile.sections[sectionId].add(cte);
+                    continue;
+                }
             }
 
             matcher = IF_PATTERN.matcher(line);
@@ -158,9 +136,9 @@ public class Profile {
             }
 
             if (profile.tempIfStack.empty())
-                profile.sections[sectionId].add(VariableParser.parseElements(line, i + 1,profile.enabled));
+                profile.sections[sectionId].add(VariableParser.parseElements(line, i + 1, profile.enabled));
             else
-                profile.tempIfStack.peek().add(VariableParser.parseElements(line, i + 1,profile.enabled));
+                profile.tempIfStack.peek().add(VariableParser.parseElements(line, i + 1, profile.enabled));
         }
 
         while (!profile.tempIfStack.empty()) {
@@ -178,11 +156,6 @@ public class Profile {
         }
 
         return profile;
-    }
-
-    public static int parseHexNumber(String str) {
-        long color = Long.parseLong(str,16);
-        return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
     }
 
 }

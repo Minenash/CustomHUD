@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
+import com.minenash.customhud.Flags;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.mixin.MinecraftClientAccess;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -20,15 +21,27 @@ import org.jetbrains.annotations.Nullable;
 public abstract class IconElement implements HudElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
+    protected final float scale;
+    protected final int shiftX;
+    protected final int shiftY;
+    protected final boolean referenceCorner;
+
+    protected IconElement(Flags flags) {
+        scale = (float) flags.scale;
+        shiftX = flags.iconShiftX;
+        shiftY = flags.iconShiftY;
+        referenceCorner = flags.iconReferenceCorner;
+    }
+
     public abstract int render(MatrixStack stack, int x, int y);
-    public abstract int getTextureWidth();
+    public abstract int getTextWidth();
 
     @Override
     public String getString() {
         return "\uFFFE";
     }
 
-    public void renderItemStack(int x, int y, ItemStack stack, float scale) {
+    public void renderItemStack(int x, int y, ItemStack stack) {
         BakedModel model = client.getItemRenderer().getModel(stack, null, null, 0);
         client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
@@ -38,10 +51,13 @@ public abstract class IconElement implements HudElement {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.translate(x+5.5, y+5.5, 100.0f); //+ client.getItemRenderer().zOffset
-        matrixStack.scale(11, -11, 1);
 
+        if (referenceCorner)
+            matrixStack.translate(0, (11*scale-11)/2, 0);
+
+        matrixStack.scale(11, -11, 1);
         if (scale != 1)
-            matrixStack.scale(scale, scale, scale);
+            matrixStack.scale(scale, scale, 1);
 
         if (!model.isSideLit())
             DiffuseLighting.disableGuiDepthLighting();

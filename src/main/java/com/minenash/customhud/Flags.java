@@ -16,7 +16,10 @@ public class Flags {
 
     public boolean formatted = false;
 
-    public int iconWidth = 11;
+    public int iconWidth = -1;
+    public int iconShiftX = 0;
+    public int iconShiftY = 0;
+    public boolean iconReferenceCorner = false;
     public boolean iconShowCount = false;
     public boolean iconShowDur = false;
     public boolean iconShowCooldown = false;
@@ -25,9 +28,10 @@ public class Flags {
         return textCase != null || smallCaps || noDelimiters;
     }
 
-    private static final Pattern PRECISION_PATTERN = Pattern.compile("-p(\\d+)");
-    private static final Pattern SCALE_PATTERN = Pattern.compile("-s((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
-    private static final Pattern WIDTH_PATTERN = Pattern.compile("-w(\\d+)");
+    private static final Pattern PRECISION_PATTERN = Pattern.compile("-(?:p|precision)(\\d+)");
+    private static final Pattern SCALE_PATTERN = Pattern.compile("-(?:s|scale)((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
+    private static final Pattern WIDTH_PATTERN = Pattern.compile("-(?:w|width)(\\d+)");
+    private static final Pattern SHIFT_PATTERN = Pattern.compile("-(?:sh|shift)(-?\\d+)(?:,(-?\\d+))?");
     public static Flags parse(String[] parts) {
         Flags flags = new Flags();
 
@@ -44,6 +48,8 @@ public class Flags {
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
                 // Stat
                 case "-f", "-formatted" -> flags.formatted = true;
+                // Icons
+                case "-dvc" -> flags.iconReferenceCorner = true;
                 // Slot Icons
                 case "-rich" -> flags.iconShowCount = flags.iconShowDur = flags.iconShowCooldown = true;
                 case "-count" -> flags.iconShowCount = true;
@@ -68,6 +74,12 @@ public class Flags {
                     matcher = WIDTH_PATTERN.matcher(parts[i]);
                     if (matcher.matches()) {
                         flags.iconWidth = Integer.parseInt(matcher.group(1));
+                    }
+                    matcher = SHIFT_PATTERN.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        flags.iconShiftX = Integer.parseInt(matcher.group(1));
+                        if (matcher.group(2) != null)
+                            flags.iconShiftY = Integer.parseInt(matcher.group(2));
                     }
                 }
             }

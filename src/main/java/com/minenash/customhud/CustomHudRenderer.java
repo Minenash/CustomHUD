@@ -1,5 +1,6 @@
 package com.minenash.customhud;
 
+import com.minenash.customhud.HudElements.ChangeThemeElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.IconElement;
 import net.minecraft.client.MinecraftClient;
@@ -19,6 +20,7 @@ public class CustomHudRenderer {
     private static final Pattern CONTAINS_HEX_COLOR_PATTERN = Pattern.compile(".*&\\{(#|0x)?[0-9a-fA-F]*}.*");
 
     public static Identifier font;
+    private static HudTheme theme;
 
 
     public static void render(MatrixStack matrix) {
@@ -30,19 +32,25 @@ public class CustomHudRenderer {
         boolean isChatOpen = client.currentScreen instanceof ChatScreen;
 
         matrix.push();
-        font = profile.font;
+        theme = profile.baseTheme;
+        font = profile.baseTheme.font;
 
-        if (profile.scale != 1.0)
-            matrix.scale(profile.scale,profile.scale,0);
+        if (theme.scale != 1.0)
+            matrix.scale(theme.scale,theme.scale,0);
 
         for (int i = 0; i < 4; i++) {
             List<List<HudElement>> section = profile.sections[i];
             if (section == null || (profile.hideOnChat[i] && isChatOpen))
                 continue;
 
-            int y = (i == 0 || i == 1 ? 3 : (int)(client.getWindow().getScaledHeight()*(1/profile.scale)) - 6 - section.size()*(9 + profile.lineSpacing)) + profile.offsets[i][1];
+            int y = (i == 0 || i == 1 ? 3 : (int)(client.getWindow().getScaledHeight()*(1/theme.scale)) - 6 - section.size()*(9 + theme.lineSpacing)) + profile.offsets[i][1];
 
             for(List<HudElement> elements : section) {
+
+                if (!elements.isEmpty() && elements.get(0) instanceof ChangeThemeElement cte) {
+                    theme = cte.theme;
+                    continue;
+                }
 
                 StringBuilder builder = new StringBuilder();
                 for (HudElement e : elements)
@@ -57,18 +65,19 @@ public class CustomHudRenderer {
                         String[] innerLines = line.split("\\\\n");
                         for (String innerLine : innerLines) {
                             renderLine(matrix, innerLine, profile, i, y, elements);
-                            y += 9 + profile.lineSpacing;
+                            y += 9 + theme.lineSpacing;
                         }
                         if (line.endsWith("\\n"))
-                            y += 9 + profile.lineSpacing;
+                            y += 9 + theme.lineSpacing;
                         continue;
                     }
                     renderLine(matrix, line, profile, i, y, elements);
 
                 }
-                y += 9 + profile.lineSpacing;
+                y += 9 + theme.lineSpacing;
 
             }
+            theme = profile.baseTheme;
         }
         font = null;
         matrix.pop();
@@ -81,14 +90,14 @@ public class CustomHudRenderer {
         for (int j = 0; j < parts.length; j++)
             totalWidth += (widths[j] = client.textRenderer.getWidth(parts[j]));
         for (HudElement icon : icons)
-            totalWidth += ((IconElement)icon).getTextureWidth() + 1;
+            totalWidth += ((IconElement)icon).getTextWidth() + 1;
 
-        int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - totalWidth) + profile.offsets[i][0];
-        DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
+        int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - totalWidth) + profile.offsets[i][0];
+        DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + theme.lineSpacing, theme.bgColor);
 
         int xOffset = parts[0].length() != 0 ? 0 : ((IconElement)icons.get(0)).render(matrix, baseX, y) + 1;
         for (int j = xOffset == 0 ? 0 : 1; j < parts.length; j++) {
-            drawText(profile, matrix, parts[j], baseX + xOffset, y + (profile.lineSpacing/2) + 1, profile.fgColor);
+            drawText(matrix, parts[j], baseX + xOffset, y + (theme.lineSpacing/2) + 1, theme.fgColor);
             xOffset += widths[j];
             if (j < icons.size())
                 xOffset += ((IconElement)icons.get(j)).render(matrix, baseX + xOffset, y) + 1;
@@ -108,30 +117,30 @@ public class CustomHudRenderer {
             if (width == 0)
                 return;
 
-            int x = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - width) + profile.offsets[i][0];
-            DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
-            drawText(profile, matrix, line, x, y + (profile.lineSpacing/2) + 1, profile.fgColor);
+            int x = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - width) + profile.offsets[i][0];
+            DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + theme.lineSpacing, theme.bgColor);
+            drawText(matrix, line, x, y + (theme.lineSpacing/2) + 1, theme.fgColor);
         }
         else {
             List<Map.Entry<String,Integer>> parts = new ArrayList<>();
             Matcher matcher = HEX_COLOR_PATTERN.matcher(line);
-            int color = profile.fgColor;
+            int color = theme.fgColor;
             while (matcher.find()) {
                 parts.add(new AbstractMap.SimpleEntry<>(matcher.group(1), color));
                 if (matcher.group(4) != null)
-                    color = Profile.parseHexNumber(matcher.group(4));
+                    color = HudTheme.parseHexNumber(matcher.group(4));
             }
 
             int totalWidth = parts.stream().map(e -> client.textRenderer.getWidth(e.getKey())).mapToInt(Integer::intValue).sum();
             if (totalWidth == 0)
                 return;
 
-            int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/profile.scale)) - 3 - totalWidth) + profile.offsets[i][0];
-            DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + profile.lineSpacing, profile.bgColor);
+            int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - totalWidth) + profile.offsets[i][0];
+            DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + theme.lineSpacing, theme.bgColor);
 
             int xOffset = 0;
             for (Map.Entry<String,Integer> part : parts) {
-                drawText(profile, matrix, part.getKey(), baseX + xOffset, y + (profile.lineSpacing/2) + 1, part.getValue());
+                drawText(matrix, part.getKey(), baseX + xOffset, y + (theme.lineSpacing/2) + 1, part.getValue());
                 xOffset += client.textRenderer.getWidth(part.getKey());
             }
         }
@@ -141,8 +150,8 @@ public class CustomHudRenderer {
         return profile.width[section] != -1? profile.width[section] : base_width;
     }
 
-    private static void drawText(Profile profile, MatrixStack matrix, String line, float x, float y, int color) {
-        if (profile.textShadow)
+    private static void drawText(MatrixStack matrix, String line, float x, float y, int color) {
+        if (theme.textShadow)
             client.textRenderer.drawWithShadow(matrix, line, x, y, color);
         else
             client.textRenderer.draw(matrix, line, x, y, color);

@@ -38,6 +38,7 @@ public class VariableParser {
     private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{.*?, ?([\"']).*?\\3 ?}}|&?\\{.*?})?");
     private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"");
     private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
+    private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("([a-z0-9/._-]*)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
 
     public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
         List<String> parts = new ArrayList<>();
@@ -132,11 +133,23 @@ public class VariableParser {
         else if (part.startsWith("icon:")) {
             part = part.substring(part.indexOf(':')+1);
 
-            Item item = Registry.ITEM.get(new Identifier(part));
+            Item item = Registry.ITEM.get(Identifier.tryParse(part));
             if (item != Items.AIR)
-                return new ItemIconElement(new ItemStack(item), (float) flags.scale, 11);
+                return new ItemIconElement(new ItemStack(item), flags);
 
-            return new TextureIconElement(new Identifier(part + ".png"), flags);
+            Matcher matcher = TEXTURE_ICON_PATTERN.matcher(part);
+            if (!matcher.matches())
+                return null;
+
+            for (int i = 0; i <= matcher.groupCount(); i++)
+                System.out.println(i + ": " + matcher.group(i));
+
+            Identifier id = new Identifier(matcher.group(1) + ".png");
+            int u = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
+            int v = matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3));
+            int w = matcher.group(4) == null ? -1 : Integer.parseInt(matcher.group(4));
+            int h = matcher.group(5) == null ? -1 : Integer.parseInt(matcher.group(5));
+            return new TextureIconElement(id, u, v, w, h, flags);
 
         }
 
