@@ -1,6 +1,4 @@
 {
-  "1.19": {
-    "version": "3.0.0",
-    "info": "Adds Icons, Clicks per Second variables, better Item Support, a lot of quality of life additions, amd 15 other variables."
-  }
+  "latest": "3.0.0",
+  "info": "Adds Icons, Clicks per Second variables, variables for any item slot, a lot of quality of life additions, and 15 other variables."
 }
