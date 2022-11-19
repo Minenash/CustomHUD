@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import com.mojang.bridge.game.PerformanceMetrics;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,6 +23,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
+import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -42,9 +44,6 @@ public class ComplexData {
     public static int timeOfDay = -1;
     public static double x1 = 0, y1 = 0, z1 = 0, velocityXZ = 0, velocityY = 0, velocityXYZ = 0;
 
-    //Not really complex, but not sure where else to put it
-    public static String address = "";
-
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final BlockState AIR_BLOCK_STATE = Blocks.AIR.getDefaultState();
 
@@ -61,6 +60,9 @@ public class ComplexData {
 
     public static int[] clicksSoFar = new int[]{0,0};
     public static int[] clicksPerSeconds = new int[]{0,0};
+    public static ArrayDeque<Integer>[] clicks = null;
+
+    public static PerformanceMetrics performanceMetrics = null;
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -167,17 +169,33 @@ public class ComplexData {
         }
 
 
-        cps:
         if (profile.enabled.clicksPerSeconds) {
-            if (cpsWaitCounter > 0) {
-                cpsWaitCounter--;
-                break cps;
+            if (clicks == null) {
+                clicks = new ArrayDeque[]{new ArrayDeque<Integer>(20), new ArrayDeque<Integer>(20)};
+                for (int i = 0; i < 20; i++) {
+                    clicks[0].add(0);
+                    clicks[1].add(0);
+                }
             }
-            cpsWaitCounter = 19;
-            clicksPerSeconds[0] = clicksSoFar[0];
-            clicksPerSeconds[1] = clicksSoFar[1];
+
+            if (cpsWaitCounter >= 20) {
+                System.out.println(System.currentTimeMillis());
+                cpsWaitCounter = 0;
+            }
+
+            clicks[0].remove();
+            clicks[1].remove();
+            clicks[0].add(clicksSoFar[0]);
+            clicks[1].add(clicksSoFar[1]);
             clicksSoFar[0] = 0;
             clicksSoFar[1] = 0;
+            clicksPerSeconds[0] = clicks[0].stream().reduce(0, Integer::sum);
+            clicksPerSeconds[1] = clicks[1].stream().reduce(0, Integer::sum);
+            cpsWaitCounter++;
+        }
+
+        if (profile.enabled.performanceMetrics) {
+            performanceMetrics = client.getGame().getPerformanceMetrics();
         }
 
         CustomHudRegistry.runComplexData();
@@ -194,7 +212,10 @@ public class ComplexData {
         world = null;
         sounds = null;
         clientChunkCache = null;
+        clicks = null;
+        performanceMetrics = null;
         x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
+        clicksSoFar[0] = clicksSoFar[1] = 0;
         clicksPerSeconds[0] = clicksPerSeconds[1] = 0;
     }
 
@@ -214,6 +235,7 @@ public class ComplexData {
         public boolean gpu = false;
         public boolean updateStats = false;
         public boolean clicksPerSeconds = false;
+        public boolean performanceMetrics = false;
 //      public boolean clientChunkCache = false;
 
     }

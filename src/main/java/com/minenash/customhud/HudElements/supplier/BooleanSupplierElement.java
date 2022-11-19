@@ -19,17 +19,24 @@ public class BooleanSupplierElement implements HudElement {
 
     public static final Supplier<Boolean> VSYNC = () -> client.options.getEnableVsync().getValue();
 
+    public static final Supplier<Boolean> SINGLEPLAYER = client::isInSingleplayer;
+    public static final Supplier<Boolean> MULTIPLAYER = () -> !client.isInSingleplayer();
+
     public static final Supplier<Boolean> CHUNK_CULLING = () -> client.chunkCullingEnabled;
     public static final Supplier<Boolean> IN_OVERWORLD = () -> isInDim(World.OVERWORLD.getValue());
     public static final Supplier<Boolean> IN_NETHER = () -> isInDim(World.NETHER.getValue());
     public static final Supplier<Boolean> IN_END = () -> isInDim(World.END.getValue());
+
+    public static final Supplier<Boolean> IS_RAINING = () -> ComplexData.world.isRaining();
+    public static final Supplier<Boolean> IS_THUNDERING = () -> ComplexData.world.isThundering();
+    public static final Supplier<Boolean> IS_SLIME_CHUNK = () -> ChunkRandom.getSlimeRandom(blockPos().getX() >> 4, blockPos().getZ() >> 4, ((StructureWorldAccess)ComplexData.world).getSeed(), 987234911L).nextInt(10) == 0;
+
 
     public static final Supplier<Boolean> SPRINTING = () -> client.player.isSprinting() && !client.player.isSwimming();
     public static final Supplier<Boolean> SNEAKING = () -> client.player.isSneaking();
     public static final Supplier<Boolean> SWIMMING = () -> client.player.isSwimming();
     public static final Supplier<Boolean> ON_GROUND = () -> client.player.isOnGround();
 
-    public static final Supplier<Boolean> IS_SLIME_CHUNK = () -> ChunkRandom.getSlimeRandom(blockPos().getX() >> 4, blockPos().getZ() >> 4, ((StructureWorldAccess)ComplexData.world).getSeed(), 987234911L).nextInt(10) == 0;
 
     @Deprecated public static final Supplier<Boolean> ITEM_HAS_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() > 0;
     @Deprecated public static final Supplier<Boolean> OFFHAND_ITEM_HAS_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() > 0;

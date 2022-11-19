@@ -63,7 +63,7 @@ public class SettingsElement {
         initialized = true;
 
         if (setting.equals("max_fps"))
-            return new Pair<>(new IntegerSupplierElement(IntegerSupplierElement.MAX_FPS), null);
+            return new Pair<>(new NumberSupplierElement(IntegerSuppliers.MAX_FPS, flags.scale, flags.precision), null);
 
         if (setting.startsWith("lang")) {
             HudElement element = switch (setting.substring(4)) {
@@ -99,7 +99,7 @@ public class SettingsElement {
             String cat = setting.substring(14);
             for (SoundCategory soundCategory : SoundCategory.values())
                 if (soundCategory.getName().equalsIgnoreCase(cat))
-                    return new Pair<>(new DecimalSupplierElement(DecimalSupplierElement.of(
+                    return new Pair<>(new NumberSupplierElement(NumberSupplierElement.of(
                             () -> ((GameOptionsAccessor)options).getSoundVolumeLevels().get(soundCategory) * 100,
                             flags.precision != -1 ? flags.precision : 0), flags.scale), null);
             return new Pair<>(null,"Unknown sound category: " + cat);
@@ -112,25 +112,20 @@ public class SettingsElement {
     }
 
     private static HudElement getSimpleOptionElement(SimpleOption<?> option, Flags flags) {
-        if (option.getValue() instanceof Boolean)
-            return new BooleanSupplierElement(() -> (Boolean) option.getValue());
-        if (option.getValue() instanceof Integer)
-            return new IntegerSupplierElement(() -> (Integer) option.getValue());
-        if (option.getValue() instanceof Double)
-            return new DecimalSupplierElement(DecimalSupplierElement.of( () -> (Double) option.getValue(), flags.precision != -1 ? flags.precision : 1), flags.scale);
-        if (option.getValue() instanceof String) {
-            HudElement element = new StringSupplierElement(() -> {
-                String str = (String) option.getValue();
-                return str.isEmpty() ? "Default" : str;
-            });
+        if (option.getValue() instanceof Boolean value)
+            return new BooleanSupplierElement(() -> value);
+        if (option.getValue() instanceof Number value)
+            return new NumberSupplierElement(() -> value, flags.scale, flags.precision != -1 ? flags.precision : value instanceof Integer ? 0 : 1);
+        if (option.getValue() instanceof String value) {
+            HudElement element = new StringSupplierElement(() -> value.isEmpty() ? "Default" : value);
             return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;
         }
-        if (option.getValue() instanceof TranslatableOption) {
-            final int falseValue = getFalseValue((TranslatableOption) option.getValue());
+        if (option.getValue() instanceof TranslatableOption value) {
+            final int falseValue = getFalseValue(value);
             return new SpecialSupplierElement(SpecialSupplierElement.of(
-                    () -> ((TranslatableOption) option.getValue()).getText().getString(),
-                    () -> ((TranslatableOption) option.getValue()).getId(),
-                    () -> ((TranslatableOption) option.getValue()).getId() != falseValue
+                    () -> value.getText().getString(),
+                    value::getId,
+                    () -> value.getId() != falseValue
             ));
         }
         if (option.getValue() instanceof NarratorMode)
@@ -141,12 +136,6 @@ public class SettingsElement {
             ));
         return null;
     }
-
-
-
-
-
-
 
     private static int getFalseValue(TranslatableOption option) {
         if (option instanceof ParticlesMode || option instanceof ChatVisibility)

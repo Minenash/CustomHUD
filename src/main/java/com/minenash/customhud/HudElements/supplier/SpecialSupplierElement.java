@@ -80,9 +80,9 @@ public class SpecialSupplierElement implements HudElement {
                                                   () -> client.options.getGraphicsMode().getValue() == GraphicsMode.FAST ? 0 : (client.options.getGraphicsMode().getValue() == GraphicsMode.FANCY ? 1 : 2),
                                                   () -> true);
 
-    public static final Entry CLOUDS = of( () -> client.options.getCloudRenderMode() == CloudRenderMode.OFF ? "off" : (client.options.getCloudRenderMode() == CloudRenderMode.FAST ? "fast" : "fancy"),
-                                           () -> client.options.getCloudRenderMode() == CloudRenderMode.OFF ? 0 : (client.options.getCloudRenderMode() == CloudRenderMode.FAST ? 1 : 2),
-                                           () -> client.options.getCloudRenderMode() != CloudRenderMode.OFF);
+    public static final Entry CLOUDS = of( () -> client.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? "off" : (client.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? "fast" : "fancy"),
+                                           () -> client.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? 0 : (client.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? 1 : 2),
+                                           () -> client.options.getCloudRenderMode().getValue() != CloudRenderMode.OFF);
 
     public static final Entry FACING_TOWARDS_PN_WORD = of( () -> isFacingEastOrSouth() ? "ifTrue" : "negative",
             () -> isFacingEastOrSouth() ? 1 : 0,

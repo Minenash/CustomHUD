@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
 import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
-import static com.minenash.customhud.HudElements.supplier.IntegerSupplierElement.*;
-import static com.minenash.customhud.HudElements.supplier.DecimalSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
+import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
 
 public class VariableParser {
@@ -245,15 +245,15 @@ public class VariableParser {
 
         supplier = getIntegerSupplier(name, enabled);
         if (supplier != null)
-            return new IntegerSupplierElement(supplier);
+            return flags.precision == -1 ? new NumberSupplierElement(supplier, flags.scale) : new NumberSupplierElement(supplier, flags.scale, flags.precision);
+
+        NumberSupplierElement.Entry entry = getDecimalSupplier(name, enabled);
+        if (entry != null)
+            return flags.precision == -1 ? new NumberSupplierElement(entry, flags.scale) : new NumberSupplierElement(entry, flags.scale, flags.precision);
 
         supplier = getStringIntSupplier(name, enabled);
         if (supplier != null)
             return new StringIntSupplierElement(supplier);
-
-        DecimalSupplierElement.Entry entry = getDecimalSupplier(name, enabled);
-        if (entry != null)
-            return flags.precision == -1 ? new DecimalSupplierElement(entry, flags.scale) : new DecimalSupplierElement(entry, flags.precision, flags.scale);
 
         SpecialSupplierElement.Entry entry2 = getSpecialSupplierElements(name, enabled);
         if (entry2 != null)
@@ -290,27 +290,35 @@ public class VariableParser {
     private static Supplier<Boolean> getBooleanSupplier(String element) {
         return switch (element) {
             case "vsync" -> VSYNC;
+            case "sp", "singleplayer" -> SINGLEPLAYER;
+            case "mp", "multiplayer" -> MULTIPLAYER;
             case "chunks_culling" -> CHUNK_CULLING;
             case "overworld" -> IN_OVERWORLD;
             case "nether" -> IN_NETHER;
             case "end" -> IN_END;
+            case "raining" -> IS_RAINING;
+            case "thundering" -> IS_THUNDERING;
+            case "slime_chunk" -> IS_SLIME_CHUNK;
             case "sprinting" -> SPRINTING;
             case "sneaking" -> SNEAKING;
             case "swimming" -> SWIMMING;
             case "on_ground" -> ON_GROUND;
-            case "slime_chunk" -> IS_SLIME_CHUNK;
             case "item_has_durability", "item_has_dur" -> ITEM_HAS_DURABILITY;
             case "offhand_item_has_durability", "oitem_has_dur" -> OFFHAND_ITEM_HAS_DURABILITY;
             default -> null;
         };
     }
 
-    private static Supplier<Integer> getIntegerSupplier(String element, ComplexData.Enabled enabled) {
+    private static Supplier<Number> getIntegerSupplier(String element, ComplexData.Enabled enabled) {
         return switch (element) {
             case "fps" -> FPS;
             case "max_fps" -> MAX_FPS;
             case "biome_blend" -> BIOME_BLEND;
-            case "ms_ticks" -> MS_TICKS;
+            case "ms_ticks", "tick_ms" -> TICK_MS;
+            case "frame_ms_min" -> { enabled.performanceMetrics = true; yield FRAME_MS_MIN;}
+            case "frame_ms_max" -> { enabled.performanceMetrics = true; yield FRAME_MS_MAX;}
+            case "frame_ms_avg" -> { enabled.performanceMetrics = true; yield FRAME_MS_AVG;}
+            case "frame_ms_samples" -> { enabled.performanceMetrics = true; yield FRAME_MS_SAMPLES;}
             case "simulation_distance", "sd" -> SIMULATION_DISTANCE;
             case "packets_sent", "tx" -> PACKETS_SENT;
             case "packets_received", "rx" -> PACKETS_RECEIVED;
@@ -396,7 +404,7 @@ public class VariableParser {
         }
     }
 
-    private static DecimalSupplierElement.Entry getDecimalSupplier(String element, ComplexData.Enabled enabled) {
+    private static NumberSupplierElement.Entry getDecimalSupplier(String element, ComplexData.Enabled enabled) {
         if (element.startsWith("velocity_"))
             enabled.velocity = true;
         return switch (element) {
@@ -421,7 +429,7 @@ public class VariableParser {
             case "memory_total" -> TOTAL_MEMORY;
             case "memory_allocated_percentage" -> ALLOCATED_PERCENTAGE;
             case "memory_allocated" -> ALLOCATED;
-            case "memory_off_heap" -> OFF_HEAP;
+//            case "memory_off_heap" -> OFF_HEAP; TODO
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
             case "gpu_usage", "gpu" -> {enabled.gpu = true; yield GPU_USAGE;}
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;

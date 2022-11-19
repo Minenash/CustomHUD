@@ -1,18 +1,15 @@
 package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.HudElements.HudElement;
-import me.jellysquid.mods.sodium.client.util.NativeBuffer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import java.lang.management.ManagementFactory;
-import java.util.function.Supplier;
+import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.*;
 
-public class DecimalSupplierElement implements HudElement {
+public class DecimalSuppliers {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final Runtime runtime = Runtime.getRuntime();
@@ -61,54 +58,6 @@ public class DecimalSupplierElement implements HudElement {
     public static final Entry TOTAL_MEMORY = of( () -> toMiB(runtime.maxMemory()), 0);
     public static final Entry ALLOCATED_PERCENTAGE = of( () -> runtime.totalMemory() * 100 / runtime.maxMemory(), 0);
     public static final Entry ALLOCATED = of( () -> toMiB(runtime.totalMemory()), 0);
-    public static final Entry OFF_HEAP = of( () -> toMiB(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed() + NativeBuffer.getTotalAllocated()), 0);
-
-    public record Entry(Supplier<Number> supplier, int precision) {}
-    public static Entry of(Supplier<Number> supplier, int precision) {
-        return new Entry(supplier, precision);
-    }
-
-    private final Supplier<Number> supplier;
-    private final int precision;
-    private final double scale;
-
-    public DecimalSupplierElement(Entry entry, double scale) {
-        this.supplier = entry.supplier;
-        this.precision = entry.precision;
-        this.scale = scale;
-    }
-
-    public DecimalSupplierElement(Entry entry, int precision, double scale) {
-        this.supplier = entry.supplier;
-        this.precision = precision;
-        this.scale = scale;
-    }
-
-    @Override
-    public String getString() {
-        try {
-            if (precision == 0)
-                return Integer.toString((int)(supplier.get().doubleValue() * scale));
-
-            double exponent = Math.pow(10, precision);
-            return Double.toString( (int)(supplier.get().doubleValue() * scale * exponent) / exponent );
-        }
-        catch (Exception _e) {
-            return "-";
-        }
-    }
-
-    @Override
-    public Number getNumber() {
-        return sanitize(supplier, Double.NaN);
-    }
-
-    @Override
-    public boolean getBoolean() {
-        return sanitize(supplier, Double.NaN).doubleValue() > 0;
-    }
-
-
-
+//    public static final Entry OFF_HEAP = of( () -> toMiB(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed() + NativeBuffer.getTotalAllocated()), 0);
 
 }
