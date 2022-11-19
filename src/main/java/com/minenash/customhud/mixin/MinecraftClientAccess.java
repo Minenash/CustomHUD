@@ -12,5 +12,4 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(MinecraftClient.class)
 public interface MinecraftClientAccess {
     @Accessor static int getCurrentFps(){ throw new AssertionError();}
-    @Accessor TextureManager getTextureManager();
 }

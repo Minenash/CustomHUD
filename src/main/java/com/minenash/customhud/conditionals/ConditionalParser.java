@@ -26,9 +26,9 @@ public class ConditionalParser {
         try {
             List<Token> tokens = getTokens(input, debugLine, enabled);
             Operation c = getConditional(tokens);
-            System.out.println("Tree for Conditional on line " + debugLine + ":");
-            c.printTree(0);
-            System.out.println();
+//            System.out.println("Tree for Conditional on line " + debugLine + ":");
+//            c.printTree(0);
+//            System.out.println();
             return c;
         }
         catch (Exception e) {

@@ -56,7 +56,6 @@ public class ComplexData {
     public static final CentralProcessor cpu = new SystemInfo().getHardware().getProcessor();
     private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
     public static double cpuLoad = 0;
-    public static double gpuLoad = 0;
 
     public static int[] clicksSoFar = new int[]{0,0};
     public static int[] clicksPerSeconds = new int[]{0,0};
@@ -227,7 +226,6 @@ public class ComplexData {
         public boolean time = false;
         public boolean velocity = false;
         public boolean cpu = false;
-        public boolean gpu = false;
         public boolean updateStats = false;
         public boolean clicksPerSeconds = false;
         public boolean performanceMetrics = false;

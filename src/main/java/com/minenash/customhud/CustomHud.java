@@ -5,12 +5,15 @@ import com.minenash.customhud.mod_compat.BuiltInModCompat;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.text.*;
+import net.minecraft.util.profiling.jfr.event.WorldLoadFinishedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -18,15 +21,20 @@ import org.lwjgl.glfw.GLFW;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.*;
 import java.util.Objects;
 
 public class CustomHud implements ModInitializer {
 
-
 	public static Profile[] profiles = new Profile[3];
 	public static int activeProfile = 1;
 	public static boolean enabled = true;
+
+	public static final String version = "2.2.0";
+	private static String latestKnownVersion = null;
+	private static String updateMsg = null;
 
 	public static final Path CONFIG_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("custom-hud");
 	public static WatchService profileWatcher;
@@ -68,8 +76,25 @@ public class CustomHud implements ModInitializer {
 			e.printStackTrace();
 		}
 		loadConfig();
+		checkForUpdate();
 
 		ClientTickEvents.END_CLIENT_TICK.register(CustomHud::onTick);
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			if (updateMsg == null)
+				return;
+			client.getMessageHandler().onGameMessage(
+					Text.literal("\nCustomHud v" + latestKnownVersion + " is now available!\n§7" + updateMsg + "\n§8[")
+						.append(Text.literal("§eChangelog").setStyle(Style.EMPTY
+							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud/changelog"))
+							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to changelog")))))
+						.append("§8] [")
+						.append(Text.literal("§eDownload").setStyle(Style.EMPTY
+							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud"))
+							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to download page on §aModrinth"))))
+						.append("§8]\n")
+						), false);
+		});
+
 	}
 
 	public static void loadProfiles() {
@@ -149,6 +174,7 @@ public class CustomHud implements ModInitializer {
 		JsonObject config = new JsonObject();
 		config.addProperty("enabled", enabled);
 		config.addProperty("activeProfile", activeProfile);
+		config.addProperty("latestKnownVersion", latestKnownVersion);
 		try {
 			Files.write(CONFIG, gson.toJson(config).getBytes());
 		} catch (IOException e) {
@@ -170,6 +196,8 @@ public class CustomHud implements ModInitializer {
 				activeProfile = 1;
 				fix = true;
 			}
+			JsonElement latestKnownVersion = json.get("latestKnownVersion");
+			CustomHud.latestKnownVersion = latestKnownVersion == null ? version : latestKnownVersion.getAsString();
 		} catch (JsonSyntaxException e) {
 			LOGGER.warn("Malformed Json, Fixing");
 			fix = true;
@@ -218,6 +246,38 @@ public class CustomHud implements ModInitializer {
 			}
 		}
 		key.reset();
+	}
+
+	private static void checkForUpdate() {
+		try {
+			JsonObject updateData = getUpdateData();
+			String version = updateData.get("latest").getAsString();
+			if (!version.equals(latestKnownVersion)) {
+				latestKnownVersion = version;
+				if (CustomHud.version.compareTo(version) < 0) {
+					updateMsg = updateData.get("info").getAsString();
+					saveConfig();
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static JsonObject getUpdateData() throws IOException {
+		URL url = new URL("https://raw.githubusercontent.com/Minenash/CustomHUD/1.19/updateInfo.json");
+
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.connect();
+
+		int responseCode = conn.getResponseCode();
+
+		if (responseCode != 200)
+			throw new RuntimeException("HttpResponseCode: " + responseCode);
+
+		return JsonParser.parseString( new String(conn.getInputStream().readAllBytes()) ).getAsJsonObject();
 	}
 
 

@@ -9,7 +9,7 @@
   "config.custom_hud.enabled": "Enabled",
   "config.custom_hud.disabled": "Disabled",
   "config.custom_hud.done": "Done",
-  "config.custom_hud.open_profile": "Edt Profile %d",
+  "config.custom_hud.open_profile": "Edit Profile %d",
   "config.custom_hud.title": "CustomHUD",
   "config.custom_hud.enable.label": "Enable/Disable this Mod",
   "config.custom_hud.active_profile.label": "Currently Active Profile"

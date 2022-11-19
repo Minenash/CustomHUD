@@ -21,16 +21,16 @@ public class MinecraftClientMixin {
 
     @Shadow @Final public GameOptions options;
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/Math;round(D)J"))
-    private long getGPUUtilisation(double gpuUsage) {
-        ComplexData.gpuLoad = gpuUsage;
-        return Math.round(gpuUsage);
-    }
+//    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/Math;round(D)J"))
+//    private long getGPUUtilisation(double gpuUsage) {
+//        ComplexData.gpuLoad = gpuUsage;
+//        return Math.round(gpuUsage);
+//    }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Recorder;isActive()Z"))
-    private boolean enableGPU(Recorder recorder) {
-        return recorder.isActive() || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.gpu);
-    }
+//    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Recorder;isActive()Z"))
+//    private boolean enableGPU(Recorder recorder) {
+//        return recorder.isActive() || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.gpu);
+//    }
 
     @Redirect(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z"))
     public boolean readClick(KeyBinding instance) {
