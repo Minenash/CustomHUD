@@ -60,7 +60,7 @@ public class CustomHud implements ModInitializer {
 		try {
 			Path path = getProfilePath(1);
 			if (Files.newBufferedReader(path).readLine() == null) {
-				try (OutputStream writer = Files.newOutputStream(path); InputStream input = getClass().getClassLoader().getResourceAsStream("assets/custom_hud/exampleProfile.txt")) {
+				try (OutputStream writer = Files.newOutputStream(path); InputStream input = getClass().getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
 					input.transferTo(writer);
 				}
 				CustomHud.profiles[0] = Profile.parseProfile(path);

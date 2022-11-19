@@ -9,11 +9,12 @@
 &6E: &e{entities_rendered} &6P: &e{particles}
 &6Light: {{light=0, "&c", "&e"}}{light}
 
-This is an example profile
-You can edit it by going into Mods → CustomHUD → Settings
-or you can go into .minecraft/config/custom_hud
-The wiki will be very helpful:
-https://github.com/Minenash/CustomHUD/wiki
+&7This is an example profile
+&7Goto this link for details on how to edit
+&ehttps://docs.minenash.com/CustomHud&7
+
+// Only download this mod from Modrinth or CurseForge
+// Don't download from 9minecraft, mediafire&c, or mega.nz
 
 ==Section:TopRight==
 Mem: &e{memory_used_percentage}%&f of &e{memory_total}
