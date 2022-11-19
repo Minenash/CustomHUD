@@ -178,11 +178,6 @@ public class ComplexData {
                 }
             }
 
-            if (cpsWaitCounter >= 20) {
-                System.out.println(System.currentTimeMillis());
-                cpsWaitCounter = 0;
-            }
-
             clicks[0].remove();
             clicks[1].remove();
             clicks[0].add(clicksSoFar[0]);

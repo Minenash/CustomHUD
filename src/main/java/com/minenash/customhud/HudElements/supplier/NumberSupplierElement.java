@@ -36,11 +36,11 @@ public class NumberSupplierElement implements HudElement {
     @Override
     public String getString() {
         try {
+            double num = supplier.get().doubleValue() * scale;
             if (precision == 0)
-                return Integer.toString((int)(supplier.get().doubleValue() * scale));
+                return Integer.toString((int)num);
 
-            double exponent = Math.pow(10, precision);
-            return Double.toString( (int)(supplier.get().doubleValue() * scale * exponent) / exponent );
+            return String.format("%."+precision+"f", num);
         }
         catch (Exception _e) {
             return "-";

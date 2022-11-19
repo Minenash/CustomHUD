@@ -62,12 +62,6 @@ public class IntegerSuppliers {
 
     public static final Supplier<Number> FORCED_LOADED_CHUNKS = () -> ComplexData.world instanceof ServerWorld ? ((ServerWorld)ComplexData.world).getForcedChunks().size() : null;
 
-    public static final Supplier<Number> TICK_MS = () -> client.getServer() == null ? null : (int)client.getServer().getTickTime();
-    public static final Supplier<Number> FRAME_MS_MIN = () -> ComplexData.performanceMetrics.getMinTime();
-    public static final Supplier<Number> FRAME_MS_MAX = () -> ComplexData.performanceMetrics.getMaxTime();
-    public static final Supplier<Number> FRAME_MS_AVG = () -> ComplexData.performanceMetrics.getAverageTime();
-    public static final Supplier<Number> FRAME_MS_SAMPLES = () -> ComplexData.performanceMetrics.getSampleCount();
-
     public static final Supplier<Number> BLOCK_X = () -> blockPos().getX();
     public static final Supplier<Number> BLOCK_Y = () -> blockPos().getY();
     public static final Supplier<Number> BLOCK_Z = () -> blockPos().getZ();

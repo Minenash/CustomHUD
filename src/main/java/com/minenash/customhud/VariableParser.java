@@ -314,11 +314,6 @@ public class VariableParser {
             case "fps" -> FPS;
             case "max_fps" -> MAX_FPS;
             case "biome_blend" -> BIOME_BLEND;
-            case "ms_ticks", "tick_ms" -> TICK_MS;
-            case "frame_ms_min" -> { enabled.performanceMetrics = true; yield FRAME_MS_MIN;}
-            case "frame_ms_max" -> { enabled.performanceMetrics = true; yield FRAME_MS_MAX;}
-            case "frame_ms_avg" -> { enabled.performanceMetrics = true; yield FRAME_MS_AVG;}
-            case "frame_ms_samples" -> { enabled.performanceMetrics = true; yield FRAME_MS_SAMPLES;}
             case "simulation_distance", "sd" -> SIMULATION_DISTANCE;
             case "packets_sent", "tx" -> PACKETS_SENT;
             case "packets_received", "rx" -> PACKETS_RECEIVED;
@@ -432,6 +427,11 @@ public class VariableParser {
 //            case "memory_off_heap" -> OFF_HEAP; TODO
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
             case "gpu_usage", "gpu" -> {enabled.gpu = true; yield GPU_USAGE;}
+            case "ms_ticks", "tick_ms" -> TICK_MS;
+            case "frame_ms_min" -> { enabled.performanceMetrics = true; yield FRAME_MS_MIN;}
+            case "frame_ms_max" -> { enabled.performanceMetrics = true; yield FRAME_MS_MAX;}
+            case "frame_ms_avg" -> { enabled.performanceMetrics = true; yield FRAME_MS_AVG;}
+            case "frame_ms_samples" -> { enabled.performanceMetrics = true; yield FRAME_MS_SAMPLES;}
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
             case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
             case "local_difficulty" -> { enabled.localDifficulty = enabled.world = true; yield LOCAL_DIFFICULTY; }

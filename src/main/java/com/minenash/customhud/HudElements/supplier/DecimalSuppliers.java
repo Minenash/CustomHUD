@@ -7,6 +7,8 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.function.Supplier;
+
 import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.*;
 
 public class DecimalSuppliers {
@@ -38,6 +40,12 @@ public class DecimalSuppliers {
     public static final Entry LOCAL_DIFFICULTY = of( () -> ComplexData.localDifficulty.getLocalDifficulty(), 2);
     public static final Entry CLAMPED_LOCAL_DIFFICULTY = of( () -> ComplexData.localDifficulty.getClampedLocalDifficulty(), 2);
     public static final Entry MOOD = of( () -> client.player.getMoodPercentage() * 100.0F, 0);
+
+    public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getTickTime(), 0);
+    public static final Entry FRAME_MS_MIN = of( () -> ComplexData.performanceMetrics.getMinTime() / 1000000D, 0);
+    public static final Entry FRAME_MS_MAX = of( () -> ComplexData.performanceMetrics.getMaxTime() / 1000000D, 0);
+    public static final Entry FRAME_MS_AVG = of( () -> ComplexData.performanceMetrics.getAverageTime() / 1000000D, 1);
+    public static final Entry FRAME_MS_SAMPLES = of( () -> ComplexData.performanceMetrics.getSampleCount(), 0);
 
     @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
     @Deprecated public static final Entry OFFHAND_ITEM_DURABILITY_PERCENT = of( () -> client.player.getOffHandStack().getDamage() / (float) client.player.getOffHandStack().getMaxDamage() * 100, 0);
