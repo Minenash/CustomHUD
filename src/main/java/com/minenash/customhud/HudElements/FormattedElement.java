@@ -3,11 +3,9 @@ package com.minenash.customhud.HudElements;
 import com.minenash.customhud.Flags;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.util.Locale;
-
 public class FormattedElement implements HudElement {
 
-    final static char[] delimiters = { ' ', '_', '-' };
+    final static char[] delimiters = { ' ', '_', '-', ':' };
 
     private final HudElement base;
     private final Flags flags;

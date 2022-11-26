@@ -3,8 +3,8 @@ package com.minenash.customhud.HudElements;
 import com.minenash.customhud.conditionals.Operation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ConditionalElement implements HudElement {
 
@@ -16,19 +16,23 @@ public class ConditionalElement implements HudElement {
         this.pairs = pairs;
     }
 
-    @Override
-    public String getString() {
-        List<HudElement> elements = null;
+    public List<HudElement> get() {
         for (ConditionalPair pair : pairs) {
             if (pair.conditional.getValue() != 0) {
-                elements = pair.ifTrue;
-                break;
+                return pair.ifTrue;
             }
         }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getString() {
+        List<HudElement> elements = get();
 
         StringBuilder builder = new StringBuilder();
-        if (elements != null)
-            elements.forEach(e -> builder.append(e.getString()));
+        for (HudElement element : elements)
+            builder.append(element.getString());
+
         return builder.toString();
     }
 

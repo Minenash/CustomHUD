@@ -70,6 +70,14 @@ public class HudTheme {
     }
 
     public static int parseHexNumber(String str) {
+        str = switch (str.length()) {
+            case 3 -> "FF" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2);
+            case 4 -> "" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2) + str.charAt(3) + str.charAt(3);
+            case 5 -> "" + str.charAt(0) + str.charAt(0) + str.substring(1);
+            case 6 -> "FF" + str;
+            default -> str;
+        };
+
         long color = Long.parseLong(str,16);
         return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
     }

@@ -3,7 +3,7 @@ package com.minenash.customhud.HudElements;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 
-public class ItemCountElement implements HudElement{
+public class ItemCountElement implements HudElement {
 
     private final Item item;
 

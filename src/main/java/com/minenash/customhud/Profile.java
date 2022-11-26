@@ -1,6 +1,8 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
+import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.conditionals.Operation;
 
@@ -95,13 +97,13 @@ public class Profile {
             matcher = LOCAL_THEME_PATTERN.matcher(line);
             if (matcher.matches()) {
                 if ( localTheme.parse(matcher.group(1)) ) {
-                    List<HudElement> cte = Collections.singletonList(new ChangeThemeElement(localTheme));
+                    List<HudElement> cte = Collections.singletonList(new FunctionalElement.ChangeTheme(localTheme));
 
                     int lastElement = profile.sections[sectionId].size()-1;
                     if (lastElement == -1)
                         profile.sections[sectionId].add(cte);
                     List<HudElement> elements = profile.sections[sectionId].get(lastElement);
-                    if (!elements.isEmpty() && elements.get(0) instanceof ChangeThemeElement)
+                    if (!elements.isEmpty() && elements.get(0) instanceof FunctionalElement.ChangeTheme)
                         profile.sections[sectionId].set(lastElement, cte);
                     else
                         profile.sections[sectionId].add(cte);

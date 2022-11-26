@@ -1,16 +1,19 @@
 package com.minenash.customhud;
 
-import com.minenash.customhud.HudElements.ChangeThemeElement;
+import com.minenash.customhud.HudElements.ConditionalElement;
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.IconElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CustomHudRenderer {
@@ -20,8 +23,11 @@ public class CustomHudRenderer {
     private static final Pattern CONTAINS_HEX_COLOR_PATTERN = Pattern.compile(".*&\\{(#|0x)?[0-9a-fA-F]*}.*");
 
     public static Identifier font;
+    public static boolean batch = false;
     private static HudTheme theme;
 
+    record IconRender(IconElement element, MutableInt x, int y) {}
+    record TextRender(String text, int length, MutableInt x, int y, int color) {}
 
     public static void render(MatrixStack matrix) {
 
@@ -38,6 +44,11 @@ public class CustomHudRenderer {
         if (theme.scale != 1.0)
             matrix.scale(theme.scale,theme.scale,0);
 
+        List<TextRender> textRenders = new ArrayList<>();
+        List<IconRender> iconRenders = new ArrayList<>();
+        int textRendersIndex = 0;
+        int iconRendersIndex = 0;
+
         for (int i = 0; i < 4; i++) {
             List<List<HudElement>> section = profile.sections[i];
             if (section == null || (profile.hideOnChat[i] && isChatOpen))
@@ -47,110 +58,98 @@ public class CustomHudRenderer {
 
             for(List<HudElement> elements : section) {
 
-                if (!elements.isEmpty() && elements.get(0) instanceof ChangeThemeElement cte) {
+                if (!elements.isEmpty() && elements.get(0) instanceof FunctionalElement.ChangeTheme cte) {
                     theme = cte.theme;
                     continue;
                 }
 
-                StringBuilder builder = new StringBuilder();
+                List<HudElement> allElements = new ArrayList<>(elements.size());
                 for (HudElement e : elements)
-                    builder.append(e.getString());
+                    addElement(allElements, e);
 
-                String line = builder.toString().replaceAll("\\s+$", "");
 
-                if (line.isEmpty() && !elements.isEmpty())
-                    continue;
-                if (!line.isEmpty()) {
-                    if (line.contains("\\n")) {
-                        String[] innerLines = line.split("\\\\n");
-                        for (String innerLine : innerLines) {
-                            renderLine(matrix, innerLine, profile, i, y, elements);
+                int x_offset = 0;
+                int color = theme.fgColor;
+                int y_offset = (theme.lineSpacing/2) + 1;
+
+                int textWidth = 0;
+                StringBuilder builder = new StringBuilder();
+                for (HudElement e : allElements) {
+                    if (e instanceof FunctionalElement) {
+                        textRenders.add(new TextRender(builder.toString(), textWidth, new MutableInt(x_offset), y + y_offset, color));
+                        x_offset += textWidth;
+                        builder = new StringBuilder();
+                        textWidth = 0;
+
+                        if (e instanceof FunctionalElement.NewLine) {
                             y += 9 + theme.lineSpacing;
+                            x_offset = 0;
+                        } else if (e instanceof FunctionalElement.ChangeColor cce) {
+                            color = cce.color;
+                        } else if (e instanceof IconElement ie) {
+                            iconRenders.add(new IconRender(ie, new MutableInt(x_offset), y));
+                            x_offset += ie.getTextWidth() + 1;
                         }
-                        if (line.endsWith("\\n"))
-                            y += 9 + theme.lineSpacing;
-                        continue;
                     }
-                    renderLine(matrix, line, profile, i, y, elements);
-
+                    else {
+                        String str = e.getString();
+                        textWidth += client.textRenderer.getWidth(str);
+                        builder.append(str);
+                    }
                 }
+                textRenders.add(new TextRender(builder.toString(), textWidth, new MutableInt(x_offset), y + y_offset, color));
+                x_offset += textWidth;
+
+                if (x_offset == 0) {
+                    y += 9 + theme.lineSpacing;
+                    continue;
+                }
+
+                int startX = ((i == 0 || i == 2) ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - x_offset) + profile.offsets[i][0];
+
+                DrawableHelper.fill(matrix, startX - 2, y, startX + x_offset + 1, y + 9 + theme.lineSpacing, theme.bgColor);
+
+                for (int index = textRendersIndex; index < textRenders.size(); index++)
+                    textRenders.get(index).x.add(startX);
+                for (int index = iconRendersIndex; index < iconRenders.size(); index++)
+                    iconRenders.get(index).x.add(startX);
+
+                textRendersIndex = textRenders.size();
+                iconRendersIndex = iconRenders.size();
+
                 y += 9 + theme.lineSpacing;
 
             }
             theme = profile.baseTheme;
         }
+
+//        batch = true;
+        for (TextRender render : textRenders) {
+            if (!render.text.isEmpty())
+                drawText(matrix, render.text, render.x.getValue(), render.y, render.color);
+        }
+//        batch = false;
+//        VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()).draw();
+
+        for (IconRender render : iconRenders) {
+            render.element.render(matrix, render.x.getValue(), render.y);
+        }
+
         font = null;
         matrix.pop();
     }
 
-    private static void renderWithIcons(MatrixStack matrix, String line, Profile profile, int i, int y, boolean left, List<HudElement> icons) {
-        String[] parts = line.split("\uFFFE", -1);
-        int[] widths = new int[parts.length];
-        int totalWidth = 0;
-        for (int j = 0; j < parts.length; j++)
-            totalWidth += (widths[j] = client.textRenderer.getWidth(parts[j]));
-        for (HudElement icon : icons)
-            totalWidth += ((IconElement)icon).getTextWidth() + 1;
+    private static void addElement(List<HudElement> allElements, HudElement element) {
+        if (element instanceof ConditionalElement ce)
+            for (HudElement e : ce.get())
+                addElement(allElements, e);
+        else
+            allElements.add(element);
 
-        int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - totalWidth) + profile.offsets[i][0];
-        DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + theme.lineSpacing, theme.bgColor);
-
-        int xOffset = parts[0].length() != 0 ? 0 : ((IconElement)icons.get(0)).render(matrix, baseX, y) + 1;
-        for (int j = xOffset == 0 ? 0 : 1; j < parts.length; j++) {
-            drawText(matrix, parts[j], baseX + xOffset, y + (theme.lineSpacing/2) + 1, theme.fgColor);
-            xOffset += widths[j];
-            if (j < icons.size())
-                xOffset += ((IconElement)icons.get(j)).render(matrix, baseX + xOffset, y) + 1;
-        }
-
-
-    }
-
-    private static void renderLine(MatrixStack matrix, String line, Profile profile, int i, int y, List<HudElement> elements) {
-        boolean left = i == 0 || i == 2;
-
-        if (line.contains("\uFFFE"))
-            renderWithIcons(matrix, line, profile, i, y, left, elements.stream().filter( e -> e instanceof IconElement ).toList());
-
-        else if (!CONTAINS_HEX_COLOR_PATTERN.matcher(line).matches()) {
-            int width = client.textRenderer.getWidth(line);
-            if (width == 0)
-                return;
-
-            int x = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - width) + profile.offsets[i][0];
-            DrawableHelper.fill(matrix, x - 2, y, x + lineLength(profile,i,width) + 1, y + 9 + theme.lineSpacing, theme.bgColor);
-            drawText(matrix, line, x, y + (theme.lineSpacing/2) + 1, theme.fgColor);
-        }
-        else {
-            List<Map.Entry<String,Integer>> parts = new ArrayList<>();
-            Matcher matcher = HEX_COLOR_PATTERN.matcher(line);
-            int color = theme.fgColor;
-            while (matcher.find()) {
-                parts.add(new AbstractMap.SimpleEntry<>(matcher.group(1), color));
-                if (matcher.group(4) != null)
-                    color = HudTheme.parseHexNumber(matcher.group(4));
-            }
-
-            int totalWidth = parts.stream().map(e -> client.textRenderer.getWidth(e.getKey())).mapToInt(Integer::intValue).sum();
-            if (totalWidth == 0)
-                return;
-
-            int baseX = (left ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - totalWidth) + profile.offsets[i][0];
-            DrawableHelper.fill(matrix, baseX - 2, y, baseX + lineLength(profile,i,totalWidth) + 1, y + 9 + theme.lineSpacing, theme.bgColor);
-
-            int xOffset = 0;
-            for (Map.Entry<String,Integer> part : parts) {
-                drawText(matrix, part.getKey(), baseX + xOffset, y + (theme.lineSpacing/2) + 1, part.getValue());
-                xOffset += client.textRenderer.getWidth(part.getKey());
-            }
-        }
-    }
-
-    private static int lineLength(Profile profile, int section, int base_width) {
-        return profile.width[section] != -1? profile.width[section] : base_width;
     }
 
     private static void drawText(MatrixStack matrix, String line, float x, float y, int color) {
+        //TODO: batch immediate.draw(); in TextRenderer
         if (theme.textShadow)
             client.textRenderer.drawWithShadow(matrix, line, x, y, color);
         else

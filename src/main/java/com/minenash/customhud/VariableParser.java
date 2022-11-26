@@ -1,6 +1,8 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
+import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.ItemIconElement;
 import com.minenash.customhud.HudElements.icon.TextureIconElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
@@ -39,6 +41,7 @@ public class VariableParser {
     private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"");
     private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("([a-z0-9/._-]*)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
+    private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
 
     public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
         List<String> parts = new ArrayList<>();
@@ -72,6 +75,13 @@ public class VariableParser {
     public static HudElement parseElement(String part, int debugLine, ComplexData.Enabled enabled) {
         if (part == null || part.isEmpty())
             return null;
+
+        if (part.startsWith("&{")) {
+            Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
+            if (m.matches()) {
+                return new FunctionalElement.ChangeColor(HudTheme.parseHexNumber(m.group(1)));
+            }
+        }
 
         if (!part.startsWith("{"))
             return new StringElement(part);

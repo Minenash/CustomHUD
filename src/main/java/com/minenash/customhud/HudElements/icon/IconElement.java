@@ -2,23 +2,18 @@ package com.minenash.customhud.HudElements.icon;
 
 import com.minenash.customhud.Flags;
 import com.minenash.customhud.HudElements.HudElement;
-import com.minenash.customhud.mixin.MinecraftClientAccess;
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
-public abstract class IconElement implements HudElement {
+public abstract class IconElement extends FunctionalElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     protected final float scale;
