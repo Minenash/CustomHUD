@@ -80,7 +80,8 @@ public class SlotItemElement implements HudElement {
         try {
             return ItemSlotArgumentType.itemSlot().parse(new StringReader(switch (in) {
                 case "head", "chest", "legs", "feet" -> "armor." + in;
-                case "mainhand", "offhand" -> "weapon";
+                case "mainhand", "offhand" -> "weapon." + in;
+                case "main", "off" -> "weapon." + in + "hand";
                 default -> {
                     if (in.charAt(0) == 'h' && in.charAt(1) != 'o') yield "hotbar." + in.substring(1);
                     if (in.charAt(0) == 'i' && in.charAt(1) != 'n') yield "inventory." + in.substring(1);

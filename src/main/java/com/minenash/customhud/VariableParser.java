@@ -37,7 +37,7 @@ import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement
 
 public class VariableParser {
 
-    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{.*?, ?([\"']).*?\\3 ?}}|&?\\{.*?})?");
+    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{(?:.*?, ?([\"']).*?\\3 ?)?}}|&?\\{.*?})?");
     private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"");
     private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("([a-z0-9/._-]*)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
@@ -78,24 +78,22 @@ public class VariableParser {
 
         if (part.startsWith("&{")) {
             Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
-            if (m.matches()) {
+            if (m.matches())
                 return new FunctionalElement.ChangeColor(HudTheme.parseHexNumber(m.group(1)));
-            }
         }
 
         if (!part.startsWith("{"))
             return new StringElement(part);
 
         part = part.substring(1, part.length()-1);
-
-        if (part.startsWith("{")) {
+        if (part.startsWith("{") && part.length() > 1) {
             part = part.substring(1, part.length() - 1);
 
             List<ConditionalElement.ConditionalPair> pairs = parseConditional(CONDITIONAL_PARSING_PATTERN.matcher(part), debugLine, enabled);
             if (pairs.isEmpty())
                 pairs = parseConditional(CONDITIONAL_PARSING_ALT_PATTERN.matcher(part), debugLine, enabled);
             if (pairs.isEmpty()) {
-                CustomHud.LOGGER.warn("Malformed conditional " + part + " on line " + debugLine);
+                CustomHud.LOGGER.warn("Malformed conditional '" + part + "' on line " + debugLine);
                 return null;
             }
             return new ConditionalElement(pairs);
