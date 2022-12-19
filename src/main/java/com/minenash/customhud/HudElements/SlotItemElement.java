@@ -8,8 +8,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
 
 import java.util.function.Function;
 
@@ -19,7 +19,7 @@ public class SlotItemElement implements HudElement {
     private static ItemStack stack(int slot) {return client.player.getStackReference(slot).get();}
     private static Item item(int slot) {return client.player.getStackReference(slot).get().getItem();}
 
-    public static final Function<Integer, String> ID = (slot) -> Registry.ITEM.getId(item(slot)).toString();
+    public static final Function<Integer, String> ID = (slot) -> Registries.ITEM.getId(item(slot)).toString();
     public static final Function<Integer, String> NAME = (slot) -> item(slot).getName().getString();
     public static final Function<Integer, Number> RAW_ID = (slot) -> Item.getRawId(item(slot));
     public static final Function<Integer, Boolean> IS_STACK_EMPTY = (slot) -> stack(slot).isEmpty();

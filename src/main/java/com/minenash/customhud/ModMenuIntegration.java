@@ -43,28 +43,24 @@ public class ModMenuIntegration implements ModMenuApi {
             int buttonX = this.width - buttonWidth - 10;
             int mid = this.width/2;
 
-            this.addDrawableChild(new ButtonWidget(buttonX,OPTION_START,buttonWidth,20,
-                    MutableText.of(new TranslatableTextContent(getEnableDisableLabel(CustomHud.enabled))), (button) -> {
+            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent("config.custom_hud.done")), (button) -> close()).dimensions(mid - 100, this.height - 28, 200, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent(getEnableDisableLabel(CustomHud.enabled))), (button) -> {
                 CustomHud.enabled = !CustomHud.enabled;
                 button.setMessage(MutableText.of(new TranslatableTextContent(getEnableDisableLabel(CustomHud.enabled))));
-            }));
-
-            this.addDrawableChild(new ButtonWidget(buttonX,OPTION_START + OPTION_BUFFER,buttonWidth,20,
-                    MutableText.of(new LiteralTextContent(Integer.toString(CustomHud.activeProfile))), (button) -> {
-                CustomHud.activeProfile =CustomHud. activeProfile == 3 ? 1 : CustomHud.activeProfile + 1;
+            }).dimensions(buttonX, OPTION_START, buttonWidth, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new LiteralTextContent(Integer.toString(CustomHud.activeProfile))), (button) -> {
+                CustomHud.activeProfile = CustomHud.activeProfile == 3 ? 1 : CustomHud.activeProfile + 1;
                 button.setMessage(MutableText.of(new LiteralTextContent(Integer.toString(CustomHud.activeProfile))));
-            }));
+            }).dimensions(buttonX, OPTION_START + OPTION_BUFFER, buttonWidth, 20).build());
 
             for (int i = 1; i <= 3; i++) {
                 int ii = i;
-                this.addDrawableChild(new ButtonWidget(mid - 75,OPTION_START + OPTION_BUFFER*(i+1) + 5,150,20,
-                        MutableText.of(new TranslatableTextContent("config.custom_hud.open_profile",i)), (button) -> new Thread(() -> Util.getOperatingSystem().open(CustomHud.getProfilePath(ii).toFile())).start()));
-
+                this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent("config.custom_hud.open_profile", i)), (button) ->
+                        new Thread(() -> Util.getOperatingSystem().open(CustomHud.getProfilePath(ii).toFile())).start()
+                ).dimensions(mid - 75, OPTION_START + OPTION_BUFFER * (i + 1) + 5, 150, 20).build());
             }
 
-            this.addDrawableChild(new ButtonWidget(mid - 100,this.height - 28,200,20,
-                    MutableText.of(new TranslatableTextContent("config.custom_hud.done")), (button) -> close()));
-
+            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent("config.custom_hud.done")), (button) -> close()).dimensions(mid - 100, this.height - 28, 200, 20).build());
         }
 
         private String getEnableDisableLabel(boolean value) {

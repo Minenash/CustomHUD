@@ -100,7 +100,7 @@ public class SettingsElement {
             for (SoundCategory soundCategory : SoundCategory.values())
                 if (soundCategory.getName().equalsIgnoreCase(cat))
                     return new Pair<>(new NumberSupplierElement(NumberSupplierElement.of(
-                            () -> ((GameOptionsAccessor)options).getSoundVolumeLevels().get(soundCategory) * 100,
+                            () -> ((GameOptionsAccessor)options).getSoundVolumeLevels().get(soundCategory).getValue() * 100,
                             flags.precision != -1 ? flags.precision : 0), flags.scale), null);
             return new Pair<>(null,"Unknown sound category: " + cat);
         }
