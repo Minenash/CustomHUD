@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements;
 
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.conditionals.Operation;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class ConditionalElement implements HudElement {
 
         public void add(List<HudElement> elements) {
             this.elements.addAll(elements);
-            this.elements.add(new StringElement("\\n"));
+            this.elements.add(new FunctionalElement.NewLine());
         }
 
         public ConditionalElement build() {

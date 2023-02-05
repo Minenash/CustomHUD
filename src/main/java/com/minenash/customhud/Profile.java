@@ -20,8 +20,8 @@ public class Profile {
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
     private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
 
-    private static final Pattern IF_PATTERN = Pattern.compile("=if ?, ?(.+)=");
-    private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?, ?(.+)=");
+    private static final Pattern IF_PATTERN = Pattern.compile("=if ?: ?(.+)=");
+    private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=");
 
     public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
@@ -129,6 +129,8 @@ public class Profile {
                 continue;
             }
             if (line.equals("=endif=")) {
+                if (profile.tempIfStack.isEmpty())
+                    continue;
                 List<HudElement> c = Collections.singletonList(profile.tempIfStack.pop().build());
                 if (profile.tempIfStack.empty())
                     profile.sections[sectionId].add(c);

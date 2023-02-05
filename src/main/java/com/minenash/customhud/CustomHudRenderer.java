@@ -19,8 +19,6 @@ import java.util.regex.Pattern;
 public class CustomHudRenderer {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
-    private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("([^{}&]*)(&\\{(#|0x)?([0-9a-fA-F]*)})?");
-    private static final Pattern CONTAINS_HEX_COLOR_PATTERN = Pattern.compile(".*&\\{(#|0x)?[0-9a-fA-F]*}.*");
 
     public static Identifier font;
     public static boolean batch = false;
@@ -82,6 +80,8 @@ public class CustomHudRenderer {
                         textWidth = 0;
 
                         if (e instanceof FunctionalElement.NewLine) {
+                            int startX = ((i == 0 || i == 2) ? 5 : (int)(client.getWindow().getScaledWidth()*(1/theme.scale)) - 3 - x_offset) + profile.offsets[i][0];
+                            DrawableHelper.fill(matrix, startX - 2, y, startX + x_offset + 1, y + 9 + theme.lineSpacing, theme.bgColor);
                             y += 9 + theme.lineSpacing;
                             x_offset = 0;
                         } else if (e instanceof FunctionalElement.ChangeColor cce) {
@@ -123,13 +123,10 @@ public class CustomHudRenderer {
             theme = profile.baseTheme;
         }
 
-//        batch = true;
         for (TextRender render : textRenders) {
             if (!render.text.isEmpty())
                 drawText(matrix, render.text, render.x.getValue(), render.y, render.color);
         }
-//        batch = false;
-//        VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()).draw();
 
         for (IconRender render : iconRenders) {
             render.element.render(matrix, render.x.getValue(), render.y);

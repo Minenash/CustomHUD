@@ -37,7 +37,7 @@ import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement
 
 public class VariableParser {
 
-    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{(?:.*?, ?([\"']).*?\\3 ?)?}}|&?\\{.*?})?");
+    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&\\n]*)(\\n|\\{\\{.*}}|&?\\{.*?})?");
     private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"");
     private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("([a-z0-9/._-]*)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
@@ -46,7 +46,10 @@ public class VariableParser {
     public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
         List<String> parts = new ArrayList<>();
 
-        Matcher matcher = LINE_PARING_PATTERN.matcher(str == null ? "" : str);
+        if (str == null) str = "";
+        str = str.replace("\\n", "\n");
+
+        Matcher matcher = LINE_PARING_PATTERN.matcher(str);
         while (matcher.find()) {
             parts.add(matcher.group(1));
             parts.add(matcher.group(2));
@@ -75,6 +78,9 @@ public class VariableParser {
     public static HudElement parseElement(String part, int debugLine, ComplexData.Enabled enabled) {
         if (part == null || part.isEmpty())
             return null;
+
+        if (part.equals("\n"))
+            return new FunctionalElement.NewLine();
 
         if (part.startsWith("&{")) {
             Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
