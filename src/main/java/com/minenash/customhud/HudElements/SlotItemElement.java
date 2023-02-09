@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.icon.SlotItemIconElement;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

@@ -67,19 +67,17 @@ public class ConditionalElement implements HudElement {
             this.conditional = conditional;
         }
 
-        public void add(List<HudElement> elements) {
+        public void add(HudElement element) {
+            this.elements.add(element);
+        }
+
+        public void addAll(List<HudElement> elements) {
             this.elements.addAll(elements);
-            this.elements.add(new FunctionalElement.NewLine());
         }
 
         public ConditionalElement build() {
             pairs.add(new ConditionalPair(conditional, elements));
-
-            for (ConditionalPair pair : pairs)
-                if (pair.ifTrue.size() > 0)
-                    pair.ifTrue.remove(pair.ifTrue.size() - 1);
-
-           return new ConditionalElement(pairs);
+            return new ConditionalElement(pairs);
         }
 
     }

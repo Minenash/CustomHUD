@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;

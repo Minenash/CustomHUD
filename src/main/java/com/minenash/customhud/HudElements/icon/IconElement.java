@@ -1,7 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.Flags;
-import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;

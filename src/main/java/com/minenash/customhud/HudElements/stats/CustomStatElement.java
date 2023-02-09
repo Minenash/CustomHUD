@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements.stats;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.stat.Stat;

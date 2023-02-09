@@ -9,6 +9,8 @@ import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
 import com.minenash.customhud.conditionals.ConditionalParser;
+import com.minenash.customhud.data.Flags;
+import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -37,21 +39,34 @@ import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement
 
 public class VariableParser {
 
-    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&\\n]*)(\\n|\\{\\{.*}}|&?\\{.*?})?");
+    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{(?:.*?, ?([\"']).*?\\3 ?)?}}|&?\\{.*?})?");
     private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"");
     private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("([a-z0-9/._-]*)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
 
-    public static List<HudElement> parseElements(String str, int debugLine, ComplexData.Enabled enabled) {
+    public static List<HudElement> addElements(String str, int debugLine, ComplexData.Enabled enabled, boolean line) {
         List<String> parts = new ArrayList<>();
 
-        if (str == null) str = "";
-        str = str.replace("\\n", "\n");
-
+        System.out.println("[Line " + debugLine+ "] '" + str + "'");
         Matcher matcher = LINE_PARING_PATTERN.matcher(str);
         while (matcher.find()) {
-            parts.add(matcher.group(1));
+            String left = matcher.group(1);
+
+            List<String> sections = new ArrayList<>();
+            int j = 0;
+            for (int i = 0; i < left.length()-1; i++) {
+                if (left.charAt(i) == '\\' && left.charAt(i+1) == 'n') {
+                    sections.add(left.substring(j,i));
+                    sections.add("\n");
+                    i+=2;
+                    j=i;
+                }
+            }
+            sections.add(left.substring(j));
+            System.out.println(sections + "\n");
+            parts.addAll(sections);
+
             parts.add(matcher.group(2));
         }
 
@@ -63,6 +78,8 @@ public class VariableParser {
                 elements.add(element);
         }
 
+        if (line)
+            elements.add(new FunctionalElement.NewLine());
         return elements;
     }
 
@@ -70,7 +87,7 @@ public class VariableParser {
         List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
         while (args.find()) {
 //            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
-            pairs.add(new ConditionalElement.ConditionalPair(ConditionalParser.parseConditional(args.group(1), debugLine, enabled), parseElements(args.group(2), debugLine, enabled)));
+            pairs.add(new ConditionalElement.ConditionalPair(ConditionalParser.parseConditional(args.group(1), debugLine, enabled), addElements(args.group(2), debugLine, enabled, false)));
         }
         return pairs;
     }

@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.supplier.*;
 import com.minenash.customhud.mixin.GameOptionsAccessor;
 import com.minenash.customhud.mixin.KeyBindingAccessor;

@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import org.apache.commons.lang3.text.WordUtils;
 
 public class FormattedElement implements HudElement {

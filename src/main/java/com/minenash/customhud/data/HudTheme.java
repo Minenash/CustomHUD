@@ -1,4 +1,4 @@
-package com.minenash.customhud;
+package com.minenash.customhud.data;
 
 import net.minecraft.util.Identifier;
 

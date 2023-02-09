@@ -32,7 +32,8 @@ public class ConditionalParser {
             return c;
         }
         catch (Exception e) {
-            System.out.println("Conditional Couldn't Be Parsed: " + e.getMessage());
+            System.out.println("[Line: " + debugLine + "] Conditional Couldn't Be Parsed: " + e.getMessage());
+            System.out.println("Input: \"" + input + "\"");
             return new Operation.Literal(1);
         }
     }

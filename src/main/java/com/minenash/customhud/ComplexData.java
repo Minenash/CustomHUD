@@ -1,5 +1,6 @@
 package com.minenash.customhud;
 
+import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import com.mojang.bridge.game.PerformanceMetrics;
 import com.mojang.datafixers.DataFixUtils;

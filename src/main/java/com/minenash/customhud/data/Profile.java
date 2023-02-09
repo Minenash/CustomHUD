@@ -1,8 +1,8 @@
-package com.minenash.customhud;
+package com.minenash.customhud.data;
 
+import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.*;
-import com.minenash.customhud.HudElements.functional.FunctionalElement;
-import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.VariableParser;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.conditionals.Operation;
 
@@ -23,11 +23,10 @@ public class Profile {
     private static final Pattern IF_PATTERN = Pattern.compile("=if ?: ?(.+)=");
     private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=");
 
-    public List<List<HudElement>>[] sections = new List[4];
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
-    public int[][] offsets = new int[4][2];
-    public int[] width = new int[]{-1,-1,-1,-1};
-    public boolean[] hideOnChat = new boolean[4];
+
+    public Section[] sections = new Section[4];
+
 
     public HudTheme baseTheme = HudTheme.defaults();
     public float targetDistance = 20;
@@ -50,11 +49,6 @@ public class Profile {
         }
 
         Profile profile = new Profile();
-
-        for (int i = 0; i < 4; i++) {
-            profile.sections[i] = new ArrayList<>();
-            profile.offsets[i] = new int[2];
-        }
 
         int sectionId = -1;
         HudTheme localTheme = profile.baseTheme.copy();
@@ -83,33 +77,42 @@ public class Profile {
                     case "bottomleft" -> sectionId = 2;
                     case "bottomright" -> sectionId = 3;
                 }
-                profile.offsets[sectionId][0] = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
-                profile.offsets[sectionId][1] = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
-                profile.width[sectionId]      = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : -1;
-                profile.hideOnChat[sectionId] = matcher.group(4) != null && Boolean.parseBoolean(matcher.group(4));
+                if (profile.sections[sectionId] == null) {
+                    profile.sections[sectionId] = switch (sectionId) {
+                        case 0 -> new Section.TopLeft();
+                        case 1 -> new Section.TopRight();
+                        case 2 -> new Section.BottomLeft();
+                        default -> new Section.BottomRight();
+                    };
+                }
+                profile.sections[sectionId].xOffset = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+                profile.sections[sectionId].yOffset = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
+                profile.sections[sectionId].width   = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : -1;
+                profile.sections[sectionId].hideOnChat = matcher.group(4) != null && Boolean.parseBoolean(matcher.group(4));
 
                 continue;
             }
             if (sectionId == -1) {
-                sectionId = 0;
+                profile.sections[(sectionId = 0)] = new Section.TopLeft();
             }
 
-            matcher = LOCAL_THEME_PATTERN.matcher(line);
-            if (matcher.matches()) {
-                if ( localTheme.parse(matcher.group(1)) ) {
-                    List<HudElement> cte = Collections.singletonList(new FunctionalElement.ChangeTheme(localTheme));
-
-                    int lastElement = profile.sections[sectionId].size()-1;
-                    if (lastElement == -1)
-                        profile.sections[sectionId].add(cte);
-                    List<HudElement> elements = profile.sections[sectionId].get(lastElement);
-                    if (!elements.isEmpty() && elements.get(0) instanceof FunctionalElement.ChangeTheme)
-                        profile.sections[sectionId].set(lastElement, cte);
-                    else
-                        profile.sections[sectionId].add(cte);
-                    continue;
-                }
-            }
+            //TODO: Look
+//            matcher = LOCAL_THEME_PATTERN.matcher(line);
+//            if (matcher.matches()) {
+//                if ( localTheme.parse(matcher.group(1)) ) {
+//                    HudElement cte = new FunctionalElement.ChangeTheme(localTheme);
+//
+//                    int lastElement = profile.sections[sectionId].size()-1;
+//                    if (lastElement == -1)
+//                        profile.sections[sectionId].add(cte);
+//                    List<HudElement> elements = profile.sections[sectionId].get(lastElement);
+//                    if (!elements.isEmpty() && elements.get(0) instanceof FunctionalElement.ChangeTheme)
+//                        profile.sections[sectionId].set(lastElement, cte);
+//                    else
+//                        profile.sections[sectionId].add(cte);
+//                    continue;
+//                }
+//            }
 
             matcher = IF_PATTERN.matcher(line);
             if (matcher.matches()) {
@@ -129,33 +132,31 @@ public class Profile {
                 continue;
             }
             if (line.equals("=endif=")) {
-                if (profile.tempIfStack.isEmpty())
-                    continue;
-                List<HudElement> c = Collections.singletonList(profile.tempIfStack.pop().build());
+                HudElement element = profile.tempIfStack.pop().build();
                 if (profile.tempIfStack.empty())
-                    profile.sections[sectionId].add(c);
+                    profile.sections[sectionId].elements.add(element);
                 else
-                    profile.tempIfStack.peek().add(c);
+                    profile.tempIfStack.peek().add(element);
                 continue;
             }
 
             if (profile.tempIfStack.empty())
-                profile.sections[sectionId].add(VariableParser.parseElements(line, i + 1, profile.enabled));
+                profile.sections[sectionId].elements.addAll(VariableParser.addElements(line, i + 1, profile.enabled, true));
             else
-                profile.tempIfStack.peek().add(VariableParser.parseElements(line, i + 1, profile.enabled));
+                profile.tempIfStack.peek().addAll(VariableParser.addElements(line, i + 1, profile.enabled, true));
         }
 
         while (!profile.tempIfStack.empty()) {
-            List<HudElement> c = Collections.singletonList(profile.tempIfStack.pop().build());
+            HudElement element = profile.tempIfStack.pop().build();
             if (profile.tempIfStack.empty())
-                profile.sections[sectionId].add(c);
+                profile.sections[sectionId].elements.add(element);
             else
-                profile.tempIfStack.peek().add(c);
+                profile.tempIfStack.peek().add(element);
         }
         profile.tempIfStack = null;
 
         for (int i = 0; i < 4; i++) {
-            if (profile.sections[i].isEmpty())
+            if (profile.sections[i] != null && profile.sections[i].elements.isEmpty())
                 profile.sections[i] = null;
         }
 

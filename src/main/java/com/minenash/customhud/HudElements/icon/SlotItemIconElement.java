@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
