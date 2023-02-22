@@ -16,9 +16,9 @@ import java.util.regex.Pattern;
 
 public class Profile {
 
-    private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
-    private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?TargetRange: ?(\\d+|max) ?==");
-    private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?Crosshair: ?(Normal|Debug) ?==");
+    private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topright|bottomleft|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
+    private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
+    private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(normal|debug) ?==");
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
     private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
 
@@ -57,27 +57,30 @@ public class Profile {
 
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i).replaceAll("&([0-9a-fk-or])", "§$1");
+            String lineLC = line.toLowerCase();
             if (line.startsWith("//") || (sectionId == -1 && line.trim().isEmpty()))
                 continue;
             if (sectionId == -1) {
-                Matcher matcher = TARGET_RANGE_FLAG_PATTERN.matcher(line);
+                Matcher matcher = TARGET_RANGE_FLAG_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
                     profile.targetDistance = matcher.group(1).equals("max") ? 725 : Integer.parseInt(matcher.group(1));
                     continue;
                 }
-                matcher = GLOBAL_THEME_PATTERN.matcher(line);
+                matcher = GLOBAL_THEME_PATTERN.matcher(lineLC);
                 if (matcher.matches() && profile.baseTheme.parse(matcher.group(1)))
                     continue;
 
-                matcher = CROSSHAIR_PATTERN.matcher(line);
-                if (matcher.matches())
+                matcher = CROSSHAIR_PATTERN.matcher(lineLC);
+                if (matcher.matches()) {
                     profile.debugCrosshair = matcher.group(1).equals("Debug");
+                    continue;
+                }
 
             }
-            Matcher matcher = SECTION_DECORATION_PATTERN.matcher(line);
+            Matcher matcher = SECTION_DECORATION_PATTERN.matcher(lineLC);
             if (matcher.matches()) {
                 localTheme = profile.baseTheme.copy();
-                switch (matcher.group(1).toLowerCase()) {
+                switch (matcher.group(1)) {
                     case "topleft" -> sectionId = 0;
                     case "topright" -> sectionId = 1;
                     case "bottomleft" -> sectionId = 2;
@@ -104,16 +107,16 @@ public class Profile {
             if (( matcher = LOCAL_THEME_PATTERN.matcher(line) ).matches() && localTheme.parse(matcher.group(1)))
                 addElement(profile, sectionId, new FunctionalElement.ChangeTheme(localTheme));
 
-            else if (( matcher = IF_PATTERN.matcher(line) ).matches())
+            else if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
                 profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled) ));
 
-            else if (( matcher = ELSEIF_PATTERN.matcher(line) ).matches())
+            else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
                 profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled));
 
-            else if (line.equals("=else="))
+            else if (line.equalsIgnoreCase("=else="))
                 profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
 
-            else if (line.equals("=endif="))
+            else if (line.equalsIgnoreCase("=endif="))
                 addElement(profile, sectionId, profile.tempIfStack.pop().build());
 
             else

@@ -229,11 +229,11 @@ public class CustomHud implements ModInitializer {
 			}
 			int profile;
 			switch (event.context().toString()) {
-				case "config.json" : profile = 0; break;
-				case "profile1.txt": profile = 1; break;
-				case "profile2.txt": profile = 2; break;
-				case "profile3.txt": profile = 3; break;
-				default: continue;
+				case "config.json" -> profile = 0;
+				case "profile1.txt" -> profile = 1;
+				case "profile2.txt" -> profile = 2;
+				case "profile3.txt" -> profile = 3;
+				default -> { continue; }
 			}
 			Path changed = CustomHud.CONFIG_FOLDER.resolve((Path) event.context());
 			Path original = profile == 0 ? CustomHud.CONFIG : CustomHud.getProfilePath(profile);
