@@ -26,7 +26,7 @@ public class CustomHudRenderer {
 
     public static Identifier font;
 
-    public static void render(MatrixStack matrices) {
+    public static void render(MatrixStack matrices, float _tickDelta) {
 
         Profile profile = CustomHud.getActiveProfile();
         if (profile == null)

@@ -18,6 +18,7 @@ public class Profile {
 
     private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?Section: ?(TopLeft|TopRight|BottomLeft|BottomRight) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?TargetRange: ?(\\d+|max) ?==");
+    private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?Crosshair: ?(Normal|Debug) ?==");
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
     private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
 
@@ -28,9 +29,9 @@ public class Profile {
 
     public Section[] sections = new Section[4];
 
-
     public HudTheme baseTheme = HudTheme.defaults();
     public float targetDistance = 20;
+    public boolean debugCrosshair = false;
 
 
     private Stack<ConditionalElement.MultiLineBuilder> tempIfStack = new Stack<>();
@@ -67,6 +68,10 @@ public class Profile {
                 matcher = GLOBAL_THEME_PATTERN.matcher(line);
                 if (matcher.matches() && profile.baseTheme.parse(matcher.group(1)))
                     continue;
+
+                matcher = CROSSHAIR_PATTERN.matcher(line);
+                if (matcher.matches())
+                    profile.debugCrosshair = matcher.group(1).equals("Debug");
 
             }
             Matcher matcher = SECTION_DECORATION_PATTERN.matcher(line);

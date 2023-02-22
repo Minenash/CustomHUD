@@ -3,10 +3,12 @@ package com.minenash.customhud;
 import com.google.gson.*;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.mod_compat.BuiltInModCompat;
+import com.minenash.customhud.render.CustomHudRenderer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
@@ -35,6 +37,8 @@ public class CustomHud implements ModInitializer {
 	public static final String version = "2.2.0";
 	private static String latestKnownVersion = null;
 	private static String updateMsg = null;
+
+	public static final boolean INDEPENDENT_GIZMO_INSTALLED = FabricLoader.getInstance().isModLoaded("independent_gizmo");
 
 	public static final Path CONFIG_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("custom-hud");
 	public static WatchService profileWatcher;
@@ -78,28 +82,31 @@ public class CustomHud implements ModInitializer {
 		loadConfig();
 		checkForUpdate();
 
+		HudRenderCallback.EVENT.register(CustomHudRenderer::render);
+
 		ClientTickEvents.END_CLIENT_TICK.register(CustomHud::onTick);
-		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			if (updateMsg == null)
-				return;
-			client.getMessageHandler().onGameMessage(
-					Text.literal("\nCustomHud v" + latestKnownVersion + " is now available!\n§7" + updateMsg + "\n§8[")
-						.append(Text.literal("§eChangelog").setStyle(Style.EMPTY
-							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud/changelog"))
-							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to changelog")))))
-						.append("§8] [")
-						.append(Text.literal("§eDownload").setStyle(Style.EMPTY
-							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud"))
-							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to download page on §aModrinth"))))
-						.append("§8]\n")
-						), false);
-		});
+//		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+//			if (updateMsg == null)
+//				return;
+//			client.getMessageHandler().onGameMessage(
+//					Text.literal("\nCustomHud v" + latestKnownVersion + " is now available!\n§7" + updateMsg + "\n§8[")
+//						.append(Text.literal("§eChangelog").setStyle(Style.EMPTY
+//							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud/changelog"))
+//							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to changelog")))))
+//						.append("§8] [")
+//						.append(Text.literal("§eDownload").setStyle(Style.EMPTY
+//							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud"))
+//							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to download page on §aModrinth"))))
+//						.append("§8]\n")
+//						), false);
+//		});
 
 	}
 
 	public static void loadProfiles() {
 		for (int i = 1; i <=3; i++ )
 			profiles[i-1] = Profile.parseProfile(getProfilePath(i));
+		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 	}
 
 	private static ComplexData.Enabled previousEnabled = ComplexData.Enabled.DISABLED;
@@ -131,6 +138,7 @@ public class CustomHud implements ModInitializer {
 			return;
 		}
 
+
 		if (kb_cycleProfiles.wasPressed()) {
 			activeProfile = activeProfile == 3 ? 1 : activeProfile + 1;
 			if (!enabled) enabled = true;
@@ -149,6 +157,8 @@ public class CustomHud implements ModInitializer {
 		}
 		else
 			return;
+
+		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 
 		CustomHud.justSaved = true;
 		saveDelay = 100;
@@ -245,6 +255,7 @@ public class CustomHud implements ModInitializer {
 				e.printStackTrace();
 			}
 		}
+		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 		key.reset();
 	}
 

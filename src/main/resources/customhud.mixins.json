@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_16",
   "client": [
     "ChunkBuilderAccess",
+    "GameOptionsAccessor",
     "InGameHudMixin",
+    "KeyBindingAccessor",
     "MinecraftClientAccess",
     "MinecraftClientMixin",
     "WorldRendererAccess",
@@ -14,9 +16,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "GameOptionsAccessor",
-    "KeyBindingAccessor"
-  ]
+  }
 }
