@@ -12,6 +12,8 @@ import com.minenash.customhud.HudElements.supplier.*;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.data.HudTheme;
+import com.minenash.customhud.errors.ErrorType;
+import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -46,7 +48,7 @@ public class VariableParser {
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("([a-z0-9/._-]*)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
 
-    public static List<HudElement> addElements(String str, int debugLine, ComplexData.Enabled enabled, boolean line) {
+    public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line) {
         List<String> parts = new ArrayList<>();
 
         System.out.println("[Line " + debugLine+ "] '" + str + "'");
@@ -65,7 +67,7 @@ public class VariableParser {
                 }
             }
             sections.add(left.substring(j));
-            System.out.println(sections + "\n");
+//            System.out.println(sections + "\n");
             parts.addAll(sections);
 
             parts.add(matcher.group(2));
@@ -74,7 +76,7 @@ public class VariableParser {
         List<HudElement> elements = new ArrayList<>();
 
         for (String part : parts) {
-            HudElement element = parseElement(part, debugLine, enabled);
+            HudElement element = parseElement(part, profile, debugLine, enabled);
             if (element != null)
                 elements.add(element);
         }
@@ -84,16 +86,16 @@ public class VariableParser {
         return elements;
     }
 
-    private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, int debugLine, ComplexData.Enabled enabled) {
+    private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, String original, int profile, int debugLine, ComplexData.Enabled enabled) {
         List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
         while (args.find()) {
 //            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
-            pairs.add(new ConditionalElement.ConditionalPair(ConditionalParser.parseConditional(args.group(1), debugLine, enabled), addElements(args.group(2), debugLine, enabled, false)));
+            pairs.add(new ConditionalElement.ConditionalPair(ConditionalParser.parseConditional(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
         }
         return pairs;
     }
 
-    public static HudElement parseElement(String part, int debugLine, ComplexData.Enabled enabled) {
+    public static HudElement parseElement(String part, int profile, int debugLine, ComplexData.Enabled enabled) {
         if (part == null || part.isEmpty())
             return null;
 
@@ -109,22 +111,23 @@ public class VariableParser {
         if (!part.startsWith("{"))
             return new StringElement(part);
 
+        String original = part;
         part = part.substring(1, part.length()-1);
         if (part.startsWith("{") && part.length() > 1) {
             part = part.substring(1, part.length() - 1);
 
-            List<ConditionalElement.ConditionalPair> pairs = parseConditional(CONDITIONAL_PARSING_PATTERN.matcher(part), debugLine, enabled);
+            List<ConditionalElement.ConditionalPair> pairs = parseConditional(CONDITIONAL_PARSING_PATTERN.matcher(part), original, profile, debugLine, enabled);
             if (pairs.isEmpty())
-                pairs = parseConditional(CONDITIONAL_PARSING_ALT_PATTERN.matcher(part), debugLine, enabled);
+                pairs = parseConditional(CONDITIONAL_PARSING_ALT_PATTERN.matcher(part), original, profile, debugLine, enabled);
             if (pairs.isEmpty()) {
-                CustomHud.LOGGER.warn("Malformed conditional '" + part + "' on line " + debugLine);
+                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
                 return null;
             }
             return new ConditionalElement(pairs);
         }
 
         String[] flagParts = part.split(" ");
-        Flags flags = Flags.parse(flagParts);
+        Flags flags = Flags.parse(profile, debugLine, flagParts);
         part = flagParts[0];
 
 
@@ -133,7 +136,7 @@ public class VariableParser {
                 return new RealTimeElement(new SimpleDateFormat(part.substring(10)));
             }
             catch (IllegalArgumentException e) {
-                System.out.println("Malformed Time Format on line " + debugLine + ": " + e.getMessage());
+                Errors.addError(profile, debugLine, original, ErrorType.INVALID_TIME_FORMAT, e.getMessage());
             }
         }
 
@@ -141,14 +144,14 @@ public class VariableParser {
         else if (part.startsWith("stat:")) {
             String stat = part.substring(5);
 
-            HudElement element = stat("mined:",   Stats.MINED,   Registry.BLOCK, stat, flags, enabled, debugLine);
-            if (element == null) element = stat("crafted:", Stats.CRAFTED, Registry.ITEM,  stat, flags, enabled, debugLine);
-            if (element == null) element = stat("used:",    Stats.USED,    Registry.ITEM,  stat, flags, enabled, debugLine);
-            if (element == null) element = stat("broken:",  Stats.BROKEN,  Registry.ITEM,  stat, flags, enabled, debugLine);
-            if (element == null) element = stat("dropped:", Stats.DROPPED, Registry.ITEM,  stat, flags, enabled, debugLine);
-            if (element == null) element = stat("picked_up:", Stats.PICKED_UP, Registry.ITEM, stat, flags, enabled, debugLine);
-            if (element == null) element = stat("killed:",    Stats.KILLED,    Registry.ENTITY_TYPE, stat, flags, enabled, debugLine);
-            if (element == null) element = stat("killed_by:", Stats.KILLED_BY, Registry.ENTITY_TYPE, stat, flags, enabled, debugLine);
+            HudElement element = stat("mined:",   Stats.MINED,   Registry.BLOCK, stat, flags, enabled);
+            if (element == null) element = stat("crafted:", Stats.CRAFTED, Registry.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("used:",    Stats.USED,    Registry.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("broken:",  Stats.BROKEN,  Registry.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("dropped:", Stats.DROPPED, Registry.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("picked_up:", Stats.PICKED_UP, Registry.ITEM, stat, flags, enabled);
+            if (element == null) element = stat("killed:",    Stats.KILLED,    Registry.ENTITY_TYPE, stat, flags, enabled);
+            if (element == null) element = stat("killed_by:", Stats.KILLED_BY, Registry.ENTITY_TYPE, stat, flags, enabled);
 
             if (element != null)
                 return element;
@@ -159,7 +162,7 @@ public class VariableParser {
                 return new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), flags);
             }
             else
-                System.out.println("Unknown stat " + stat + " on line " + debugLine);
+                Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_STATISTIC, stat);
         }
 
         else if (part.startsWith("icon:")) {
@@ -173,8 +176,8 @@ public class VariableParser {
             if (!matcher.matches())
                 return null;
 
-            for (int i = 0; i <= matcher.groupCount(); i++)
-                System.out.println(i + ": " + matcher.group(i));
+//            for (int i = 0; i <= matcher.groupCount(); i++)
+//                System.out.println(i + ": " + matcher.group(i));
 
             Identifier id = new Identifier(matcher.group(1) + ".png");
             int u = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
@@ -191,24 +194,24 @@ public class VariableParser {
             try {
                 Item item = Registry.ITEM.get(new Identifier(part));
                 if (item == Items.AIR)
-                    System.out.println("Unknown item id " + part + " on line " + debugLine);
+                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
                 else
                     return new ItemCountElement(item);
             }
             catch (InvalidIdentifierException e) {
-                System.out.println("Unknown item id " + part + " on line " + debugLine);
+                Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
             }
         }
 
         else if (part.startsWith("item:")) {
             int firstCollinIndex = part.indexOf(':', 6);
 
-            Pair<HudElement,String> element = firstCollinIndex == -1?
-                    SlotItemElement.create(part.substring(5), "", flags) :
-                    SlotItemElement.create(part.substring(5,firstCollinIndex), part.substring(firstCollinIndex+1), flags);
+            String slot = firstCollinIndex == -1? part.substring(5) : part.substring(5, firstCollinIndex);
+            String method = firstCollinIndex == -1? "" : part.substring(firstCollinIndex+1);
+            Pair<HudElement,ErrorType> element = SlotItemElement.create(slot, method, flags);
 
             if (element.getRight() != null) {
-                CustomHud.LOGGER.warn(element.getRight() + " on line " + debugLine);
+                Errors.addError(profile, debugLine, original, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ITEM_PROPERTY ? method : slot);
                 return null;
             }
             return element.getLeft();
@@ -216,10 +219,10 @@ public class VariableParser {
 
         else if (part.startsWith("s:") || part.startsWith("setting:")) {
             String setting = part.substring(part.indexOf(':') + 1).toLowerCase();
-            Pair<HudElement,String> element = SettingsElement.create(setting, flags);
+            Pair<HudElement,Pair<ErrorType,String>> element = SettingsElement.create(setting, flags);
 
             if (element.getRight() != null) {
-                CustomHud.LOGGER.warn(element.getRight() + " on line " + debugLine);
+                Errors.addError(profile, debugLine, original, element.getRight().getLeft(), element.getRight().getRight());
                 return null;
             }
             return element.getLeft();
@@ -237,14 +240,13 @@ public class VariableParser {
                 Matcher keyMatcher = registryKey.matcher(part);
                 if (keyMatcher.matches()) {
                     element = CustomHudRegistry.get(keyMatcher.group(1), part);
-
                     if (element != null)
                         return element;
-                    else
-                        CustomHud.LOGGER.warn("[I] Unknown Variable " + part + " on line " + debugLine);
+
+                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, null);
                 }
                 else
-                    CustomHud.LOGGER.warn("[O] Unknown Variable " + part + " on line " + debugLine);
+                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, null);
             }
         }
         return null;
@@ -252,7 +254,7 @@ public class VariableParser {
 
     private static final Pattern registryKey = Pattern.compile("(\\w+).*");
 
-    private static HudElement stat(String prefix, StatType<?> type, Registry<?> registry, String stat, Flags flags, ComplexData.Enabled enabled, int debugLine) {
+    private static HudElement stat(String prefix, StatType<?> type, Registry<?> registry, String stat, Flags flags, ComplexData.Enabled enabled) {
         if (!stat.startsWith(prefix))
             return null;
 
@@ -261,8 +263,6 @@ public class VariableParser {
             enabled.updateStats = true;
             return new TypedStatElement(type, entry.get(), flags);
         }
-        else
-            System.out.println("Unknown value " + stat.substring(prefix.length()) + " on line " + debugLine);
 
         return null;
     }

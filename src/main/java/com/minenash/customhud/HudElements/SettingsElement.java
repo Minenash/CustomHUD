@@ -2,6 +2,7 @@ package com.minenash.customhud.HudElements;
 
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.supplier.*;
+import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.mixin.GameOptionsAccessor;
 import com.minenash.customhud.mixin.KeyBindingAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -57,7 +58,7 @@ public class SettingsElement {
         });
     }
 
-    public static Pair<HudElement,String> create(String setting, Flags flags) {
+    public static Pair<HudElement,Pair<ErrorType,String>> create(String setting, Flags flags) {
         if (!initialized)
             init();
         initialized = true;
@@ -73,7 +74,7 @@ public class SettingsElement {
                 default -> null;
             };
             if (element == null)
-                return new Pair<>(null,"Unknown setting: " + setting);
+                return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_SETTING, setting));
             return new Pair<>(flags.anyTextUsed() ? new FormattedElement(element, flags) : element, null);
         }
 
@@ -92,7 +93,7 @@ public class SettingsElement {
                             () -> ((KeyBindingAccessor) binding).getBoundKey().getCode(),
                             () -> !binding.isUnbound()
                     )), null);
-            return new Pair<>(null,"Unknown key: " + key);
+            return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_KEYBOARD_KEY, key));
         }
 
         if (setting.startsWith("soundcategory_")) {
@@ -102,12 +103,12 @@ public class SettingsElement {
                     return new Pair<>(new NumberSupplierElement(NumberSupplierElement.of(
                             () -> ((GameOptionsAccessor)options).getSoundVolumeLevels().get(soundCategory) * 100,
                             flags.precision != -1 ? flags.precision : 0), flags.scale), null);
-            return new Pair<>(null,"Unknown sound category: " + cat);
+            return new Pair<>(null,new Pair<>(ErrorType.UNKNOWN_SOUND_CATEGORY, cat));
         }
 
         SimpleOption<?> option = simpleOptions.get(setting);
         if (option == null)
-            return new Pair<>(null,"Unknown setting: " + setting);
+            return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_SETTING, setting));
         return new Pair<>(getSimpleOptionElement(option, flags), null);
     }
 

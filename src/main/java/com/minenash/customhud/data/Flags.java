@@ -1,5 +1,8 @@
 package com.minenash.customhud.data;
 
+import com.minenash.customhud.errors.ErrorType;
+import com.minenash.customhud.errors.Errors;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +35,8 @@ public class Flags {
     private static final Pattern SCALE_PATTERN = Pattern.compile("-(?:s|scale)((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
     private static final Pattern WIDTH_PATTERN = Pattern.compile("-(?:w|width)(\\d+)");
     private static final Pattern SHIFT_PATTERN = Pattern.compile("-(?:sh|shift)(-?\\d+)(?:,(-?\\d+))?");
-    public static Flags parse(String[] parts) {
+
+    public static Flags parse(int profile, int line, String[] parts) {
         Flags flags = new Flags();
 
         if (parts.length <= 1)
@@ -74,13 +78,17 @@ public class Flags {
                     matcher = WIDTH_PATTERN.matcher(parts[i]);
                     if (matcher.matches()) {
                         flags.iconWidth = Integer.parseInt(matcher.group(1));
+                        continue;
                     }
                     matcher = SHIFT_PATTERN.matcher(parts[i]);
                     if (matcher.matches()) {
                         flags.iconShiftX = Integer.parseInt(matcher.group(1));
                         if (matcher.group(2) != null)
                             flags.iconShiftY = Integer.parseInt(matcher.group(2));
+                        continue;
                     }
+
+                    Errors.addError(profile, line, parts[i], ErrorType.UNKNOWN_VARIABLE_FLAG, null);
                 }
             }
         }

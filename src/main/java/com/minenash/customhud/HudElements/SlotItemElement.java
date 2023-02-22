@@ -2,6 +2,7 @@ package com.minenash.customhud.HudElements;
 
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.icon.SlotItemIconElement;
+import com.minenash.customhud.errors.ErrorType;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
@@ -48,12 +49,12 @@ public class SlotItemElement implements HudElement {
     public static final Function<Integer, Boolean> HAS_DURABILITY = (slot) ->  item(slot).getMaxDamage() - client.player.getMainHandStack().getDamage() > 0;
     public static final Function<Integer, Boolean> HAS_MAX_DURABILITY = (slot) ->  item(slot).getMaxDamage() > 0;
 
-    public static Pair<HudElement,String> create(String slotString, String method, Flags flags) {
+    public static Pair<HudElement, ErrorType> create(String slotString, String method, Flags flags) {
         int slot = getSlotNumber(slotString);
         if (slot == -1)
-            return new Pair<>(null, "Unknown slot: " + slotString);
+            return new Pair<>(null, ErrorType.UNKNOWN_SLOT);
         if (slot > 35 && slot < 98 || slot > 103)
-            return new Pair<>(null, "That slot is not available to the player: " + slotString);
+            return new Pair<>(null, ErrorType.UNAVAILABLE_SLOT);
 
         HudElement element = switch (method) {
             case "" -> new SlotItemElement(slot, NAME, RAW_ID, IS_STACK_EMPTY);
@@ -67,7 +68,7 @@ public class SlotItemElement implements HudElement {
         };
 
         if (element == null)
-            return new Pair<>(null, "Unknown property: " + method);
+            return new Pair<>(null, ErrorType.UNKNOWN_ITEM_PROPERTY);
 
         if (flags.anyTextUsed())
             return new Pair<>(new FormattedElement(element, flags), null);

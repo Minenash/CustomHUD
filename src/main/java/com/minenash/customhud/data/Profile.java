@@ -6,6 +6,8 @@ import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.VariableParser;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.conditionals.Operation;
+import com.minenash.customhud.errors.ErrorType;
+import com.minenash.customhud.errors.Errors;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,7 +38,22 @@ public class Profile {
 
     private Stack<ConditionalElement.MultiLineBuilder> tempIfStack = new Stack<>();
 
-    public static Profile parseProfile(Path path) {
+    public static Profile parseProfile(Path path, int profileID) {
+        Profile profile = parseProfileInner(path, profileID);
+
+        if (!Errors.getErrors(profileID).isEmpty()) {
+            System.out.println("\nErrors Found in profile " + profileID);
+            for (var e : Errors.getErrors(profileID))
+                System.out.println(e.line() + " | " + e.type() + " | " + e.source() + " | " + e.context());
+            System.out.println("\n");
+        }
+
+        return profile;
+    }
+
+    private static Profile parseProfileInner(Path path, int profileID) {
+        Errors.clearErrors(profileID);
+
         List<String> lines;
 
         try {
@@ -47,6 +64,7 @@ public class Profile {
             lines = Files.readAllLines(path);
         } catch (IOException e) {
             e.printStackTrace();
+            Errors.addError(profileID, -1, null, ErrorType.IO, e.getMessage());
             return null;
         }
 
@@ -108,10 +126,10 @@ public class Profile {
                 addElement(profile, sectionId, new FunctionalElement.ChangeTheme(localTheme));
 
             else if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
-                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled) ));
+                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
 
             else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
-                profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled));
+                profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled));
 
             else if (line.equalsIgnoreCase("=else="))
                 profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
@@ -120,7 +138,7 @@ public class Profile {
                 addElement(profile, sectionId, profile.tempIfStack.pop().build());
 
             else
-                addAllElement(profile, sectionId, VariableParser.addElements(line, i + 1, profile.enabled, true));
+                addAllElement(profile, sectionId, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true));
 
         }
 

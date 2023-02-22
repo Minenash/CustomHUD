@@ -67,7 +67,7 @@ public class CustomHud implements ModInitializer {
 				try (OutputStream writer = Files.newOutputStream(path); InputStream input = getClass().getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
 					input.transferTo(writer);
 				}
-				CustomHud.profiles[0] = Profile.parseProfile(path);
+				CustomHud.profiles[0] = Profile.parseProfile(path, 1);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -105,7 +105,7 @@ public class CustomHud implements ModInitializer {
 
 	public static void loadProfiles() {
 		for (int i = 1; i <=3; i++ )
-			profiles[i-1] = Profile.parseProfile(getProfilePath(i));
+			profiles[i-1] = Profile.parseProfile(getProfilePath(i), 1);
 		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 	}
 
@@ -244,7 +244,7 @@ public class CustomHud implements ModInitializer {
 						CustomHud.loadConfig();
 					}
 					else {
-						CustomHud.profiles[profile - 1] = Profile.parseProfile(original);
+						CustomHud.profiles[profile - 1] = Profile.parseProfile(original, profile);
 						LOGGER.info("Updated Profile " + profile);
 						if (MinecraftClient.getInstance().player != null)
 							MinecraftClient.getInstance().player.sendMessage(MutableText.of(new TranslatableTextContent("gui.custom_hud.profile_updated", profile)), true);
