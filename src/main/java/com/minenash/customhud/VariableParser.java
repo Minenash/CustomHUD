@@ -3,6 +3,7 @@ package com.minenash.customhud;
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.icon.DebugGizmoElement;
 import com.minenash.customhud.HudElements.icon.ItemIconElement;
 import com.minenash.customhud.HudElements.icon.TextureIconElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
@@ -223,6 +224,9 @@ public class VariableParser {
             }
             return element.getLeft();
         }
+
+        if (part.equals("gizmo"))
+            return new DebugGizmoElement(flags);
 
         else {
             HudElement element = getSupplierElement(part, enabled, flags);

@@ -8,8 +8,6 @@ import net.minecraft.item.ItemStack;
 
 public class ItemIconElement extends IconElement {
 
-    private static final MinecraftClient client = MinecraftClient.getInstance();
-
     private final ItemStack stack;
     private final int width;
 
@@ -34,8 +32,7 @@ public class ItemIconElement extends IconElement {
         return width;
     }
 
-    public int render(MatrixStack matrix, int x, int y) {
+    public void render(MatrixStack matrix, int x, int y) {
         renderItemStack(x+shiftX, y+shiftY, stack);
-        return width;
     }
 }

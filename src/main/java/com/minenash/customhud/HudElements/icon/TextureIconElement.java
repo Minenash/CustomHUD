@@ -77,16 +77,15 @@ public class TextureIconElement extends IconElement {
     }
 
     @Override
-    public int render(MatrixStack matrix, int x, int y) {
+    public void render(MatrixStack matrix, int x, int y) {
         if (width == 0)
-            return 0;
+            return;
 
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        DrawableHelper.drawTexture(matrix, x+shiftX, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
-        return textWidth;
+        DrawableHelper.drawTexture(matrix, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
 

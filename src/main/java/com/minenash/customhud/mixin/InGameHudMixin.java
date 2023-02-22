@@ -1,6 +1,6 @@
 package com.minenash.customhud.mixin;
 
-import com.minenash.customhud.render.CustomHudRenderer2;
+import com.minenash.customhud.render.CustomHudRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -18,7 +18,7 @@ public class InGameHudMixin {
     @Inject(method = "render", at = @At("TAIL"))
     public void renderCustomHud(MatrixStack matrix, float _timeDelta, CallbackInfo _info) {
         if (!MinecraftClient.getInstance().options.debugEnabled)
-            CustomHudRenderer2.render(matrix);
+            CustomHudRenderer.render(matrix);
     }
 
 }

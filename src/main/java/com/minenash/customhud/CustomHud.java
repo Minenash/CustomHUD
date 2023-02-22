@@ -26,6 +26,8 @@ import java.util.Objects;
 
 public class CustomHud implements ModInitializer {
 
+	//Debug: LD_PRELOAD=/home/jakob/Programs/renderdoc_1.25/lib/librenderdoc.so
+
 	public static Profile[] profiles = new Profile[3];
 	public static int activeProfile = 1;
 	public static boolean enabled = true;

@@ -27,7 +27,7 @@ public abstract class IconElement extends FunctionalElement {
         referenceCorner = flags.iconReferenceCorner;
     }
 
-    public abstract int render(MatrixStack stack, int x, int y);
+    public abstract void render(MatrixStack stack, int x, int y);
     public abstract int getTextWidth();
 
     @Override

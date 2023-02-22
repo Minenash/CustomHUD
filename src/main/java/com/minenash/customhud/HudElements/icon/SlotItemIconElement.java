@@ -45,10 +45,10 @@ public class SlotItemIconElement extends IconElement {
         return getStack().isEmpty() ? 0 : width;
     }
 
-    public int render(MatrixStack matrix, int x, int y) {
+    public void render(MatrixStack matrix, int x, int y) {
         ItemStack stack = getStack();
         if (stack == null || stack.isEmpty())
-            return 0;
+            return;
         x += shiftX;
         y += shiftY;
         renderItemStack(x, y, stack);
@@ -58,8 +58,6 @@ public class SlotItemIconElement extends IconElement {
             renderDur(stack, x, y);
         if (showCooldown)
             renderCooldown(stack, x, y);
-
-        return getTextWidth();
     }
 
     private void renderCount(int count, int x, int y) {

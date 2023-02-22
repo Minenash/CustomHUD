@@ -2,6 +2,7 @@ package com.minenash.customhud.data;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.VariableParser;
 import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.conditionals.Operation;
@@ -92,67 +93,32 @@ public class Profile {
 
                 continue;
             }
-            if (sectionId == -1) {
+            if (sectionId == -1)
                 profile.sections[(sectionId = 0)] = new Section.TopLeft();
-            }
 
-            //TODO: Look
-//            matcher = LOCAL_THEME_PATTERN.matcher(line);
-//            if (matcher.matches()) {
-//                if ( localTheme.parse(matcher.group(1)) ) {
-//                    HudElement cte = new FunctionalElement.ChangeTheme(localTheme);
-//
-//                    int lastElement = profile.sections[sectionId].size()-1;
-//                    if (lastElement == -1)
-//                        profile.sections[sectionId].add(cte);
-//                    List<HudElement> elements = profile.sections[sectionId].get(lastElement);
-//                    if (!elements.isEmpty() && elements.get(0) instanceof FunctionalElement.ChangeTheme)
-//                        profile.sections[sectionId].set(lastElement, cte);
-//                    else
-//                        profile.sections[sectionId].add(cte);
-//                    continue;
-//                }
-//            }
+            if (( matcher = LOCAL_THEME_PATTERN.matcher(line) ).matches() && localTheme.parse(matcher.group(1)))
+                addElement(profile, sectionId, new FunctionalElement.ChangeTheme(localTheme));
 
-            matcher = IF_PATTERN.matcher(line);
-            if (matcher.matches()) {
-                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder());
+            else if (( matcher = IF_PATTERN.matcher(line) ).matches())
+                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled) ));
+
+            else if (( matcher = ELSEIF_PATTERN.matcher(line) ).matches())
                 profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled));
-                continue;
-            }
 
-            matcher = ELSEIF_PATTERN.matcher(line);
-            if (matcher.matches()) {
-                profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), i+1, profile.enabled));
-                continue;
-            }
-
-            if (line.equals("=else=")) {
+            else if (line.equals("=else="))
                 profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
-                continue;
-            }
-            if (line.equals("=endif=")) {
-                HudElement element = profile.tempIfStack.pop().build();
-                if (profile.tempIfStack.empty())
-                    profile.sections[sectionId].elements.add(element);
-                else
-                    profile.tempIfStack.peek().add(element);
-                continue;
-            }
 
-            if (profile.tempIfStack.empty())
-                profile.sections[sectionId].elements.addAll(VariableParser.addElements(line, i + 1, profile.enabled, true));
+            else if (line.equals("=endif="))
+                addElement(profile, sectionId, profile.tempIfStack.pop().build());
+
             else
-                profile.tempIfStack.peek().addAll(VariableParser.addElements(line, i + 1, profile.enabled, true));
+                addAllElement(profile, sectionId, VariableParser.addElements(line, i + 1, profile.enabled, true));
+
         }
 
-        while (!profile.tempIfStack.empty()) {
-            HudElement element = profile.tempIfStack.pop().build();
-            if (profile.tempIfStack.empty())
-                profile.sections[sectionId].elements.add(element);
-            else
-                profile.tempIfStack.peek().add(element);
-        }
+        while (!profile.tempIfStack.empty())
+            addElement(profile, sectionId, profile.tempIfStack.pop().build());
+
         profile.tempIfStack = null;
 
         for (int i = 0; i < 4; i++) {
@@ -161,6 +127,20 @@ public class Profile {
         }
 
         return profile;
+    }
+
+    private static void addElement(Profile profile, int sectionId, HudElement element) {
+        if (profile.tempIfStack.empty())
+            profile.sections[sectionId].elements.add(element);
+        else
+            profile.tempIfStack.peek().add(element);
+    }
+
+    private static void addAllElement(Profile profile, int sectionId, List<HudElement> elements) {
+        if (profile.tempIfStack.empty())
+            profile.sections[sectionId].elements.addAll(elements);
+        else
+            profile.tempIfStack.peek().addAll(elements);
     }
 
 }

@@ -20,7 +20,7 @@ import net.minecraft.util.math.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomHudRenderer2 {
+public class CustomHudRenderer {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -59,6 +59,15 @@ public class CustomHudRenderer2 {
             for (HudElement e : section.elements)
                 lineCount += addElement(elements, e);
 
+            boolean removeExtraNewLines = false;
+            for (int i = elements.size() - 1; i >= 0; i--) {
+                if (!(elements.get(i) instanceof FunctionalElement.NewLine))
+                    break;
+                if (removeExtraNewLines)
+                    elements.remove(i);
+                removeExtraNewLines = true;
+            }
+
             StringBuilder builder = new StringBuilder();
             int y = section.getStartY(theme, lineCount);
             int xOffset = 0;
@@ -88,8 +97,9 @@ public class CustomHudRenderer2 {
                         color = cce.color;
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
                         if (!dynamicWidth && theme.bgColor != cte.theme.bgColor) {
-                            int x1 = section.getWidthX(right, section.width) ;
-                            addLineBg(matrices, bgBuilder, x1, staticWidthY, x1 + section.width, y, theme.bgColor);
+                            int x1 = section.getWidthX(right + 3, section.width) - 2;
+                            addLineBg(matrices, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
+                            staticWidthY = y;
                         }
                         theme = cte.theme;
                     } else if (e instanceof IconElement ie) {
@@ -99,6 +109,11 @@ public class CustomHudRenderer2 {
                 } else {
                     builder.append(e.getString());
                 }
+            }
+
+            if (!dynamicWidth) {
+                int x1 = section.getWidthX(right + 3, section.width) - 2;
+                addLineBg(matrices, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
             }
 
         }
