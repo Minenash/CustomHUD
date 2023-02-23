@@ -51,7 +51,7 @@ public class VariableParser {
     public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line) {
         List<String> parts = new ArrayList<>();
 
-        System.out.println("[Line " + debugLine+ "] '" + str + "'");
+//        System.out.println("[Line " + debugLine+ "] '" + str + "'");
         Matcher matcher = LINE_PARING_PATTERN.matcher(str);
         while (matcher.find()) {
             String left = matcher.group(1);
@@ -228,7 +228,7 @@ public class VariableParser {
             return element.getLeft();
         }
 
-        if (part.equals("gizmo"))
+        else if (part.equals("gizmo"))
             return new DebugGizmoElement(flags);
 
         else {

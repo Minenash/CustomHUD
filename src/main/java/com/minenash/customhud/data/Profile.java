@@ -42,10 +42,11 @@ public class Profile {
         Profile profile = parseProfileInner(path, profileID);
 
         if (!Errors.getErrors(profileID).isEmpty()) {
-            System.out.println("\nErrors Found in profile " + profileID);
+            System.out.println("\n");
+            System.out.println("Errors Found in profile " + profileID);
             for (var e : Errors.getErrors(profileID))
                 System.out.println(e.line() + " | " + e.type() + " | " + e.source() + " | " + e.context());
-            System.out.println("\n");
+            System.out.println();
         }
 
         return profile;

@@ -2,6 +2,7 @@ package com.minenash.customhud;
 
 import com.google.gson.*;
 import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.errors.ErrorScreen;
 import com.minenash.customhud.mod_compat.BuiltInModCompat;
 import com.minenash.customhud.render.CustomHudRenderer;
 import net.fabricmc.api.ModInitializer;
@@ -52,6 +53,8 @@ public class CustomHud implements ModInitializer {
 	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swap_to_profile1");
 	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swap_to_profile2");
 	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swap_to_profile3");
+
+	private static final KeyBinding kb_showErrors = registerKeyBinding("show_errors");
 
 	private static KeyBinding registerKeyBinding(String binding) {
 		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.custom_hud"));
@@ -105,7 +108,7 @@ public class CustomHud implements ModInitializer {
 
 	public static void loadProfiles() {
 		for (int i = 1; i <=3; i++ )
-			profiles[i-1] = Profile.parseProfile(getProfilePath(i), 1);
+			profiles[i-1] = Profile.parseProfile(getProfilePath(i), i);
 		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 	}
 
@@ -154,6 +157,9 @@ public class CustomHud implements ModInitializer {
 		else if (kb_swapToProfile3.wasPressed()) {
 			activeProfile = 3;
 			if (!enabled) enabled = true;
+		}
+		else if (kb_showErrors.wasPressed()) {
+			client.setScreen(new ErrorScreen(client.currentScreen));
 		}
 		else
 			return;

@@ -1,6 +1,7 @@
 package com.minenash.customhud.errors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Errors {
@@ -13,15 +14,19 @@ public class Errors {
     }
 
     public static List<Error> getErrors(int profile) {
-        return errors[profile];
+        return errors[profile-1];
+    }
+
+    public static boolean hasErrors(int profile) {
+        return !errors[profile-1].isEmpty();
     }
 
     public static void clearErrors(int profile) {
-        errors[profile].clear();
+        errors[profile-1].clear();
     }
 
     public static void addError(int profile, int line, String source, ErrorType type, String context) {
-        errors[profile].add(new Error(line, source, type, context));
+        errors[profile-1].add(new Error(line, source, type, context));
     }
 
 
