@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
@@ -23,6 +24,9 @@ public class ErrorScreen extends Screen {
     private ButtonWidget[] profiles = new ButtonWidget[3];
     private final Screen parent;
     private int profile;
+    public int y_offset = 0;
+    private static final int lineColumnX = 15;
+    public int sourceSectionWidth = 120;
 
     public ErrorScreen(Screen parent) {
         super(Text.literal("Profile Errors"));
@@ -56,7 +60,6 @@ public class ErrorScreen extends Screen {
         super.init();
     }
 
-    public int y_offset = 0;
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         profiles[0].active = Errors.hasErrors(1);
         profiles[1].active = Errors.hasErrors(2);
@@ -65,9 +68,6 @@ public class ErrorScreen extends Screen {
         y_offset = 0;
         this.listWidget.render(matrices, mouseX, mouseY, delta);
         drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-
-        DrawableHelper.fill(matrices, 30, 52, 31, height - 36 + 4, 0x44FFFFFF);
-        DrawableHelper.fill(matrices, 150, 52, 151, height - 36 + 4, 0x44FFFFFF);
 
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -106,36 +106,41 @@ public class ErrorScreen extends Screen {
 
         }
 
-        private static final int lineColumnX = 15;
-        private static final int sourceColumnX = 90;
-        private static final int messageColumnX = 150;
-
         @Environment(EnvType.CLIENT)
         public class ErrorEntry extends AlwaysSelectedEntryListWidget.Entry<ErrorEntry> {
             final Errors.Error error;
+            final String source;
+            final List<OrderedText> lines;
+            final int msgX;
 
             public ErrorEntry(Errors.Error error) {
                 this.error = error;
+                msgX = 32 + sourceSectionWidth + 15;
+                lines = textRenderer.wrapLines(StringVisitable.plain( error.type().message.apply(error.context()) ), width - (msgX));
+
+                String source = error.source().replace('§', '&');
+                if (textRenderer.getWidth(source) > sourceSectionWidth) {
+                    String suffix = source.startsWith("{{") ? "…}}" : source.startsWith("{") ? "…}" : "…";
+                    int endWidth = textRenderer.getWidth("suffix");
+                    while (textRenderer.getWidth(source) > sourceSectionWidth - endWidth)
+                        source = source.substring(0, source.length() - 1);
+                    this.source = source + suffix;
+                }
+                else
+                    this.source = source;
+
             }
 
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+                drawCentered(matrices, y + y_offset, lineColumnX, "" + error.line());
 
-                if (!error.type().multiLine) {
-                    drawCentered(matrices, y + y_offset, lineColumnX, "" + error.line());
-                    drawCentered(matrices, y + y_offset, sourceColumnX, error.source());
-                    client.textRenderer.drawWithShadow(matrices, error.type().message.apply(error.context()), messageColumnX, y, 0xFFFFFFFF);
+                client.textRenderer.drawWithShadow(matrices,source, 32, y + y_offset, 0xFFFFFFFF);
 
-                }
-                else {
-                    drawCentered(matrices, y + y_offset, lineColumnX, "" + error.line());
-                    client.textRenderer.drawWithShadow(matrices, error.source(), sourceColumnX, y, 0xFFFFFFFF);
+                client.textRenderer.drawWithShadow(matrices, lines.get(0), msgX, y + y_offset, 0xFFFFFFFF);
 
-
-                    for (OrderedText text : client.textRenderer.wrapLines(Text.literal(error.type().message.apply(error.context())), width - 20)) {
-                        y_offset += 18;
-                        client.textRenderer.drawWithShadow(matrices, text, 32, y + y_offset, 0xFFFFFFFF);
-                    }
+                for (int i = 1; i < lines.size(); i++) {
                     y_offset += 18;
+                    client.textRenderer.drawWithShadow(matrices, lines.get(0), msgX, y + y_offset, 0xFFFFFFFF);
                 }
 
 
