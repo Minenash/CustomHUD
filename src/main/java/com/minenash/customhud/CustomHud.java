@@ -30,6 +30,7 @@ import java.util.Objects;
 public class CustomHud implements ModInitializer {
 
 	//Debug: LD_PRELOAD=/home/jakob/Programs/renderdoc_1.25/lib/librenderdoc.so
+	private static final MinecraftClient client = MinecraftClient.getInstance();
 
 	public static Profile[] profiles = new Profile[3];
 	public static int activeProfile = 1;
@@ -252,8 +253,8 @@ public class CustomHud implements ModInitializer {
 					else {
 						CustomHud.profiles[profile - 1] = Profile.parseProfile(original, profile);
 						LOGGER.info("Updated Profile " + profile);
-						if (MinecraftClient.getInstance().player != null)
-							MinecraftClient.getInstance().player.sendMessage(MutableText.of(new TranslatableTextContent("gui.custom_hud.profile_updated", profile)), true);
+						if (client.player != null)
+							client.player.sendMessage(MutableText.of(new TranslatableTextContent("gui.custom_hud.profile_updated", profile)), true);
 						break;
 					}
 				}
@@ -261,6 +262,8 @@ public class CustomHud implements ModInitializer {
 				e.printStackTrace();
 			}
 		}
+		if (client.currentScreen instanceof ErrorScreen screen)
+			screen.init();
 		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 		key.reset();
 	}
