@@ -1,5 +1,7 @@
 package com.minenash.customhud.data;
 
+import com.minenash.customhud.errors.ErrorType;
+import com.minenash.customhud.errors.Errors;
 import net.minecraft.util.Identifier;
 
 import java.util.regex.Matcher;
@@ -37,7 +39,7 @@ public class HudTheme {
     private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("font: ?(\\w*:?\\w+)");
     private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("textshadow: ?(true|false)");
 
-    public boolean parse(String line) {
+    public boolean parse(boolean global, String line) {
         line = line.toLowerCase();
         Matcher matcher = COLOR_FLAG_PATTERN.matcher(line);
         if (matcher.matches())
@@ -49,7 +51,7 @@ public class HudTheme {
         else if (( matcher = SPACING_FLAG_PATTERN.matcher(line) ).matches())
             lineSpacing = Integer.parseInt(matcher.group(1));
 
-        else if ((  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches())
+        else if (global & (  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches())
             scale = Float.parseFloat(matcher.group(1));
 
         else if (( matcher = FONT_FLAG_PATTERN.matcher(line) ).matches())
@@ -60,6 +62,7 @@ public class HudTheme {
 
         else
             return false;
+
         return true;
     }
 

@@ -1,20 +1,23 @@
 package com.minenash.customhud.errors;
 
 import com.minenash.customhud.CustomHud;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -23,7 +26,7 @@ import java.util.List;
 public class ErrorScreen extends Screen {
 
     private ErrorListWidget listWidget = null;
-    private ButtonWidget[] profiles = new ButtonWidget[3];
+    private final ButtonWidget[] profiles = new ButtonWidget[3];
     private final Screen parent;
     private int profile;
     public int y_offset = 0;
@@ -90,7 +93,8 @@ public class ErrorScreen extends Screen {
             super(client, ErrorScreen.this.width, ErrorScreen.this.height, 52, ErrorScreen.this.height - 36 + 4, 18);
 
             this.addEntry( new ErrorEntryHeader() );
-            this.addEntry( new ErrorEntry(new Errors.Error("100", "{aaaaaaaaaaaaaaahhhhhhhhhhhaaaaaaaaaaaaaaahhhhhhhhhhhaaaaaaaaaaaaaaahhhhhhhhhhh}", ErrorType.TEST, "")) );
+            if (!Errors.hasErrors(profile))
+                this.addEntry( new ErrorEntry( new Errors.Error("0", "No Errors", ErrorType.NONE, "") ) );
 
             for (var e : Errors.getErrors(profile))
                 this.addEntry(new ErrorEntry(e));
@@ -142,16 +146,16 @@ public class ErrorScreen extends Screen {
         public class ErrorEntryHeader extends ErrorEntry {
 
             public ErrorEntryHeader() {
-                super(new Errors.Error("Line", " Source", ErrorType.HEADER, ""));
+                super(new Errors.Error("Line", "Source", ErrorType.HEADER, ""));
             }
 
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                drawCentered(matrices, y + y_offset, lineColumnX, error.line());
-                client.textRenderer.drawWithShadow(matrices, collapsedSource, 36, y + y_offset, 0xFFFFFFFF);
-                client.textRenderer.drawWithShadow(matrices, collapsedMsg, msgX, y + y_offset, 0xFFFFFFFF);
-
-                DrawableHelper.fill(matrices, 0, y + 12, width, y+16, 0x88000000);
+                drawCentered(matrices, y + y_offset, lineColumnX, error.line().formatted(Formatting.UNDERLINE));
+                client.textRenderer.drawWithShadow(matrices, Text.literal(collapsedSource).formatted(Formatting.UNDERLINE), 36, y + y_offset, 0xFFFFFFFF);
+                client.textRenderer.drawWithShadow(matrices, Text.literal(collapsedMsg).formatted(Formatting.UNDERLINE), msgX, y + y_offset, 0xFFFFFFFF);
+                client.textRenderer.drawWithShadow(matrices, error.type().linkText.formatted(Formatting.WHITE), refX, y + y_offset, 0xFFFFFFFF);
+//                DrawableHelper.fill(matrices, 0, y + 12, width, y+16, 0x88000000);
             }
         }
 
@@ -163,16 +167,21 @@ public class ErrorScreen extends Screen {
             final List<OrderedText> expandedMsg;
             final String expandedSource;
             final int msgX;
+            final int refX, refLength;
             boolean expands = false;
 
             public ErrorEntry(Errors.Error error) {
                 this.error = error;
                 msgX = 36 + sourceSectionWidth + 15;
-                expandedMsg = textRenderer.wrapLines(StringVisitable.plain( error.type().message.apply(error.context()) ), width - 36 - 16);
-                collapsedMsg = ensureLength(error.type().message.apply(error.context()), width - msgX - 16, "…");
+
+                refLength = error.type().linkText == null ? 0 : textRenderer.getWidth(error.type().linkText);
+                refX = error.type().linkText == null ? 0 : width - 28 - refLength;
+
+                expandedMsg = textRenderer.wrapLines(StringVisitable.plain( error.type().message + error.context() ), width - 36 - 16);
+                collapsedMsg = ensureLength(error.type().message + error.context(), width - msgX - 16 - refLength, "…");
                 collapsedSource = ensureLength(error.source().replace('§', '&'), sourceSectionWidth,
                         error.source().startsWith("{{") ? "…}}" : error.source().startsWith("{") ? "…}" : "…");
-                expandedSource = ensureLength(error.source().replace('§', '&'), width - 36 - 16,
+                expandedSource = ensureLength(error.source().replace('§', '&'), width - 36 - 16 - refLength,
                         error.source().startsWith("{{") ? "…}}" : error.source().startsWith("{") ? "…}" : "…");
             }
 
@@ -180,6 +189,7 @@ public class ErrorScreen extends Screen {
                 if (textRenderer.getWidth(str) <= width)
                     return str;
                 else {
+                    str = str.substring(0, str.length() - suffix.length() + 1);
                     expands = true;
                     int endWidth = textRenderer.getWidth("suffix");
                     while (textRenderer.getWidth(str) > width - endWidth)
@@ -192,23 +202,25 @@ public class ErrorScreen extends Screen {
                 if (hovered) {
                     int extendedHeight = ErrorListWidget.this.getSelectedOrNull() == this ? (18 * expandedMsg.size()) : 0;
                     DrawableHelper.fill(matrices, 0, y + y_offset, width, y + y_offset + 18 + extendedHeight, 0x22FFFFFF);
+                    if (mouseX >= refX && mouseX <= refX + refLength)
+                        renderTooltip(matrices, Text.literal("§eClick to open the " + error.type().linkText.getString() + " page"), mouseX, mouseY);
                 }
 
                 y += 6;
+                int ceX = getMaxScroll() > 0 ? width-16 : width-12;
 
+                drawCentered(matrices, y + y_offset, lineColumnX, "" + error.line());
+                if (refX > 0)
+                    client.textRenderer.drawWithShadow(matrices, error.type().linkText, refX, y + y_offset, 0xFFFFFFFF);
                 if (ErrorListWidget.this.getSelectedOrNull() != this) {
-                    drawCentered(matrices, y + y_offset, lineColumnX, "" + error.line());
                     if (expands)
-                        drawCentered(matrices, y + y_offset, width-16, "C");
+                        client.textRenderer.drawWithShadow(matrices, "▶", ceX, y + y_offset, 0xFFFFFFFF);
                     client.textRenderer.drawWithShadow(matrices, collapsedSource, 36, y + y_offset, 0xFFFFFFFF);
                     client.textRenderer.drawWithShadow(matrices, collapsedMsg, msgX, y + y_offset, 0xFFFFFFFF);
-
-
                 }
                 else {
-                    drawCentered(matrices, y + y_offset, lineColumnX, "" + error.line());
                     if (expands)
-                        drawCentered(matrices, y + y_offset, width-16, "E");
+                        client.textRenderer.drawWithShadow(matrices, "▼", ceX, y + y_offset, 0xFFFFFFFF);
                     client.textRenderer.drawWithShadow(matrices, expandedSource, 36, y + y_offset, 0xFFFFFFFF);
                     for (OrderedText msgLine : expandedMsg) {
                         y_offset += 18;
@@ -221,6 +233,17 @@ public class ErrorScreen extends Screen {
 
             }
 
+            public static final Identifier texture = new Identifier("textures/gui/resource_packs.png");
+            private void renderExpandIcon(MatrixStack matrix, int x, int y, boolean expanded, int mouseX) {
+                boolean hovered = mouseX >= x && mouseX <= x + 7;
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, texture);
+                DrawableHelper.drawTexture(matrix, x, y, 7, 11, 0, 0, 32, 32, 256, 256);
+
+                DrawableHelper.drawTexture(matrix, x, y, 7, 11, 9 + (expanded ? 24 : 0), 5 + (hovered ? 32 : 0), 7, 11, 256, 256);
+
+            }
+
             protected void drawCentered(MatrixStack matrices, int y, int x, String text) {
                 float xx = (float)(x - client.textRenderer.getWidth(text) / 2);
                 client.textRenderer.drawWithShadow(matrices, text, xx, y, 0xFFFFFFFF);
@@ -228,10 +251,13 @@ public class ErrorScreen extends Screen {
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (ErrorListWidget.this.getSelectedOrNull() == this)
+                if (mouseX >= refX && mouseX <= refX + refLength)
+                    Util.getOperatingSystem().open(error.type().link);
+                else if (ErrorListWidget.this.getSelectedOrNull() == this)
                     ErrorListWidget.this.setSelected(null);
-                else if (true)
+                else if (expands)
                     ErrorListWidget.this.setSelected(this);
+                ErrorListWidget.this.setSelected(null);
                 return false;
             }
 

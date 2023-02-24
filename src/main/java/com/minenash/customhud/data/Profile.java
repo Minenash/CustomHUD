@@ -8,6 +8,7 @@ import com.minenash.customhud.conditionals.ConditionalParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class Profile {
 
-    private static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topright|bottomleft|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
+    public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topright|bottomleft|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
     private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(normal|debug) ?==");
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
@@ -41,10 +42,6 @@ public class Profile {
 
     public static Profile parseProfile(Path path, int profileID) {
         Profile profile = parseProfileInner(path, profileID);
-
-        if (profileID == 1) {
-            Errors.addError(1, "N/A", path.toString(), ErrorType.IO, new FileNotFoundException().getMessage());
-        }
 
         if (!Errors.getErrors(profileID).isEmpty()) {
             System.out.println("\n");
@@ -70,7 +67,7 @@ public class Profile {
             lines = Files.readAllLines(path);
         } catch (IOException e) {
             e.printStackTrace();
-            Errors.addError(profileID, -1, "", ErrorType.IO, e.getMessage());
+            Errors.addError(profileID, "N/A", path.relativize(FabricLoader.getInstance().getGameDir().getParent()).toString(), ErrorType.IO, e.getMessage());
             return null;
         }
 
@@ -90,15 +87,15 @@ public class Profile {
                     profile.targetDistance = matcher.group(1).equals("max") ? 725 : Integer.parseInt(matcher.group(1));
                     continue;
                 }
-                matcher = GLOBAL_THEME_PATTERN.matcher(lineLC);
-                if (matcher.matches() && profile.baseTheme.parse(matcher.group(1)))
-                    continue;
-
                 matcher = CROSSHAIR_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
                     profile.debugCrosshair = matcher.group(1).equals("Debug");
                     continue;
                 }
+
+                matcher = GLOBAL_THEME_PATTERN.matcher(lineLC);
+                if (matcher.matches() && profile.baseTheme.parse(true, matcher.group(1)))
+                    continue;
 
             }
             Matcher matcher = SECTION_DECORATION_PATTERN.matcher(lineLC);
@@ -128,7 +125,7 @@ public class Profile {
             if (sectionId == -1)
                 profile.sections[(sectionId = 0)] = new Section.TopLeft();
 
-            if (( matcher = LOCAL_THEME_PATTERN.matcher(line) ).matches() && localTheme.parse(matcher.group(1)))
+            if (( matcher = LOCAL_THEME_PATTERN.matcher(line) ).matches() && localTheme.parse(false, matcher.group(1)))
                 addElement(profile, sectionId, new FunctionalElement.ChangeTheme(localTheme));
 
             else if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
@@ -142,6 +139,8 @@ public class Profile {
 
             else if (line.equalsIgnoreCase("=endif="))
                 addElement(profile, sectionId, profile.tempIfStack.pop().build());
+            else if (GLOBAL_THEME_PATTERN.matcher(line).matches() || LOCAL_THEME_PATTERN.matcher(line).matches())
+                Errors.addError(profileID, i, lineLC, ErrorType.UNKNOWN_THEME_FLAG, "");
 
             else
                 addAllElement(profile, sectionId, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true));
