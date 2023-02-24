@@ -1,11 +1,10 @@
 package com.minenash.customhud.errors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Errors {
-    public record Error(int line, String source, ErrorType type, String context) {}
+    public record Error(String line, String source, ErrorType type, String context) {}
 
     private static final List<Error>[] errors = new ArrayList[3];
     static {
@@ -26,6 +25,9 @@ public class Errors {
     }
 
     public static void addError(int profile, int line, String source, ErrorType type, String context) {
+        addError(profile, Integer.toString(line), source, type, context);
+    }
+    public static void addError(int profile, String line, String source, ErrorType type, String context) {
         errors[profile-1].add(new Error(line, source, type, context));
     }
 

@@ -9,6 +9,7 @@ import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +42,10 @@ public class Profile {
     public static Profile parseProfile(Path path, int profileID) {
         Profile profile = parseProfileInner(path, profileID);
 
+        if (profileID == 1) {
+            Errors.addError(1, "N/A", path.toString(), ErrorType.IO, new FileNotFoundException().getMessage());
+        }
+
         if (!Errors.getErrors(profileID).isEmpty()) {
             System.out.println("\n");
             System.out.println("Errors Found in profile " + profileID);
@@ -65,7 +70,7 @@ public class Profile {
             lines = Files.readAllLines(path);
         } catch (IOException e) {
             e.printStackTrace();
-            Errors.addError(profileID, -1, null, ErrorType.IO, e.getMessage());
+            Errors.addError(profileID, -1, "", ErrorType.IO, e.getMessage());
             return null;
         }
 

@@ -243,10 +243,10 @@ public class VariableParser {
                     if (element != null)
                         return element;
 
-                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, null);
+                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, part);
                 }
                 else
-                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, null);
+                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, part);
             }
         }
         return null;

@@ -255,6 +255,8 @@ public class CustomHud implements ModInitializer {
 						LOGGER.info("Updated Profile " + profile);
 						if (client.player != null)
 							client.player.sendMessage(MutableText.of(new TranslatableTextContent("gui.custom_hud.profile_updated", profile)), true);
+						if (client.currentScreen instanceof ErrorScreen screen)
+							screen.changeProfile(profile);
 						break;
 					}
 				}
@@ -262,8 +264,7 @@ public class CustomHud implements ModInitializer {
 				e.printStackTrace();
 			}
 		}
-		if (client.currentScreen instanceof ErrorScreen screen)
-			screen.init();
+
 		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 		key.reset();
 	}

@@ -3,9 +3,10 @@ package com.minenash.customhud.errors;
 import java.util.function.Function;
 
 public enum ErrorType {
-    TEST (context -> "The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script"),
-    IO (context -> "Could not load file: " + context),
-    UNKNOWN_VARIABLE ( context -> "Unknown variable"),
+    HEADER (_context -> "Details"),
+    TEST (_context -> "The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script The bee movie script"),
+    IO (context -> "Could not load file: §c" + context),
+    UNKNOWN_VARIABLE ( context -> "Unknown variable: §e" + context),
     UNKNOWN_VARIABLE_FLAG ( context -> "Unknown variable flag: §e" + context),
     MALFORMED_CONDITIONAL (context -> "Malformed conditional: " + context),
 
