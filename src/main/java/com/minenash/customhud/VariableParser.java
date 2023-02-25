@@ -274,7 +274,7 @@ public class VariableParser {
         if (supplier != null)
             return new StringSupplierElement(supplier);
 
-        supplier = getBooleanSupplier(name);
+        supplier = getBooleanSupplier(name, enabled);
         if (supplier != null)
             return new BooleanSupplierElement(supplier);
 
@@ -322,7 +322,7 @@ public class VariableParser {
         };
     }
 
-    private static Supplier<Boolean> getBooleanSupplier(String element) {
+    private static Supplier<Boolean> getBooleanSupplier(String element, ComplexData.Enabled enabled) {
         return switch (element) {
             case "vsync" -> VSYNC;
             case "sp", "singleplayer" -> SINGLEPLAYER;
@@ -331,9 +331,9 @@ public class VariableParser {
             case "overworld" -> IN_OVERWORLD;
             case "nether" -> IN_NETHER;
             case "end" -> IN_END;
-            case "raining" -> IS_RAINING;
-            case "thundering" -> IS_THUNDERING;
-            case "slime_chunk" -> IS_SLIME_CHUNK;
+            case "raining" -> {enabled.world = true; yield IS_RAINING;}
+            case "thundering" -> {enabled.world = true; yield IS_THUNDERING;}
+            case "slime_chunk" -> {enabled.world = true; yield IS_SLIME_CHUNK;}
             case "sprinting" -> SPRINTING;
             case "sneaking" -> SNEAKING;
             case "swimming" -> SWIMMING;
