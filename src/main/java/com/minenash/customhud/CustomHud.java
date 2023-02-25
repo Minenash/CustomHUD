@@ -3,6 +3,7 @@ package com.minenash.customhud;
 import com.google.gson.*;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.ErrorScreen;
+import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.BuiltInModCompat;
 import com.minenash.customhud.render.CustomHudRenderer;
 import net.fabricmc.api.ModInitializer;
@@ -13,8 +14,14 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.toast.Toast;
+import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.*;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -35,10 +42,6 @@ public class CustomHud implements ModInitializer {
 	public static Profile[] profiles = new Profile[3];
 	public static int activeProfile = 1;
 	public static boolean enabled = true;
-
-	public static final String version = "2.2.0";
-	private static String latestKnownVersion = null;
-	private static String updateMsg = null;
 
 	public static final boolean INDEPENDENT_GIZMO_INSTALLED = FabricLoader.getInstance().isModLoaded("independent_gizmo");
 
@@ -84,32 +87,24 @@ public class CustomHud implements ModInitializer {
 			e.printStackTrace();
 		}
 		loadConfig();
-		checkForUpdate();
+		UpdateChecker.check();
 
 		HudRenderCallback.EVENT.register(CustomHudRenderer::render);
 
+
+
 		ClientTickEvents.END_CLIENT_TICK.register(CustomHud::onTick);
-//		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-//			if (updateMsg == null)
-//				return;
-//			client.getMessageHandler().onGameMessage(
-//					Text.literal("\nCustomHud v" + latestKnownVersion + " is now available!\n§7" + updateMsg + "\n§8[")
-//						.append(Text.literal("§eChangelog").setStyle(Style.EMPTY
-//							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud/changelog"))
-//							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to changelog")))))
-//						.append("§8] [")
-//						.append(Text.literal("§eDownload").setStyle(Style.EMPTY
-//							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud"))
-//							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to download page on §aModrinth"))))
-//						.append("§8]\n")
-//						), false);
-//		});
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			if (UpdateChecker.updateMessage != null)
+				client.getMessageHandler().onGameMessage(UpdateChecker.updateMessage, false);
+		});
 
 	}
 
 	public static void loadProfiles() {
-		for (int i = 1; i <=3; i++ )
-			profiles[i-1] = Profile.parseProfile(getProfilePath(i), i);
+		for (int i = 1; i <=3; i++ ) {
+			profiles[i - 1] = Profile.parseProfile(getProfilePath(i), i);
+		}
 		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 	}
 
@@ -191,7 +186,7 @@ public class CustomHud implements ModInitializer {
 		JsonObject config = new JsonObject();
 		config.addProperty("enabled", enabled);
 		config.addProperty("activeProfile", activeProfile);
-		config.addProperty("latestKnownVersion", latestKnownVersion);
+		config.addProperty("latestKnownVersion", UpdateChecker.getLatestKnownVersionAsString());
 		try {
 			Files.write(CONFIG, gson.toJson(config).getBytes());
 		} catch (IOException e) {
@@ -214,8 +209,9 @@ public class CustomHud implements ModInitializer {
 				fix = true;
 			}
 			JsonElement latestKnownVersion = json.get("latestKnownVersion");
-			CustomHud.latestKnownVersion = latestKnownVersion == null ? version : latestKnownVersion.getAsString();
-		} catch (JsonSyntaxException e) {
+			if (latestKnownVersion != null)
+				UpdateChecker.latestKnownVersion =latestKnownVersion.getAsString().split("\\.");
+		} catch (JsonSyntaxException|NullPointerException e) {
 			LOGGER.warn("Malformed Json, Fixing");
 			fix = true;
 		} catch (IOException e) {
@@ -253,8 +249,7 @@ public class CustomHud implements ModInitializer {
 					else {
 						CustomHud.profiles[profile - 1] = Profile.parseProfile(original, profile);
 						LOGGER.info("Updated Profile " + profile);
-						if (client.player != null)
-							client.player.sendMessage(MutableText.of(new TranslatableTextContent("gui.custom_hud.profile_updated", profile)), true);
+						showToast(profile, false);
 						if (client.currentScreen instanceof ErrorScreen screen)
 							screen.changeProfile(profile);
 						break;
@@ -269,36 +264,13 @@ public class CustomHud implements ModInitializer {
 		key.reset();
 	}
 
-	private static void checkForUpdate() {
-		try {
-			JsonObject updateData = getUpdateData();
-			String version = updateData.get("latest").getAsString();
-			if (!version.equals(latestKnownVersion)) {
-				latestKnownVersion = version;
-				if (CustomHud.version.compareTo(version) < 0) {
-					updateMsg = updateData.get("info").getAsString();
-					saveConfig();
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static JsonObject getUpdateData() throws IOException {
-		URL url = new URL("https://raw.githubusercontent.com/Minenash/CustomHUD/1.19/updateInfo.json");
-
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.connect();
-
-		int responseCode = conn.getResponseCode();
-
-		if (responseCode != 200)
-			throw new RuntimeException("HttpResponseCode: " + responseCode);
-
-		return JsonParser.parseString( new String(conn.getInputStream().readAllBytes()) ).getAsJsonObject();
+	public static void showToast(int profile, boolean mainMenu) {
+		client.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
+				Text.translatable("gui.custom_hud.profile_updated", profile).formatted(Formatting.WHITE),
+				Errors.hasErrors(profile) ? Text.literal("§cFound 5 errors§7, Press ")
+						.append(((MutableText)kb_showErrors.getBoundKeyLocalizedText()).formatted(Formatting.AQUA))
+						.append( "§7" + (mainMenu? " in-game":"") + " to view") : Text.literal("§aNo errors found")
+		));
 	}
 
 

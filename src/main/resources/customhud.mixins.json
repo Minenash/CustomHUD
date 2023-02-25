@@ -10,6 +10,7 @@
     "KeyBindingAccessor",
     "MinecraftClientAccess",
     "MinecraftClientMixin",
+    "TitleScreenMixin",
     "WorldRendererAccess",
     "fonts.TextHandlerMixin",
     "fonts.TextRendererMixin"
