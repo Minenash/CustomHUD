@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
+import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -63,11 +64,22 @@ public class SlotItemIconElement extends IconElement {
     private void renderCount(int count, int x, int y) {
         if (count != 1) {
             MatrixStack matrixStack = new MatrixStack();
-            matrixStack.scale(11/16F, 11/16F, 1);
-            matrixStack.translate(-2, -4, 200);
+            float profileScale = CustomHud.getActiveProfile().baseTheme.scale;
+            matrixStack.scale(profileScale, profileScale, 1);
+
+            matrixStack.translate(0, -4 * 11/16F, 200);
+            matrixStack.scale(11/16F * scale, 11/16F * scale, 1);
+            matrixStack.translate(-2, 0, 0);
             String string = String.valueOf(count);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            client.textRenderer.draw(string, (float)(x + 19 - 2 - client.textRenderer.getWidth(string)) * 16/11F, (float)(y + 6 + 3) * 16/11F, 0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+
+
+
+
+            client.textRenderer.draw(string,
+                    (float)(x + 19 - 2 - client.textRenderer.getWidth(string)) * 16/11F / scale,
+                    ((float)(y + 6 + 3) * 16/11F / scale),
+                    0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
             immediate.draw();
         }
     }

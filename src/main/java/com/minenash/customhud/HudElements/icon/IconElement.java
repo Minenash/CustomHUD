@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
+import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -44,14 +45,15 @@ public abstract class IconElement extends FunctionalElement {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
+        float profileScale = CustomHud.getActiveProfile().baseTheme.scale;
+        matrixStack.scale(profileScale, profileScale, 1);
+
         matrixStack.translate(x+5.5, y+5.5, 100.0f); //+ client.getItemRenderer().zOffset
 
         if (referenceCorner)
             matrixStack.translate(0, (11*scale-11)/2, 0);
 
-        matrixStack.scale(11, -11, 1);
-        if (scale != 1)
-            matrixStack.scale(scale, scale, 1);
+        matrixStack.scale(11 * scale, -11 * scale, 1);
 
         if (!model.isSideLit())
             DiffuseLighting.disableGuiDepthLighting();

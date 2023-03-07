@@ -37,6 +37,7 @@ public class CustomHudRenderer {
         List<RenderPiece> pieces = new ArrayList<>();
 
         matrices.push();
+        matrices.scale(profile.baseTheme.scale, profile.baseTheme.scale, 1);
         BufferBuilder bgBuilder = Tessellator.getInstance().getBuffer();
         bgBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
