@@ -173,8 +173,10 @@ public class VariableParser {
                 return new ItemIconElement(new ItemStack(item), flags);
 
             Matcher matcher = TEXTURE_ICON_PATTERN.matcher(part);
-            if (!matcher.matches())
+            if (!matcher.matches()) {
+                Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ICON, part);
                 return null;
+            }
 
 //            for (int i = 0; i <= matcher.groupCount(); i++)
 //                System.out.println(i + ": " + matcher.group(i));
@@ -184,7 +186,11 @@ public class VariableParser {
             int v = matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3));
             int w = matcher.group(4) == null ? -1 : Integer.parseInt(matcher.group(4));
             int h = matcher.group(5) == null ? -1 : Integer.parseInt(matcher.group(5));
-            return new TextureIconElement(id, u, v, w, h, flags);
+
+            TextureIconElement element = new TextureIconElement(id, u, v, w, h, flags);
+            if (!element.isIconAvailable())
+                Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
+            return element;
 
         }
 

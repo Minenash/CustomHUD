@@ -253,11 +253,10 @@ public class ErrorScreen extends Screen {
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (mouseX >= refX && mouseX <= refX + refLength)
                     Util.getOperatingSystem().open(error.type().link);
-                else if (ErrorListWidget.this.getSelectedOrNull() == this)
-                    ErrorListWidget.this.setSelected(null);
-                else if (expands)
+                else if (expands && ErrorListWidget.this.getSelectedOrNull() != this)
                     ErrorListWidget.this.setSelected(this);
-                ErrorListWidget.this.setSelected(null);
+                else
+                    ErrorListWidget.this.setSelected(null);
                 return false;
             }
 

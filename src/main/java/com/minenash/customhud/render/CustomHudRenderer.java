@@ -29,7 +29,7 @@ public class CustomHudRenderer {
     public static void render(MatrixStack matrices, float _tickDelta) {
 
         Profile profile = CustomHud.getActiveProfile();
-        if (profile == null)
+        if (profile == null || client.options.debugEnabled)
             return;
 
         boolean isChatOpen = client.currentScreen instanceof ChatScreen;
@@ -37,6 +37,9 @@ public class CustomHudRenderer {
         List<RenderPiece> pieces = new ArrayList<>();
 
         matrices.push();
+        if (profile.baseTheme.scale != 1.0)
+            matrices.scale(profile.baseTheme.scale,profile.baseTheme.scale,0);
+
         BufferBuilder bgBuilder = Tessellator.getInstance().getBuffer();
         bgBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
@@ -137,7 +140,7 @@ public class CustomHudRenderer {
 
         for (RenderPiece piece : pieces) {
             if (piece.element instanceof IconElement ie )
-                ie.render(matrices, piece.x, piece.y);
+                ie.render(matrices, piece.x, piece.y, profile.baseTheme.scale);
         }
 
         matrices.pop();

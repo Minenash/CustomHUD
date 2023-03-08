@@ -51,7 +51,7 @@ public class HudTheme {
         else if (( matcher = SPACING_FLAG_PATTERN.matcher(line) ).matches())
             lineSpacing = Integer.parseInt(matcher.group(1));
 
-        else if (global & (  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches())
+        else if (global && (  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches())
             scale = Float.parseFloat(matcher.group(1));
 
         else if (( matcher = FONT_FLAG_PATTERN.matcher(line) ).matches())

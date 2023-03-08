@@ -27,7 +27,7 @@ public abstract class IconElement extends FunctionalElement {
         referenceCorner = flags.iconReferenceCorner;
     }
 
-    public abstract void render(MatrixStack stack, int x, int y);
+    public abstract void render(MatrixStack stack, int x, int y, float profileScale);
     public abstract int getTextWidth();
 
     @Override
@@ -35,7 +35,7 @@ public abstract class IconElement extends FunctionalElement {
         return "\uFFFE";
     }
 
-    public void renderItemStack(int x, int y, ItemStack stack) {
+    public void renderItemStack(int x, int y, float profileScale, ItemStack stack) {
         BakedModel model = client.getItemRenderer().getModel(stack, null, null, 0);
         client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
@@ -44,12 +44,13 @@ public abstract class IconElement extends FunctionalElement {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.translate(x+5.5, y+5.5, 100.0f); //+ client.getItemRenderer().zOffset
+        matrixStack.scale(profileScale,profileScale,1);
+        matrixStack.translate(x+5.5, y+3.5, 100.0f); //+ client.getItemRenderer().zOffset
 
         if (referenceCorner)
-            matrixStack.translate(0, (11*scale-11)/2, 0);
+            matrixStack.translate(0, (10*scale-10)/2, 0);
 
-        matrixStack.scale(11, -11, 1);
+        matrixStack.scale(10, -10, 1);
         if (scale != 1)
             matrixStack.scale(scale, scale, 1);
 
