@@ -106,7 +106,7 @@ public class SlotItemIconElement extends IconElement {
             RenderSystem.defaultBlendFunc();
             Tessellator tessellator2 = Tessellator.getInstance();
             BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
-            this.renderGuiQuad(bufferBuilder2, profileScale, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 0, 255, 255, 64);
+            this.renderGuiQuad(bufferBuilder2, profileScale, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 255, 255, 255, 64);
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
