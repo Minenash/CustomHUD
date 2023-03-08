@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -20,7 +20,7 @@ public class SlotItemIconElement extends IconElement {
     public SlotItemIconElement(int slot, Flags flags) {
         super(flags);
         this.slot = slot;
-        this.width = flags.iconWidth != -1 ? flags.iconWidth : (int)(11*scale);;
+        this.width = flags.iconWidth != -1 ? flags.iconWidth : MathHelper.ceil(11*scale);;
         this.showCount = flags.iconShowCount;
         this.showDur = flags.iconShowDur;
         this.showCooldown = flags.iconShowCooldown;
@@ -45,36 +45,40 @@ public class SlotItemIconElement extends IconElement {
         return getStack().isEmpty() ? 0 : width;
     }
 
-    public int render(MatrixStack matrix, int x, int y) {
+    public void render(MatrixStack matrix, int x, int y, float profileScale) {
         ItemStack stack = getStack();
         if (stack == null || stack.isEmpty())
-            return 0;
+            return;
         x += shiftX;
         y += shiftY;
-        renderItemStack(x, y, stack);
-        if (showCount)
-            renderCount(stack.getCount(), x, y);
-        if (showDur)
-            renderDur(stack, x, y);
-        if (showCooldown)
-            renderCooldown(stack, x, y);
 
-        return getTextWidth();
+        renderItemStack(x, y, profileScale, stack);
+        if (showCount)
+            renderCount(stack.getCount(), x, y, profileScale);
+        if (showDur)
+            renderDur(stack, x, y, profileScale);
+        if (showCooldown)
+            renderCooldown(stack, x, y, profileScale);
     }
 
-    private void renderCount(int count, int x, int y) {
+    private void renderCount(int count, int x, int y, float profileScale) {
         if (count != 1) {
             MatrixStack matrixStack = new MatrixStack();
-            matrixStack.scale(11/16F, 11/16F, 1);
-            matrixStack.translate(-2, -4, 200);
+            matrixStack.scale(profileScale, profileScale, 1);
+            matrixStack.translate(x + (scale-1)/4,y + (scale-1)/4,200);
+            matrixStack.scale(10/16F * scale, 10/16F * scale, 1);
+
             String string = String.valueOf(count);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            client.textRenderer.draw(string, (float)(x + 19 - 2 - client.textRenderer.getWidth(string)) * 16/11F, (float)(y + 6 + 3) * 16/11F, 0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            client.textRenderer.draw(string,
+                    17.5F - client.textRenderer.getWidth(string),
+                    6 / scale + 0.5F,
+                    0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
             immediate.draw();
         }
     }
 
-    public void renderDur(ItemStack stack, int x, int y) {
+    public void renderDur(ItemStack stack, int x, int y, float profileScale) {
         if (stack.isItemBarVisible()) {
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
@@ -83,15 +87,15 @@ public class SlotItemIconElement extends IconElement {
             BufferBuilder bufferBuilder = tessellator.getBuffer();
             int i = stack.getItemBarStep();
             int j = stack.getItemBarColor();
-            this.renderGuiQuad(bufferBuilder, x + 1, y + 9, 9, 2*11/16F, 0, 0, 0, 255);
-            this.renderGuiQuad(bufferBuilder, x + 1, y + 9, i-4, 11/16F, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
+            this.renderGuiQuad(bufferBuilder, profileScale, x + scale, y + 0.5 + 6*(1+(scale-1)/2), 9, 2*11/16F, 0, 0, 0, 255);
+            this.renderGuiQuad(bufferBuilder, profileScale, x + scale, y + 0.5 + 6*(1+(scale-1)/2), i-4, 11/16F, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
             RenderSystem.enableBlend();
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
     }
 
-    public void renderCooldown(ItemStack stack, int x, int y) {
+    public void renderCooldown(ItemStack stack, int x, int y, float profileScale) {
         ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 
         float f = clientPlayerEntity == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getTickDelta());
@@ -102,13 +106,20 @@ public class SlotItemIconElement extends IconElement {
             RenderSystem.defaultBlendFunc();
             Tessellator tessellator2 = Tessellator.getInstance();
             BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
-            this.renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(11 * (1.0f - f)), 11, MathHelper.ceil(11 * f), 255, 255, 255, 127);
+            this.renderGuiQuad(bufferBuilder2, profileScale, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 255, 255, 255, 64);
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
     }
+    
+    private void renderGuiQuad(BufferBuilder buffer, float profileScale, double x, double y, double width, double height, int red, int green, int blue, int alpha) {
+        x *= profileScale;
+        y *= profileScale;
+        width *= profileScale;
+        height *= profileScale;
+        width *= scale;
+        height *= scale;
 
-    private void renderGuiQuad(BufferBuilder buffer, double x, double y, double width, double height, int red, int green, int blue, int alpha) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         buffer.vertex(x + 0, y + 0, 0.0).color(red, green, blue, alpha).next();

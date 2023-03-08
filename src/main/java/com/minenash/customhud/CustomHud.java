@@ -1,19 +1,27 @@
 package com.minenash.customhud;
 
 import com.google.gson.*;
+import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.errors.ErrorScreen;
+import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.BuiltInModCompat;
+import com.minenash.customhud.render.CustomHudRenderer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.toast.Toast;
+import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.*;
-import net.minecraft.util.profiling.jfr.event.WorldLoadFinishedEvent;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -28,13 +36,14 @@ import java.util.Objects;
 
 public class CustomHud implements ModInitializer {
 
+	//Debug: LD_PRELOAD=/home/jakob/Programs/renderdoc_1.25/lib/librenderdoc.so
+	private static final MinecraftClient client = MinecraftClient.getInstance();
+
 	public static Profile[] profiles = new Profile[3];
 	public static int activeProfile = 1;
 	public static boolean enabled = true;
 
-	public static final String version = "2.2.0";
-	private static String latestKnownVersion = null;
-	private static String updateMsg = null;
+	public static final boolean INDEPENDENT_GIZMO_INSTALLED = FabricLoader.getInstance().isModLoaded("independent_gizmo");
 
 	public static final Path CONFIG_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("custom-hud");
 	public static WatchService profileWatcher;
@@ -43,13 +52,15 @@ public class CustomHud implements ModInitializer {
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	private static final KeyBinding kb_enable = registerKeyBinding("enable");
-	private static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycle_profiles");
-	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swap_to_profile1");
-	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swap_to_profile2");
-	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swap_to_profile3");
+	private static final KeyBinding kb_enable = registerKeyBinding("enable", GLFW.GLFW_KEY_UNKNOWN);
+	private static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycle_profiles", GLFW.GLFW_KEY_GRAVE_ACCENT);
+	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swap_to_profile1", GLFW.GLFW_KEY_UNKNOWN);
+	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swap_to_profile2", GLFW.GLFW_KEY_UNKNOWN);
+	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swap_to_profile3", GLFW.GLFW_KEY_UNKNOWN);
 
-	private static KeyBinding registerKeyBinding(String binding) {
+	private static final KeyBinding kb_showErrors = registerKeyBinding("show_errors", GLFW.GLFW_KEY_B);
+
+	private static KeyBinding registerKeyBinding(String binding, int defaultKey) {
 		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.custom_hud"));
 	}
 
@@ -63,7 +74,7 @@ public class CustomHud implements ModInitializer {
 				try (OutputStream writer = Files.newOutputStream(path); InputStream input = getClass().getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
 					input.transferTo(writer);
 				}
-				CustomHud.profiles[0] = Profile.parseProfile(path);
+				CustomHud.profiles[0] = Profile.parseProfile(path, 1);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -76,30 +87,25 @@ public class CustomHud implements ModInitializer {
 			e.printStackTrace();
 		}
 		loadConfig();
-		checkForUpdate();
+		UpdateChecker.check();
+
+		HudRenderCallback.EVENT.register(CustomHudRenderer::render);
+
+
 
 		ClientTickEvents.END_CLIENT_TICK.register(CustomHud::onTick);
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			if (updateMsg == null)
-				return;
-			client.getMessageHandler().onGameMessage(
-					Text.literal("\nCustomHud v" + latestKnownVersion + " is now available!\n§7" + updateMsg + "\n§8[")
-						.append(Text.literal("§eChangelog").setStyle(Style.EMPTY
-							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud/changelog"))
-							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to changelog")))))
-						.append("§8] [")
-						.append(Text.literal("§eDownload").setStyle(Style.EMPTY
-							.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/customhud"))
-							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§eOpen link to download page on §aModrinth"))))
-						.append("§8]\n")
-						), false);
+			if (UpdateChecker.updateMessage != null)
+				client.getMessageHandler().onGameMessage(UpdateChecker.updateMessage, false);
 		});
 
 	}
 
 	public static void loadProfiles() {
-		for (int i = 1; i <=3; i++ )
-			profiles[i-1] = Profile.parseProfile(getProfilePath(i));
+		for (int i = 1; i <=3; i++ ) {
+			profiles[i - 1] = Profile.parseProfile(getProfilePath(i), i);
+		}
+		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 	}
 
 	private static ComplexData.Enabled previousEnabled = ComplexData.Enabled.DISABLED;
@@ -131,6 +137,7 @@ public class CustomHud implements ModInitializer {
 			return;
 		}
 
+
 		if (kb_cycleProfiles.wasPressed()) {
 			activeProfile = activeProfile == 3 ? 1 : activeProfile + 1;
 			if (!enabled) enabled = true;
@@ -147,8 +154,13 @@ public class CustomHud implements ModInitializer {
 			activeProfile = 3;
 			if (!enabled) enabled = true;
 		}
+		else if (kb_showErrors.wasPressed()) {
+			client.setScreen(new ErrorScreen(client.currentScreen));
+		}
 		else
 			return;
+
+		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 
 		CustomHud.justSaved = true;
 		saveDelay = 100;
@@ -174,7 +186,7 @@ public class CustomHud implements ModInitializer {
 		JsonObject config = new JsonObject();
 		config.addProperty("enabled", enabled);
 		config.addProperty("activeProfile", activeProfile);
-		config.addProperty("latestKnownVersion", latestKnownVersion);
+		config.addProperty("latestKnownVersion", UpdateChecker.getLatestKnownVersionAsString());
 		try {
 			Files.write(CONFIG, gson.toJson(config).getBytes());
 		} catch (IOException e) {
@@ -197,8 +209,9 @@ public class CustomHud implements ModInitializer {
 				fix = true;
 			}
 			JsonElement latestKnownVersion = json.get("latestKnownVersion");
-			CustomHud.latestKnownVersion = latestKnownVersion == null ? version : latestKnownVersion.getAsString();
-		} catch (JsonSyntaxException e) {
+			if (latestKnownVersion != null)
+				UpdateChecker.latestKnownVersion =latestKnownVersion.getAsString().split("\\.");
+		} catch (JsonSyntaxException|NullPointerException e) {
 			LOGGER.warn("Malformed Json, Fixing");
 			fix = true;
 		} catch (IOException e) {
@@ -219,11 +232,11 @@ public class CustomHud implements ModInitializer {
 			}
 			int profile;
 			switch (event.context().toString()) {
-				case "config.json" : profile = 0; break;
-				case "profile1.txt": profile = 1; break;
-				case "profile2.txt": profile = 2; break;
-				case "profile3.txt": profile = 3; break;
-				default: continue;
+				case "config.json" -> profile = 0;
+				case "profile1.txt" -> profile = 1;
+				case "profile2.txt" -> profile = 2;
+				case "profile3.txt" -> profile = 3;
+				default -> { continue; }
 			}
 			Path changed = CustomHud.CONFIG_FOLDER.resolve((Path) event.context());
 			Path original = profile == 0 ? CustomHud.CONFIG : CustomHud.getProfilePath(profile);
@@ -234,10 +247,11 @@ public class CustomHud implements ModInitializer {
 						CustomHud.loadConfig();
 					}
 					else {
-						CustomHud.profiles[profile - 1] = Profile.parseProfile(original);
+						CustomHud.profiles[profile - 1] = Profile.parseProfile(original, profile);
 						LOGGER.info("Updated Profile " + profile);
-						if (MinecraftClient.getInstance().player != null)
-							MinecraftClient.getInstance().player.sendMessage(MutableText.of(new TranslatableTextContent("gui.custom_hud.profile_updated", profile)), true);
+						showToast(profile, false);
+						if (client.currentScreen instanceof ErrorScreen screen)
+							screen.changeProfile(profile);
 						break;
 					}
 				}
@@ -245,39 +259,18 @@ public class CustomHud implements ModInitializer {
 				e.printStackTrace();
 			}
 		}
+
+		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
 		key.reset();
 	}
 
-	private static void checkForUpdate() {
-		try {
-			JsonObject updateData = getUpdateData();
-			String version = updateData.get("latest").getAsString();
-			if (!version.equals(latestKnownVersion)) {
-				latestKnownVersion = version;
-				if (CustomHud.version.compareTo(version) < 0) {
-					updateMsg = updateData.get("info").getAsString();
-					saveConfig();
-				}
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static JsonObject getUpdateData() throws IOException {
-		URL url = new URL("https://raw.githubusercontent.com/Minenash/CustomHUD/1.19/updateInfo.json");
-
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.connect();
-
-		int responseCode = conn.getResponseCode();
-
-		if (responseCode != 200)
-			throw new RuntimeException("HttpResponseCode: " + responseCode);
-
-		return JsonParser.parseString( new String(conn.getInputStream().readAllBytes()) ).getAsJsonObject();
+	public static void showToast(int profile, boolean mainMenu) {
+		client.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
+				Text.translatable("gui.custom_hud.profile_updated", profile).formatted(Formatting.WHITE),
+				Errors.hasErrors(profile) ? Text.literal("§cFound " + Errors.getErrors(profile).size() + " errors§7, Press ")
+						.append(((MutableText)kb_showErrors.getBoundKeyLocalizedText()).formatted(Formatting.AQUA))
+						.append( "§7" + (mainMenu? " in-game":"") + " to view") : Text.literal("§aNo errors found")
+		));
 	}
 
 

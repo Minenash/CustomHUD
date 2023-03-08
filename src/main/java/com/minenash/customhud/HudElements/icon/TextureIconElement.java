@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.Flags;
+import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -30,6 +30,8 @@ public class TextureIconElement extends IconElement {
     private final int yOffset;
     private final int textWidth;
 
+    private final boolean iconAvailable;
+
 
     public TextureIconElement(Identifier texture, int u, int v, int w, int h, Flags flags) {
         super(flags);
@@ -45,11 +47,11 @@ public class TextureIconElement extends IconElement {
         catch (IOException e) { e.printStackTrace(); }
 
 
-        boolean available = img != null;
-        this.texture = available ? texture : TEXTURE_NOT_FOUND;
+        iconAvailable = img != null;
+        this.texture = iconAvailable ? texture : TEXTURE_NOT_FOUND;
 
-        textureWidth = available ? img.getWidth() : 16;
-        textureHeight = available ? img.getHeight() : 16;
+        textureWidth = iconAvailable ? img.getWidth() : 16;
+        textureHeight = iconAvailable ? img.getHeight() : 16;
         regionWidth = w != -1 ? w : textureWidth;
         regionHeight = h != -1 ? h : textureHeight;
 
@@ -76,17 +78,20 @@ public class TextureIconElement extends IconElement {
         return textWidth;
     }
 
+    public boolean isIconAvailable() {
+        return iconAvailable;
+    }
+
     @Override
-    public int render(MatrixStack matrix, int x, int y) {
+    public void render(MatrixStack matrix, int x, int y, float profileScale) {
         if (width == 0)
-            return 0;
+            return;
 
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        DrawableHelper.drawTexture(matrix, x+shiftX, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
-        return textWidth;
+        DrawableHelper.drawTexture(matrix, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
 

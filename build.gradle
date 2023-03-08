@@ -44,6 +44,7 @@ dependencies {
 
 	implementation "org.joml:joml:1.10.2" //sodium
 	modImplementation "org.anarres:jcpp:1.4.14" //iris
+	modImplementation "io.github.douira:glsl-transformer:2.0.0-pre9" //iris
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.

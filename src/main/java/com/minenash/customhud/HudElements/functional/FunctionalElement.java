@@ -1,7 +1,7 @@
 package com.minenash.customhud.HudElements.functional;
 
 import com.minenash.customhud.HudElements.HudElement;
-import com.minenash.customhud.HudTheme;
+import com.minenash.customhud.data.HudTheme;
 
 public class FunctionalElement implements HudElement {
 

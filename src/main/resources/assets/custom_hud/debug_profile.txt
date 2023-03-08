@@ -1,0 +1,43 @@
+==Section: TopLeft==
+Minecraft {version} ({client_version}/{modded_name})
+{fps} fps T: {{max_fps,"{max_fps}","inf"}} {{vsync,"vsync "}}{graphics_mode} {{clouds,"{clouds}-clouds "}}B: {biome_blend}
+Integrated server @ {ms_ticks} ms ticks, {tx} tx, {rx} rx
+C: {chunks_rendered}/{chunks_loaded} {{chunks_culling,"(s) "}}D: {render_distance}, pC: {queued_tasks}, pU: {upload_queue}, aB: {buffer_count}
+E: {entities_rendered}/{entities_loaded}, B: 0, SD: {sd}
+P: {p}, T: {entities_loaded}
+{dimension_id} FC: {fc}
+
+XYZ: {x} / {y -p5} / {z}
+Block: {bx} {by} {bz}
+Chunk {icx} {icy} {icz} in {cx} {cy} {cz}
+Facing: {facing} (Towards {facing_towards_pn_sign} {facing_towards_xz}) ({yaw} / {pitch})
+Client Light: {light} ({light_sky} sky, {light_block} block)
+CH S: {chs} M: {chm}
+SH S: {shs} O: {sho} M: {shm} ML: {shml}
+Biome: {biome_id}
+Local Difficulty: {local_difficulty} // {clamped_local_difficulty} (Day {day})
+SC: {sc}, M: {monsters}, C: {creatures}, A: {ambient_mobs}, A: {axolotls}, U: {underground_water_creatures}, W: {water_creatures}, W: {water_ambient_mobs}, M: {misc_mobs}
+Sounds: {sounds}/{max_sounds} + {static_sounds}/{max_static_sounds} (Mood {mood}%)
+
+==Section: TopRight==
+Java: {java_version} {java_bit}bit
+Mem: {memory_used_percentage}% {memory_used}/{memory_total}MB
+Allocated: {memory_allocated_percentage}% {memory_allocated}MB
+
+Display: {display_width}x{display_height}
+
+=if, target_block=
+&nTargeted Block: {tbx}, {tby}, {tbz}
+{target_block_id}
+
+=endif=
+=if, target_fluid=
+&nTargeted Fluid: {tfx}, {tfy}, {tfz}
+{target_fluid_id}
+
+=endif=
+=if, target_entity=
+&nTargeted Entity
+{target_entity_id}
+
+=endif=

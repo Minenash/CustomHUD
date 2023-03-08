@@ -1,5 +1,7 @@
-package com.minenash.customhud;
+package com.minenash.customhud.data;
 
+import com.minenash.customhud.errors.ErrorType;
+import com.minenash.customhud.errors.Errors;
 import net.minecraft.util.Identifier;
 
 import java.util.regex.Matcher;
@@ -31,42 +33,37 @@ public class HudTheme {
     }
 
 
-    private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("LineSpacing: ?([-+]?\\d+)");
-    private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("Scale: ?(\\d+.?\\d*|.?\\d+)");
-    private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("(Back|Fore)groundColou?r: ?(0x|#)?([0-9a-fA-F]+)");
-    private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("Font: ?(\\w*:?\\w+)");
-    private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("TextShadow: ?(true|false)");
+    private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("linespacing: ?([-+]?\\d+)");
+    private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("scale: ?(\\d+.?\\d*|.?\\d+)");
+    private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("(back|fore)groundcolou?r: ?(0x|#)?([0-9a-fA-F]+)");
+    private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("font: ?(\\w*:?\\w+)");
+    private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("textshadow: ?(true|false)");
 
-    public boolean parse(String line) {
+    public boolean parse(boolean global, String line) {
+        line = line.toLowerCase();
         Matcher matcher = COLOR_FLAG_PATTERN.matcher(line);
-        if (matcher.matches()) {
-            if (matcher.group(1).equals("Fore"))
+        if (matcher.matches())
+            if (matcher.group(1).equals("fore"))
                 fgColor = parseHexNumber(matcher.group(3));
             else
                 bgColor = parseHexNumber(matcher.group(3));
-            return true;
-        }
-        matcher = SPACING_FLAG_PATTERN.matcher(line);
-        if (matcher.matches()) {
+
+        else if (( matcher = SPACING_FLAG_PATTERN.matcher(line) ).matches())
             lineSpacing = Integer.parseInt(matcher.group(1));
-            return true;
-        }
-        matcher = SCALE_FLAG_PATTERN.matcher(line);
-        if (matcher.matches()) {
+
+        else if (global && (  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches())
             scale = Float.parseFloat(matcher.group(1));
-            return true;
-        }
-        matcher = FONT_FLAG_PATTERN.matcher(line);
-        if (matcher.matches()) {
+
+        else if (( matcher = FONT_FLAG_PATTERN.matcher(line) ).matches())
             font = new Identifier(matcher.group(1));
-            return true;
-        }
-        matcher = TEXT_SHADOW_FLAG_PATTERN.matcher(line);
-        if (matcher.matches()) {
+
+        else if (( matcher = TEXT_SHADOW_FLAG_PATTERN.matcher(line) ).matches())
             textShadow = Boolean.parseBoolean(matcher.group(1));
-            return true;
-        }
-        return false;
+
+        else
+            return false;
+
+        return true;
     }
 
     public static int parseHexNumber(String str) {

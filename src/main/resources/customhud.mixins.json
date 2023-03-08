@@ -5,18 +5,17 @@
   "compatibilityLevel": "JAVA_16",
   "client": [
     "ChunkBuilderAccess",
+    "GameOptionsAccessor",
     "InGameHudMixin",
+    "KeyBindingAccessor",
     "MinecraftClientAccess",
     "MinecraftClientMixin",
+    "TitleScreenMixin",
     "WorldRendererAccess",
     "fonts.TextHandlerMixin",
     "fonts.TextRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "GameOptionsAccessor",
-    "KeyBindingAccessor"
-  ]
+  }
 }

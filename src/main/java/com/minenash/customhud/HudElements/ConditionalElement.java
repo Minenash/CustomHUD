@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements;
 
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.conditionals.Operation;
 
 import java.util.ArrayList;
@@ -58,6 +59,10 @@ public class ConditionalElement implements HudElement {
         private Operation conditional = null;
         private List<HudElement> elements = new ArrayList<>();
 
+        public MultiLineBuilder(Operation conditional) {
+            setConditional(conditional);
+        }
+
         public void setConditional(Operation conditional) {
             if (this.conditional != null) {
                 pairs.add(new ConditionalPair(this.conditional, elements));
@@ -66,19 +71,17 @@ public class ConditionalElement implements HudElement {
             this.conditional = conditional;
         }
 
-        public void add(List<HudElement> elements) {
+        public void add(HudElement element) {
+            this.elements.add(element);
+        }
+
+        public void addAll(List<HudElement> elements) {
             this.elements.addAll(elements);
-            this.elements.add(new StringElement("\\n"));
         }
 
         public ConditionalElement build() {
             pairs.add(new ConditionalPair(conditional, elements));
-
-            for (ConditionalPair pair : pairs)
-                if (pair.ifTrue.size() > 0)
-                    pair.ifTrue.remove(pair.ifTrue.size() - 1);
-
-           return new ConditionalElement(pairs);
+            return new ConditionalElement(pairs);
         }
 
     }
