@@ -48,12 +48,13 @@ public abstract class IconElement extends FunctionalElement {
         float profileScale = CustomHud.getActiveProfile().baseTheme.scale;
         matrixStack.scale(profileScale, profileScale, 1);
 
-        matrixStack.translate(x+5.5, y+5.5, 100.0f); //+ client.getItemRenderer().zOffset
+        matrixStack.translate(x+(5.5*scale), y+3.5, 100.0f); //+ client.getItemRenderer().zOffset
 
         if (referenceCorner)
-            matrixStack.translate(0, (11*scale-11)/2, 0);
+            matrixStack.translate(0, (10*scale-10)/2, 0);
 
-        matrixStack.scale(11 * scale, -11 * scale, 1);
+        matrixStack.scale(10 * scale, -10 * scale, 1);
+//        matrixStack.translate((scale-1)/2, 0, 0);
 
         if (!model.isSideLit())
             DiffuseLighting.disableGuiDepthLighting();
