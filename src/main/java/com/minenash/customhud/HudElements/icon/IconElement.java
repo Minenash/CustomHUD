@@ -48,11 +48,9 @@ public abstract class IconElement extends FunctionalElement {
         matrixStack.translate(x+5.5, y+3.5, 100.0f); //+ client.getItemRenderer().zOffset
 
         if (referenceCorner)
-            matrixStack.translate(0, (10*scale-10)/2, 0);
+            matrixStack.translate(0, (11*scale-11)/2, 0);
 
-        matrixStack.scale(10, -10, 1);
-        if (scale != 1)
-            matrixStack.scale(scale, scale, 1);
+        matrixStack.scale(11 * scale, -11 * scale, 1);
 
         if (!model.isSideLit())
             DiffuseLighting.disableGuiDepthLighting();
