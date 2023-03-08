@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,8 +121,8 @@ public class CustomHudRenderer {
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferRenderer.drawWithShader(bgBuilder.end());
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        BufferRenderer.drawWithGlobalProgram(bgBuilder.end());
         RenderSystem.disableBlend();
 
         ((CustomHudTextRendererExtention) client.textRenderer).customHud$beginCache();

@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 public class DebugGizmoElement extends IconElement {
 
@@ -52,8 +52,8 @@ public class DebugGizmoElement extends IconElement {
         }
 
         matrixStack.translate(x + shiftX + x_offset, y + shiftY + y_offset + (size/2), 100);
-        matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw()));
+        matrixStack.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
 
         matrixStack.scale(scale, scale, scale);
         RenderSystem.applyModelViewMatrix();

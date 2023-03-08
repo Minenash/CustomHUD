@@ -53,22 +53,24 @@ public class ErrorScreen extends Screen {
         this.listWidget = new ErrorListWidget(this.client, profile);
         this.addSelectableChild(listWidget);
 
-        profiles[0] = this.addDrawableChild(new ButtonWidget(this.width / 2 - 40 - 90, 24, 80, 20, Text.literal("Profile 1"), button -> {
-            changeProfile(1);
-        }));
-        profiles[1] = this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, 24, 80, 20, Text.literal("Profile 2"), button -> {
-            changeProfile(2);
-        }));
-        profiles[2] = this.addDrawableChild(new ButtonWidget(this.width / 2 - 40 + 90, 24, 80, 20, Text.literal("Profile 3"), button -> {
-            changeProfile(3);
-        }));
 
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 26, 150, 20, Text.literal("Open Profile"), button -> {
-            new Thread(() -> Util.getOperatingSystem().open(CustomHud.getProfilePath(profile).toFile())).start();
-        }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 26, 150, 20, ScreenTexts.DONE, (button) -> {
-            this.client.setScreen(parent);
-        }));
+
+        profiles[0] = this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 1"), button -> changeProfile(1))
+                .position(this.width / 2 - 40 - 90, 24).size(80, 20).build() );
+
+        profiles[1] = this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 2"), button -> changeProfile(2))
+                .position(this.width / 2 - 40, 24).size(80, 20).build() );
+
+        profiles[2] = this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 3"), button -> changeProfile(3))
+                .position(this.width / 2 - 40 + 90, 24).size(80, 20).build() );
+
+        this.addDrawableChild( ButtonWidget.builder(Text.literal("Open Profile"),
+                button -> new Thread(() -> Util.getOperatingSystem().open(CustomHud.getProfilePath(profile).toFile())).start())
+                .position(this.width / 2 - 155, this.height - 26).size(150, 20).build() );
+
+        this.addDrawableChild( ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(parent))
+                .position(this.width / 2 - 155 + 160, this.height - 26).size(150, 20).build() );
+
         super.init();
     }
 
@@ -236,7 +238,7 @@ public class ErrorScreen extends Screen {
             public static final Identifier texture = new Identifier("textures/gui/resource_packs.png");
             private void renderExpandIcon(MatrixStack matrix, int x, int y, boolean expanded, int mouseX) {
                 boolean hovered = mouseX >= x && mouseX <= x + 7;
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                 RenderSystem.setShaderTexture(0, texture);
                 DrawableHelper.drawTexture(matrix, x, y, 7, 11, 0, 0, 32, 32, 256, 256);
 
