@@ -9,8 +9,8 @@ import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.function.Supplier;
@@ -39,15 +39,15 @@ public class SpecialSupplierElement implements HudElement {
                                                  () -> Block.getRawIdFromState(ComplexData.targetBlock),
                                                  () -> !ComplexData.targetBlock.isAir());
 
-    public static final Entry TARGET_BLOCK_ID = of( () -> Registry.BLOCK.getId(ComplexData.targetBlock.getBlock()).toString(),
+    public static final Entry TARGET_BLOCK_ID = of( () -> Registries.BLOCK.getId(ComplexData.targetBlock.getBlock()).toString(),
                                                     () -> Block.getRawIdFromState(ComplexData.targetBlock),
                                                     () -> !ComplexData.targetBlock.isAir());
 
-    public static final Entry TARGET_FLUID = of( () -> WordUtils.capitalize(Registry.FLUID.getId(ComplexData.targetFluid.getFluid()).getPath().replace('_',' ')),
+    public static final Entry TARGET_FLUID = of( () -> WordUtils.capitalize(Registries.FLUID.getId(ComplexData.targetFluid.getFluid()).getPath().replace('_',' ')),
                                                  () -> Fluid.STATE_IDS.getRawId(ComplexData.targetFluid),
                                                  () -> !ComplexData.targetFluid.isEmpty());
 
-    public static final Entry TARGET_FLUID_ID = of( () -> Registry.FLUID.getId(ComplexData.targetFluid.getFluid()).toString(),
+    public static final Entry TARGET_FLUID_ID = of( () -> Registries.FLUID.getId(ComplexData.targetFluid.getFluid()).toString(),
                                                     () -> Fluid.STATE_IDS.getRawId(ComplexData.targetFluid),
                                                     () -> !ComplexData.targetFluid.isEmpty());
 
@@ -60,7 +60,7 @@ public class SpecialSupplierElement implements HudElement {
             () -> !client.player.getMainHandStack().isEmpty());
 
     @Deprecated
-    public static final Entry ITEM_ID = of( () -> Registry.ITEM.getId(client.player.getMainHandStack().getItem()).toString(),
+    public static final Entry ITEM_ID = of( () -> Registries.ITEM.getId(client.player.getMainHandStack().getItem()).toString(),
                                             () -> Item.getRawId(client.player.getMainHandStack().getItem()),
                                             () -> !client.player.getMainHandStack().isEmpty());
     @Deprecated
@@ -72,7 +72,7 @@ public class SpecialSupplierElement implements HudElement {
             () -> client.player.getOffHandStack().getName().getString().length(),
             () -> !client.player.getOffHandStack().isEmpty());
     @Deprecated
-    public static final Entry OFFHAND_ITEM_ID = of( () -> Registry.ITEM.getId(client.player.getOffHandStack().getItem()).toString(),
+    public static final Entry OFFHAND_ITEM_ID = of( () -> Registries.ITEM.getId(client.player.getOffHandStack().getItem()).toString(),
                                                     () -> Item.getRawId(client.player.getOffHandStack().getItem()),
                                                     () -> !client.player.getOffHandStack().isEmpty());
 

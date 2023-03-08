@@ -88,7 +88,7 @@ public class TextureIconElement extends IconElement {
             return;
 
         RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         DrawableHelper.drawTexture(matrix, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);

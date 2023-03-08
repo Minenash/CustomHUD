@@ -111,7 +111,7 @@ public class SlotItemIconElement extends IconElement {
             RenderSystem.enableDepthTest();
         }
     }
-
+    
     private void renderGuiQuad(BufferBuilder buffer, float profileScale, double x, double y, double width, double height, int red, int green, int blue, int alpha) {
         x *= profileScale;
         y *= profileScale;
@@ -120,14 +120,13 @@ public class SlotItemIconElement extends IconElement {
         width *= scale;
         height *= scale;
 
-
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         buffer.vertex(x + 0, y + 0, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + 0, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + 0, 0.0).color(red, green, blue, alpha).next();
-        BufferRenderer.drawWithShader(buffer.end());
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
 
 }

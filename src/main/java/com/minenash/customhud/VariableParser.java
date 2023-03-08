@@ -18,12 +18,13 @@ import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,12 +34,12 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.*;
-import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
-import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
-import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
-import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
+import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
+import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
 
 public class VariableParser {
 
@@ -144,19 +145,19 @@ public class VariableParser {
         else if (part.startsWith("stat:")) {
             String stat = part.substring(5);
 
-            HudElement element = stat("mined:",   Stats.MINED,   Registry.BLOCK, stat, flags, enabled);
-            if (element == null) element = stat("crafted:", Stats.CRAFTED, Registry.ITEM,  stat, flags, enabled);
-            if (element == null) element = stat("used:",    Stats.USED,    Registry.ITEM,  stat, flags, enabled);
-            if (element == null) element = stat("broken:",  Stats.BROKEN,  Registry.ITEM,  stat, flags, enabled);
-            if (element == null) element = stat("dropped:", Stats.DROPPED, Registry.ITEM,  stat, flags, enabled);
-            if (element == null) element = stat("picked_up:", Stats.PICKED_UP, Registry.ITEM, stat, flags, enabled);
-            if (element == null) element = stat("killed:",    Stats.KILLED,    Registry.ENTITY_TYPE, stat, flags, enabled);
-            if (element == null) element = stat("killed_by:", Stats.KILLED_BY, Registry.ENTITY_TYPE, stat, flags, enabled);
+            HudElement element = stat("mined:",   Stats.MINED,   Registries.BLOCK, stat, flags, enabled);
+            if (element == null) element = stat("crafted:", Stats.CRAFTED, Registries.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("used:",    Stats.USED,    Registries.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("broken:",  Stats.BROKEN,  Registries.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("dropped:", Stats.DROPPED, Registries.ITEM,  stat, flags, enabled);
+            if (element == null) element = stat("picked_up:", Stats.PICKED_UP, Registries.ITEM, stat, flags, enabled);
+            if (element == null) element = stat("killed:",    Stats.KILLED,    Registries.ENTITY_TYPE, stat, flags, enabled);
+            if (element == null) element = stat("killed_by:", Stats.KILLED_BY, Registries.ENTITY_TYPE, stat, flags, enabled);
 
             if (element != null)
                 return element;
 
-            Identifier statId = Registry.CUSTOM_STAT.get(new Identifier(stat));
+            Identifier statId = Registries.CUSTOM_STAT.get(new Identifier(stat));
             if (Stats.CUSTOM.hasStat(statId)) {
                 enabled.updateStats = true;
                 return new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), flags);
@@ -168,7 +169,7 @@ public class VariableParser {
         else if (part.startsWith("icon:")) {
             part = part.substring(part.indexOf(':')+1);
 
-            Item item = Registry.ITEM.get(Identifier.tryParse(part));
+            Item item = Registries.ITEM.get(Identifier.tryParse(part));
             if (item != Items.AIR)
                 return new ItemIconElement(new ItemStack(item), flags);
 
@@ -198,7 +199,7 @@ public class VariableParser {
             part = part.substring(part.indexOf(':')+1);
 
             try {
-                Item item = Registry.ITEM.get(new Identifier(part));
+                Item item = Registries.ITEM.get(new Identifier(part));
                 if (item == Items.AIR)
                     Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
                 else

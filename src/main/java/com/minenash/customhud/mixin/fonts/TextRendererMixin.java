@@ -18,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(TextRenderer.class)
 public class TextRendererMixin implements CustomHudTextRendererExtention {
 
-    @ModifyArg(method = "drawLayer(Ljava/lang/String;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)F", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextVisitFactory;visitFormatted(Ljava/lang/String;Lnet/minecraft/text/Style;Lnet/minecraft/text/CharacterVisitor;)Z"), index = 1)
-    public Style customHud$changeStyle(Style old) {
+    @ModifyArg(method = "drawLayer(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)F", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/TextVisitFactory;visitFormatted(Ljava/lang/String;Lnet/minecraft/text/Style;Lnet/minecraft/text/CharacterVisitor;)Z"), index = 1)
+    public Style changeStyle(Style old) {
         return CustomHudRenderer.font == null ? old : old.withFont(CustomHudRenderer.font);
     }
 

@@ -8,9 +8,9 @@ import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.function.Supplier;
@@ -36,7 +36,7 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> MOON_PHASE_WORD = () -> ComplexData.clientChunk.isEmpty() ? null : moon_phases[client.world.getMoonPhase()];
 
     public static final Supplier<String> TARGET_ENTITY = () -> client.targetedEntity == null ? null : I18n.translate(client.targetedEntity.getType().getTranslationKey());
-    public static final Supplier<String> TARGET_ENTITY_ID = () -> client.targetedEntity == null ? null : Registry.ENTITY_TYPE.getId(client.targetedEntity.getType()).toString();
+    public static final Supplier<String> TARGET_ENTITY_ID = () -> client.targetedEntity == null ? null : Registries.ENTITY_TYPE.getId(client.targetedEntity.getType()).toString();
 
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
