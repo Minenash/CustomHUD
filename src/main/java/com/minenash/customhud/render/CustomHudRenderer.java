@@ -29,7 +29,7 @@ public class CustomHudRenderer {
     public static void render(MatrixStack matrices, float _tickDelta) {
 
         Profile profile = CustomHud.getActiveProfile();
-        if (profile == null)
+        if (profile == null || client.options.debugEnabled)
             return;
 
         boolean isChatOpen = client.currentScreen instanceof ChatScreen;
@@ -138,7 +138,7 @@ public class CustomHudRenderer {
 
         for (RenderPiece piece : pieces) {
             if (piece.element instanceof IconElement ie )
-                ie.render(matrices, piece.x, piece.y);
+                ie.render(matrices, piece.x, piece.y, profile.baseTheme.scale);
         }
 
         matrices.pop();

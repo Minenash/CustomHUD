@@ -149,9 +149,9 @@ public class ComplexData {
             x1 = p.getX();
             y1 = p.getY();
             z1 = p.getZ();
-            velocityXZ = ((int)(changeXZ*40))/10.0;
-            velocityY = ((int)(changeY*40))/10.0;
-            velocityXYZ = ((int)(changeXYZ*40))/10.0;
+            velocityXZ = changeXZ * 4;
+            velocityY = changeY * 4;
+            velocityXYZ = changeXYZ * 4;
         }
 
         if (profile.enabled.cpu) {

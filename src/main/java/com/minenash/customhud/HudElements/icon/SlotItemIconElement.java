@@ -1,6 +1,5 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -46,16 +45,14 @@ public class SlotItemIconElement extends IconElement {
         return getStack().isEmpty() ? 0 : width;
     }
 
-    public void render(MatrixStack matrix, int x, int y) {
+    public void render(MatrixStack matrix, int x, int y, float profileScale) {
         ItemStack stack = getStack();
         if (stack == null || stack.isEmpty())
             return;
         x += shiftX;
         y += shiftY;
 
-        float profileScale = CustomHud.getActiveProfile().baseTheme.scale;
-
-        renderItemStack(x, y, stack);
+        renderItemStack(x, y, profileScale, stack);
         if (showCount)
             renderCount(stack.getCount(), x, y, profileScale);
         if (showDur)
@@ -102,7 +99,7 @@ public class SlotItemIconElement extends IconElement {
         ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 
         float f = clientPlayerEntity == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getTickDelta());
-//        if (f > 0.0f) {
+        if (f > 0.0f) {
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
@@ -112,7 +109,7 @@ public class SlotItemIconElement extends IconElement {
             this.renderGuiQuad(bufferBuilder2, profileScale, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 0, 255, 255, 64);
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
-//        }
+        }
     }
 
     private void renderGuiQuad(BufferBuilder buffer, float profileScale, double x, double y, double width, double height, int red, int green, int blue, int alpha) {

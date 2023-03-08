@@ -52,15 +52,15 @@ public class CustomHud implements ModInitializer {
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	private static final KeyBinding kb_enable = registerKeyBinding("enable");
-	private static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycle_profiles");
-	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swap_to_profile1");
-	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swap_to_profile2");
-	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swap_to_profile3");
+	private static final KeyBinding kb_enable = registerKeyBinding("enable", GLFW.GLFW_KEY_UNKNOWN);
+	private static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycle_profiles", GLFW.GLFW_KEY_GRAVE_ACCENT);
+	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swap_to_profile1", GLFW.GLFW_KEY_UNKNOWN);
+	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swap_to_profile2", GLFW.GLFW_KEY_UNKNOWN);
+	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swap_to_profile3", GLFW.GLFW_KEY_UNKNOWN);
 
-	private static final KeyBinding kb_showErrors = registerKeyBinding("show_errors");
+	private static final KeyBinding kb_showErrors = registerKeyBinding("show_errors", GLFW.GLFW_KEY_B);
 
-	private static KeyBinding registerKeyBinding(String binding) {
+	private static KeyBinding registerKeyBinding(String binding, int defaultKey) {
 		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.custom_hud"));
 	}
 
@@ -267,7 +267,7 @@ public class CustomHud implements ModInitializer {
 	public static void showToast(int profile, boolean mainMenu) {
 		client.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
 				Text.translatable("gui.custom_hud.profile_updated", profile).formatted(Formatting.WHITE),
-				Errors.hasErrors(profile) ? Text.literal("§cFound 5 errors§7, Press ")
+				Errors.hasErrors(profile) ? Text.literal("§cFound " + Errors.getErrors(profile).size() + " errors§7, Press ")
 						.append(((MutableText)kb_showErrors.getBoundKeyLocalizedText()).formatted(Formatting.AQUA))
 						.append( "§7" + (mainMenu? " in-game":"") + " to view") : Text.literal("§aNo errors found")
 		));

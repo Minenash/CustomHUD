@@ -30,6 +30,8 @@ public class TextureIconElement extends IconElement {
     private final int yOffset;
     private final int textWidth;
 
+    private final boolean iconAvailable;
+
 
     public TextureIconElement(Identifier texture, int u, int v, int w, int h, Flags flags) {
         super(flags);
@@ -45,11 +47,11 @@ public class TextureIconElement extends IconElement {
         catch (IOException e) { e.printStackTrace(); }
 
 
-        boolean available = img != null;
-        this.texture = available ? texture : TEXTURE_NOT_FOUND;
+        iconAvailable = img != null;
+        this.texture = iconAvailable ? texture : TEXTURE_NOT_FOUND;
 
-        textureWidth = available ? img.getWidth() : 16;
-        textureHeight = available ? img.getHeight() : 16;
+        textureWidth = iconAvailable ? img.getWidth() : 16;
+        textureHeight = iconAvailable ? img.getHeight() : 16;
         regionWidth = w != -1 ? w : textureWidth;
         regionHeight = h != -1 ? h : textureHeight;
 
@@ -76,8 +78,12 @@ public class TextureIconElement extends IconElement {
         return textWidth;
     }
 
+    public boolean isIconAvailable() {
+        return iconAvailable;
+    }
+
     @Override
-    public void render(MatrixStack matrix, int x, int y) {
+    public void render(MatrixStack matrix, int x, int y, float profileScale) {
         if (width == 0)
             return;
 

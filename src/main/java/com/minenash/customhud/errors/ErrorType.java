@@ -22,6 +22,8 @@ public enum ErrorType {
     UNAVAILABLE_SLOT ("Slots", "references/item_slots", "The §e" + "§r slot is not available for players"),
     UNKNOWN_ITEM_PROPERTY ("Item Properties", "variables#items", "Unknown Item Property: §e"),
 
+    UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),
+
     UNKNOWN_SETTING ("Settings", "references/settings", "Unknown Setting: §e"),
     UNKNOWN_KEYBOARD_KEY ("Settings", "references/settings", "Unknown Keyboard Key: §e"),
     UNKNOWN_SOUND_CATEGORY ("Settings", "references/settings", "Unknown Sound Category: §e"),
@@ -37,6 +39,6 @@ public enum ErrorType {
     ErrorType(String linkText, String link, String msg) {
         this.message = msg;
         this.linkText = Text.literal(linkText).formatted(Formatting.AQUA, Formatting.UNDERLINE);
-        this.link = "https://customhud.dev/3.0.0/" + link;
+        this.link = "https://customhud.dev/v3/" + link;
     }
 }

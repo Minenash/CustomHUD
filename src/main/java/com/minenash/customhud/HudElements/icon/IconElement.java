@@ -1,6 +1,5 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -28,7 +27,7 @@ public abstract class IconElement extends FunctionalElement {
         referenceCorner = flags.iconReferenceCorner;
     }
 
-    public abstract void render(MatrixStack stack, int x, int y);
+    public abstract void render(MatrixStack stack, int x, int y, float profileScale);
     public abstract int getTextWidth();
 
     @Override
@@ -36,7 +35,7 @@ public abstract class IconElement extends FunctionalElement {
         return "\uFFFE";
     }
 
-    public void renderItemStack(int x, int y, ItemStack stack) {
+    public void renderItemStack(int x, int y, float profileScale, ItemStack stack) {
         BakedModel model = client.getItemRenderer().getModel(stack, null, null, 0);
         client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
@@ -45,7 +44,6 @@ public abstract class IconElement extends FunctionalElement {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        float profileScale = CustomHud.getActiveProfile().baseTheme.scale;
         matrixStack.scale(profileScale, profileScale, 1);
 
         matrixStack.translate(x+(5.5*scale), y+3.5, 100.0f); //+ client.getItemRenderer().zOffset
@@ -54,7 +52,6 @@ public abstract class IconElement extends FunctionalElement {
             matrixStack.translate(0, (10*scale-10)/2, 0);
 
         matrixStack.scale(10 * scale, -10 * scale, 1);
-//        matrixStack.translate((scale-1)/2, 0, 0);
 
         if (!model.isSideLit())
             DiffuseLighting.disableGuiDepthLighting();

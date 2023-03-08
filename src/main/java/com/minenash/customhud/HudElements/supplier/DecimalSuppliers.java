@@ -27,9 +27,9 @@ public class DecimalSuppliers {
     public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
 
     //TODO: Fix precision
-    public static final Entry VELOCITY_XZ = of( () -> ComplexData.velocityXZ, 5);
-    public static final Entry VELOCITY_Y = of( () -> ComplexData.velocityY, 5);
-    public static final Entry VELOCITY_XYZ = of( () -> ComplexData.velocityXYZ, 5);
+    public static final Entry VELOCITY_XZ = of( () -> ComplexData.velocityXZ, 1);
+    public static final Entry VELOCITY_Y = of( () -> ComplexData.velocityY, 1);
+    public static final Entry VELOCITY_XYZ = of( () -> ComplexData.velocityXYZ, 1);
     public static final Entry VELOCITY_XZ_KMH = of( () -> ComplexData.velocityXZ * 3.6, 1);
     public static final Entry VELOCITY_Y_KMH = of( () -> ComplexData.velocityY * 3.6, 1);
     public static final Entry VELOCITY_XYZ_KMH = of( () -> ComplexData.velocityXYZ * 3.6, 1);

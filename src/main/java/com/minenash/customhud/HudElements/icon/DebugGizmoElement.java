@@ -20,17 +20,18 @@ public class DebugGizmoElement extends IconElement {
     }
 
     @Override
-    public void render(MatrixStack stack, int x, int y) {
+    public void render(MatrixStack stack, int x, int y, float profileScale) {
         float scale = -1 * this.scale;
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
+        matrixStack.scale(profileScale,profileScale,1);
 
         float yaw = MathHelper.wrapDegrees(camera.getYaw());
         float pitch = MathHelper.wrapDegrees(camera.getPitch());
 
         float x_offset = size / 2;
-        float y_offset = (pitch + 90) / 180 * size * 2;
+        float y_offset = (pitch + 90) / 180 * size * 2 - 2;
         if (y_offset > size) y_offset = size;
 
         if (yaw > 90) {

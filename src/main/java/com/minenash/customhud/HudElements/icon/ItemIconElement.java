@@ -32,7 +32,7 @@ public class ItemIconElement extends IconElement {
         return width;
     }
 
-    public void render(MatrixStack matrix, int x, int y) {
-        renderItemStack(x+shiftX, y+shiftY, stack);
+    public void render(MatrixStack matrix, int x, int y, float profileScale) {
+        renderItemStack(x+shiftX, y+shiftY, profileScale, stack);
     }
 }
