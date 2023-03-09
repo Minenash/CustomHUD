@@ -34,9 +34,13 @@ public class ErrorScreen extends Screen {
     public int sourceSectionWidth = 120;
 
     public ErrorScreen(Screen parent) {
+        this(parent, CustomHud.activeProfile);
+    }
+
+    public ErrorScreen(Screen parent, int profile) {
         super(Text.literal("Profile Errors"));
         this.parent = parent;
-        this.profile = CustomHud.activeProfile;
+        this.profile = profile;
     }
 
     public void changeProfile(int profile) {
@@ -155,7 +159,6 @@ public class ErrorScreen extends Screen {
                 client.textRenderer.drawWithShadow(matrices, Text.literal(collapsedSource).formatted(Formatting.UNDERLINE), 36, y + y_offset, 0xFFFFFFFF);
                 client.textRenderer.drawWithShadow(matrices, Text.literal(collapsedMsg).formatted(Formatting.UNDERLINE), msgX, y + y_offset, 0xFFFFFFFF);
                 client.textRenderer.drawWithShadow(matrices, error.type().linkText.formatted(Formatting.WHITE), refX, y + y_offset, 0xFFFFFFFF);
-//                DrawableHelper.fill(matrices, 0, y + 12, width, y+16, 0x88000000);
             }
         }
 
@@ -230,17 +233,6 @@ public class ErrorScreen extends Screen {
                     y_offset += 18;
 
                 }
-
-            }
-
-            public static final Identifier texture = new Identifier("textures/gui/resource_packs.png");
-            private void renderExpandIcon(MatrixStack matrix, int x, int y, boolean expanded, int mouseX) {
-                boolean hovered = mouseX >= x && mouseX <= x + 7;
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderTexture(0, texture);
-                DrawableHelper.drawTexture(matrix, x, y, 7, 11, 0, 0, 32, 32, 256, 256);
-
-                DrawableHelper.drawTexture(matrix, x, y, 7, 11, 9 + (expanded ? 24 : 0), 5 + (hovered ? 32 : 0), 7, 11, 256, 256);
 
             }
 
