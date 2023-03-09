@@ -12,7 +12,6 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralTextContent;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
@@ -36,7 +35,7 @@ public class ModMenuIntegration implements ModMenuApi {
         private static final int OPTION_START = 32+13, OPTION_BUFFER = 30;
 
         protected ConfigScreen(Screen parent) {
-            super(MutableText.of(new TranslatableTextContent("sml.config.screen.title")));
+            super(Text.translatable("sml.config.screen.title"));
             this.parent = parent;
             this.font = MinecraftClient.getInstance().textRenderer;
         }
@@ -53,11 +52,11 @@ public class ModMenuIntegration implements ModMenuApi {
 
             this.addDrawableChild(ButtonWidget.builder(Text.translatable(getEnableDisableLabel(CustomHud.enabled)), button -> {
                 CustomHud.enabled = !CustomHud.enabled;
-                button.setMessage(MutableText.of(new TranslatableTextContent(getEnableDisableLabel(CustomHud.enabled))));
+                button.setMessage(Text.translatable(getEnableDisableLabel(CustomHud.enabled)));
             }).dimensions(buttonX, OPTION_START, buttonWidth, 20).build());
-            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new LiteralTextContent(Integer.toString(CustomHud.activeProfile))), (button) -> {
+            this.addDrawableChild(ButtonWidget.builder(Text.literal(Integer.toString(CustomHud.activeProfile)), (button) -> {
                 CustomHud.activeProfile = CustomHud.activeProfile == 3 ? 1 : CustomHud.activeProfile + 1;
-                button.setMessage(MutableText.of(new LiteralTextContent(Integer.toString(CustomHud.activeProfile))));
+                button.setMessage(Text.literal(Integer.toString(CustomHud.activeProfile)));
             }).dimensions(buttonX, OPTION_START + OPTION_BUFFER, buttonWidth, 20).build());
 
             for (int i = 1; i <= 3; i++) {
@@ -77,7 +76,7 @@ public class ModMenuIntegration implements ModMenuApi {
                         .build());
             }
 
-            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent("config.custom_hud.done")), (button) -> close()).dimensions(mid - 100, this.height - 28, 200, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(Text.translatable("config.custom_hud.done"), (button) -> close()).dimensions(mid - 100, this.height - 28, 200, 20).build());
         }
 
         private String getEnableDisableLabel(boolean value) {
@@ -97,9 +96,9 @@ public class ModMenuIntegration implements ModMenuApi {
             if (MinecraftClient.getInstance().cameraEntity == null)
                 DrawableHelper.fill(matrix,0,36,this.width,this.height - 30-9, 0x88000000);
 
-            DrawableHelper.drawCenteredText(matrix, font, MutableText.of(new TranslatableTextContent("config.custom_hud.title")), this.width / 2, 13, 0xFFFFFF);
-            font.draw(matrix, MutableText.of(new TranslatableTextContent("config.custom_hud.enable.label")), 20, OPTION_START + 5, 0xFFFFFF);
-            font.draw(matrix, MutableText.of(new TranslatableTextContent("config.custom_hud.active_profile.label")), 20, OPTION_START + OPTION_BUFFER + 5, 0xFFFFFF);
+            DrawableHelper.drawCenteredText(matrix, font, Text.translatable("config.custom_hud.title"), this.width / 2, 13, 0xFFFFFF);
+            font.draw(matrix, Text.translatable("config.custom_hud.enable.label"), 20, OPTION_START + 5, 0xFFFFFF);
+            font.draw(matrix, Text.translatable("config.custom_hud.active_profile.label"), 20, OPTION_START + OPTION_BUFFER + 5, 0xFFFFFF);
 
             super.render(matrix,mouseX, mouseY, delta);
         }
