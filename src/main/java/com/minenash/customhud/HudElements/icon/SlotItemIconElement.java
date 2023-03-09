@@ -66,6 +66,8 @@ public class SlotItemIconElement extends IconElement {
             MatrixStack matrixStack = new MatrixStack();
             matrixStack.scale(profileScale, profileScale, 1);
             matrixStack.translate(x + (scale-1)/4,y + (scale-1)/4,200);
+            if (referenceCorner)
+                matrixStack.translate(0, (10*scale-10)/2, 0);
             matrixStack.scale(10/16F * scale, 10/16F * scale, 1);
 
             String string = String.valueOf(count);
@@ -113,6 +115,8 @@ public class SlotItemIconElement extends IconElement {
     }
     
     private void renderGuiQuad(BufferBuilder buffer, float profileScale, double x, double y, double width, double height, int red, int green, int blue, int alpha) {
+        if (referenceCorner)
+            y += (10*scale-10)/2;
         x *= profileScale;
         y *= profileScale;
         width *= profileScale;
