@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
@@ -267,9 +268,14 @@ public class CustomHud implements ModInitializer {
 	public static void showToast(int profile, boolean mainMenu) {
 		client.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
 				Text.translatable("gui.custom_hud.profile_updated", profile).formatted(Formatting.WHITE),
-				Errors.hasErrors(profile) ? Text.literal("§cFound " + Errors.getErrors(profile).size() + " errors§7, Press ")
-						.append(((MutableText)kb_showErrors.getBoundKeyLocalizedText()).formatted(Formatting.AQUA))
-						.append( "§7" + (mainMenu? " in-game":"") + " to view") : Text.literal("§aNo errors found")
+				Errors.hasErrors(profile) ?
+						Text.literal("§cFound " + Errors.getErrors(profile).size() + " errors")
+							.append(client.currentScreen instanceof TitleScreen ?
+								Text.literal("§7, view in config screen via modmenu ")
+								: Text.literal("§7, press ")
+									.append(((MutableText)kb_showErrors.getBoundKeyLocalizedText()).formatted(Formatting.AQUA))
+									.append("§7 to view"))
+						: Text.literal("§aNo errors found")
 		));
 	}
 

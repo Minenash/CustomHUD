@@ -125,22 +125,37 @@ public class Profile {
             if (sectionId == -1)
                 profile.sections[(sectionId = 0)] = new Section.TopLeft();
 
-            if (( matcher = LOCAL_THEME_PATTERN.matcher(line) ).matches() && localTheme.parse(false, matcher.group(1)))
-                addElement(profile, sectionId, new FunctionalElement.ChangeTheme(localTheme));
-
-            else if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
+            if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
                 profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
 
             else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
-                profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled));
+                if (profile.tempIfStack.isEmpty())
+                    Errors.addError(profileID, i, line, ErrorType.CONDITIONAL_NOT_STARTED, "=else if: §ocond§r=");
+                else
+                    profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), line, profileID, i + 1, profile.enabled));
 
             else if (line.equalsIgnoreCase("=else="))
-                profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
+                if (profile.tempIfStack.isEmpty())
+                    Errors.addError(profileID, i, line, ErrorType.CONDITIONAL_NOT_STARTED, "=else=");
+                else
+                    profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
 
             else if (line.equalsIgnoreCase("=endif="))
-                addElement(profile, sectionId, profile.tempIfStack.pop().build());
-            else if (GLOBAL_THEME_PATTERN.matcher(line).matches() || LOCAL_THEME_PATTERN.matcher(line).matches())
-                Errors.addError(profileID, i, lineLC, ErrorType.UNKNOWN_THEME_FLAG, "");
+                if (profile.tempIfStack.isEmpty())
+                    Errors.addError(profileID, i, line, ErrorType.CONDITIONAL_NOT_STARTED, "end");
+                else
+                    addElement(profile, sectionId, profile.tempIfStack.pop().build());
+
+            else if (( matcher = LOCAL_THEME_PATTERN.matcher(lineLC) ).matches()) {
+                if (localTheme.parse(false, matcher.group(1)))
+                    addElement(profile, sectionId, new FunctionalElement.ChangeTheme(localTheme));
+                else
+                    Errors.addError(profileID, i, line, ErrorType.UNKNOWN_THEME_FLAG, "");
+            }
+
+            else if (GLOBAL_THEME_PATTERN.matcher(lineLC).matches() )
+                Errors.addError(profileID, i, line, ErrorType.ILLEGAL_GLOBAL_THEME_FLAG, "");
+
 
             else
                 addAllElement(profile, sectionId, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true));

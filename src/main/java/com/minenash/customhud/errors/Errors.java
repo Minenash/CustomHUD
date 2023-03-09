@@ -25,7 +25,7 @@ public class Errors {
     }
 
     public static void addError(int profile, int line, String source, ErrorType type, String context) {
-        addError(profile, Integer.toString(line), source, type, context);
+        addError(profile, Integer.toString(line+1), source, type, context);
     }
     public static void addError(int profile, String line, String source, ErrorType type, String context) {
         errors[profile-1].add(new Error(line, source, type, context));

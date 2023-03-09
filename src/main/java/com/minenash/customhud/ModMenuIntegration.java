@@ -1,16 +1,21 @@
 package com.minenash.customhud;
 
+import com.minenash.customhud.errors.ErrorScreen;
+import com.minenash.customhud.errors.Errors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
 import com.terraformersmc.modmenu.api.ModMenuApi;
@@ -43,8 +48,10 @@ public class ModMenuIntegration implements ModMenuApi {
             int buttonX = this.width - buttonWidth - 10;
             int mid = this.width/2;
 
-            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent("config.custom_hud.done")), (button) -> close()).dimensions(mid - 100, this.height - 28, 200, 20).build());
-            this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent(getEnableDisableLabel(CustomHud.enabled))), (button) -> {
+            this.addDrawableChild(ButtonWidget.builder(Text.translatable("config.custom_hud.done"), button -> close())
+                    .dimensions(mid - 100, this.height - 28, 200, 20).build());
+
+            this.addDrawableChild(ButtonWidget.builder(Text.translatable(getEnableDisableLabel(CustomHud.enabled)), button -> {
                 CustomHud.enabled = !CustomHud.enabled;
                 button.setMessage(MutableText.of(new TranslatableTextContent(getEnableDisableLabel(CustomHud.enabled))));
             }).dimensions(buttonX, OPTION_START, buttonWidth, 20).build());
@@ -55,9 +62,19 @@ public class ModMenuIntegration implements ModMenuApi {
 
             for (int i = 1; i <= 3; i++) {
                 int ii = i;
-                this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent("config.custom_hud.open_profile", i)), (button) ->
+                this.addDrawableChild(ButtonWidget.builder(Text.translatable("config.custom_hud.open_profile", i), (button) ->
                         new Thread(() -> Util.getOperatingSystem().open(CustomHud.getProfilePath(ii).toFile())).start()
                 ).dimensions(mid - 75, OPTION_START + OPTION_BUFFER * (i + 1) + 5, 150, 20).build());
+            }
+
+            for (int i = 1; i <= 3; i++) {
+                int ii = i;
+                if (Errors.hasErrors(i))
+                    this.addDrawableChild(ButtonWidget.builder(Text.literal("!").formatted(Formatting.RED), (button) ->
+                            client.setScreen(new ErrorScreen(client.currentScreen, ii)))
+                        .dimensions(mid + 85, OPTION_START + OPTION_BUFFER * (i + 1) + 5, 20, 20)
+                        .tooltip(Tooltip.of(Text.literal(Errors.getErrors(ii).size() + " Errors Found").formatted(Formatting.RED)))
+                        .build());
             }
 
             this.addDrawableChild(ButtonWidget.builder(MutableText.of(new TranslatableTextContent("config.custom_hud.done")), (button) -> close()).dimensions(mid - 100, this.height - 28, 200, 20).build());

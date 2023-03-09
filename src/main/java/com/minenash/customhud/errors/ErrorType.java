@@ -3,8 +3,6 @@ package com.minenash.customhud.errors;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
-import java.util.function.Function;
-
 public enum ErrorType {
     NONE ("", null, "Good Job!"),
     HEADER ("Help", null, "Details"),
@@ -13,6 +11,7 @@ public enum ErrorType {
     UNKNOWN_VARIABLE ("Variables", "variables", "Unknown Variable: §e"),
     UNKNOWN_VARIABLE_FLAG ("Variable Flags", "references/variable_flags", "Unknown Variable Flag: §e"),
     UNKNOWN_THEME_FLAG ("Theming", "references/theming", "Unknown Theme Option or Value"),
+    ILLEGAL_GLOBAL_THEME_FLAG("Theming", "references/theming", "This theme option is global-only"),
 
     INVALID_TIME_FORMAT ("Time Formatting", "references/real_time", "Invalid Time Format: "),
     UNKNOWN_STATISTIC ("Statistics", "references/stats", "Unknown Statistic: §e"),
@@ -28,6 +27,7 @@ public enum ErrorType {
     UNKNOWN_KEYBOARD_KEY ("Settings", "references/settings", "Unknown Keyboard Key: §e"),
     UNKNOWN_SOUND_CATEGORY ("Settings", "references/settings", "Unknown Sound Category: §e"),
 
+    CONDITIONAL_NOT_STARTED ("Conditionals", "conditionals", "No =if: §ocond§r= to "),
     MALFORMED_CONDITIONAL ("Conditionals", "conditionals", "Malformed conditional: "),
     CONDITIONAL_UNEXPECTED_VALUE ("Conditionals", "conditionals", "Unexpected Value: §e"),
     CONDITIONAL_WRONG_NUMBER_OF_TOKENS ("Conditionals", "conditionals", "Expected 4 tokens, found §e");
