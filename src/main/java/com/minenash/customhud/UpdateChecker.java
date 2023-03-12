@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public class UpdateChecker {
 
-    private static final String mcVersion = MinecraftClient.getInstance().getGame().getVersion().getId();
+    private static final String mcVersion = MinecraftClient.getInstance().getGameVersion();
     private static final String currentVersion;
     static {
         String modVersionRaw = FabricLoader.getInstance().getModContainer("custom_hud").get().getMetadata().getVersion().getFriendlyString();
@@ -40,6 +40,8 @@ public class UpdateChecker {
         JsonObject updateInfo = getUpdateData();
         if (updateInfo == null)
             return;
+
+        System.out.println("VERSION: " + mcVersion);
 
         JsonObject info = updateInfo.getAsJsonObject(mcVersion);
         if (info == null)

@@ -96,7 +96,7 @@ public class ModMenuIntegration implements ModMenuApi {
             if (MinecraftClient.getInstance().cameraEntity == null)
                 DrawableHelper.fill(matrix,0,36,this.width,this.height - 30-9, 0x88000000);
 
-            DrawableHelper.drawCenteredText(matrix, font, Text.translatable("config.custom_hud.title"), this.width / 2, 13, 0xFFFFFF);
+            DrawableHelper.drawCenteredTextWithShadow(matrix, font, Text.translatable("config.custom_hud.title"), this.width / 2, 13, 0xFFFFFF);
             font.draw(matrix, Text.translatable("config.custom_hud.enable.label"), 20, OPTION_START + 5, 0xFFFFFF);
             font.draw(matrix, Text.translatable("config.custom_hud.active_profile.label"), 20, OPTION_START + OPTION_BUFFER + 5, 0xFFFFFF);
 

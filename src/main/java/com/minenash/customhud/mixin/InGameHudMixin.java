@@ -3,6 +3,7 @@ package com.minenash.customhud.mixin;
 import com.minenash.customhud.CustomHud;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
@@ -37,9 +38,9 @@ public abstract class InGameHudMixin {
     }
 
     @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", ordinal = 0,target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
-    private void skipNormalCrosshairRendering(InGameHud hud, MatrixStack stack, int x, int y, int u, int v, int width, int height) {
+    private void skipNormalCrosshairRendering(MatrixStack stack, int x, int y, int u, int v, int width, int height) {
         if (!renderAttackIndicator)
-            hud.drawTexture(stack, x, y, u, v, width, height);
+            DrawableHelper.drawTexture(stack, x, y, u, v, width, height);
     }
 
 }

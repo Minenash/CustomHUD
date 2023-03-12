@@ -36,8 +36,12 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
-	modImplementation "maven.modrinth:iris:${project.iris_version}"
+//	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
+//	modImplementation "maven.modrinth:iris:${project.iris_version}"
+
+	modImplementation files("run/mods/iris.jar")
+	modImplementation files("run/mods/sodium.jar")
+
 	modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") {
 		exclude module: "fabric-api"
 	}

@@ -71,19 +71,16 @@ public class SlotItemIconElement extends IconElement {
             matrixStack.scale(10/16F * scale, 10/16F * scale, 1);
 
             String string = String.valueOf(count);
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            client.textRenderer.draw(string,
+            client.textRenderer.drawWithShadow(matrixStack, string,
                     17.5F - client.textRenderer.getWidth(string),
                     6 / scale + 0.5F,
-                    0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-            immediate.draw();
+                    0xFFFFFF);
         }
     }
 
     public void renderDur(ItemStack stack, int x, int y, float profileScale) {
         if (stack.isItemBarVisible()) {
             RenderSystem.disableDepthTest();
-            RenderSystem.disableTexture();
             RenderSystem.disableBlend();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -92,7 +89,6 @@ public class SlotItemIconElement extends IconElement {
             this.renderGuiQuad(bufferBuilder, profileScale, x + scale, y + 0.5 + 6*(1+(scale-1)/2), 9, 2*11/16F, 0, 0, 0, 255);
             this.renderGuiQuad(bufferBuilder, profileScale, x + scale, y + 0.5 + 6*(1+(scale-1)/2), i-4, 11/16F, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
             RenderSystem.enableBlend();
-            RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
     }
@@ -103,13 +99,11 @@ public class SlotItemIconElement extends IconElement {
         float f = clientPlayerEntity == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getTickDelta());
         if (f > 0.0f) {
             RenderSystem.disableDepthTest();
-            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             Tessellator tessellator2 = Tessellator.getInstance();
             BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
             this.renderGuiQuad(bufferBuilder2, profileScale, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 255, 255, 255, 64);
-            RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
     }

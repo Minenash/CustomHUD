@@ -8,7 +8,6 @@
     "GameOptionsAccessor",
     "InGameHudMixin",
     "KeyBindingAccessor",
-    "MinecraftClientAccess",
     "MinecraftClientMixin",
     "TitleScreenMixin",
     "WorldRendererAccess",

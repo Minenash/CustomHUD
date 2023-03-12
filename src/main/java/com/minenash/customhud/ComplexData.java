@@ -2,7 +2,6 @@ package com.minenash.customhud;
 
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
-import com.mojang.bridge.game.PerformanceMetrics;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,6 +12,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.MetricsData;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -58,11 +58,13 @@ public class ComplexData {
     private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
     public static double cpuLoad = 0;
 
+    public static double gpuUsage = 0;
+
     public static int[] clicksSoFar = new int[]{0,0};
     public static int[] clicksPerSeconds = new int[]{0,0};
     public static ArrayDeque<Integer>[] clicks = null;
 
-    public static PerformanceMetrics performanceMetrics = null;
+    public static MetricsData performanceMetrics = null;
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -128,9 +130,6 @@ public class ComplexData {
         if (profile.enabled.sound)
             sounds = client.getSoundManager().getDebugString().substring(8).replace(" + ", "/").split("/");
 
-//      if (profile.enabled.clientChunkCache)
-//          clientChunkCache = client.worldRenderer.getChunksDebugString().substring(20).split(", ");
-
         if (profile.enabled.time) {
             timeOfDay = (int) ((client.world.getTimeOfDay() + 6000) % 24000);
         }
@@ -190,7 +189,7 @@ public class ComplexData {
         }
 
         if (profile.enabled.performanceMetrics) {
-            performanceMetrics = client.getGame().getPerformanceMetrics();
+            performanceMetrics = client.getMetricsData();
         }
 
         CustomHudRegistry.runComplexData();
@@ -230,7 +229,6 @@ public class ComplexData {
         public boolean updateStats = false;
         public boolean clicksPerSeconds = false;
         public boolean performanceMetrics = false;
-//      public boolean clientChunkCache = false;
 
     }
 

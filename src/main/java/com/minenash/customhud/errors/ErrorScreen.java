@@ -85,7 +85,7 @@ public class ErrorScreen extends Screen {
 
         y_offset = 0;
         this.listWidget.render(matrices, mouseX, mouseY, delta);
-        drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 
         super.render(matrices, mouseX, mouseY, delta);
 
@@ -142,7 +142,7 @@ public class ErrorScreen extends Screen {
         }
 
         @Override
-        protected boolean isFocused() {
+        public boolean isFocused() {
             return ErrorScreen.this.getFocused() == this;
         }
 

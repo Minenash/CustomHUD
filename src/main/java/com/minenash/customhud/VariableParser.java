@@ -468,7 +468,7 @@ public class VariableParser {
             case "memory_allocated" -> ALLOCATED;
 //            case "memory_off_heap" -> OFF_HEAP; TODO
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
-            case "gpu_usage", "gpu" -> GPU_USAGE;
+            case "gpu_usage", "gpu" -> {enabled.performanceMetrics = true; yield GPU_USAGE;}
             case "ms_ticks", "tick_ms" -> TICK_MS;
             case "frame_ms_min" -> { enabled.performanceMetrics = true; yield FRAME_MS_MIN;}
             case "frame_ms_max" -> { enabled.performanceMetrics = true; yield FRAME_MS_MAX;}

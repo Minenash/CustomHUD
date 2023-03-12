@@ -69,10 +69,11 @@ public class SettingsElement {
             return new Pair<>(new NumberSupplierElement(IntegerSuppliers.MAX_FPS, flags.scale, flags.precision), null);
 
         if (setting.startsWith("lang")) {
+            String code = client.getLanguageManager().getLanguage();
             HudElement element = switch (setting.substring(4)) {
-                case "" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage().getName());
-                case "_region" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage().getRegion());
-                case "_code" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage().getCode());
+                case "" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).name()); //TODO Check
+                case "_region" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).region());
+                case "_code" -> new StringSupplierElement(() -> code);
                 default -> null;
             };
             if (element == null)

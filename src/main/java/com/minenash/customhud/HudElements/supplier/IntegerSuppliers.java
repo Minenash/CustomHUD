@@ -2,7 +2,6 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.mixin.ChunkBuilderAccess;
-import com.minenash.customhud.mixin.MinecraftClientAccess;
 import com.minenash.customhud.mixin.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GLX;
 import net.fabricmc.loader.api.FabricLoader;
@@ -43,7 +42,7 @@ public class IntegerSuppliers {
     }
 
 
-    public static final Supplier<Number> FPS = MinecraftClientAccess::getCurrentFps;
+    public static final Supplier<Number> FPS = client::getCurrentFps;
     public static final Supplier<Number> MAX_FPS = () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FRAMERATE ? null : client.options.getMaxFps().getValue();
     public static final Supplier<Number> BIOME_BLEND = () -> client.options.getBiomeBlendRadius().getValue();
     public static final Supplier<Number> SIMULATION_DISTANCE = () -> client.options.getSimulationDistance().getValue();

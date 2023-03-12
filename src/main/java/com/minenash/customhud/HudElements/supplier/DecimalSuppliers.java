@@ -42,10 +42,10 @@ public class DecimalSuppliers {
     public static final Entry MOOD = of( () -> client.player.getMoodPercentage() * 100.0F, 0);
 
     public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getTickTime(), 0);
-    public static final Entry FRAME_MS_MIN = of( () -> ComplexData.performanceMetrics.getMinTime() / 1000000D, 0);
-    public static final Entry FRAME_MS_MAX = of( () -> ComplexData.performanceMetrics.getMaxTime() / 1000000D, 0);
-    public static final Entry FRAME_MS_AVG = of( () -> ComplexData.performanceMetrics.getAverageTime() / 1000000D, 1);
-    public static final Entry FRAME_MS_SAMPLES = of( () -> ComplexData.performanceMetrics.getSampleCount(), 0);
+    public static final Entry FRAME_MS_MIN = of( () -> 0 / 1000000D, 0); //TODO Fix
+    public static final Entry FRAME_MS_MAX = of( () -> 0 / 1000000D, 0);
+    public static final Entry FRAME_MS_AVG = of( () -> 0 / 1000000D, 1);
+    public static final Entry FRAME_MS_SAMPLES = of( () -> 0, 0);
 
     @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
     @Deprecated public static final Entry OFFHAND_ITEM_DURABILITY_PERCENT = of( () -> client.player.getOffHandStack().getDamage() / (float) client.player.getOffHandStack().getMaxDamage() * 100, 0);
@@ -60,7 +60,7 @@ public class DecimalSuppliers {
     }, 0);
 
     public static final Entry CPU_USAGE = of( () -> ComplexData.cpuLoad, 0);
-    public static final Entry GPU_USAGE = of(client::getGpuUtilizationPercentage, 0);
+    public static final Entry GPU_USAGE = of(() -> ComplexData.gpuUsage, 0);
     public static final Entry MEMORY_USED_PERCENTAGE = of( () -> (runtime.totalMemory() - runtime.freeMemory())*100D / runtime.maxMemory(), 0);
     public static final Entry MEMORY_USED = of( () -> toMiB(runtime.totalMemory() - runtime.freeMemory()), 0);
     public static final Entry TOTAL_MEMORY = of( () -> toMiB(runtime.maxMemory()), 0);
