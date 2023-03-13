@@ -2,11 +2,15 @@ package com.minenash.customhud;
 
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -15,12 +19,15 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import org.joml.Matrix4f;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
@@ -64,7 +71,7 @@ public class ComplexData {
     public static int[] clicksPerSeconds = new int[]{0,0};
     public static ArrayDeque<Integer>[] clicks = null;
 
-    public static MetricsData performanceMetrics = null;
+    public static int[] performanceMetrics = new int[3];
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -189,7 +196,20 @@ public class ComplexData {
         }
 
         if (profile.enabled.performanceMetrics) {
-            performanceMetrics = client.getMetricsData();
+            long[] ls = client.getMetricsData().getSamples();
+            long avg = 0L;
+
+            performanceMetrics[0] = 0;
+            performanceMetrics[1] = Integer.MAX_VALUE; //MIN
+            performanceMetrics[2] = Integer.MIN_VALUE; //MAX
+
+            for (int r = 0; r < ls.length; ++r) {
+                int s = (int)(ls[r] / 1000000L);
+                performanceMetrics[1] = Math.min(performanceMetrics[1], s);
+                performanceMetrics[2] = Math.max(performanceMetrics[2], s);
+                avg += s;
+            }
+            performanceMetrics[0] = (int) (avg / ls.length);
         }
 
         CustomHudRegistry.runComplexData();
@@ -207,7 +227,7 @@ public class ComplexData {
         sounds = null;
         clientChunkCache = null;
         clicks = null;
-        performanceMetrics = null;
+        performanceMetrics = new int[3];
         x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
         clicksSoFar[0] = clicksSoFar[1] = 0;
         clicksPerSeconds[0] = clicksPerSeconds[1] = 0;

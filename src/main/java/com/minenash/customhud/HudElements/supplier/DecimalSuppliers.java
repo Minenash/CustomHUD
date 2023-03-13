@@ -26,7 +26,6 @@ public class DecimalSuppliers {
     public static final Entry NETHER_X = of( () -> inNether() ? cameraEntity().getX() * 8 : cameraEntity().getX() / 8, 0);
     public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
 
-    //TODO: Fix precision
     public static final Entry VELOCITY_XZ = of( () -> ComplexData.velocityXZ, 1);
     public static final Entry VELOCITY_Y = of( () -> ComplexData.velocityY, 1);
     public static final Entry VELOCITY_XYZ = of( () -> ComplexData.velocityXYZ, 1);
@@ -42,9 +41,9 @@ public class DecimalSuppliers {
     public static final Entry MOOD = of( () -> client.player.getMoodPercentage() * 100.0F, 0);
 
     public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getTickTime(), 0);
-    public static final Entry FRAME_MS_MIN = of( () -> 0 / 1000000D, 0); //TODO Fix
-    public static final Entry FRAME_MS_MAX = of( () -> 0 / 1000000D, 0);
-    public static final Entry FRAME_MS_AVG = of( () -> 0 / 1000000D, 1);
+    public static final Entry FRAME_MS_MIN = of( () -> ComplexData.performanceMetrics[1], 0);
+    public static final Entry FRAME_MS_MAX = of( () -> ComplexData.performanceMetrics[2], 0);
+    public static final Entry FRAME_MS_AVG = of( () -> ComplexData.performanceMetrics[0], 1);
     public static final Entry FRAME_MS_SAMPLES = of( () -> 0, 0);
 
     @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
