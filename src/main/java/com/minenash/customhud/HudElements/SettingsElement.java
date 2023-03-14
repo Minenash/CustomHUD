@@ -71,7 +71,7 @@ public class SettingsElement {
         if (setting.startsWith("lang")) {
             String code = client.getLanguageManager().getLanguage();
             HudElement element = switch (setting.substring(4)) {
-                case "" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).name()); //TODO Check
+                case "" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).name());
                 case "_region" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).region());
                 case "_code" -> new StringSupplierElement(() -> code);
                 default -> null;
