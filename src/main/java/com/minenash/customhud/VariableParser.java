@@ -321,7 +321,7 @@ public class VariableParser {
             case "address" -> ADDRESS;
             case "java_version" -> JAVA_VERSION;
             case "cpu_name" -> CPU_NAME;
-            case "gpu_name" -> GPU_NAME;
+            case "gpu_name" -> {enabled.performanceMetrics = true; yield GPU_NAME;}
             case "server_brand" -> SERVER_BRAND;
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
             default -> null;

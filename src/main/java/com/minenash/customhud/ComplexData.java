@@ -58,6 +58,8 @@ public class ComplexData {
     private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
     public static double cpuLoad = 0;
 
+    public static double gpuUsage = 0;
+
     public static int[] clicksSoFar = new int[]{0,0};
     public static int[] clicksPerSeconds = new int[]{0,0};
     public static ArrayDeque<Integer>[] clicks = null;
