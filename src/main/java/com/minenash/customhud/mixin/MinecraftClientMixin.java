@@ -41,7 +41,7 @@ public class MinecraftClientMixin {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/String;format(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;"))
     public void getGpuUsage(boolean tick, CallbackInfo ci) {
-        ComplexData.gpuUsage = gpuUtilizationPercentage;
+        ComplexData.gpuUsage = gpuUtilizationPercentage > 100 ? 100 : gpuUtilizationPercentage;
     }
 
 
