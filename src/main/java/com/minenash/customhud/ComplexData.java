@@ -71,7 +71,7 @@ public class ComplexData {
     public static int[] clicksPerSeconds = new int[]{0,0};
     public static ArrayDeque<Integer>[] clicks = null;
 
-    public static int[] performanceMetrics = new int[3];
+    public static double[] performanceMetrics = new double[3];
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -197,19 +197,19 @@ public class ComplexData {
 
         if (profile.enabled.performanceMetrics) {
             long[] ls = client.getMetricsData().getSamples();
-            long avg = 0L;
+            double avg = 0L;
 
             performanceMetrics[0] = 0;
             performanceMetrics[1] = Integer.MAX_VALUE; //MIN
             performanceMetrics[2] = Integer.MIN_VALUE; //MAX
 
             for (int r = 0; r < ls.length; ++r) {
-                int s = (int)(ls[r] / 1000000L);
+                double s = (ls[r] / 1000000D);
                 performanceMetrics[1] = Math.min(performanceMetrics[1], s);
                 performanceMetrics[2] = Math.max(performanceMetrics[2], s);
                 avg += s;
             }
-            performanceMetrics[0] = (int) (avg / ls.length);
+            performanceMetrics[0] = avg / ls.length;
         }
 
         CustomHudRegistry.runComplexData();
@@ -227,7 +227,7 @@ public class ComplexData {
         sounds = null;
         clientChunkCache = null;
         clicks = null;
-        performanceMetrics = new int[3];
+        performanceMetrics = new double[3];
         x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
         clicksSoFar[0] = clicksSoFar[1] = 0;
         clicksPerSeconds[0] = clicksPerSeconds[1] = 0;
