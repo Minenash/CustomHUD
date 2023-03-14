@@ -321,7 +321,7 @@ public class VariableParser {
             case "address" -> ADDRESS;
             case "java_version" -> JAVA_VERSION;
             case "cpu_name" -> CPU_NAME;
-            case "gpu_name" -> {enabled.performanceMetrics = true; yield GPU_NAME;}
+            case "gpu_name" -> GPU_NAME;
             case "server_brand" -> SERVER_BRAND;
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
             default -> null;
@@ -467,7 +467,7 @@ public class VariableParser {
             case "memory_allocated" -> ALLOCATED;
 //            case "memory_off_heap" -> OFF_HEAP; TODO
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
-            case "gpu_usage", "gpu" -> GPU_USAGE;
+            case "gpu_usage", "gpu" -> {enabled.performanceMetrics = true; yield GPU_USAGE;}
             case "ms_ticks", "tick_ms" -> TICK_MS;
             case "frame_ms_min" -> { enabled.performanceMetrics = true; yield FRAME_MS_MIN;}
             case "frame_ms_max" -> { enabled.performanceMetrics = true; yield FRAME_MS_MAX;}
