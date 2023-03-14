@@ -60,7 +60,7 @@ public class DecimalSuppliers {
     }, 0);
 
     public static final Entry CPU_USAGE = of( () -> ComplexData.cpuLoad, 0);
-    public static final Entry GPU_USAGE = of(client::getGpuUtilizationPercentage, 0);
+    public static final Entry GPU_USAGE = of( () -> ComplexData.gpuUsage, 0);
     public static final Entry MEMORY_USED_PERCENTAGE = of( () -> (runtime.totalMemory() - runtime.freeMemory())*100D / runtime.maxMemory(), 0);
     public static final Entry MEMORY_USED = of( () -> toMiB(runtime.totalMemory() - runtime.freeMemory()), 0);
     public static final Entry TOTAL_MEMORY = of( () -> toMiB(runtime.maxMemory()), 0);
