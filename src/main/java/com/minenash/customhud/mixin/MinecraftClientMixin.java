@@ -45,6 +45,9 @@ public abstract class MinecraftClientMixin {
 
     @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
     public boolean getGpuUsageAndOtherPerformanceMetrics(GameOptions instance) {
+        if (CustomHud.getActiveProfile() == null) {
+            return false;
+        }
         return CustomHud.getActiveProfile().enabled.performanceMetrics || instance.debugEnabled;
     }
 
