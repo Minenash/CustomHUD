@@ -373,12 +373,11 @@ public class VariableParser {
             case "target_block_x", "target_x", "tbx" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_X; }
             case "target_block_y", "target_y", "tby" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Y; }
             case "target_block_z", "target_z", "tbz" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Z; }
+            case "target_block_distance", "target_distance", "tbd" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_DISTANCE; }
             case "target_fluid_x", "tfx" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_X; }
             case "target_fluid_y", "tfy" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_Y; }
             case "target_fluid_z", "tfz" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_Z; }
-            case "target_entity_x", "tex" -> TARGET_ENTITY_X;
-            case "target_entity_y", "tey" -> TARGET_ENTITY_Y;
-            case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
+            case "target_fluid_distance", "tfd" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_DISTANCE; }
             case "in_chunk_x", "icx" -> IN_CHUNK_X;
             case "in_chunk_y", "icy" -> IN_CHUNK_Y;
             case "in_chunk_z", "icz" -> IN_CHUNK_Z;
@@ -449,6 +448,10 @@ public class VariableParser {
             case "z" -> Z;
             case "nether_x", "nx" -> NETHER_X;
             case "nether_z", "nz" -> NETHER_Z;
+            case "target_entity_x", "tex" -> TARGET_ENTITY_X;
+            case "target_entity_y", "tey" -> TARGET_ENTITY_Y;
+            case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
+            case "target_entity_distance", "ted" -> TARGET_ENTITY_DISTANCE;
             case "velocity_xz" -> VELOCITY_XZ;
             case "velocity_y" -> VELOCITY_Y;
             case "velocity_xyz" -> VELOCITY_XYZ;
