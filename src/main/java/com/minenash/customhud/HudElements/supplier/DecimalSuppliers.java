@@ -32,6 +32,7 @@ public class DecimalSuppliers {
     public static final Entry TARGET_ENTITY_DISTANCE = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getPos().distanceTo(client.cameraEntity.getPos()), 1);
 
     public static final Entry REACH_DISTANCE = of ( () -> client.interactionManager.getReachDistance(), 1);
+    public static final Entry FISHING_HOOK_DISTANCE = of ( () -> client.player.fishHook.distanceTo(client.player), 1);
 
     //TODO: Fix precision
     public static final Entry VELOCITY_XZ = of( () -> ComplexData.velocityXZ, 1);

@@ -3,6 +3,7 @@ package com.minenash.customhud.HudElements.supplier;
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.ChunkRandom;
@@ -31,11 +32,15 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> IS_THUNDERING = () -> ComplexData.world.isThundering();
     public static final Supplier<Boolean> IS_SLIME_CHUNK = () -> ChunkRandom.getSlimeRandom(blockPos().getX() >> 4, blockPos().getZ() >> 4, ((StructureWorldAccess)ComplexData.world).getSeed(), 987234911L).nextInt(10) == 0;
 
-
     public static final Supplier<Boolean> SPRINTING = () -> client.player.isSprinting() && !client.player.isSwimming();
     public static final Supplier<Boolean> SNEAKING = () -> client.player.isSneaking();
     public static final Supplier<Boolean> SWIMMING = () -> client.player.isSwimming();
     public static final Supplier<Boolean> ON_GROUND = () -> client.player.isOnGround();
+
+    public static final Supplier<Boolean> FISHING_IS_CAST = () -> client.player.fishHook != null;
+    public static final Supplier<Boolean> FISHING_IS_HOOKED = () -> client.player.fishHook != null && client.player.fishHook.getHookedEntity() != null;
+    public static final Supplier<Boolean> FISHING_HAS_CAUGHT = () -> client.player.fishHook != null && client.player.fishHook.getDataTracker().get(FishingBobberEntity.CAUGHT_FISH);
+    public static final Supplier<Boolean> FISHING_IN_OPEN_WATER = () -> client.player.fishHook != null && client.player.fishHook.isOpenOrWaterAround(client.player.fishHook.getBlockPos());
 
 
     @Deprecated public static final Supplier<Boolean> ITEM_HAS_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() > 0;
