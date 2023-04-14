@@ -23,7 +23,7 @@ public class SlotItemElement implements HudElement {
     public static final Function<Integer, String> ID = (slot) -> Registry.ITEM.getId(item(slot)).toString();
     public static final Function<Integer, String> NAME = (slot) -> item(slot).getName().getString();
     public static final Function<Integer, Number> RAW_ID = (slot) -> Item.getRawId(item(slot));
-    public static final Function<Integer, Boolean> IS_STACK_EMPTY = (slot) -> stack(slot).isEmpty();
+    public static final Function<Integer, Boolean> IS_STACK_NOT_EMPTY = (slot) -> !stack(slot).isEmpty();
 
     public static final Function<Integer, String> CUSTOM_NAME = (slot) -> stack(slot).getName().getString();
     public static final Function<Integer, Number> CUSTOM_NAME_LENGTH = (slot) -> stack(slot).getName().getString().length();
@@ -57,8 +57,8 @@ public class SlotItemElement implements HudElement {
             return new Pair<>(null, ErrorType.UNAVAILABLE_SLOT);
 
         HudElement element = switch (method) {
-            case "" -> new SlotItemElement(slot, NAME, RAW_ID, IS_STACK_EMPTY);
-            case "id" -> new SlotItemElement(slot, ID, RAW_ID, IS_STACK_EMPTY);
+            case "" -> new SlotItemElement(slot, NAME, RAW_ID, IS_STACK_NOT_EMPTY);
+            case "id" -> new SlotItemElement(slot, ID, RAW_ID, IS_STACK_NOT_EMPTY);
             case "name" -> new SlotItemElement(slot, CUSTOM_NAME, CUSTOM_NAME_LENGTH, HAS_CUSTOM_NAME);
             case "dur","durability" -> new SlotItemElement(slot, DURABILITY_STR, DURABILITY_NUM, HAS_DURABILITY);
             case "max_dur","max_durability" -> new SlotItemElement(slot, MAX_DURABILITY_STR, MAX_DURABILITY_NUM, HAS_MAX_DURABILITY);
