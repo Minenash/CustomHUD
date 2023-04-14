@@ -35,7 +35,7 @@ public class HudTheme {
 
     private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("linespacing: ?([-+]?\\d+)");
     private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("scale: ?(\\d+.?\\d*|.?\\d+)");
-    private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("(back|fore)groundcolou?r: ?(0x|#)?([0-9a-fA-F]+)");
+    private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("(back|fore)groundcolou?r: ?(0x|#)?([0-9a-fA-F]+|none)");
     private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("font: ?(\\w*:?\\w+)");
     private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("textshadow: ?(true|false)");
 
@@ -67,6 +67,9 @@ public class HudTheme {
     }
 
     public static int parseHexNumber(String str) {
+        if (str.equals("none"))
+            return 0;
+
         str = switch (str.length()) {
             case 3 -> "FF" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2);
             case 4 -> "" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2) + str.charAt(3) + str.charAt(3);
@@ -76,6 +79,7 @@ public class HudTheme {
         };
 
         long color = Long.parseLong(str,16);
+        System.out.println("Color:" + color);
         return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
     }
 
