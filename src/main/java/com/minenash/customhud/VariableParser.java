@@ -308,6 +308,9 @@ public class VariableParser {
             case "version" -> VERSION;
             case "client_version" -> CLIENT_VERSION;
             case "modded_name" -> MODDED_NAME;
+            case "display_name", "name" -> DISPLAY_NAME;
+            case "username" -> USERNAME;
+            case "uuid" -> UUID;
             case "dimension" -> DIMENSION;
             case "dimension_id" -> DIMENSION_ID;
             case "facing" -> FACING;
@@ -318,6 +321,8 @@ public class VariableParser {
             case "moon_phase_word" -> { enabled.clientChunk = true; yield MOON_PHASE_WORD; }
             case "target_entity" -> TARGET_ENTITY;
             case "target_entity_id" -> TARGET_ENTITY_ID;
+            case "target_entity_name" -> TARGET_ENTITY_NAME;
+            case "target_entity_uuid" -> TARGET_ENTITY_UUID;
             case "address" -> ADDRESS;
             case "java_version" -> JAVA_VERSION;
             case "cpu_name" -> CPU_NAME;
