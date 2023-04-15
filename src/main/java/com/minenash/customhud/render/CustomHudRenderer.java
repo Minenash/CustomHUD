@@ -41,8 +41,7 @@ public class CustomHudRenderer {
         BufferBuilder bgBuilder = Tessellator.getInstance().getBuffer();
         bgBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        for (int s = 0; s < 4; s++) {
-            Section section = profile.sections[s];
+        for (Section section : profile.sections) {
             HudTheme theme = profile.baseTheme;
             font = profile.baseTheme.font;
 
@@ -83,7 +82,7 @@ public class CustomHudRenderer {
                     builder.setLength(0);
 
                     if (e instanceof FunctionalElement.NewLine) {
-                        int x1 = section.getLineX(right, xOffset);
+                        int x1 = section.getStartX(right, xOffset);
                         for (int i = piecesOffset; i < pieces.size(); i++)
                             pieces.get(i).x += x1;
                         piecesOffset = pieces.size();
@@ -98,7 +97,7 @@ public class CustomHudRenderer {
                         color = cce.color;
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
                         if (!dynamicWidth && theme.bgColor != cte.theme.bgColor) {
-                            int x1 = section.getWidthX(right + 3, section.width) - 2;
+                            int x1 = section.getStartX(right + 3, section.width) - 2;
                             addLineBg(matrices, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
                             staticWidthY = y;
                         }
@@ -113,7 +112,7 @@ public class CustomHudRenderer {
             }
 
             if (!dynamicWidth) {
-                int x1 = section.getWidthX(right + 3, section.width) - 2;
+                int x1 = section.getStartX(right + 3, section.width) - 2;
                 addLineBg(matrices, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
             }
 
