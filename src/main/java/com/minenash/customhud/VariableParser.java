@@ -5,6 +5,7 @@ import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.DebugGizmoElement;
 import com.minenash.customhud.HudElements.icon.ItemIconElement;
+import com.minenash.customhud.HudElements.icon.SpaceElement;
 import com.minenash.customhud.HudElements.icon.TextureIconElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
@@ -236,6 +237,17 @@ public class VariableParser {
 
         else if (part.equals("gizmo"))
             return new DebugGizmoElement(flags);
+
+        else if (part.startsWith("space:")) {
+            String widthStr = part.substring(6);
+            try {
+                return new SpaceElement( Integer.parseInt(widthStr) );
+            }
+            catch (NumberFormatException e) {
+                Errors.addError(profile, debugLine, original, ErrorType.NOT_A_WHOLE_NUMBER, "\"" + widthStr + "\"");
+                return null;
+            }
+        }
 
         else {
             HudElement element = getSupplierElement(part, enabled, flags);
