@@ -44,9 +44,9 @@ public class HudTheme {
         Matcher matcher = COLOR_FLAG_PATTERN.matcher(line);
         if (matcher.matches())
             if (matcher.group(1).equals("fore"))
-                fgColor = parseHexNumber(matcher.group(3));
+                fgColor = parseHexNumber(matcher.group(3), false);
             else
-                bgColor = parseHexNumber(matcher.group(3));
+                bgColor = parseHexNumber(matcher.group(3), true);
 
         else if (( matcher = SPACING_FLAG_PATTERN.matcher(line) ).matches())
             lineSpacing = Integer.parseInt(matcher.group(1));
@@ -66,15 +66,15 @@ public class HudTheme {
         return true;
     }
 
-    public static int parseHexNumber(String str) {
+    public static int parseHexNumber(String str, boolean forBg) {
         if (str.equals("none"))
             return 0;
 
         str = switch (str.length()) {
-            case 3 -> "FF" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2);
+            case 3 -> (forBg? "44" : "ff") + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2);
             case 4 -> "" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2) + str.charAt(3) + str.charAt(3);
             case 5 -> "" + str.charAt(0) + str.charAt(0) + str.substring(1);
-            case 6 -> "FF" + str;
+            case 6 -> (forBg? "44" : "ff") + str;
             default -> str;
         };
 
