@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 
 import java.util.function.Supplier;
 
@@ -30,6 +31,7 @@ public class BooleanSupplierElement implements HudElement {
 
     public static final Supplier<Boolean> IS_RAINING = () -> ComplexData.world.isRaining();
     public static final Supplier<Boolean> IS_THUNDERING = () -> ComplexData.world.isThundering();
+    public static final Supplier<Boolean> IS_SNOWING = () -> ComplexData.world.isRaining() && ComplexData.world.getBiome(client.player.getBlockPos()).value().getPrecipitation() == Biome.Precipitation.SNOW;
     public static final Supplier<Boolean> IS_SLIME_CHUNK = () -> ChunkRandom.getSlimeRandom(blockPos().getX() >> 4, blockPos().getZ() >> 4, ((StructureWorldAccess)ComplexData.world).getSeed(), 987234911L).nextInt(10) == 0;
 
     public static final Supplier<Boolean> SPRINTING = () -> client.player.isSprinting() && !client.player.isSwimming();

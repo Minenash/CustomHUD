@@ -344,6 +344,7 @@ public class VariableParser {
             case "end" -> IN_END;
             case "raining" -> {enabled.world = true; yield IS_RAINING;}
             case "thundering" -> {enabled.world = true; yield IS_THUNDERING;}
+            case "snowing" -> {enabled.world = true; yield IS_SNOWING;}
             case "slime_chunk" -> {enabled.world = true; yield IS_SLIME_CHUNK;}
             case "sprinting" -> SPRINTING;
             case "sneaking" -> SNEAKING;
