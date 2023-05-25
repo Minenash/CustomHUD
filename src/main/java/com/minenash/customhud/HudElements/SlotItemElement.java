@@ -25,6 +25,11 @@ public class SlotItemElement implements HudElement {
     public static final Function<Integer, Number> RAW_ID = (slot) -> Item.getRawId(item(slot));
     public static final Function<Integer, Boolean> IS_STACK_NOT_EMPTY = (slot) -> !stack(slot).isEmpty();
 
+    public static final Function<Integer, Number> COUNT = (slot) -> stack(slot).getCount();
+    public static final Function<Integer, Number> MAX_COUNT = (slot) -> stack(slot).getMaxCount();
+    public static final Function<Integer, String> COUNT_STR = (slot) -> Integer.toString( stack(slot).getCount() );
+    public static final Function<Integer, String> MAX_COUNT_STR = (slot) -> Integer.toString( stack(slot).getMaxCount() );
+
     public static final Function<Integer, String> CUSTOM_NAME = (slot) -> stack(slot).getName().getString();
     public static final Function<Integer, Number> CUSTOM_NAME_LENGTH = (slot) -> stack(slot).getName().getString().length();
     public static final Function<Integer, Boolean> HAS_CUSTOM_NAME = (slot) -> !stack(slot).getName().getString().equals(item(slot).getName().getString());
@@ -60,6 +65,8 @@ public class SlotItemElement implements HudElement {
             case "" -> new SlotItemElement(slot, NAME, RAW_ID, IS_STACK_NOT_EMPTY);
             case "id" -> new SlotItemElement(slot, ID, RAW_ID, IS_STACK_NOT_EMPTY);
             case "name" -> new SlotItemElement(slot, CUSTOM_NAME, CUSTOM_NAME_LENGTH, HAS_CUSTOM_NAME);
+            case "count" -> new SlotItemElement(slot, COUNT_STR, COUNT, IS_STACK_NOT_EMPTY);
+            case "max_count" -> new SlotItemElement(slot, MAX_COUNT_STR, MAX_COUNT, IS_STACK_NOT_EMPTY);
             case "dur","durability" -> new SlotItemElement(slot, DURABILITY_STR, DURABILITY_NUM, HAS_DURABILITY);
             case "max_dur","max_durability" -> new SlotItemElement(slot, MAX_DURABILITY_STR, MAX_DURABILITY_NUM, HAS_MAX_DURABILITY);
             case "dur_per","durability_percentage" -> new SlotItemElement(slot, DURABILITY_PERCENT_STR, DURABILITY_PERCENT_NUM, HAS_MAX_DURABILITY, flags.precision == -1? 0 : flags.precision << 8);
