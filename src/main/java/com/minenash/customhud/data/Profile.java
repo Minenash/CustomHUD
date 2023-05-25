@@ -164,8 +164,10 @@ public class Profile {
 
         }
 
-        while (!profile.tempIfStack.empty())
+        while (!profile.tempIfStack.empty()) {
             addElement(profile, section, profile.tempIfStack.pop().build());
+            Errors.addError(profileID, lines.size()+1, "end of profile", ErrorType.CONDITIONAL_NOT_ENDED, "");
+        }
 
         profile.tempIfStack = null;
 
