@@ -89,9 +89,10 @@ public class IntegerSuppliers {
 
     public static final Supplier<Number> CLIENT_LIGHT = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getChunkManager().getLightingProvider().getLight(blockPos(), 0);
     public static final Supplier<Number> CLIENT_LIGHT_SKY = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getLightLevel(LightType.SKY, blockPos());
+    public static final Supplier<Number> CLIENT_LIGHT_SKY_TRUE = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getLightLevel(LightType.SKY, blockPos()) - client.world.getAmbientDarkness();
     public static final Supplier<Number> CLIENT_LIGHT_BLOCK = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getLightLevel(LightType.BLOCK, blockPos());
-    public static final Supplier<Number> SERVER_LIGHT_SKY = () -> ComplexData.serverChunk == null ? null : serverLighting().get(LightType.SKY).getLightLevel(blockPos());
-    public static final Supplier<Number> SERVER_LIGHT_BLOCK = () -> ComplexData.serverChunk == null ? null : serverLighting().get(LightType.BLOCK).getLightLevel(blockPos());
+    @Deprecated public static final Supplier<Number> SERVER_LIGHT_SKY = () -> ComplexData.serverChunk == null ? null : serverLighting().get(LightType.SKY).getLightLevel(blockPos());
+    @Deprecated public static final Supplier<Number> SERVER_LIGHT_BLOCK = () -> ComplexData.serverChunk == null ? null : serverLighting().get(LightType.BLOCK).getLightLevel(blockPos());
 
     public static final Supplier<Number> CLIENT_HEIGHT_MAP_SURFACE = () -> chunk(ComplexData.clientChunk, Heightmap.Type.WORLD_SURFACE);
     public static final Supplier<Number> CLIENT_HEIGHT_MAP_MOTION_BLOCKING = () -> chunk(ComplexData.clientChunk, Heightmap.Type.MOTION_BLOCKING);

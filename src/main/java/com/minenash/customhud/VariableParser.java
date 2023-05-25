@@ -414,6 +414,7 @@ public class VariableParser {
             case "region_relative_z", "rrz" -> REGION_RELATIVE_Z;
             case "client_light", "light" -> { enabled.clientChunk = true; yield CLIENT_LIGHT; }
             case "client_light_sky", "light_sky" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_SKY; }
+            case "client_light_true_sky", "light_true_sky" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_SKY_TRUE; }
             case "client_light_block", "light_block" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_BLOCK; }
             case "server_light_sky" -> { enabled.world = enabled.serverChunk = true; yield SERVER_LIGHT_SKY; }
             case "server_light_block" -> { enabled.world = enabled.serverChunk = true; yield SERVER_LIGHT_BLOCK; }
