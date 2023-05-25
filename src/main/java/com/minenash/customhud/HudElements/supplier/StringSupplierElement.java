@@ -29,7 +29,9 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> UUID = () -> client.player.getGameProfile().getId().toString();
 
     public static final Supplier<String> SERVER_BRAND = () -> client.player.getServerBrand();
-    public static final Supplier<String> ADDRESS = () -> client.getCurrentServerEntry().address;
+    public static final Supplier<String> SERVER_NAME = () -> client.getCurrentServerEntry().name;
+    public static final Supplier<String> SERVER_ADDRESS = () -> client.getCurrentServerEntry().address;
+    public static final Supplier<String> WORLD_NAME = () -> !client.isIntegratedServerRunning() ? "" : client.getServer().getSaveProperties().getLevelName();
 
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
