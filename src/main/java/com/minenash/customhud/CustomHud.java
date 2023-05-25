@@ -64,18 +64,6 @@ public class CustomHud implements ModInitializer {
 		BuiltInModCompat.register();
 
 		try {
-			Path path = getProfilePath(1);
-			if (Files.newBufferedReader(path).readLine() == null) {
-				try (OutputStream writer = Files.newOutputStream(path); InputStream input = getClass().getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
-					input.transferTo(writer);
-				}
-				CustomHud.profiles[0] = Profile.parseProfile(path, 1);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
 			profileWatcher = FileSystems.getDefault().newWatchService();
 			CONFIG_FOLDER.register(profileWatcher, StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY);
 		} catch (IOException e) {
