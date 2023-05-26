@@ -159,14 +159,15 @@ public class Profile {
             else if (GLOBAL_THEME_PATTERN.matcher(lineLC).matches() )
                 Errors.addError(profileID, i+1, line, ErrorType.ILLEGAL_GLOBAL_THEME_FLAG, "");
 
-
             else
                 addAllElement(profile, section, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true));
 
         }
 
-        while (!profile.tempIfStack.empty())
+        while (!profile.tempIfStack.empty()) {
             addElement(profile, section, profile.tempIfStack.pop().build());
+            Errors.addError(profileID, lines.size()+1, "end of profile", ErrorType.CONDITIONAL_NOT_ENDED, "");
+        }
 
         profile.tempIfStack = null;
 
