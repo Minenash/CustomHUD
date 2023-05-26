@@ -106,7 +106,7 @@ public class VariableParser {
         if (part.startsWith("&{")) {
             Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
             if (m.matches())
-                return new FunctionalElement.ChangeColor(HudTheme.parseHexNumber(m.group(1)));
+                return new FunctionalElement.ChangeColor(HudTheme.parseHexNumber(m.group(1), false));
         }
 
         if (!part.startsWith("{"))
