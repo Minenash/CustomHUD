@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class Profile {
 
-    public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topright|bottomleft|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
+    public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
     private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(normal|debug) ?==");
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
@@ -31,7 +31,7 @@ public class Profile {
 
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
 
-    public Section[] sections = new Section[4];
+    public List<Section> sections = new ArrayList<>();
 
     public HudTheme baseTheme = HudTheme.defaults();
     public float targetDistance = 20;
@@ -73,15 +73,15 @@ public class Profile {
 
         Profile profile = new Profile();
 
-        int sectionId = -1;
+        Section section = null;
         HudTheme localTheme = profile.baseTheme.copy();
 
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i).replaceAll("&([0-9a-fk-or])", "§$1");
             String lineLC = line.toLowerCase();
-            if (line.startsWith("//") || (sectionId == -1 && line.trim().isEmpty()))
+            if (line.startsWith("//"))
                 continue;
-            if (sectionId == -1) {
+            if (section == null) {
                 Matcher matcher = TARGET_RANGE_FLAG_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
                     profile.targetDistance = matcher.group(1).equals("max") ? 725 : Integer.parseInt(matcher.group(1));
@@ -101,29 +101,33 @@ public class Profile {
             Matcher matcher = SECTION_DECORATION_PATTERN.matcher(lineLC);
             if (matcher.matches()) {
                 localTheme = profile.baseTheme.copy();
-                switch (matcher.group(1)) {
-                    case "topleft" -> sectionId = 0;
-                    case "topright" -> sectionId = 1;
-                    case "bottomleft" -> sectionId = 2;
-                    case "bottomright" -> sectionId = 3;
-                }
-                if (profile.sections[sectionId] == null) {
-                    profile.sections[sectionId] = switch (sectionId) {
-                        case 0 -> new Section.TopLeft();
-                        case 1 -> new Section.TopRight();
-                        case 2 -> new Section.BottomLeft();
-                        default -> new Section.BottomRight();
-                    };
-                }
-                profile.sections[sectionId].xOffset = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
-                profile.sections[sectionId].yOffset = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
-                profile.sections[sectionId].width   = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : -1;
-                profile.sections[sectionId].hideOnChat = matcher.group(4) != null && Boolean.parseBoolean(matcher.group(4));
+                section = switch (matcher.group(1)) {
+                    case "topleft" -> new Section.TopLeft();
+                    case "topcenter" -> new Section.TopCenter();
+                    case "topright" -> new Section.TopRight();
+
+                    case "centerleft" -> new Section.CenterLeft();
+                    case "centercenter" -> new Section.CenterCenter();
+                    case "centerright" -> new Section.CenterRight();
+
+                    case "bottomleft" -> new Section.BottomLeft();
+                    case "bottomcenter" -> new Section.BottomCenter();
+                    case "bottomright" -> new Section.BottomRight();
+                    default -> null;
+                };
+
+                // Can't be null
+                section.xOffset = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+                section.yOffset = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
+                section.width   = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : -1;
+                section.hideOnChat = matcher.group(4) != null && Boolean.parseBoolean(matcher.group(4));
+
+                profile.sections.add(section);
 
                 continue;
             }
-            if (sectionId == -1)
-                profile.sections[(sectionId = 0)] = new Section.TopLeft();
+            if (section == null)
+                profile.sections.add(new Section.TopLeft());
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
                 profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
@@ -144,11 +148,11 @@ public class Profile {
                 if (profile.tempIfStack.isEmpty())
                     Errors.addError(profileID, i+1, line, ErrorType.CONDITIONAL_NOT_STARTED, "end");
                 else
-                    addElement(profile, sectionId, profile.tempIfStack.pop().build());
+                    addElement(profile, section, profile.tempIfStack.pop().build());
 
             else if (( matcher = LOCAL_THEME_PATTERN.matcher(lineLC) ).matches()) {
                 if (localTheme.parse(false, matcher.group(1)))
-                    addElement(profile, sectionId, new FunctionalElement.ChangeTheme(localTheme));
+                    addElement(profile, section, new FunctionalElement.ChangeTheme(localTheme));
                 else
                     Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_THEME_FLAG, "");
             }
@@ -158,33 +162,30 @@ public class Profile {
 
 
             else
-                addAllElement(profile, sectionId, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true));
+                addAllElement(profile, section, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true));
 
         }
 
         while (!profile.tempIfStack.empty())
-            addElement(profile, sectionId, profile.tempIfStack.pop().build());
+            addElement(profile, section, profile.tempIfStack.pop().build());
 
         profile.tempIfStack = null;
 
-        for (int i = 0; i < 4; i++) {
-            if (profile.sections[i] != null && profile.sections[i].elements.isEmpty())
-                profile.sections[i] = null;
-        }
+        profile.sections.removeIf(s -> s.elements.isEmpty());
 
         return profile;
     }
 
-    private static void addElement(Profile profile, int sectionId, HudElement element) {
+    private static void addElement(Profile profile, Section section, HudElement element) {
         if (profile.tempIfStack.empty())
-            profile.sections[sectionId].elements.add(element);
+            section.elements.add(element);
         else
             profile.tempIfStack.peek().add(element);
     }
 
-    private static void addAllElement(Profile profile, int sectionId, List<HudElement> elements) {
+    private static void addAllElement(Profile profile, Section section, List<HudElement> elements) {
         if (profile.tempIfStack.empty())
-            profile.sections[sectionId].elements.addAll(elements);
+            section.elements.addAll(elements);
         else
             profile.tempIfStack.peek().addAll(elements);
     }
