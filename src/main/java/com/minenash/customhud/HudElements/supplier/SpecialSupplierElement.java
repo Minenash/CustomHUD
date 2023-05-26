@@ -84,7 +84,7 @@ public class SpecialSupplierElement implements HudElement {
                                            () -> client.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? 0 : (client.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? 1 : 2),
                                            () -> client.options.getCloudRenderMode().getValue() != CloudRenderMode.OFF);
 
-    public static final Entry FACING_TOWARDS_PN_WORD = of( () -> isFacingEastOrSouth() ? "ifTrue" : "negative",
+    public static final Entry FACING_TOWARDS_PN_WORD = of( () -> isFacingEastOrSouth() ? "positive" : "negative",
             () -> isFacingEastOrSouth() ? 1 : 0,
             SpecialSupplierElement::isFacingEastOrSouth);
 
