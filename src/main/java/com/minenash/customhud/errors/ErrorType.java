@@ -28,6 +28,7 @@ public enum ErrorType {
     UNKNOWN_SOUND_CATEGORY ("Settings", "references/settings", "Unknown Sound Category: §e"),
 
     CONDITIONAL_NOT_STARTED ("Conditionals", "conditionals", "No =if: §ocond§r= to "),
+    CONDITIONAL_NOT_ENDED ("Conditionals", "conditionals", "Missing =endif="),
     MALFORMED_CONDITIONAL ("Conditionals", "conditionals", "Malformed conditional: "),
     CONDITIONAL_UNEXPECTED_VALUE ("Conditionals", "conditionals", "Unexpected Value: §e"),
     CONDITIONAL_WRONG_NUMBER_OF_TOKENS ("Conditionals", "conditionals", "Expected 4 tokens, found §e");
@@ -38,7 +39,7 @@ public enum ErrorType {
 
     ErrorType(String linkText, String link, String msg) {
         this.message = msg;
-        this.linkText = Text.literal(linkText).formatted(Formatting.AQUA, Formatting.UNDERLINE);
+        this.linkText = linkText == null ? null : Text.literal(linkText).formatted(Formatting.AQUA, Formatting.UNDERLINE);
         this.link = "https://customhud.dev/v3/" + link;
     }
 }
