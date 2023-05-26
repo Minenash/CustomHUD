@@ -69,8 +69,8 @@ public class SpecialSupplierElement implements HudElement {
                                                  () -> !client.player.getOffHandStack().isEmpty());
     @Deprecated
     public static final Entry OFFHAND_ITEM_NAME = of( () -> client.player.getOffHandStack().getName().getString(),
-            () -> client.player.getOffHandStack().getName().getString().length(),
-            () -> !client.player.getOffHandStack().isEmpty());
+                                                      () -> client.player.getOffHandStack().getName().getString().length(),
+                                                      () -> !client.player.getOffHandStack().isEmpty());
     @Deprecated
     public static final Entry OFFHAND_ITEM_ID = of( () -> Registries.ITEM.getId(client.player.getOffHandStack().getItem()).toString(),
                                                     () -> Item.getRawId(client.player.getOffHandStack().getItem()),
