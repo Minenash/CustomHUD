@@ -324,7 +324,9 @@ public class VariableParser {
             case "target_entity_id" -> TARGET_ENTITY_ID;
             case "target_entity_name" -> TARGET_ENTITY_NAME;
             case "target_entity_uuid" -> TARGET_ENTITY_UUID;
-            case "address" -> ADDRESS;
+            case "world_name", "world" -> WORLD_NAME;
+            case "server_name" -> SERVER_NAME;
+            case "server_address", "address", "ip" -> SERVER_ADDRESS;
             case "java_version" -> JAVA_VERSION;
             case "cpu_name" -> CPU_NAME;
             case "gpu_name" -> GPU_NAME;
