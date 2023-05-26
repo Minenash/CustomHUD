@@ -352,6 +352,10 @@ public class VariableParser {
             case "on_ground" -> ON_GROUND;
             case "item_has_durability", "item_has_dur" -> ITEM_HAS_DURABILITY;
             case "offhand_item_has_durability", "oitem_has_dur" -> OFFHAND_ITEM_HAS_DURABILITY;
+            case "fishing_is_cast" -> FISHING_IS_CAST;
+            case "fishing_is_hooked" -> FISHING_IS_HOOKED;
+            case "fishing_has_caught" -> FISHING_HAS_CAUGHT;
+            case "fishing_in_open_water" -> FISHING_IN_OPEN_WATER;
             default -> null;
         };
     }
@@ -459,6 +463,7 @@ public class VariableParser {
             case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
             case "target_entity_distance", "ted" -> TARGET_ENTITY_DISTANCE;
             case "reach_distance", "reach" -> REACH_DISTANCE;
+            case "fishing_hook_distance" -> FISHING_HOOK_DISTANCE;
             case "velocity_xz" -> VELOCITY_XZ;
             case "velocity_y" -> VELOCITY_Y;
             case "velocity_xyz" -> VELOCITY_XYZ;
