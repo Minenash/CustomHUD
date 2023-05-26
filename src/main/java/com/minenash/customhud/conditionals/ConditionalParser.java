@@ -42,7 +42,7 @@ public class ConditionalParser {
         }
     }
 
-    private static List<Token> getTokens(String original, int profile, int debugLine, ComplexData.Enabled enabled) {
+    private static List<Token> getTokens(String original, int profile, int debugLine, ComplexData.Enabled enabled) throws ErrorException {
 
         List<Token> tokens = new ArrayList<>();
         char[] chars = original.toCharArray();
@@ -61,7 +61,7 @@ public class ConditionalParser {
             else if (c == '-' && i+1 < chars.length && !isNum(chars[i+1])) tokens.add(new Token(TokenType.MATH, MathOperator.SUBTRACT));
             else if (c == '!') {
                 if (i + 1 == chars.length || chars[i + 1] != '=')
-                    throw new IllegalStateException();
+                    throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, "!");
                 tokens.add(new Token(TokenType.COMPARISON, Comparison.NOT_EQUALS));
                 i += 2;
                 continue;
