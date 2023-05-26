@@ -1,5 +1,5 @@
 ==Section:TopLeft==
-{{fps >= 60, "&a","{{fps < 30, '&c', '&e'}}"}}{fps}&f fps
+{{fps >= 60, "&a", fps < 30, "&c", "&e"}}{fps}&f fps
 &cX&aY&bZ: &c{bx} &a{by} &b{bz} &f| &e{velocity_xz}
 &2Facing: &a{facing} &e({facing_towards_pn_sign}{facing_towards_xz})
 &2Biome: &a{biome} &7&o({dimension}) {{slime_chunk,"&bSlime"}}
@@ -11,7 +11,7 @@
 
 &7This is an example profile
 &7Goto this link for details on how to edit
-&ehttps://docs.minenash.com/CustomHud&7
+&ehttps://customhud.dev/#docs
 
 // Only download this mod from Modrinth or CurseForge
 // Don't download from 9minecraft, mediafire&c, or mega.nz
@@ -27,6 +27,6 @@ Packets: &e{tx} {rx}
 {{target_fluid, "&e{target_fluid} &f| &c{tfx}, &a{tfy}, &b{tfz}&f [Fluid]"}}
 {{target_entity, "&e{target_entity} &f| &c{tex}, &a{tey}, &b{tez}&f [Entity]"}}
 {{target_block|target_fluid|target_entity, "&f"}}
-{{item|oitem, "&nItems in Hands"}}
-{{item, "&e{item} {{item_has_dur,'(&a{item_dur}&e/&a{item_max_dur}&e) '}}&f[Main]"}}
-{{oitem, "&e{oitem} {{oitem_has_dur,'(&a{oitem_dur}&e/&a{oitem_max_dur}) '}}&f[Off]"}}
+{{item:main|item:off, "&nItems in Hands"}}
+{{item:main, "&e{item:main} {{item:main:max_dur,'(&a{item:main:dur}&e/&a{item:main:max_dur}&e) '}}&f[Main]"}}
+{{item:off, "&e{item:off} {{item:off:max_dur,'(&a{item:off:dur}&e/&a{item:off:max_dur}&e) '}}&f[Off]"}}
