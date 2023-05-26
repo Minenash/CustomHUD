@@ -31,7 +31,9 @@ public enum ErrorType {
     CONDITIONAL_NOT_ENDED ("Conditionals", "conditionals", "Missing =endif="),
     MALFORMED_CONDITIONAL ("Conditionals", "conditionals", "Malformed conditional: "),
     CONDITIONAL_UNEXPECTED_VALUE ("Conditionals", "conditionals", "Unexpected Value: §e"),
-    CONDITIONAL_WRONG_NUMBER_OF_TOKENS ("Conditionals", "conditionals", "Expected 4 tokens, found §e");
+    CONDITIONAL_WRONG_NUMBER_OF_TOKENS ("Conditionals", "conditionals", "Expected 4 tokens, found §e"),
+
+    NOT_A_WHOLE_NUMBER (null, null, "Not a whole number: ");
 
     final String message;
     final MutableText linkText;
