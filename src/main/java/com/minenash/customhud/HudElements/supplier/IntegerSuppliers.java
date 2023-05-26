@@ -67,12 +67,11 @@ public class IntegerSuppliers {
     public static final Supplier<Number> TARGET_BLOCK_X = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getX();
     public static final Supplier<Number> TARGET_BLOCK_Y = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getY();
     public static final Supplier<Number> TARGET_BLOCK_Z = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getZ();
+    public static final Supplier<Number> TARGET_BLOCK_DISTANCE = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getManhattanDistance(client.player.getBlockPos());
     public static final Supplier<Number> TARGET_FLUID_X = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getX();
     public static final Supplier<Number> TARGET_FLUID_Y = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getY();
     public static final Supplier<Number> TARGET_FLUID_Z = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getZ();
-    public static final Supplier<Number> TARGET_ENTITY_X = () -> client.targetedEntity == null ? null : client.targetedEntity.getBlockX();
-    public static final Supplier<Number> TARGET_ENTITY_Y = () -> client.targetedEntity == null ? null : client.targetedEntity.getBlockY();
-    public static final Supplier<Number> TARGET_ENTITY_Z = () -> client.targetedEntity == null ? null : client.targetedEntity.getBlockZ();
+    public static final Supplier<Number> TARGET_FLUID_DISTANCE = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getManhattanDistance(client.player.getBlockPos());
 
     //TODO: Make these Decimal ^ and v
     public static final Supplier<Number> IN_CHUNK_X = () -> blockPos().getX() & 15;

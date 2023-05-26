@@ -26,6 +26,11 @@ public class DecimalSuppliers {
     public static final Entry NETHER_X = of( () -> inNether() ? cameraEntity().getX() * 8 : cameraEntity().getX() / 8, 0);
     public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
 
+    public static final Entry TARGET_ENTITY_X = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getX(), 0);
+    public static final Entry TARGET_ENTITY_Y = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getY(), 0);
+    public static final Entry TARGET_ENTITY_Z = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getZ(), 0);
+    public static final Entry TARGET_ENTITY_DISTANCE = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getPos().distanceTo(client.cameraEntity.getPos()), 1);
+
     public static final Entry VELOCITY_XZ = of( () -> ComplexData.velocityXZ, 1);
     public static final Entry VELOCITY_Y = of( () -> ComplexData.velocityY, 1);
     public static final Entry VELOCITY_XYZ = of( () -> ComplexData.velocityXYZ, 1);
