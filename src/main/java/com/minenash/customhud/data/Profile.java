@@ -10,8 +10,9 @@ import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -62,8 +63,14 @@ public class Profile {
         try {
             if(!Files.exists(path.getParent()))
                 Files.createDirectory(path.getParent());
-            if (!Files.exists(path))
+            if (!Files.exists(path)) {
                 Files.createFile(path);
+                if (profileID == 1) {
+                    try (OutputStream writer = Files.newOutputStream(path); InputStream input = Profile.class.getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
+                        input.transferTo(writer);
+                    }
+                }
+            }
             lines = Files.readAllLines(path);
         } catch (IOException e) {
             e.printStackTrace();
