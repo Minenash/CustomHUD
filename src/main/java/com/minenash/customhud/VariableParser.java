@@ -458,6 +458,7 @@ public class VariableParser {
             case "target_entity_y", "tey" -> TARGET_ENTITY_Y;
             case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
             case "target_entity_distance", "ted" -> TARGET_ENTITY_DISTANCE;
+            case "reach_distance", "reach" -> REACH_DISTANCE;
             case "velocity_xz" -> VELOCITY_XZ;
             case "velocity_y" -> VELOCITY_Y;
             case "velocity_xyz" -> VELOCITY_XYZ;
