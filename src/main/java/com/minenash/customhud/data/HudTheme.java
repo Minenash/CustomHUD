@@ -79,7 +79,6 @@ public class HudTheme {
         };
 
         long color = Long.parseLong(str,16);
-        System.out.println("Color:" + color);
         return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
     }
 
