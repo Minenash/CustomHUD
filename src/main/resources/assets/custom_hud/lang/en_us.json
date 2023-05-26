@@ -5,6 +5,7 @@
   "key.custom_hud.swap_to_profile1": "Swap to Profile 1",
   "key.custom_hud.swap_to_profile2": "Swap to Profile 2",
   "key.custom_hud.swap_to_profile3": "Swap to Profile 3",
+  "key.custom_hud.show_errors": "Show Errors",
   "gui.custom_hud.profile_updated": "CustomHud Profile %d Updated",
   "config.custom_hud.enabled": "Enabled",
   "config.custom_hud.disabled": "Disabled",
