@@ -26,6 +26,9 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> MODDED_NAME = ClientBrandRetriever::getClientModName;
     public static final Supplier<String> SERVER_BRAND = () -> client.player.getServerBrand();
     public static final Supplier<String> ADDRESS = () -> client.getCurrentServerEntry().address;
+    public static final Supplier<String> DISPLAY_NAME = () -> client.player.getDisplayName().getString();
+    public static final Supplier<String> USERNAME = () -> client.player.getGameProfile().getName() == null ? "" : client.player.getGameProfile().getName();
+    public static final Supplier<String> UUID = () -> client.player.getGameProfile().getId().toString();
 
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
@@ -37,6 +40,8 @@ public class StringSupplierElement implements HudElement {
 
     public static final Supplier<String> TARGET_ENTITY = () -> client.targetedEntity == null ? null : I18n.translate(client.targetedEntity.getType().getTranslationKey());
     public static final Supplier<String> TARGET_ENTITY_ID = () -> client.targetedEntity == null ? null : Registries.ENTITY_TYPE.getId(client.targetedEntity.getType()).toString();
+    public static final Supplier<String> TARGET_ENTITY_NAME = () -> client.targetedEntity == null ? null : client.targetedEntity.getDisplayName().getString();
+    public static final Supplier<String> TARGET_ENTITY_UUID = () -> client.targetedEntity == null ? null : client.targetedEntity.getUuidAsString();
 
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
