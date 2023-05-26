@@ -232,7 +232,7 @@ public class VariableParser {
                 Errors.addError(profile, debugLine, original, element.getRight().getLeft(), element.getRight().getRight());
                 return null;
             }
-            return element.getLeft();
+            return flags.anyTextUsed() ? new FormattedElement(element.getLeft(), flags) : element.getLeft();
         }
 
         else if (part.equals("gizmo"))
