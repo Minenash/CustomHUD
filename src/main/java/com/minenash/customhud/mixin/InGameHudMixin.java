@@ -1,5 +1,6 @@
 package com.minenash.customhud.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.minenash.customhud.CustomHud;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
@@ -9,6 +10,7 @@ import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,6 +23,7 @@ public abstract class InGameHudMixin {
 
     @Shadow protected abstract void renderCrosshair(MatrixStack matrices);
 
+    @Shadow @Final private MinecraftClient client;
     boolean renderAttackIndicator = false;
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderCrosshair(Lnet/minecraft/client/util/math/MatrixStack;)V", shift = At.Shift.AFTER))
@@ -32,9 +35,9 @@ public abstract class InGameHudMixin {
         }
     }
 
-    @Redirect(method = "renderCrosshair", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z", opcode = Opcodes.GETFIELD))
-    private boolean getDebugCrosshairEnable(GameOptions options) {
-        return !renderAttackIndicator && (Boolean) FabricLoader.getInstance().getObjectShare().get("independent_gizmo:enable");
+    @ModifyExpressionValue(method = "renderCrosshair", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
+    private boolean getDebugCrosshairEnable(boolean original) {
+        return client.options.debugEnabled ? original : !renderAttackIndicator && (Boolean) FabricLoader.getInstance().getObjectShare().get("independent_gizmo:enable");
     }
 
     @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", ordinal = 0,target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))

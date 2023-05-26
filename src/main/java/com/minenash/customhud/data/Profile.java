@@ -89,7 +89,7 @@ public class Profile {
                 }
                 matcher = CROSSHAIR_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
-                    profile.debugCrosshair = matcher.group(1).equals("Debug");
+                    profile.debugCrosshair = matcher.group(1).equals("debug");
                     continue;
                 }
 
