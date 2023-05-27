@@ -101,7 +101,7 @@ public class Profile {
                 }
 
                 matcher = GLOBAL_THEME_PATTERN.matcher(lineLC);
-                if (matcher.matches() && profile.baseTheme.parse(true, matcher.group(1)))
+                if (matcher.matches() && profile.baseTheme.parse(true, matcher.group(1), profileID, i+1))
                     continue;
 
             }
@@ -157,7 +157,7 @@ public class Profile {
                     addElement(profile, section, profile.tempIfStack.pop().build());
 
             else if (( matcher = LOCAL_THEME_PATTERN.matcher(lineLC) ).matches()) {
-                if (localTheme.parse(false, matcher.group(1)))
+                if (localTheme.parse(false, matcher.group(1), profileID, i+1))
                     addElement(profile, section, new FunctionalElement.ChangeTheme(localTheme));
                 else
                     Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_THEME_FLAG, "");

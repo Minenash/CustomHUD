@@ -107,6 +107,14 @@ public class VariableParser {
             Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
             if (m.matches())
                 return new FunctionalElement.ChangeColor(HudTheme.parseHexNumber(m.group(1), false));
+            else {
+                String colorStr = part.substring(2, part.length()-1).trim().toLowerCase();
+                Integer color = HudTheme.parseColorName(colorStr);
+                if (color != null)
+                    return new FunctionalElement.ChangeColor(color);
+                Errors.addError(profile, debugLine, part, ErrorType.UNKNOWN_COLOR, colorStr);
+                return null;
+            }
         }
 
         if (!part.startsWith("{"))
