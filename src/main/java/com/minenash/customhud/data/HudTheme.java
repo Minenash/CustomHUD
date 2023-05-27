@@ -36,10 +36,11 @@ public class HudTheme {
     private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("linespacing: ?([-+]?\\d+)");
     private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("scale: ?(\\d+.?\\d*|.?\\d+)");
     private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("(back|fore)groundcolou?r: ?(0x|#)?([0-9a-fA-F]+|none)");
+    private static final Pattern COLOR_FLAG_PATTERN_STR = Pattern.compile("(back|fore)groundcolou?r: ?(.*)");
     private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("font: ?(\\w*:?\\w+)");
     private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("textshadow: ?(true|false)");
 
-    public boolean parse(boolean global, String line) {
+    public boolean parse(boolean global, String line, int profileID, int lineNum) {
         line = line.toLowerCase();
         Matcher matcher = COLOR_FLAG_PATTERN.matcher(line);
         if (matcher.matches())
@@ -47,6 +48,18 @@ public class HudTheme {
                 fgColor = parseHexNumber(matcher.group(3), false);
             else
                 bgColor = parseHexNumber(matcher.group(3), true);
+
+        else if (( matcher = COLOR_FLAG_PATTERN_STR.matcher(line) ).matches()) {
+            Integer color = parseColorName(matcher.group(2).trim());
+            if (color == null) {
+                Errors.addError(profileID, lineNum, line, ErrorType.UNKNOWN_THEME_FLAG, matcher.group(2));
+                return true; //Not Really, but I add the error here
+            }
+            if (matcher.group(1).equals("fore"))
+                fgColor = 0xFF000000 + color;
+            else
+                bgColor = 0x44000000 + color;
+        }
 
         else if (( matcher = SPACING_FLAG_PATTERN.matcher(line) ).matches())
             lineSpacing = Integer.parseInt(matcher.group(1));
@@ -80,6 +93,28 @@ public class HudTheme {
 
         long color = Long.parseLong(str,16);
         return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
+    }
+
+    public static Integer parseColorName(String str) {
+        return switch (str) {
+            case "black"       -> 0x000000;
+            case "dark_blue"   -> 0x0000AA;
+            case "dark_green"  -> 0x00AA00;
+            case "dark_aqua"   -> 0x00AAAA;
+            case "dark_red"    -> 0xAA0000;
+            case "dark_purple" -> 0xAA00AA;
+            case "gold", "orange" -> 0xFFAA00;
+            case "gray"        -> 0xAAAAAA;
+            case "dark_gray"   -> 0x555555;
+            case "blue"        -> 0x5555FF;
+            case "green"       -> 0x55FF55;
+            case "aqua"        -> 0x55FFFF;
+            case "red"         -> 0xFF5555;
+            case "light_purple", "purple" -> 0xFF55FF;
+            case "yellow"      -> 0xFFFF55;
+            case "white"       -> 0xFFFFFF;
+            default -> null;
+        };
     }
 
 
