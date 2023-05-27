@@ -332,10 +332,10 @@ public class VariableParser {
             case "biome" -> BIOME;
             case "biome_id" -> BIOME_ID;
             case "moon_phase_word" -> { enabled.clientChunk = true; yield MOON_PHASE_WORD; }
-            case "target_entity" -> TARGET_ENTITY;
-            case "target_entity_id" -> TARGET_ENTITY_ID;
-            case "target_entity_name" -> TARGET_ENTITY_NAME;
-            case "target_entity_uuid" -> TARGET_ENTITY_UUID;
+            case "target_entity", "te" -> TARGET_ENTITY;
+            case "target_entity_id", "tei" -> TARGET_ENTITY_ID;
+            case "target_entity_name", "ten" -> TARGET_ENTITY_NAME;
+            case "target_entity_uuid", "teu" -> TARGET_ENTITY_UUID;
             case "world_name", "world" -> WORLD_NAME;
             case "server_name" -> SERVER_NAME;
             case "server_address", "address", "ip" -> SERVER_ADDRESS;
@@ -517,10 +517,10 @@ public class VariableParser {
             case "hour24": { enabled.time = true; return TIME_HOUR_24; }
             case "minute": { enabled.time = true; return TIME_MINUTES; }
             case "second": { enabled.time = true; return TIME_SECONDS; }
-            case "target_block": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK;}
-            case "target_block_id": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK_ID;}
-            case "target_fluid": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID;}
-            case "target_fluid_id": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID_ID;}
+            case "target_block", "tb": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK;}
+            case "target_block_id", "tbi": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK_ID;}
+            case "target_fluid", "tf": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID;}
+            case "target_fluid_id", "tfi": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID_ID;}
             case "item": return ITEM;
             case "item_name": return ITEM_NAME;
             case "item_id": return ITEM_ID;
