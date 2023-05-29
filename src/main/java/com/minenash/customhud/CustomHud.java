@@ -60,18 +60,9 @@ public class CustomHud implements ModInitializer {
 	public void onInitialize() {
 		BuiltInModCompat.register();
 
-		loadConfig();
-		try {
-			profileWatcher = FileSystems.getDefault().newWatchService();
-			CONFIG_FOLDER.register(profileWatcher, StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		UpdateChecker.check();
 
 		HudRenderCallback.EVENT.register(CustomHudRenderer::render);
-
-
 
 		ClientTickEvents.END_CLIENT_TICK.register(CustomHud::onTick);
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
@@ -86,6 +77,13 @@ public class CustomHud implements ModInitializer {
 			profiles[i - 1] = Profile.parseProfile(getProfilePath(i), i);
 		}
 		onProfileChangeOrUpdate();
+		try {
+			profileWatcher = FileSystems.getDefault().newWatchService();
+			CONFIG_FOLDER.register(profileWatcher, StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		loadConfig();
 	}
 
 	private static ComplexData.Enabled previousEnabled = ComplexData.Enabled.DISABLED;
