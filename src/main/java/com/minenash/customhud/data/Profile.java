@@ -10,7 +10,6 @@ import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,7 +23,7 @@ public class Profile {
 
     public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
-    private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(normal|debug) ?==");
+    private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(.*) ?==");
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
     private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
 
@@ -37,7 +36,7 @@ public class Profile {
 
     public HudTheme baseTheme = HudTheme.defaults();
     public float targetDistance = 20;
-    public boolean debugCrosshair = false;
+    public Crosshairs crosshair = Crosshairs.NORMAL;
 
 
     private Stack<ConditionalElement.MultiLineBuilder> tempIfStack = new Stack<>();
@@ -97,7 +96,11 @@ public class Profile {
                 }
                 matcher = CROSSHAIR_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
-                    profile.debugCrosshair = matcher.group(1).equals("debug");
+                    profile.crosshair = Crosshairs.parse(matcher.group(1).trim());
+                    if (profile.crosshair == null) {
+                        profile.crosshair = Crosshairs.NORMAL;
+                        Errors.addError(profileID, i, line+1, ErrorType.UNKNOWN_CROSSHAIR, matcher.group(1));
+                    }
                     continue;
                 }
 

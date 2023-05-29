@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.google.gson.*;
+import com.minenash.customhud.data.Crosshairs;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.ErrorScreen;
 import com.minenash.customhud.errors.Errors;
@@ -24,8 +25,6 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.Objects;
 
@@ -37,8 +36,6 @@ public class CustomHud implements ModInitializer {
 	public static Profile[] profiles = new Profile[3];
 	public static int activeProfile = 1;
 	public static boolean enabled = true;
-
-	public static final boolean INDEPENDENT_GIZMO_INSTALLED = FabricLoader.getInstance().isModLoaded("independent_gizmo");
 
 	public static final Path CONFIG_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("custom-hud");
 	public static WatchService profileWatcher;
@@ -88,7 +85,7 @@ public class CustomHud implements ModInitializer {
 		for (int i = 1; i <=3; i++ ) {
 			profiles[i - 1] = Profile.parseProfile(getProfilePath(i), i);
 		}
-		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
+		onProfileChangeOrUpdate();
 	}
 
 	private static ComplexData.Enabled previousEnabled = ComplexData.Enabled.DISABLED;
@@ -115,13 +112,8 @@ public class CustomHud implements ModInitializer {
 
 		if (kb_enable.wasPressed()) {
 			enabled = !enabled;
-			CustomHud.justSaved = true;
-			saveDelay = 100;
-			return;
 		}
-
-
-		if (kb_cycleProfiles.wasPressed()) {
+		else if (kb_cycleProfiles.wasPressed()) {
 			activeProfile = activeProfile == 3 ? 1 : activeProfile + 1;
 			if (!enabled) enabled = true;
 		}
@@ -143,14 +135,17 @@ public class CustomHud implements ModInitializer {
 		else
 			return;
 
-		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
-
+		onProfileChangeOrUpdate();
 		CustomHud.justSaved = true;
 		saveDelay = 100;
 	}
 
 	public static Profile getActiveProfile() {
 		return enabled ? profiles[activeProfile -1] : null;
+	}
+
+	public static Crosshairs getCrosshair() {
+		return getActiveProfile() == null ? Crosshairs.NORMAL : getActiveProfile().crosshair;
 	}
 
 	public static Path getProfilePath(int i) {
@@ -243,8 +238,12 @@ public class CustomHud implements ModInitializer {
 			}
 		}
 
-		FabricLoader.getInstance().getObjectShare().put("independent_gizmo:enable", profiles[activeProfile-1].debugCrosshair);
+		onProfileChangeOrUpdate();
 		key.reset();
+	}
+
+	public static void onProfileChangeOrUpdate() {
+		FabricLoader.getInstance().getObjectShare().put("customhud:crosshair", profiles[activeProfile-1].crosshair.getName());
 	}
 
 	public static void showToast(int profile, boolean mainMenu) {
