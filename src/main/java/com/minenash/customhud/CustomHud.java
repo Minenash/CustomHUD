@@ -112,13 +112,8 @@ public class CustomHud implements ModInitializer {
 
 		if (kb_enable.wasPressed()) {
 			enabled = !enabled;
-			CustomHud.justSaved = true;
-			saveDelay = 100;
-			return;
 		}
-
-
-		if (kb_cycleProfiles.wasPressed()) {
+		else if (kb_cycleProfiles.wasPressed()) {
 			activeProfile = activeProfile == 3 ? 1 : activeProfile + 1;
 			if (!enabled) enabled = true;
 		}
