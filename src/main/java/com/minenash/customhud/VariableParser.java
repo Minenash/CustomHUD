@@ -450,6 +450,8 @@ public class VariableParser {
             case "display_refresh_rate" -> DISPLAY_REFRESH_RATE;
             case "mods" -> MODS;
             case "ping" -> PING;
+            case "time", "solar_time" -> SOLAR_TIME;
+            case "lunar_time" -> LUNAR_TIME;
             case "item_durability", "item_dur" -> ITEM_DURABILITY;
             case "item_max_durability", "item_max_dur" -> ITEM_MAX_DURABILITY;
             case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
