@@ -138,7 +138,7 @@ public class Profile {
                 continue;
             }
             if (section == null)
-                profile.sections.add(new Section.TopLeft());
+                profile.sections.add(section = new Section.TopLeft());
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
                 profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
