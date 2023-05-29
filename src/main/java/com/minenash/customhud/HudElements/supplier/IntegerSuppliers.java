@@ -128,6 +128,8 @@ public class IntegerSuppliers {
     public static final Supplier<Number> DISPLAY_REFRESH_RATE = () -> GLX._getRefreshRate(client.getWindow());
     public static final Supplier<Number> MODS = () -> FabricLoader.getInstance().getAllMods().size();
     public static final Supplier<Number> PING = () -> client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency();
+    public static final Supplier<Number> SOLAR_TIME = () -> client.world.getTimeOfDay() % 24000;
+    public static final Supplier<Number> LUNAR_TIME = () -> client.world.getTimeOfDay();
 
     @Deprecated public static final Supplier<Number> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
     @Deprecated public static final Supplier<Number> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();
