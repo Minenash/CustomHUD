@@ -19,6 +19,7 @@ public class DecimalSuppliers {
     private static Entity cameraEntity() { return client.getCameraEntity(); }
     private static boolean inNether() { return client.world.getRegistryKey().getValue().equals(World.NETHER.getValue()); }
     private static double toMiB(long bytes) { return bytes / 1024D / 1024L; }
+    private static Entity hooked() {return client.player.fishHook == null ? null : client.player.fishHook.getHookedEntity();}
 
     public static final Entry X = of( () -> cameraEntity().getX(), 3);
     public static final Entry Y = of( () -> cameraEntity().getY(), 3);
@@ -30,6 +31,11 @@ public class DecimalSuppliers {
     public static final Entry TARGET_ENTITY_Y = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getY(), 0);
     public static final Entry TARGET_ENTITY_Z = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getZ(), 0);
     public static final Entry TARGET_ENTITY_DISTANCE = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getPos().distanceTo(client.cameraEntity.getPos()), 1);
+
+    public static final Entry HOOKED_ENTITY_X = of ( () -> hooked() == null ? null : hooked().getX(), 0);
+    public static final Entry HOOKED_ENTITY_Y = of ( () -> hooked() == null ? null : hooked().getY(), 0);
+    public static final Entry HOOKED_ENTITY_Z = of ( () -> hooked() == null ? null : hooked().getZ(), 0);
+    public static final Entry HOOKED_ENTITY_DISTANCE = of( () -> hooked() == null ? null : hooked().getPos().distanceTo(client.cameraEntity.getPos()), 1);
 
     public static final Entry REACH_DISTANCE = of ( () -> client.interactionManager.getReachDistance(), 1);
     public static final Entry FISHING_HOOK_DISTANCE = of ( () -> client.player.fishHook.distanceTo(client.player), 1);

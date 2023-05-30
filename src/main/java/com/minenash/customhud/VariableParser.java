@@ -344,6 +344,10 @@ public class VariableParser {
             case "target_entity_id", "tei" -> TARGET_ENTITY_ID;
             case "target_entity_name", "ten" -> TARGET_ENTITY_NAME;
             case "target_entity_uuid", "teu" -> TARGET_ENTITY_UUID;
+            case "hooked_entity", "he" -> HOOKED_ENTITY;
+            case "hooked_entity_id", "hei" -> HOOKED_ENTITY_ID;
+            case "hooked_entity_name", "hen" -> HOOKED_ENTITY_NAME;
+            case "hooked_entity_uuid", "heu" -> HOOKED_ENTITY_UUID;
             case "world_name", "world" -> WORLD_NAME;
             case "server_name" -> SERVER_NAME;
             case "server_address", "address", "ip" -> SERVER_ADDRESS;
@@ -488,6 +492,10 @@ public class VariableParser {
             case "target_entity_y", "tey" -> TARGET_ENTITY_Y;
             case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
             case "target_entity_distance", "ted" -> TARGET_ENTITY_DISTANCE;
+            case "hooked_entity_x", "hex" -> HOOKED_ENTITY_X;
+            case "hooked_entity_y", "hey" -> HOOKED_ENTITY_Y;
+            case "hooked_entity_z", "hez" -> HOOKED_ENTITY_Z;
+            case "hooked_entity_distance", "hed" -> HOOKED_ENTITY_DISTANCE;
             case "reach_distance", "reach" -> REACH_DISTANCE;
             case "fishing_hook_distance" -> FISHING_HOOK_DISTANCE;
             case "velocity_xz" -> VELOCITY_XZ;
