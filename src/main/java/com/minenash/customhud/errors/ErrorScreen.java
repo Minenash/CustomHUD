@@ -150,7 +150,7 @@ public class ErrorScreen extends Screen {
         public class ErrorEntryHeader extends ErrorEntry {
 
             public ErrorEntryHeader() {
-                super(new Errors.Error("Line", "Source", ErrorType.HEADER, ""));
+                super(new Errors.Error("§nLine", "Source", ErrorType.HEADER, ""));
             }
 
             @Override
