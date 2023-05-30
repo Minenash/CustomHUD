@@ -86,12 +86,16 @@ public class IntegerSuppliers {
     public static final Supplier<Number> REGION_RELATIVE_Z = () -> blockPos().getZ() >> 4 & 0x1F;
 
 
-    public static final Supplier<Number> CLIENT_LIGHT = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getChunkManager().getLightingProvider().getLight(blockPos(), 0);
+    public static final Supplier<Number> CLIENT_LIGHT = () -> {
+        if (ComplexData.clientChunk.isEmpty()) return null;
+        client.world.calculateAmbientDarkness();
+        return Math.max(0, client.world.getChunkManager().getLightingProvider().getLight(blockPos(), client.world.getAmbientDarkness()));
+    };
     public static final Supplier<Number> CLIENT_LIGHT_SKY = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getLightLevel(LightType.SKY, blockPos());
     public static final Supplier<Number> CLIENT_LIGHT_SUN = () -> {
         if (ComplexData.clientChunk.isEmpty()) return null;
         client.world.calculateAmbientDarkness();
-        return client.world.getLightLevel(LightType.SKY, blockPos()) - client.world.getAmbientDarkness();
+        return Math.max(0, client.world.getLightLevel(LightType.SKY, blockPos()) - client.world.getAmbientDarkness());
     };
     public static final Supplier<Number> CLIENT_LIGHT_BLOCK = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getLightLevel(LightType.BLOCK, blockPos());
     @Deprecated public static final Supplier<Number> SERVER_LIGHT_SKY = () -> ComplexData.serverChunk == null ? null : serverLighting().get(LightType.SKY).getLightLevel(blockPos());

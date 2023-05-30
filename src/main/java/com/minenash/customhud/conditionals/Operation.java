@@ -103,7 +103,7 @@ public interface Operation {
     }
     record BooleanVariable(HudElement variable) implements Operation {
         public int getValue() {
-            return variable.getBoolean() ? 1 : 0;
+            return variable == null ? 0 : variable.getBoolean() ? 1 : 0;
         }
 
         @Override
