@@ -20,6 +20,7 @@ public class StringSupplierElement implements HudElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static Entity cameraEntity() { return client.getCameraEntity(); }
     private static BlockPos blockPos() { return client.getCameraEntity().getBlockPos(); }
+    private static Entity hooked() {return client.player.fishHook == null ? null : client.player.fishHook.getHookedEntity();}
 
     public static final Supplier<String> VERSION = () -> SharedConstants.getGameVersion().getName();
     public static final Supplier<String> CLIENT_VERSION = client::getGameVersion;
@@ -45,6 +46,11 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> TARGET_ENTITY_ID = () -> client.targetedEntity == null ? null : Registries.ENTITY_TYPE.getId(client.targetedEntity.getType()).toString();
     public static final Supplier<String> TARGET_ENTITY_NAME = () -> client.targetedEntity == null ? null : client.targetedEntity.getDisplayName().getString();
     public static final Supplier<String> TARGET_ENTITY_UUID = () -> client.targetedEntity == null ? null : client.targetedEntity.getUuidAsString();
+
+    public static final Supplier<String> HOOKED_ENTITY = () -> hooked() == null ? null : I18n.translate(hooked().getType().getTranslationKey());
+    public static final Supplier<String> HOOKED_ENTITY_ID = () -> hooked() == null ? null : Registries.ENTITY_TYPE.getId(hooked().getType()).toString();
+    public static final Supplier<String> HOOKED_ENTITY_NAME = () -> hooked() == null ? null : hooked().getDisplayName().getString();
+    public static final Supplier<String> HOOKED_ENTITY_UUID = () -> hooked() == null ? null : hooked().getUuidAsString();
 
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
