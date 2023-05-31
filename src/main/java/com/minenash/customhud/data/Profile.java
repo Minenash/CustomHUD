@@ -163,7 +163,7 @@ public class Profile {
 
             else if (( matcher = LOCAL_THEME_PATTERN.matcher(lineLC) ).matches()) {
                 if (localTheme.parse(false, matcher.group(1), profileID, i+1))
-                    addElement(profile, section, new FunctionalElement.ChangeTheme(localTheme));
+                    addElement(profile, section, new FunctionalElement.ChangeTheme(localTheme.copy()));
                 else
                     Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_THEME_FLAG, "");
             }
