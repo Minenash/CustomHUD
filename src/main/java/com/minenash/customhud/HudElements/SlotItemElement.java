@@ -86,6 +86,8 @@ public class SlotItemElement implements HudElement {
     }
 
     private static int getSlotNumber(String in) {
+        if (in.isBlank())
+            return -1;
         try {
             return ItemSlotArgumentType.itemSlot().parse(new StringReader(switch (in) {
                 case "head", "chest", "legs", "feet" -> "armor." + in;
