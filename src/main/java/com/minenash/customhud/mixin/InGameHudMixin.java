@@ -8,7 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,7 +39,7 @@ public abstract class InGameHudMixin {
     }
 
     @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"))
-    private boolean skipNormalCrosshairRendering(MatrixStack stack, int x, int y, int u, int v, int width, int height) {
+    private boolean skipNormalCrosshairRendering(DrawContext instance, Identifier texture, int x, int y, int u, int v, int width, int height) {
         return !renderAttackIndicator && CustomHud.getCrosshair() != Crosshairs.NONE;
     }
 
