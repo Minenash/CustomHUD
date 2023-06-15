@@ -6,14 +6,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
@@ -91,16 +88,16 @@ public class ModMenuIntegration implements ModMenuApi {
         }
 
         @Override
-        public void render(MatrixStack matrix, int mouseX, int mouseY, float delta) {
-            this.renderBackground(matrix);
+        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+            this.renderBackground(context);
             if (MinecraftClient.getInstance().cameraEntity == null)
-                DrawableHelper.fill(matrix,0,36,this.width,this.height - 30-9, 0x88000000);
+                context.fill(0,36,this.width,this.height - 30-9, 0x88000000);
 
-            DrawableHelper.drawCenteredTextWithShadow(matrix, font, Text.translatable("config.custom_hud.title"), this.width / 2, 13, 0xFFFFFF);
-            font.draw(matrix, Text.translatable("config.custom_hud.enable.label"), 20, OPTION_START + 5, 0xFFFFFF);
-            font.draw(matrix, Text.translatable("config.custom_hud.active_profile.label"), 20, OPTION_START + OPTION_BUFFER + 5, 0xFFFFFF);
+            context.drawCenteredTextWithShadow(font, Text.translatable("config.custom_hud.title"), this.width / 2, 13, 0xFFFFFF);
+            context.drawTextWithShadow(font, Text.translatable("config.custom_hud.enable.label"), 20, OPTION_START + 5, 0xFFFFFF);
+            context.drawTextWithShadow(font,  Text.translatable("config.custom_hud.active_profile.label"), 20, OPTION_START + OPTION_BUFFER + 5, 0xFFFFFF);
 
-            super.render(matrix,mouseX, mouseY, delta);
+            super.render(context,mouseX, mouseY, delta);
         }
 
     }

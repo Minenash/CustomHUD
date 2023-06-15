@@ -3,6 +3,7 @@ package com.minenash.customhud.HudElements.icon;
 import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
@@ -20,10 +21,10 @@ public class DebugGizmoElement extends IconElement {
     }
 
     @Override
-    public void render(MatrixStack stack, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y, float profileScale) {
         float scale = -1 * this.scale;
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        MatrixStack matrixStack = context.getMatrices();
         matrixStack.push();
         matrixStack.scale(profileScale,profileScale,1);
 

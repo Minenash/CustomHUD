@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Crosshairs;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,16 +19,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = InGameHud.class, priority = 900)
 public abstract class InGameHudMixin {
 
-    @Shadow protected abstract void renderCrosshair(MatrixStack matrices);
+    @Shadow protected abstract void renderCrosshair(DrawContext context);
 
     @Shadow @Final private MinecraftClient client;
     boolean renderAttackIndicator = false;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderCrosshair(Lnet/minecraft/client/util/math/MatrixStack;)V", shift = At.Shift.AFTER))
-    private void renderAttackIndicatorForDebugScreen2(MatrixStack stack, float _tickDelta, CallbackInfo _info) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderCrosshair(Lnet/minecraft/client/gui/DrawContext;)V", shift = At.Shift.AFTER))
+    private void renderAttackIndicatorForDebugScreen2(DrawContext context, float _tickDelta, CallbackInfo _info) {
         if (CustomHud.getCrosshair() == Crosshairs.DEBUG && MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
             renderAttackIndicator = true;
-            renderCrosshair(stack);
+            renderCrosshair(context);
             renderAttackIndicator = false;
         }
     }
@@ -37,7 +38,7 @@ public abstract class InGameHudMixin {
         return client.options.debugEnabled ? original : !renderAttackIndicator && CustomHud.getCrosshair() == Crosshairs.DEBUG;
     }
 
-    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/hud/InGameHud;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
+    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"))
     private boolean skipNormalCrosshairRendering(MatrixStack stack, int x, int y, int u, int v, int width, int height) {
         return !renderAttackIndicator && CustomHud.getCrosshair() != Crosshairs.NONE;
     }

@@ -1,23 +1,19 @@
 package com.minenash.customhud.errors;
 
 import com.minenash.customhud.CustomHud;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -78,19 +74,19 @@ public class ErrorScreen extends Screen {
         super.init();
     }
 
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         profiles[0].active = Errors.hasErrors(1);
         profiles[1].active = Errors.hasErrors(2);
         profiles[2].active = Errors.hasErrors(3);
 
         y_offset = 0;
-        this.listWidget.render(matrices, mouseX, mouseY, delta);
-        drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        this.listWidget.render(context, mouseX, mouseY, delta);
+        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
 
         int x = this.width / 2 + (profile == 1 ? -90 : profile == 2 ? 0 : 90);
-        DrawableHelper.fill(matrices, x - 30, 47, x + 30, 48, 0xFFFFFFFF);
+        context.fill(x - 30, 47, x + 30, 48, 0xFFFFFFFF);
     }
 
     class ErrorListWidget extends EntryListWidget<ErrorListWidget.ErrorEntry> {
@@ -111,7 +107,7 @@ public class ErrorScreen extends Screen {
         }
 
         @Override
-        protected void drawSelectionHighlight(MatrixStack matrices, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {}
+        protected void drawSelectionHighlight(DrawContext context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {}
 
         @Override
         protected int getScrollbarPositionX() {
@@ -137,8 +133,8 @@ public class ErrorScreen extends Screen {
         }
 
         @Override
-        protected void renderBackground(MatrixStack matrices) {
-            ErrorScreen.this.renderBackground(matrices);
+        protected void renderBackground(DrawContext context) {
+            ErrorScreen.this.renderBackground(context);
         }
 
         @Override
@@ -156,11 +152,11 @@ public class ErrorScreen extends Screen {
             }
 
             @Override
-            public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                drawCentered(matrices, y + y_offset, lineColumnX, error.line().formatted(Formatting.UNDERLINE));
-                client.textRenderer.drawWithShadow(matrices, Text.literal(collapsedSource).formatted(Formatting.UNDERLINE), 36, y + y_offset, 0xFFFFFFFF);
-                client.textRenderer.drawWithShadow(matrices, Text.literal(collapsedMsg).formatted(Formatting.UNDERLINE), msgX, y + y_offset, 0xFFFFFFFF);
-                client.textRenderer.drawWithShadow(matrices, error.type().linkText.formatted(Formatting.WHITE), refX, y + y_offset, 0xFFFFFFFF);
+            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+                context.drawCenteredTextWithShadow(textRenderer, error.line().formatted(Formatting.UNDERLINE), lineColumnX, y + y_offset, 0xFFFFFFFF);
+                context.drawTextWithShadow(textRenderer, Text.literal(collapsedSource).formatted(Formatting.UNDERLINE), 36, y + y_offset, 0xFFFFFFFF);
+                context.drawTextWithShadow(textRenderer, Text.literal(collapsedMsg).formatted(Formatting.UNDERLINE), msgX, y + y_offset, 0xFFFFFFFF);
+                context.drawTextWithShadow(textRenderer, error.type().linkText.formatted(Formatting.WHITE), refX, y + y_offset, 0xFFFFFFFF);
             }
         }
 
@@ -203,44 +199,39 @@ public class ErrorScreen extends Screen {
                 }
             }
 
-            public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
                 if (hovered) {
                     int extendedHeight = ErrorListWidget.this.getSelectedOrNull() == this ? (18 * expandedMsg.size()) : 0;
-                    DrawableHelper.fill(matrices, 0, y + y_offset, width, y + y_offset + 18 + extendedHeight, 0x22FFFFFF);
+                    context.fill(0, y + y_offset, width, y + y_offset + 18 + extendedHeight, 0x22FFFFFF);
                     if (mouseX >= refX && mouseX <= refX + refLength)
-                        renderTooltip(matrices, Text.literal("§eClick to open the " + error.type().linkText.getString() + " page"), mouseX, mouseY);
+                        context.drawTooltip(textRenderer, Text.literal("§eClick to open the " + error.type().linkText.getString() + " page"), mouseX, mouseY);
                 }
 
                 y += 6;
                 int ceX = getMaxScroll() > 0 ? width-16 : width-12;
 
-                drawCentered(matrices, y + y_offset, lineColumnX, "" + error.line());
+                context.drawCenteredTextWithShadow(textRenderer, error.line(), lineColumnX, y + y_offset, 0xFFFFFFFF);
                 if (refX > 0)
-                    client.textRenderer.drawWithShadow(matrices, error.type().linkText, refX, y + y_offset, 0xFFFFFFFF);
+                    context.drawTextWithShadow(textRenderer, error.type().linkText, refX, y + y_offset, 0xFFFFFFFF);
                 if (ErrorListWidget.this.getSelectedOrNull() != this) {
                     if (expands)
-                        client.textRenderer.drawWithShadow(matrices, "▶", ceX, y + y_offset, 0xFFFFFFFF);
-                    client.textRenderer.drawWithShadow(matrices, collapsedSource, 36, y + y_offset, 0xFFFFFFFF);
-                    client.textRenderer.drawWithShadow(matrices, collapsedMsg, msgX, y + y_offset, 0xFFFFFFFF);
+                        context.drawTextWithShadow(textRenderer, "▶", ceX, y + y_offset, 0xFFFFFFFF);
+                    context.drawTextWithShadow(textRenderer, collapsedSource, 36, y + y_offset, 0xFFFFFFFF);
+                    context.drawTextWithShadow(textRenderer, collapsedMsg, msgX, y + y_offset, 0xFFFFFFFF);
                 }
                 else {
                     if (expands)
-                        client.textRenderer.drawWithShadow(matrices, "▼", ceX, y + y_offset, 0xFFFFFFFF);
-                    client.textRenderer.drawWithShadow(matrices, expandedSource, 36, y + y_offset, 0xFFFFFFFF);
+                        context.drawTextWithShadow(textRenderer, "▼", ceX, y + y_offset, 0xFFFFFFFF);
+                    context.drawTextWithShadow(textRenderer, expandedSource, 36, y + y_offset, 0xFFFFFFFF);
                     for (OrderedText msgLine : expandedMsg) {
                         y_offset += 18;
-                        drawCentered(matrices, y + y_offset, lineColumnX, "→");
-                        client.textRenderer.drawWithShadow(matrices, msgLine, 36, y + y_offset, 0xFFFFFFFF);
+                        context.drawCenteredTextWithShadow(textRenderer, "→", lineColumnX, y + y_offset, 0xFFFFFFFF);
+                        context.drawTextWithShadow(textRenderer, msgLine, 36, y + y_offset, 0xFFFFFFFF);
                     }
                     y_offset += 18;
 
                 }
 
-            }
-
-            protected void drawCentered(MatrixStack matrices, int y, int x, String text) {
-                float xx = (float)(x - client.textRenderer.getWidth(text) / 2);
-                client.textRenderer.drawWithShadow(matrices, text, xx, y, 0xFFFFFFFF);
             }
 
             @Override

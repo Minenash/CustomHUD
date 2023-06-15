@@ -5,6 +5,7 @@ import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -28,7 +29,7 @@ public abstract class IconElement extends FunctionalElement {
         referenceCorner = flags.iconReferenceCorner;
     }
 
-    public abstract void render(MatrixStack stack, int x, int y, float profileScale);
+    public abstract void render(DrawContext context, int x, int y, float profileScale);
     public abstract int getTextWidth();
 
     @Override

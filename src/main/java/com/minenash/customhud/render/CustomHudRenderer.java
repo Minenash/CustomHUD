@@ -8,12 +8,11 @@ import com.minenash.customhud.HudElements.icon.IconElement;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.data.Section;
-import com.minenash.customhud.ducks.CustomHudTextRendererExtention;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 
@@ -26,7 +25,7 @@ public class CustomHudRenderer {
 
     public static Identifier font;
 
-    public static void render(MatrixStack matrices, float _tickDelta) {
+    public static void render(DrawContext context, float _tickDelta) {
 
         Profile profile = CustomHud.getActiveProfile();
         if (profile == null || client.options.debugEnabled)
@@ -36,8 +35,8 @@ public class CustomHudRenderer {
 
         List<RenderPiece> pieces = new ArrayList<>();
 
-        matrices.push();
-        matrices.scale(profile.baseTheme.scale, profile.baseTheme.scale, 1);
+        context.getMatrices().push();
+        context.getMatrices().scale(profile.baseTheme.scale, profile.baseTheme.scale, 1);
         BufferBuilder bgBuilder = Tessellator.getInstance().getBuffer();
         bgBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
@@ -88,7 +87,7 @@ public class CustomHudRenderer {
                         piecesOffset = pieces.size();
 
                         if (dynamicWidth && xOffset != 0)
-                            addLineBg(matrices, bgBuilder, x1-2, y - 2, x1 + xOffset + 2, y + 9 + theme.lineSpacing - 2, theme.bgColor);
+                            addLineBg(context, bgBuilder, x1-2, y - 2, x1 + xOffset + 2, y + 9 + theme.lineSpacing - 2, theme.bgColor);
 
                         y += 9 + theme.lineSpacing;
                         xOffset = 0;
@@ -98,7 +97,7 @@ public class CustomHudRenderer {
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
                         if (!dynamicWidth && theme.bgColor != cte.theme.bgColor) {
                             int x1 = section.getStartX(right + 3, section.width) - 2;
-                            addLineBg(matrices, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
+                            addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
                             staticWidthY = y;
                         }
                         theme = cte.theme;
@@ -113,7 +112,7 @@ public class CustomHudRenderer {
 
             if (!dynamicWidth) {
                 int x1 = section.getStartX(right + 3, section.width) - 2;
-                addLineBg(matrices, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
+                addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
             }
 
         }
@@ -124,23 +123,18 @@ public class CustomHudRenderer {
         BufferRenderer.drawWithGlobalProgram(bgBuilder.end());
         RenderSystem.disableBlend();
 
-        ((CustomHudTextRendererExtention) client.textRenderer).customHud$beginCache();
         for (RenderPiece piece : pieces) {
             if (piece.element instanceof String value && !value.isEmpty())
-                if (piece.shadow)
-                    client.textRenderer.drawWithShadow(matrices, value, piece.x, piece.y, piece.color);
-                else
-                    client.textRenderer.draw(matrices, value, piece.x, piece.y, piece.color);
+                context.drawText(client.textRenderer, value, piece.x, piece.y, piece.color, piece.shadow);
 
         }
-        ((CustomHudTextRendererExtention) client.textRenderer).customHud$submitCache();
 
         for (RenderPiece piece : pieces) {
             if (piece.element instanceof IconElement ie )
-                ie.render(matrices, piece.x, piece.y, profile.baseTheme.scale);
+                ie.render(context, piece.x, piece.y, profile.baseTheme.scale);
         }
 
-        matrices.pop();
+        context.getMatrices().pop();
 
     }
 
@@ -159,8 +153,8 @@ public class CustomHudRenderer {
 
     }
 
-    private static void addLineBg(MatrixStack matrices, BufferBuilder builder, int x1, int y1, int x2, int y2, int color) {
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
+    private static void addLineBg(DrawContext context, BufferBuilder builder, int x1, int y1, int x2, int y2, int color) {
+        Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
         float f = (float)(color >> 24 & 255) / 255.0F;
         float g = (float)(color >> 16 & 255) / 255.0F;
         float h = (float)(color >> 8 & 255) / 255.0F;

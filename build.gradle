@@ -40,11 +40,11 @@ dependencies {
 	implementation include("com.github.LlamaLad7:MixinExtras:0.1.1")
 	annotationProcessor("com.github.LlamaLad7:MixinExtras:0.1.1")
 
-//	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
-//	modImplementation "maven.modrinth:iris:${project.iris_version}"
+	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
+	modImplementation "maven.modrinth:iris:${project.iris_version}"
 
-	modImplementation files("run/mods/iris.jar")
-	modImplementation files("run/mods/sodium.jar")
+//	modImplementation files("run/mods/iris.jar")
+//	modImplementation files("run/mods/sodium.jar")
 
 	modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") {
 		exclude module: "fabric-api"

@@ -1,7 +1,7 @@
 package com.minenash.customhud.HudElements.icon;
 
 import com.minenash.customhud.data.Flags;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
 public class SpaceElement extends IconElement {
 
@@ -13,7 +13,7 @@ public class SpaceElement extends IconElement {
     }
 
     @Override
-    public void render(MatrixStack stack, int x, int y, float profileScale) {}
+    public void render(DrawContext context, int x, int y, float profileScale) {}
 
     @Override
     public int getTextWidth() {

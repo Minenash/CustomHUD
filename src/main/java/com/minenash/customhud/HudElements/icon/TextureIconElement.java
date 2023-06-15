@@ -3,7 +3,7 @@ package com.minenash.customhud.HudElements.icon;
 import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
@@ -83,15 +83,16 @@ public class TextureIconElement extends IconElement {
     }
 
     @Override
-    public void render(MatrixStack matrix, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y, float profileScale) {
         if (width == 0)
             return;
 
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        DrawableHelper.drawTexture(matrix, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+        //TODO: CHECK
+//        RenderSystem.setShaderTexture(0, texture);
+//        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+//        RenderSystem.enableBlend();
+//        RenderSystem.defaultBlendFunc();
+        context.drawTexture(texture, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
 

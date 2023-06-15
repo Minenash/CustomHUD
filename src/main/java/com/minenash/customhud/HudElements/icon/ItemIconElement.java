@@ -1,8 +1,7 @@
 package com.minenash.customhud.HudElements.icon;
 
 import com.minenash.customhud.data.Flags;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -32,7 +31,7 @@ public class ItemIconElement extends IconElement {
         return width;
     }
 
-    public void render(MatrixStack matrix, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y, float profileScale) {
         renderItemStack(x+shiftX, y+shiftY, profileScale, stack);
     }
 }
