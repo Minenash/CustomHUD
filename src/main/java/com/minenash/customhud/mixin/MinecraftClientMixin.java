@@ -2,6 +2,7 @@ package com.minenash.customhud.mixin;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.CustomHud;
+import com.minenash.customhud.core.data.Enabled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.option.GameOptions;
@@ -45,7 +46,7 @@ public abstract class MinecraftClientMixin {
 
     @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
     public boolean getGpuUsageAndOtherPerformanceMetrics(GameOptions instance) {
-        return instance.debugEnabled || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.performanceMetrics);
+        return instance.debugEnabled || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.has(Enabled.PERFORMANCE_METRICS) );
     }
 
 }

@@ -1,6 +1,6 @@
 package com.minenash.customhud.mod_compat;
 
-import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.core.elements.HudElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

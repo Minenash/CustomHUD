@@ -1,33 +1,25 @@
 package com.minenash.customhud;
 
-import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.core.data.Profile;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.MetricsData;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import org.joml.Matrix4f;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
@@ -35,6 +27,8 @@ import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import static com.minenash.customhud.core.data.Enabled.*;
 
 public class ComplexData {
 
@@ -75,12 +69,12 @@ public class ComplexData {
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
-        if (profile.enabled.serverWorld) {
+        if (profile.enabled.has(SERVER_WORLD)) {
             IntegratedServer integratedServer = client.getServer();
             serverWorld = integratedServer != null ? integratedServer.getWorld(client.world.getRegistryKey()) : null;
         }
 
-        if (profile.enabled.clientChunk) {
+        if (profile.enabled.has(CLIENT_CHUNK)) {
             ChunkPos newPos = new ChunkPos(client.getCameraEntity().getBlockPos());
             if (!Objects.equals(ComplexData.pos,newPos)) {
                 pos = newPos;
@@ -91,7 +85,7 @@ public class ComplexData {
                 clientChunk = client.world.getChunk(pos.x, pos.z);
         }
 
-        if (profile.enabled.serverChunk) {
+        if (profile.enabled.has(SERVER_CHUNK)) {
             if (chunkFuture == null) {
                 if (serverWorld != null)
                     chunkFuture = serverWorld.getChunkManager().getChunkFutureSyncOnMainThread(pos.x, pos.z, ChunkStatus.FULL, false).thenApply((either) -> either.map((chunk) -> (WorldChunk)chunk, (unloaded) -> null));
@@ -102,10 +96,10 @@ public class ComplexData {
             serverChunk = chunkFuture.getNow(null);
         }
 
-        if (profile.enabled.world)
+        if (profile.enabled.has(WORLD))
             world = DataFixUtils.orElse(Optional.ofNullable(client.getServer()).flatMap((integratedServer) -> Optional.ofNullable(integratedServer.getWorld(client.world.getRegistryKey()))), client.world);
 
-        if (profile.enabled.targetBlock) {
+        if (profile.enabled.has(TARGET_BLOCK)) {
             HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, false);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
@@ -118,7 +112,7 @@ public class ComplexData {
             }
         }
 
-        if (profile.enabled.targetFluid) {
+        if (profile.enabled.has(TARGET_FLUID)) {
             HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, true);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
@@ -131,18 +125,18 @@ public class ComplexData {
             }
         }
 
-        if (profile.enabled.localDifficulty)
+        if (profile.enabled.has(LOCAL_DIFFICULTY))
             localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getMoonSize());
 
-        if (profile.enabled.sound)
+        if (profile.enabled.has(SOUND))
             sounds = client.getSoundManager().getDebugString().substring(8).replace(" + ", "/").split("/");
 
-        if (profile.enabled.time) {
+        if (profile.enabled.has(TIME)) {
             timeOfDay = (int) ((client.world.getTimeOfDay() + 6000) % 24000);
         }
 
         velocity:
-        if (profile.enabled.velocity) {
+        if (profile.enabled.has(VELOCITY)) {
             if (velocityWaitCounter > 0) {
                 velocityWaitCounter--;
                 break velocity;
@@ -160,14 +154,14 @@ public class ComplexData {
             velocityXYZ = changeXYZ * 4;
         }
 
-        if (profile.enabled.cpu) {
+        if (profile.enabled.has(CPU)) {
             double load = cpu.getSystemCpuLoadBetweenTicks( prevTicks ) * 100;
             if (load > 0)
                 cpuLoad = load;
             prevTicks = cpu.getSystemCpuLoadTicks();
         }
 
-        if (profile.enabled.updateStats) {
+        if (profile.enabled.has(UPDATE_STATS)) {
             if (System.currentTimeMillis() - lastStatUpdate >= 500) {
                 client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
                 lastStatUpdate = System.currentTimeMillis();
@@ -175,7 +169,7 @@ public class ComplexData {
         }
 
 
-        if (profile.enabled.clicksPerSeconds) {
+        if (profile.enabled.has(CLICKS_PER_SECONDS)) {
             if (clicks == null) {
                 clicks = new ArrayDeque[]{new ArrayDeque<Integer>(20), new ArrayDeque<Integer>(20)};
                 for (int i = 0; i < 20; i++) {
@@ -195,7 +189,7 @@ public class ComplexData {
             cpsWaitCounter++;
         }
 
-        if (profile.enabled.performanceMetrics) {
+        if (profile.enabled.has(PERFORMANCE_METRICS)) {
             long[] ls = client.getMetricsData().getSamples();
             double avg = 0L;
 
@@ -203,8 +197,8 @@ public class ComplexData {
             performanceMetrics[1] = Integer.MAX_VALUE; //MIN
             performanceMetrics[2] = Integer.MIN_VALUE; //MAX
 
-            for (int r = 0; r < ls.length; ++r) {
-                double s = (ls[r] / 1000000D);
+            for (long l : ls) {
+                double s = (l / 1000000D);
                 performanceMetrics[1] = Math.min(performanceMetrics[1], s);
                 performanceMetrics[2] = Math.max(performanceMetrics[2], s);
                 avg += s;
@@ -232,26 +226,5 @@ public class ComplexData {
         clicksSoFar[0] = clicksSoFar[1] = 0;
         clicksPerSeconds[0] = clicksPerSeconds[1] = 0;
     }
-
-    public static class Enabled {
-        public static final Enabled DISABLED = new Enabled();
-        public boolean clientChunk = false;
-        public boolean serverChunk = false;
-        public boolean serverWorld = false;
-        public boolean localDifficulty = false;
-        public boolean world = false;
-        public boolean sound = false;
-        public boolean targetBlock = false;
-        public boolean targetFluid = false;
-        public boolean time = false;
-        public boolean velocity = false;
-        public boolean cpu = false;
-        public boolean updateStats = false;
-        public boolean clicksPerSeconds = false;
-        public boolean performanceMetrics = false;
-
-    }
-
-
 
 }

@@ -1,7 +1,7 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.errors.ErrorScreen;
-import com.minenash.customhud.errors.Errors;
+import com.minenash.customhud.core.errors.Errors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

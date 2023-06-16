@@ -3,7 +3,7 @@ package com.minenash.customhud.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.minenash.customhud.CustomHud;
-import com.minenash.customhud.data.Crosshairs;
+import com.minenash.customhud.core.data.Crosshairs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;

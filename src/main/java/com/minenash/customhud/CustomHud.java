@@ -1,10 +1,11 @@
 package com.minenash.customhud;
 
 import com.google.gson.*;
-import com.minenash.customhud.data.Crosshairs;
-import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.core.data.Crosshairs;
+import com.minenash.customhud.core.data.Enabled;
+import com.minenash.customhud.core.data.Profile;
 import com.minenash.customhud.errors.ErrorScreen;
-import com.minenash.customhud.errors.Errors;
+import com.minenash.customhud.core.errors.Errors;
 import com.minenash.customhud.mod_compat.BuiltInModCompat;
 import com.minenash.customhud.render.CustomHudRenderer;
 import net.fabricmc.api.ModInitializer;
@@ -86,7 +87,7 @@ public class CustomHud implements ModInitializer {
 		loadConfig();
 	}
 
-	private static ComplexData.Enabled previousEnabled = ComplexData.Enabled.DISABLED;
+	private static Enabled previousEnabled = new Enabled();
 	public static boolean justSaved = false;
 	private static int saveDelay = -1;
 	private static void onTick(MinecraftClient client) {
@@ -100,7 +101,7 @@ public class CustomHud implements ModInitializer {
 		updateProfiles();
 		Profile profile = CustomHud.getActiveProfile();
 		if (profile != null && client.cameraEntity != null) {
-			if (!Objects.equals(previousEnabled,profile.enabled)) {
+			if (profile.enabled.equals(previousEnabled)) {
 				ComplexData.reset();
 				previousEnabled = profile.enabled;
 			}

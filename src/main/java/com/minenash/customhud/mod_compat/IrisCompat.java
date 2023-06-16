@@ -1,9 +1,7 @@
 package com.minenash.customhud.mod_compat;
 
 //import com.minenash.customhud.mixin.mod_compat.iris.ShadowRenderAccessor;
-import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;
-import com.minenash.customhud.HudElements.supplier.StringIntSupplierElement;
-import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
+import com.minenash.customhud.core.elements.SupplierElements;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.shaderpack.ShaderPack;
 
@@ -41,11 +39,11 @@ public class IrisCompat {
 
     public static void registerCompat() {
 
-        registerElement("iris_version", (_str) -> new StringSupplierElement(VERSION));
-        registerElement("iris_enabled", (_str) -> new BooleanSupplierElement(ENABLED));
-        registerElement("iris_shaderpack", (_str) -> new StringSupplierElement(SHADERPACK));
-        registerElement("iris_shaderpack_profile", (_str) -> new StringSupplierElement(SHADERPACK_PROFILE));
-        registerElement("iris_shaderpack_changes", (_str) -> new StringIntSupplierElement(SHADERPACK_CHANGES));
+        registerElement("iris_version", (_str) -> new SupplierElements.Str(VERSION));
+        registerElement("iris_enabled", (_str) -> new SupplierElements.Bool(ENABLED));
+        registerElement("iris_shaderpack", (_str) -> new SupplierElements.Str(SHADERPACK));
+        registerElement("iris_shaderpack_profile", (_str) -> new SupplierElements.Str(SHADERPACK_PROFILE));
+        registerElement("iris_shaderpack_changes", (_str) -> new SupplierElements.Str(SHADERPACK_CHANGES));
 
         registerComplexData(() -> {
             Optional<ShaderPack> pack = Iris.getCurrentPack();

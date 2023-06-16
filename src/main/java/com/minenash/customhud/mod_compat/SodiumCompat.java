@@ -1,7 +1,6 @@
 package com.minenash.customhud.mod_compat;
 
-import com.minenash.customhud.HudElements.supplier.StringIntSupplierElement;
-import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
+import com.minenash.customhud.core.elements.SupplierElements;
 import me.jellysquid.mods.sodium.client.SodiumClientMod;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
 
@@ -25,13 +24,13 @@ public class SodiumCompat {
 
     public static void registerCompat() {
 
-        registerElement("sodium_version", (_str) -> new StringSupplierElement(VERSION));
-        registerElement("sodium_chunk_arena_allocator", (_str) -> new StringSupplierElement(CHUNK_ARENA_ALLOCATOR));
-        registerElement("sodium_staging_buffers", (_str) -> new StringSupplierElement(STAGING_BUFFER));
+        registerElement("sodium_version", (_str) -> new SupplierElements.Str(VERSION));
+        registerElement("sodium_chunk_arena_allocator", (_str) -> new SupplierElements.Str(CHUNK_ARENA_ALLOCATOR));
+        registerElement("sodium_staging_buffers", (_str) -> new SupplierElements.Str(STAGING_BUFFER));
 
-        registerElement("sodium_buffer_objects", (_str) -> new StringIntSupplierElement(BUFFER_OBJECTS));
-        registerElement("sodium_memory_used", (_str) -> new StringIntSupplierElement(MEMORY_USED));
-        registerElement("sodium_memory_allocated", (_str) -> new StringIntSupplierElement(MEMORY_ALLOCATED));
+        registerElement("sodium_buffer_objects", (_str) -> new SupplierElements.StrInt(BUFFER_OBJECTS));
+        registerElement("sodium_memory_used", (_str) -> new SupplierElements.StrInt(MEMORY_USED));
+        registerElement("sodium_memory_allocated", (_str) -> new SupplierElements.StrInt(MEMORY_ALLOCATED));
 
         registerComplexData(() -> {
             SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();

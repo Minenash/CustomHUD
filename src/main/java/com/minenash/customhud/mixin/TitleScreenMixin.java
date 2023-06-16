@@ -1,7 +1,7 @@
 package com.minenash.customhud.mixin;
 
 import com.minenash.customhud.CustomHud;
-import com.minenash.customhud.errors.Errors;
+import com.minenash.customhud.core.errors.Errors;
 import net.minecraft.client.gui.screen.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
