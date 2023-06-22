@@ -1,6 +1,5 @@
 package com.minenash.customhud.core.data;
 
-import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.core.elements.ConditionalElement;
 import com.minenash.customhud.core.elements.FunctionalElement;
 import com.minenash.customhud.core.elements.HudElement;
@@ -17,7 +16,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

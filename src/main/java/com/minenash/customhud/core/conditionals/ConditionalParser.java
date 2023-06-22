@@ -1,6 +1,5 @@
 package com.minenash.customhud.core.conditionals;
 
-import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.core.data.Enabled;
 import com.minenash.customhud.core.elements.HudElement;
 import com.minenash.customhud.core.elements.StringElement;
@@ -11,7 +10,6 @@ import com.minenash.customhud.core.errors.Errors;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConditionalParser {
 

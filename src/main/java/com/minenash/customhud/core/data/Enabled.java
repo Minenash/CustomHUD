@@ -1,7 +1,4 @@
-package com.minenash.customhud.core.data;
-
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+package com.minenash.customhud.core.data; 
 
 public class Enabled {
     public static final int                NONE = 0b000000000000000;

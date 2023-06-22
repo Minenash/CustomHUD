@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.minenash.customhud.mixin",
+  "package": "com.minenash.customhud.mc1_20.mixin",
   "compatibilityLevel": "JAVA_16",
   "client": [
     "ChunkBuilderAccess",

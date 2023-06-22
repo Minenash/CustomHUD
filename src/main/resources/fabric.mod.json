@@ -19,9 +19,13 @@
 
   "environment": "client",
   "entrypoints": {
-    "main": ["com.minenash.customhud.CustomHud"],
+    "main": [
+      "com.minenash.customhud.mc1_20.CustomHud"
+    ],
     "preLaunch": ["com.llamalad7.mixinextras.MixinExtrasBootstrap::init"],
-    "modmenu": ["com.minenash.customhud.ModMenuIntegration"]
+    "modmenu": [
+      "com.minenash.customhud.mc1_20.ModMenuIntegration"
+    ]
   },
   "mixins": [
     "customhud.mixins.json"

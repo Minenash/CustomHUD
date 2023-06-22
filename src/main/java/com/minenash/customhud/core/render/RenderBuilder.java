@@ -6,7 +6,7 @@ import com.minenash.customhud.core.data.Section;
 import com.minenash.customhud.core.elements.ConditionalElement;
 import com.minenash.customhud.core.elements.FunctionalElement;
 import com.minenash.customhud.core.elements.HudElement;
-import com.minenash.customhud.elements.icon.ItemRenderUtil;
+import com.minenash.customhud.mc1_20.elements.icon.ItemRenderUtil;
 
 import java.util.ArrayList;
 import java.util.List;
