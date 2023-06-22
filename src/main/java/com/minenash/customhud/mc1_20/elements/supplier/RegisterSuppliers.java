@@ -10,7 +10,7 @@ import static com.minenash.customhud.mc1_20.elements.supplier.SpecialSuppliers.*
 import static com.minenash.customhud.mc1_20.elements.supplier.StringIntSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.StringSuppliers.*;
 import static com.minenash.customhud.core.SupplierRegistry.add;
-import static com.minenash.customhud.core.SEntry.Type.*;
+import static com.minenash.customhud.core.SupplierEntry.Type.*;
 
 public class RegisterSuppliers {
 

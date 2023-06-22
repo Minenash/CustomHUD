@@ -4,9 +4,9 @@ import java.util.function.Supplier;
 
 public interface HudElement {
 
-    String getString();
-    Number getNumber();
-    boolean getBoolean();
+    default String getString() { return null; }
+    default Number getNumber() { return null; }
+    default boolean getBoolean() { return false; }
 
     default <T> T sanitize(Supplier<T> supplier, T onFail) {
         try {

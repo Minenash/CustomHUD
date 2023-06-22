@@ -2,8 +2,8 @@ package com.minenash.customhud.core.conditionals;
 
 import com.minenash.customhud.core.data.Enabled;
 import com.minenash.customhud.core.elements.HudElement;
-import com.minenash.customhud.core.elements.StringElement;
 import com.minenash.customhud.core.VariableParser;
+import com.minenash.customhud.core.elements.SudoElements;
 import com.minenash.customhud.core.errors.ErrorException;
 import com.minenash.customhud.core.errors.ErrorType;
 import com.minenash.customhud.core.errors.Errors;
@@ -11,6 +11,7 @@ import com.minenash.customhud.core.errors.Errors;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("DuplicatedCode")
 public class ConditionalParser {
 
     enum TokenType { START_PREN, END_PREN, FULL_PREN, AND, OR, MATH, COMPARISON, NUMBER, STRING, BOOLEAN, VARIABLE }
@@ -194,16 +195,16 @@ public class ConditionalParser {
         boolean checkNum = false;
         HudElement left = switch (tokens.get(0).type()) {
             case VARIABLE -> (HudElement) tokens.get(0).value();
-            case STRING -> new StringElement((String)tokens.get(0).value());
-            case NUMBER -> { checkNum = true; yield new SudoHudElements.Num((Number)tokens.get(0).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(0).value());}
+            case STRING -> new SudoElements.Str((String)tokens.get(0).value());
+            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(0).value()); }
+            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(0).value());}
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
         };
         HudElement right = switch (tokens.get(2).type()) {
             case VARIABLE -> (HudElement) tokens.get(2).value();
-            case STRING -> new StringElement((String)tokens.get(2).value());
-            case NUMBER -> { checkNum = true; yield new SudoHudElements.Num((Number)tokens.get(2).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(2).value());}
+            case STRING -> new SudoElements.Str((String)tokens.get(2).value());
+            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(2).value()); }
+            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(2).value());}
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(2).type().toString());
         };
 
@@ -232,16 +233,16 @@ public class ConditionalParser {
         boolean checkNum = false;
         HudElement left = switch (tokens.get(0).type()) {
             case VARIABLE -> (HudElement) tokens.get(0).value();
-            case STRING -> new StringElement((String)tokens.get(0).value());
-            case NUMBER -> { checkNum = true; yield new SudoHudElements.Num((Number)tokens.get(0).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(0).value());}
+            case STRING -> new SudoElements.Str((String)tokens.get(0).value());
+            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(0).value()); }
+            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(0).value());}
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
         };
         HudElement right = switch (tokens.get(2).type()) {
             case VARIABLE -> (HudElement) tokens.get(2).value();
-            case STRING -> new StringElement((String)tokens.get(2).value());
-            case NUMBER -> { checkNum = true; yield new SudoHudElements.Num((Number)tokens.get(2).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoHudElements.Bool((Boolean)tokens.get(2).value());}
+            case STRING -> new SudoElements.Str((String)tokens.get(2).value());
+            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(2).value()); }
+            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(2).value());}
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(2).type().toString());
         };
 

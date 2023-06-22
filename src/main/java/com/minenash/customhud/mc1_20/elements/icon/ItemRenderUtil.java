@@ -2,6 +2,7 @@ package com.minenash.customhud.mc1_20.elements.icon;
 
 import com.minenash.customhud.core.data.Flags;
 import com.minenash.customhud.core.elements.FunctionalElement;
+import com.minenash.customhud.core.elements.HudElement;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +14,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
-public abstract class ItemRenderUtil extends FunctionalElement {
+public abstract class ItemRenderUtil implements HudElement, FunctionalElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     protected final float scale;

@@ -111,7 +111,7 @@ public class VariableParser {
         }
 
         if (!part.startsWith("{"))
-            return new StringElement(part);
+            return new SudoElements.Str(part);
 
         String original = part;
         part = part.substring(1, part.length()-1);
@@ -288,7 +288,7 @@ public class VariableParser {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static HudElement getSupplierElement(String name, Enabled enabled, Flags flags) {
-        SEntry entry = SupplierRegistry.get(name);
+        SupplierEntry entry = SupplierRegistry.get(name);
 
         if (entry == null) return null;
 

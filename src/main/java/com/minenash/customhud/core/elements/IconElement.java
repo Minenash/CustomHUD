@@ -3,7 +3,7 @@ package com.minenash.customhud.core.elements;
 import com.minenash.customhud.core.data.Flags;
 import net.minecraft.client.gui.DrawContext;
 
-public abstract class IconElement extends FunctionalElement {
+public abstract class IconElement implements HudElement, FunctionalElement {
 
     protected final float scale;
     protected final int shiftX;

@@ -5,14 +5,14 @@ import java.util.Map;
 
 public class SupplierRegistry {
 
-    public static final Map<String, SEntry<?>> reg = new HashMap<>();
+    public static final Map<String, SupplierEntry<?>> reg = new HashMap<>();
 
-    public static <T> void add(int en, SEntry.Type type, T supplier, String... names) {
+    public static <T> void add(int en, SupplierEntry.Type type, T supplier, String... names) {
         for (String name : names)
-            reg.put(name, new SEntry<>(en, type, supplier));
+            reg.put(name, new SupplierEntry<>(en, type, supplier));
     }
 
-    public static SEntry<?> get(String name) {
+    public static SupplierEntry<?> get(String name) {
         return reg.get(name);
     }
 }

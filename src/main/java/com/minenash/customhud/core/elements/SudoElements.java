@@ -1,8 +1,12 @@
-package com.minenash.customhud.core.conditionals;
+package com.minenash.customhud.core.elements;
 
-import com.minenash.customhud.core.elements.HudElement;
+public class SudoElements {
 
-public class SudoHudElements {
+    public record Str(String str) implements HudElement {
+        @Override public String getString() { return str; }
+        @Override public Number getNumber() { return str.length(); }
+        @Override public boolean getBoolean() { return str.length() > 1; }
+    }
 
     public record Num(Number number) implements HudElement {
         @Override public String getString() { return number.toString(); }
