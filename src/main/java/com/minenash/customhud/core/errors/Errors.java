@@ -1,5 +1,7 @@
 package com.minenash.customhud.core.errors;
 
+import com.minenash.customhud.core.registry.VariableParseContext;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,10 @@ public class Errors {
 
     public static void clearErrors(int profile) {
         errors[profile-1].clear();
+    }
+
+    public static void addError(VariableParseContext varContext, ErrorType type, String context) {
+        addError(varContext.profile(), Integer.toString(varContext.line()), varContext.original(), type, context);
     }
 
     public static void addError(int profile, int line, String source, ErrorType type, String context) {

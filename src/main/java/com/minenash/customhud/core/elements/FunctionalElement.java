@@ -6,6 +6,7 @@ public interface FunctionalElement {
 
     record ChangeTheme(HudTheme theme) implements HudElement, FunctionalElement {}
     record ChangeColor(int color) implements HudElement, FunctionalElement {}
-    class NewLine implements HudElement, FunctionalElement{}
+    class NewLine implements HudElement, FunctionalElement {}
+    class Error implements HudElement, FunctionalElement {}
 
 }

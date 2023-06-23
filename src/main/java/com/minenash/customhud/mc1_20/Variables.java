@@ -1,20 +1,57 @@
-package com.minenash.customhud.mc1_20.elements.supplier;
+package com.minenash.customhud.mc1_20;
 
 import com.minenash.customhud.core.data.Enabled;
+import com.minenash.customhud.core.elements.FormattedElement;
+import com.minenash.customhud.core.elements.FunctionalElement;
+import com.minenash.customhud.core.elements.HudElement;
+import com.minenash.customhud.core.errors.ErrorType;
+import com.minenash.customhud.core.errors.Errors;
+import com.minenash.customhud.core.registry.VariableParseContext;
+import com.minenash.customhud.mc1_20.elements.ItemCountElement;
+import com.minenash.customhud.mc1_20.elements.SettingsElement;
+import com.minenash.customhud.mc1_20.elements.SlotItemElement;
+import com.minenash.customhud.mc1_20.elements.icon.DebugGizmoElement;
+import com.minenash.customhud.mc1_20.elements.icon.ItemIconElement;
+import com.minenash.customhud.mc1_20.elements.icon.TextureIconElement;
+import com.minenash.customhud.mc1_20.elements.stats.CustomStatElement;
+import com.minenash.customhud.mc1_20.elements.stats.TypedStatElement;
+import com.minenash.customhud.mc1_20.elements.supplier.DecimalSuppliers;
+import com.minenash.customhud.mc1_20.elements.supplier.SpecialSuppliers;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.stat.StatType;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
+
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.minenash.customhud.core.data.Enabled.*;
+import static com.minenash.customhud.core.data.Enabled.NONE;
+import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntryType.*;
+import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntryType.SPECIAL;
+import static com.minenash.customhud.core.registry.VariableRegistry.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.BooleanSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.DecimalSuppliers.*;
+import static com.minenash.customhud.mc1_20.elements.supplier.DecimalSuppliers.X;
 import static com.minenash.customhud.mc1_20.elements.supplier.IntegerSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.SpecialSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.StringIntSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.StringSuppliers.*;
-import static com.minenash.customhud.core.registry.VariableRegistry.register;
-import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntryType.*;
+import static com.minenash.customhud.mc1_20.elements.supplier.StringSuppliers.TIME_AM_PM;
 
-public class RegisterSuppliers {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class Variables {
 
-    static {
+    private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("((?:[a-z0-9/._-]+:)?[a-z0-9/._-]+)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
+
+    public static void registerVars() {
+
         register(NONE, BOOLEAN, VSYNC, "vsync");
         register(NONE, BOOLEAN, SINGLEPLAYER, "sp", "singleplayer");
         register(NONE, BOOLEAN, MULTIPLAYER, "mp", "multiplayer");
@@ -153,45 +190,45 @@ public class RegisterSuppliers {
         register(NONE, DEC, X, "x");
         register(NONE, DEC, Y, "y");
         register(NONE, DEC, Z, "z");
-        register(NONE, DEC, X, "nether_x", "nx");
-        register(NONE, DEC, X, "nether_z", "nz");
-        register(NONE, DEC, X, "target_entity_x", "tex");
-        register(NONE, DEC, X, "target_entity_y", "tey");
-        register(NONE, DEC, X, "target_entity_z", "tez");
-        register(NONE, DEC, X, "target_entity_distance", "ted");
-        register(NONE, DEC, X, "hooked_entity_x", "hex");
-        register(NONE, DEC, X, "hooked_entity_y", "hey");
-        register(NONE, DEC, X, "hooked_entity_z", "hez");
-        register(NONE, DEC, X, "hooked_entity_distance", "hed");
-        register(NONE, DEC, X, "reach_distance", "reach");
-        register(NONE, DEC, X, "fishing_hook_distance");
-        register(NONE, DEC, X, "velocity_xz");
-        register(NONE, DEC, X, "velocity_y");
-        register(NONE, DEC, X, "velocity_xyz");
-        register(NONE, DEC, X, "velocity_xz_kmh");
-        register(NONE, DEC, X, "velocity_y_kmh");
-        register(NONE, DEC, X, "velocity_xyz_kmh");
-        register(NONE, DEC, X, "yaw");
-        register(NONE, DEC, X, "pitch");
-        register(NONE, DEC, X, "day");
-        register(NONE, DEC, X, "mood");
-        register(NONE, DEC, X, "tps");
-        register(NONE, DEC, X, "memory_used_percentage");
-        register(NONE, DEC, X, "memory_used");
-        register(NONE, DEC, X, "memory_total");
-        register(NONE, DEC, X, "memory_allocated_percentage");
-        register(NONE, DEC, X, "memory_allocated");
-        register(NONE, DEC, X, "cpu_usage", "cpu");
-        register(NONE, DEC, X, "gpu_usage", "gpu");
-        register(NONE, DEC, X, "ms_ticks", "tick_ms");
-        register(NONE, DEC, X, "frame_ms_min");
-        register(NONE, DEC, X, "frame_ms_max");
-        register(NONE, DEC, X, "frame_ms_avg");
-        register(NONE, DEC, X, "frame_ms_samples");
-        register(NONE, DEC, X, "item_durability_percent", "item_dur_per");
-        register(NONE, DEC, X, "offhand_item_durability_percent", "oitem_dur_per");
-        register(NONE, DEC, X, "local_difficulty");
-        register(NONE, DEC, X, "clamped_local_difficulty");
+        register(NONE, DEC, NETHER_X, "nether_x", "nx");
+        register(NONE, DEC, NETHER_Z, "nether_z", "nz");
+        register(NONE, DEC, TARGET_ENTITY_X, "target_entity_x", "tex");
+        register(NONE, DEC, TARGET_ENTITY_Y, "target_entity_y", "tey");
+        register(NONE, DEC, TARGET_ENTITY_Z, "target_entity_z", "tez");
+        register(NONE, DEC, TARGET_ENTITY_DISTANCE, "target_entity_distance", "ted");
+        register(NONE, DEC, HOOKED_ENTITY_X, "hooked_entity_x", "hex");
+        register(NONE, DEC, HOOKED_ENTITY_Y, "hooked_entity_y", "hey");
+        register(NONE, DEC, HOOKED_ENTITY_Z, "hooked_entity_z", "hez");
+        register(NONE, DEC, HOOKED_ENTITY_DISTANCE, "hooked_entity_distance", "hed");
+        register(NONE, DEC, REACH_DISTANCE, "reach_distance", "reach");
+        register(NONE, DEC, FISHING_HOOK_DISTANCE, "fishing_hook_distance");
+        register(NONE, DEC, VELOCITY_XZ, "velocity_xz");
+        register(NONE, DEC, VELOCITY_Y, "velocity_y");
+        register(NONE, DEC, VELOCITY_XYZ, "velocity_xyz");
+        register(NONE, DEC, VELOCITY_XZ_KMH, "velocity_xz_kmh");
+        register(NONE, DEC, VELOCITY_Y_KMH, "velocity_y_kmh");
+        register(NONE, DEC, VELOCITY_XYZ_KMH, "velocity_xyz_kmh");
+        register(NONE, DEC, YAW, "yaw");
+        register(NONE, DEC, PITCH, "pitch");
+        register(NONE, DEC, DAY, "day");
+        register(NONE, DEC, MOOD, "mood");
+        register(NONE, DEC, TPS, "tps");
+        register(NONE, DEC, MEMORY_USED_PERCENTAGE, "memory_used_percentage");
+        register(NONE, DEC, MEMORY_USED, "memory_used");
+        register(NONE, DEC, TOTAL_MEMORY, "memory_total");
+        register(NONE, DEC, ALLOCATED_PERCENTAGE, "memory_allocated_percentage");
+        register(NONE, DEC, ALLOCATED, "memory_allocated");
+        register(CPU, DEC, CPU_USAGE, "cpu_usage", "cpu");
+        register(PERFORMANCE_METRICS, DEC, GPU_USAGE, "gpu_usage", "gpu");
+        register(NONE, DEC, TICK_MS, "ms_ticks", "tick_ms");
+        register(PERFORMANCE_METRICS, DEC, FRAME_MS_MIN, "frame_ms_min");
+        register(PERFORMANCE_METRICS, DEC, FRAME_MS_MAX, "frame_ms_max");
+        register(PERFORMANCE_METRICS, DEC, FRAME_MS_AVG, "frame_ms_avg");
+        register(PERFORMANCE_METRICS, DEC, FRAME_MS_SAMPLES, "frame_ms_samples");
+        register(NONE, DEC, ITEM_DURABILITY_PERCENT, "item_durability_percent", "item_dur_per");
+        register(NONE, DEC, OFFHAND_ITEM_DURABILITY_PERCENT, "offhand_item_durability_percent", "oitem_dur_per");
+        register(Enabled.LOCAL_DIFFICULTY, DEC, DecimalSuppliers.LOCAL_DIFFICULTY, "local_difficulty");
+        register(Enabled.LOCAL_DIFFICULTY, DEC, CLAMPED_LOCAL_DIFFICULTY, "clamped_local_difficulty");
 
         register(TIME, SPECIAL, TIME_HOUR_24, "hour24");
         register(TIME, SPECIAL, TIME_MINUTES, "minute");
@@ -211,6 +248,123 @@ public class RegisterSuppliers {
         register(NONE, SPECIAL, FACING_TOWARDS_PN_WORD, "facing_towards_pn_word");
         register(NONE, SPECIAL, FACING_TOWARDS_PN_SIGN, "facing_towards_pn_sign");
 
+
+
+
+
+        register("customhud:stat", context -> {
+            if (!context.startsWith("stat:")) return null;
+
+            String stat = context.base().substring(5);
+
+            HudElement element = stat("mined:",   Stats.MINED,   Registries.BLOCK, stat, context);
+            if (element == null) element = stat("crafted:", Stats.CRAFTED, Registries.ITEM,  stat, context);
+            if (element == null) element = stat("used:",    Stats.USED,    Registries.ITEM,  stat, context);
+            if (element == null) element = stat("broken:",  Stats.BROKEN,  Registries.ITEM,  stat, context);
+            if (element == null) element = stat("dropped:", Stats.DROPPED, Registries.ITEM,  stat, context);
+            if (element == null) element = stat("picked_up:", Stats.PICKED_UP, Registries.ITEM, stat, context);
+            if (element == null) element = stat("killed:",    Stats.KILLED,    Registries.ENTITY_TYPE, stat, context);
+            if (element == null) element = stat("killed_by:", Stats.KILLED_BY, Registries.ENTITY_TYPE, stat, context);
+
+            if (element != null)
+                return element;
+
+            Identifier statId = Registries.CUSTOM_STAT.get(new Identifier(stat));
+            if (Stats.CUSTOM.hasStat(statId)) {
+                context.enabled().add(Enabled.UPDATE_STATS);
+                return new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), context.flags());
+            }
+            Errors.addError(context, ErrorType.UNKNOWN_STATISTIC, stat);
+            return new FunctionalElement.Error();
+        });
+
+        register("customhud:itemcount", context -> {
+            if (!context.startsWith("itemcount:")) return null;
+
+            String itemStr = context.base().substring(context.base().indexOf(':')+1);
+            Item item = Registries.ITEM.get( Identifier.tryParse(itemStr));
+
+            if (item != Items.AIR)
+                return new ItemCountElement(item);
+            Errors.addError(context, ErrorType.UNKNOWN_ITEM_ID, itemStr);
+            return new FunctionalElement.Error();
+
+        });
+
+        register("customhud:item", context -> {
+            if (!context.startsWith("item:")) return null;
+
+            int firstCollinIndex = context.base().indexOf(':', 6);
+
+            String slot = firstCollinIndex == -1? context.base().substring(5) : context.base().substring(5, firstCollinIndex);
+            String method = firstCollinIndex == -1? "" : context.base().substring(firstCollinIndex+1);
+            Pair<HudElement,ErrorType> element = SlotItemElement.create(slot, method, context.flags());
+
+            if (element.getRight() != null) {
+                Errors.addError(context, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ITEM_PROPERTY ? method : slot);
+                return new FunctionalElement.Error();
+            }
+            return element.getLeft();
+        });
+
+        register("customhud:setting", context -> {
+            if (!context.startsWith("setting:") && !context.startsWith("s:")) return null;
+
+            String setting = context.base().substring(context.base().indexOf(':') + 1).toLowerCase();
+            Pair<HudElement, Pair<ErrorType,String>> element = SettingsElement.create(setting, context.flags());
+
+            if (element.getRight() != null) {
+                Errors.addError(context, element.getRight().getLeft(), element.getRight().getRight());
+                return new FunctionalElement.Error();
+            }
+            return context.flags().anyTextUsed() ? new FormattedElement(element.getLeft(), context.flags()) : element.getLeft();
+
+        });
+
+        register("customhud:icon", context -> {
+            if (!context.startsWith("icon:")) return null;
+
+            String base = context.base().substring(context.base().indexOf(':')+1);
+
+            Item item = Registries.ITEM.get(Identifier.tryParse(base));
+            if (item != Items.AIR)
+                return new ItemIconElement(new ItemStack(item), context.flags());
+
+            Matcher matcher = TEXTURE_ICON_PATTERN.matcher(base);
+            if (!matcher.matches()) {
+                Errors.addError(context, ErrorType.UNKNOWN_ICON, base);
+                return new FunctionalElement.Error();
+            }
+
+            Identifier id = new Identifier(matcher.group(1) + (matcher.group(1).endsWith(".png") ? "" : ".png"));
+            int u = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
+            int v = matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3));
+            int w = matcher.group(4) == null ? -1 : Integer.parseInt(matcher.group(4));
+            int h = matcher.group(5) == null ? -1 : Integer.parseInt(matcher.group(5));
+
+            TextureIconElement element = new TextureIconElement(id, u, v, w, h, context.flags());
+            if (!element.isIconAvailable())
+                Errors.addError(context, ErrorType.UNKNOWN_ICON, id.toString());
+            return element;
+
+        });
+
+        register("customhud:gizmo", context ->
+            context.base().equals("gizmo") ? new DebugGizmoElement(context.flags()) : null
+        );
+    }
+
+    private static HudElement stat(String prefix, StatType<?> type, Registry<?> registry, String stat, VariableParseContext context) {
+        if (!stat.startsWith(prefix))
+            return null;
+
+        Optional<?> entry = registry.getOrEmpty( new Identifier(stat.substring(prefix.length())) );
+        if (entry.isPresent()) {
+            context.enabled().add(Enabled.UPDATE_STATS);
+            return new TypedStatElement(type, entry.get(), context.flags());
+        }
+
+        return null;
     }
 
 }

@@ -1,14 +1,14 @@
 package com.minenash.customhud.mc1_20.mod_compat;
 
-import com.minenash.customhud.core.elements.SupplierElements;
+import com.minenash.customhud.core.data.Enabled;
+import com.minenash.customhud.core.registry.VariableRegistry;
 import me.jellysquid.mods.sodium.client.SodiumClientMod;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import static com.minenash.customhud.mc1_20.mod_compat.CustomHudRegistry.registerElement;
-import static com.minenash.customhud.mc1_20.mod_compat.CustomHudRegistry.registerComplexData;
+import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntryType.*;
 
 public class SodiumCompat {
 
@@ -24,15 +24,15 @@ public class SodiumCompat {
 
     public static void registerCompat() {
 
-        registerElement("sodium_version", (_str) -> new SupplierElements.Str(VERSION));
-        registerElement("sodium_chunk_arena_allocator", (_str) -> new SupplierElements.Str(CHUNK_ARENA_ALLOCATOR));
-        registerElement("sodium_staging_buffers", (_str) -> new SupplierElements.Str(STAGING_BUFFER));
+        VariableRegistry.register(Enabled.NONE, STRING, VERSION, "sodium_version");
+        VariableRegistry.register(Enabled.NONE, STRING, CHUNK_ARENA_ALLOCATOR, "sodium_chunk_arena_allocator");
+        VariableRegistry.register(Enabled.NONE, STRING, STAGING_BUFFER, "sodium_staging_buffers");
 
-        registerElement("sodium_buffer_objects", (_str) -> new SupplierElements.StrInt(BUFFER_OBJECTS));
-        registerElement("sodium_memory_used", (_str) -> new SupplierElements.StrInt(MEMORY_USED));
-        registerElement("sodium_memory_allocated", (_str) -> new SupplierElements.StrInt(MEMORY_ALLOCATED));
+        VariableRegistry.register(Enabled.NONE, STR_INT, BUFFER_OBJECTS, "sodium_buffer_objects");
+        VariableRegistry.register(Enabled.NONE, STR_INT, MEMORY_USED, "sodium_memory_used");
+        VariableRegistry.register(Enabled.NONE, STR_INT, MEMORY_ALLOCATED, "sodium_memory_allocated");
 
-        registerComplexData(() -> {
+        VariableRegistry.registerComplexData("sodium:debug", () -> {
             SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
             if (renderer != null)
                 debugLines = (List<String>) renderer.getMemoryDebugStrings();

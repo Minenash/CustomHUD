@@ -105,10 +105,14 @@ public class SettingsElement {
         if (setting.startsWith("soundcategory_")) {
             String cat = setting.substring(14);
             for (SoundCategory soundCategory : SoundCategory.values())
-                if (soundCategory.getName().equalsIgnoreCase(cat))
-                    return new Pair<>(new SupplierElements.Num(SupplierElements.Num.of(
-                            () -> ((GameOptionsAccessor)options).getSoundVolumeLevels().get(soundCategory).getValue() * 100,
-                            flags.precision != -1 ? flags.precision : 0), flags.scale, flags.precision != -1 ? flags.precision : 0), null);
+                if (soundCategory.getName().equalsIgnoreCase(cat)) {
+                    return new Pair<>(new SupplierElements.Num(
+                            () -> ((GameOptionsAccessor) options).getSoundVolumeLevels().get(soundCategory).getValue() * 100,
+                            flags.scale,
+                            flags.precision == -1 ? 0 : flags.precision
+                    ), null);
+
+                }
             return new Pair<>(null,new Pair<>(ErrorType.UNKNOWN_SOUND_CATEGORY, cat));
         }
 

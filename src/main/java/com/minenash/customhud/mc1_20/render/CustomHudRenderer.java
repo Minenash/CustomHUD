@@ -1,9 +1,9 @@
 package com.minenash.customhud.mc1_20.render;
 
-import com.minenash.customhud.mc1_20.CustomHud;
+import com.minenash.customhud.core.CustomHudCore;
+import com.minenash.customhud.core.elements.IconElement;
 import com.minenash.customhud.core.render.RenderBuilder;
 import com.minenash.customhud.core.render.RenderPiece;
-import com.minenash.customhud.mc1_20.elements.icon.ItemRenderUtil;
 import com.minenash.customhud.core.data.Profile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -23,7 +23,7 @@ public class CustomHudRenderer {
 
     public static void render(DrawContext context, float _tickDelta) {
 
-        Profile profile = CustomHud.getActiveProfile();
+        Profile profile = CustomHudCore.getActiveProfile();
         if (profile == null || client.options.debugEnabled)
             return;
 
@@ -51,7 +51,7 @@ public class CustomHudRenderer {
                     font = new Identifier(fgPiece.font);
                     context.drawText(client.textRenderer, value, fgPiece.x, fgPiece.y, fgPiece.color, fgPiece.shadow);
                 }
-                if (fgPiece.element instanceof ItemRenderUtil ie)
+                if (fgPiece.element instanceof IconElement ie)
                     ie.render(context, fgPiece.x, fgPiece.y, profile.baseTheme.scale);
             }
 

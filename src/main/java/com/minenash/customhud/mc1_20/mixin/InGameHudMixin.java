@@ -2,6 +2,7 @@ package com.minenash.customhud.mc1_20.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.minenash.customhud.core.CustomHudCore;
 import com.minenash.customhud.mc1_20.CustomHud;
 import com.minenash.customhud.core.data.Crosshairs;
 import net.minecraft.client.MinecraftClient;
@@ -26,7 +27,7 @@ public abstract class InGameHudMixin {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderCrosshair(Lnet/minecraft/client/gui/DrawContext;)V", shift = At.Shift.AFTER))
     private void renderAttackIndicatorForDebugScreen2(DrawContext context, float _tickDelta, CallbackInfo _info) {
-        if (CustomHud.getCrosshair() == Crosshairs.DEBUG && MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
+        if (CustomHudCore.getCrosshair() == Crosshairs.DEBUG && MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
             renderAttackIndicator = true;
             renderCrosshair(context);
             renderAttackIndicator = false;
@@ -35,12 +36,12 @@ public abstract class InGameHudMixin {
 
     @ModifyExpressionValue(method = "renderCrosshair", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
     private boolean getDebugCrosshairEnable(boolean original) {
-        return client.options.debugEnabled ? original : !renderAttackIndicator && CustomHud.getCrosshair() == Crosshairs.DEBUG;
+        return client.options.debugEnabled ? original : !renderAttackIndicator && CustomHudCore.getCrosshair() == Crosshairs.DEBUG;
     }
 
     @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V"))
     private boolean skipNormalCrosshairRendering(DrawContext instance, Identifier texture, int x, int y, int u, int v, int width, int height) {
-        return !renderAttackIndicator && CustomHud.getCrosshair() != Crosshairs.NONE;
+        return !renderAttackIndicator && CustomHudCore.getCrosshair() != Crosshairs.NONE;
     }
 
 }

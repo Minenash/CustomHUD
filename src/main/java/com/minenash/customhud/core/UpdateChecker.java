@@ -1,9 +1,9 @@
-package com.minenash.customhud.mc1_20;
+package com.minenash.customhud.core;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.minenash.customhud.mc1_20.CustomHud;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public class UpdateChecker {
 
-    private static final String mcVersion = MinecraftClient.getInstance().getGameVersion();
+//    private static final String mcVersion = MinecraftClient.getInstance().getGameVersion();
     private static final String currentVersion;
     static {
         String modVersionRaw = FabricLoader.getInstance().getModContainer("custom_hud").get().getMetadata().getVersion().getFriendlyString();
@@ -27,7 +27,7 @@ public class UpdateChecker {
 
     public static Text updateMessage = null;
 
-    public static void check() {
+    public static void check(String mcVersion) {
         if (currentVersion.contains("beta") || currentVersion.contains("alpha"))
             return;
 
@@ -62,7 +62,7 @@ public class UpdateChecker {
                         .withClickEvent( new ClickEvent(ClickEvent.Action.OPEN_URL, info.get("link").getAsString()) )
                         .withHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Download on Modrinth")) )
                 )).append("\nWhat's New:\n §7" + info.get("msg").getAsString());
-        CustomHud.saveConfig();
+        CustomHudCore.saveConfig();
 
     }
 

@@ -1,5 +1,7 @@
 package com.minenash.customhud.core.elements;
 
+import com.minenash.customhud.core.data.Flags;
+
 import java.util.function.Supplier;
 
 public class SupplierElements {
@@ -71,10 +73,12 @@ public class SupplierElements {
         private final int precision;
         private final double scale;
 
-        public Num(Entry entry, double scale, int precision) { this(entry.supplier, scale, precision); }
+        public Num(Entry entry, Flags flags) {
+            this(entry.supplier, flags.scale, flags.precision == -1 ? entry.precision : flags.precision);
+        }
         public Num(Supplier<Number> supplier, double scale, int precision) {
             this.supplier = supplier;
-            this.precision = precision;
+            this.precision = precision == -1 ? 0 : precision;
             this.scale = scale;
         }
 
