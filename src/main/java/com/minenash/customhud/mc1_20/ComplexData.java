@@ -1,6 +1,7 @@
 package com.minenash.customhud.mc1_20;
 
 import com.minenash.customhud.core.data.Profile;
+import com.minenash.customhud.core.registry.VariableRegistry;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -205,7 +206,7 @@ public class ComplexData {
             performanceMetrics[0] = avg / ls.length;
         }
 
-        CustomHudRegistry.runComplexData();
+        VariableRegistry.runComplexData();
 
     }
 

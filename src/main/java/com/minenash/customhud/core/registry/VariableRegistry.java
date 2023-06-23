@@ -75,4 +75,9 @@ public class VariableRegistry {
         return complexData.containsKey(id);
     }
 
+    public static void runComplexData() {
+        for (Runnable runnable : complexData.values())
+            runnable.run();
+    }
+
 }

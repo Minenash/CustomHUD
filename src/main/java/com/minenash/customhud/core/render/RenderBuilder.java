@@ -70,14 +70,14 @@ public class RenderBuilder {
                         xOffset = 0;
                         color = theme.fgColor;
                     } else if (e instanceof FunctionalElement.ChangeColor cce) {
-                        color = cce.color;
+                        color = cce.color();
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
-                        if (!dynamicWidth && theme.bgColor != cte.theme.bgColor) {
+                        if (!dynamicWidth && theme.bgColor != cte.theme().bgColor) {
                             int x1 = section.getStartX(right + 3, section.width) - 2;
                             pieces.add(new RenderPiece.Background(x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor));
                             staticWidthY = y;
                         }
-                        theme = cte.theme;
+                        theme = cte.theme();
                     } else if (e instanceof ItemRenderUtil ie) {
                         xOffset += ie.getTextWidth();
                     }

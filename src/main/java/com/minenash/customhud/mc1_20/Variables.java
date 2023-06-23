@@ -38,7 +38,6 @@ import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntr
 import static com.minenash.customhud.core.registry.VariableRegistry.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.BooleanSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.DecimalSuppliers.*;
-import static com.minenash.customhud.mc1_20.elements.supplier.DecimalSuppliers.X;
 import static com.minenash.customhud.mc1_20.elements.supplier.IntegerSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.SpecialSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.StringIntSuppliers.*;
