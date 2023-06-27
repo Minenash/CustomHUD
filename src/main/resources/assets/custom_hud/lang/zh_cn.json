@@ -1,0 +1,17 @@
+{
+  "category.custom_hud": "Custom Hud",
+  "key.custom_hud.enable": "启用/禁用",
+  "key.custom_hud.cycle_profiles": "切换配置文件",
+  "key.custom_hud.swap_to_profile1": "切换至配置文件 1",
+  "key.custom_hud.swap_to_profile2": "切换至配置文件 2",
+  "key.custom_hud.swap_to_profile3": "切换至配置文件 3",
+  "key.custom_hud.show_errors": "显示错误",
+  "gui.custom_hud.profile_updated": "CustomHud 配置文件 %d 已更新",
+  "config.custom_hud.enabled": "启用",
+  "config.custom_hud.disabled": "禁用",
+  "config.custom_hud.done": "完成",
+  "config.custom_hud.open_profile": "编辑配置文件 %d",
+  "config.custom_hud.title": "CustomHUD",
+  "config.custom_hud.enable.label": "启用/禁用该模组",
+  "config.custom_hud.active_profile.label": "当前启用的配置文件"
+}
