@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.*;
 
-public class CustomHudCore {
+public class ProfileHandler {
 
     public static Profile[] profiles = new Profile[3];
     public static int activeProfile = 1;

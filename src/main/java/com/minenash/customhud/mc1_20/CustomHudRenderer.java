@@ -1,6 +1,6 @@
-package com.minenash.customhud.mc1_20.render;
+package com.minenash.customhud.mc1_20;
 
-import com.minenash.customhud.core.CustomHudCore;
+import com.minenash.customhud.core.ProfileHandler;
 import com.minenash.customhud.core.elements.IconElement;
 import com.minenash.customhud.core.render.RenderBuilder;
 import com.minenash.customhud.core.render.RenderPiece;
@@ -23,7 +23,7 @@ public class CustomHudRenderer {
 
     public static void render(DrawContext context, float _tickDelta) {
 
-        Profile profile = CustomHudCore.getActiveProfile();
+        Profile profile = ProfileHandler.getActiveProfile();
         if (profile == null || client.options.debugEnabled)
             return;
 
@@ -37,13 +37,13 @@ public class CustomHudRenderer {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        BufferRenderer.drawWithGlobalProgram(bgBuilder.end());
-        RenderSystem.disableBlend();
-
 
         for (RenderPiece piece : pieces)
             if (piece instanceof RenderPiece.Background bgPiece)
                 addLineBg(context, bgBuilder, bgPiece);
+
+        BufferRenderer.drawWithGlobalProgram(bgBuilder.end());
+        RenderSystem.disableBlend();
 
         for (RenderPiece piece : pieces)
             if (piece instanceof RenderPiece.Foreground fgPiece) {
@@ -54,7 +54,6 @@ public class CustomHudRenderer {
                 if (fgPiece.element instanceof IconElement ie)
                     ie.render(context, fgPiece.x, fgPiece.y, profile.baseTheme.scale);
             }
-
 
         context.getMatrices().pop();
 

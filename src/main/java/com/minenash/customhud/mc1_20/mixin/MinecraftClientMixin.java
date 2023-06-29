@@ -1,6 +1,6 @@
 package com.minenash.customhud.mc1_20.mixin;
 
-import com.minenash.customhud.core.CustomHudCore;
+import com.minenash.customhud.core.ProfileHandler;
 import com.minenash.customhud.mc1_20.ComplexData;
 import com.minenash.customhud.core.data.Enabled;
 import net.minecraft.client.MinecraftClient;
@@ -35,7 +35,7 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(RunArgs args, CallbackInfo ci) {
-        CustomHudCore.loadProfiles();
+        ProfileHandler.loadProfiles();
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/String;format(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;"))
@@ -46,7 +46,7 @@ public abstract class MinecraftClientMixin {
 
     @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
     public boolean getGpuUsageAndOtherPerformanceMetrics(GameOptions instance) {
-        return instance.debugEnabled || (CustomHudCore.getActiveProfile() != null && CustomHudCore.getActiveProfile().enabled.has(Enabled.PERFORMANCE_METRICS) );
+        return instance.debugEnabled || (ProfileHandler.getActiveProfile() != null && ProfileHandler.getActiveProfile().enabled.has(Enabled.PERFORMANCE_METRICS) );
     }
 
 }

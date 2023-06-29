@@ -1,10 +1,9 @@
-package com.minenash.customhud.core;
+package com.minenash.customhud.core.parsing;
 
 import com.minenash.customhud.core.data.Enabled;
 import com.minenash.customhud.core.registry.VariableParseContext;
 import com.minenash.customhud.core.registry.VariableRegistry;
 import com.minenash.customhud.core.elements.*;
-import com.minenash.customhud.core.conditionals.ConditionalParser;
 import com.minenash.customhud.core.data.Flags;
 import com.minenash.customhud.core.data.HudTheme;
 import com.minenash.customhud.core.errors.ErrorType;
@@ -62,7 +61,7 @@ public class VariableParser {
         List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
         while (args.find()) {
 //            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
-            pairs.add(new ConditionalElement.ConditionalPair(ConditionalParser.parseConditional(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
+            pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseConditional(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
         }
         return pairs;
     }

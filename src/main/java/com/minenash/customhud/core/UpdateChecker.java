@@ -2,7 +2,6 @@ package com.minenash.customhud.core;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.minenash.customhud.mc1_20.CustomHud;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -62,7 +61,7 @@ public class UpdateChecker {
                         .withClickEvent( new ClickEvent(ClickEvent.Action.OPEN_URL, info.get("link").getAsString()) )
                         .withHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Download on Modrinth")) )
                 )).append("\nWhat's New:\n §7" + info.get("msg").getAsString());
-        CustomHudCore.saveConfig();
+        ProfileHandler.saveConfig();
 
     }
 

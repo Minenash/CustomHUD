@@ -1,6 +1,6 @@
 package com.minenash.customhud.mc1_20.mixin.fonts;
 
-import com.minenash.customhud.mc1_20.render.CustomHudRenderer;
+import com.minenash.customhud.mc1_20.CustomHudRenderer;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.Style;
 import org.spongepowered.asm.mixin.Mixin;

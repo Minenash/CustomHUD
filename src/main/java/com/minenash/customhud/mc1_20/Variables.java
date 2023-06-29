@@ -32,9 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.minenash.customhud.core.data.Enabled.*;
-import static com.minenash.customhud.core.data.Enabled.NONE;
 import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntryType.*;
-import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntryType.SPECIAL;
 import static com.minenash.customhud.core.registry.VariableRegistry.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.BooleanSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.DecimalSuppliers.*;
@@ -42,7 +40,6 @@ import static com.minenash.customhud.mc1_20.elements.supplier.IntegerSuppliers.*
 import static com.minenash.customhud.mc1_20.elements.supplier.SpecialSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.StringIntSuppliers.*;
 import static com.minenash.customhud.mc1_20.elements.supplier.StringSuppliers.*;
-import static com.minenash.customhud.mc1_20.elements.supplier.StringSuppliers.TIME_AM_PM;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class Variables {

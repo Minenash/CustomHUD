@@ -1,17 +1,17 @@
-package com.minenash.customhud.core.conditionals;
+package com.minenash.customhud.core.parsing;
 
 import com.minenash.customhud.core.elements.HudElement;
 
 import java.util.List;
 
-public interface Operation {
+public interface ExpressionOperation {
 
     int getValue();
     void printTree(int indent);
 
-    record Or(List<Operation> elements) implements Operation {
+    record Or(List<ExpressionOperation> elements) implements ExpressionOperation {
         public int getValue() {
-            for (Operation element : elements)
+            for (ExpressionOperation element : elements)
                 if (element.getValue() > 0)
                     return 1;
             return 0;
@@ -22,14 +22,14 @@ public interface Operation {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
             System.out.println("- Or: ");
-            for (Operation elem : elements)
+            for (ExpressionOperation elem : elements)
                 elem.printTree(indent + 2);
         }
     }
 
-    record And(List<Operation> elements) implements Operation {
+    record And(List<ExpressionOperation> elements) implements ExpressionOperation {
         public int getValue() {
-            for (Operation element : elements)
+            for (ExpressionOperation element : elements)
                 if (element.getValue() == 0)
                     return 0;
             return 1;
@@ -40,11 +40,11 @@ public interface Operation {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
             System.out.println("- And:");
-            for (Operation elem : elements)
+            for (ExpressionOperation elem : elements)
                 elem.printTree(indent+2);
         }
     }
-    record Comparison(HudElement left, HudElement right, ConditionalParser.Comparison comparison, boolean checkBool, boolean checkNum) implements Operation {
+    record Comparison(HudElement left, HudElement right, ExpressionParser.Comparison comparison, boolean checkBool, boolean checkNum) implements ExpressionOperation {
         public int getValue() {
             return getValueInternal() ? 1 : 0;
         }
@@ -68,12 +68,12 @@ public interface Operation {
         public void printTree(int indent) {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
-            String bool = (comparison == ConditionalParser.Comparison.EQUALS || comparison == ConditionalParser.Comparison.NOT_EQUALS) && checkBool ? "BOOL_" : "";
+            String bool = (comparison == ExpressionParser.Comparison.EQUALS || comparison == ExpressionParser.Comparison.NOT_EQUALS) && checkBool ? "BOOL_" : "";
             System.out.println("- Conditional(" + bool + comparison + "): " + left.getString() + ", " + right.getString());
         }
     }
 
-    record MathOperation(HudElement left, HudElement right, ConditionalParser.MathOperator operation, boolean checkBool, boolean checkNum) implements Operation {
+    record MathOperation(HudElement left, HudElement right, ExpressionParser.MathOperator operation, boolean checkBool, boolean checkNum) implements ExpressionOperation {
         public int getValue() {
             return switch (operation) {
                 default -> 0;
@@ -89,7 +89,7 @@ public interface Operation {
         }
     }
 
-    record Literal(int value) implements Operation {
+    record Literal(int value) implements ExpressionOperation {
         public int getValue() {
             return value;
         }
@@ -101,7 +101,7 @@ public interface Operation {
             System.out.println("- Literal: " + value);
         }
     }
-    record BooleanVariable(HudElement variable) implements Operation {
+    record BooleanVariable(HudElement variable) implements ExpressionOperation {
         public int getValue() {
             return variable == null ? 0 : variable.getBoolean() ? 1 : 0;
         }

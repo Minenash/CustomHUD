@@ -1,8 +1,7 @@
-package com.minenash.customhud.core.conditionals;
+package com.minenash.customhud.core.parsing;
 
 import com.minenash.customhud.core.data.Enabled;
 import com.minenash.customhud.core.elements.HudElement;
-import com.minenash.customhud.core.VariableParser;
 import com.minenash.customhud.core.elements.SudoElements;
 import com.minenash.customhud.core.errors.ErrorException;
 import com.minenash.customhud.core.errors.ErrorType;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("DuplicatedCode")
-public class ConditionalParser {
+public class ExpressionParser {
 
     enum TokenType { START_PREN, END_PREN, FULL_PREN, AND, OR, MATH, COMPARISON, NUMBER, STRING, BOOLEAN, VARIABLE }
     enum Comparison { LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUALS, EQUALS, NOT_EQUALS }
@@ -24,12 +23,12 @@ public class ConditionalParser {
         }
     }
 
-    public static Operation parseConditional(String input, String source, int profile, int debugLine, Enabled enabled) {
+    public static ExpressionOperation parseConditional(String input, String source, int profile, int debugLine, Enabled enabled) {
         if (input.isBlank() || input.equals(",") || input.equals(", "))
-            return new Operation.Literal(1);
+            return new ExpressionOperation.Literal(1);
         try {
             List<Token> tokens = getTokens(input, profile, debugLine, enabled);
-            Operation c = getConditional(tokens);
+            ExpressionOperation c = getConditional(tokens);
 //            System.out.println("Tree for Conditional on line " + debugLine + ":");
 //            c.printTree(0);
 //            System.out.println();
@@ -39,7 +38,7 @@ public class ConditionalParser {
             Errors.addError(profile, debugLine, source, e.type, e.context);
             System.out.println("[Line: " + debugLine + "] Conditional Couldn't Be Parsed: " + e.getMessage());
             System.out.println("Input: \"" + input + "\"");
-            return new Operation.Literal(1);
+            return new ExpressionOperation.Literal(1);
         }
     }
 
@@ -155,33 +154,33 @@ public class ConditionalParser {
             original.remove(end);
     }
 
-    private static Operation getConditional(List<Token> tokens) throws ErrorException {
+    private static ExpressionOperation getConditional(List<Token> tokens) throws ErrorException {
         List<List<Token>> ors = split(tokens, TokenType.OR);
-        List<Operation> conditionals = new ArrayList<>();
+        List<ExpressionOperation> conditionals = new ArrayList<>();
         for (var or : ors)
             conditionals.add(getAndConditional(or));
 
-        return conditionals.size() == 1 ? conditionals.get(0) : new Operation.Or(conditionals);
+        return conditionals.size() == 1 ? conditionals.get(0) : new ExpressionOperation.Or(conditionals);
 
     }
 
-    private static Operation getAndConditional(List<Token> tokens) throws ErrorException {
+    private static ExpressionOperation getAndConditional(List<Token> tokens) throws ErrorException {
         List<List<Token>> ands = split(tokens, TokenType.AND);
-        List<Operation> conditionals = new ArrayList<>();
+        List<ExpressionOperation> conditionals = new ArrayList<>();
         for (var and : ands)
             conditionals.add(getComparisonOperation(and));
 
-        return conditionals.size() == 1 ? conditionals.get(0) : new Operation.And(conditionals);
+        return conditionals.size() == 1 ? conditionals.get(0) : new ExpressionOperation.And(conditionals);
     }
 
     @SuppressWarnings("unchecked")
-    private static Operation getComparisonOperation(List<Token> tokens) throws ErrorException {
+    private static ExpressionOperation getComparisonOperation(List<Token> tokens) throws ErrorException {
         if (tokens.size() == 1) {
             Token token = tokens.get(0);
             switch (token.type) {
                 case FULL_PREN: return getConditional( (List<Token>) token.value());
-                case BOOLEAN: return new Operation.Literal( (Integer) token.value());
-                case VARIABLE: return new Operation.BooleanVariable( (HudElement) token.value());
+                case BOOLEAN: return new ExpressionOperation.Literal( (Integer) token.value());
+                case VARIABLE: return new ExpressionOperation.BooleanVariable( (HudElement) token.value());
             }
             throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
         }
@@ -208,17 +207,17 @@ public class ConditionalParser {
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(2).type().toString());
         };
 
-        return new Operation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
+        return new ExpressionOperation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
     }
 
     //TODO
-    private static Operation getMathOperation(List<Token> tokens) throws ErrorException {
+    private static ExpressionOperation getMathOperation(List<Token> tokens) throws ErrorException {
         if (tokens.size() == 1) {
             Token token = tokens.get(0);
             switch (token.type) {
                 case FULL_PREN: return getConditional( (List<Token>) token.value());
-                case BOOLEAN: return new Operation.Literal( (Integer) token.value());
-                case VARIABLE: return new Operation.BooleanVariable( (HudElement) token.value());
+                case BOOLEAN: return new ExpressionOperation.Literal( (Integer) token.value());
+                case VARIABLE: return new ExpressionOperation.BooleanVariable( (HudElement) token.value());
             }
             throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
         }
@@ -246,7 +245,7 @@ public class ConditionalParser {
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(2).type().toString());
         };
 
-        return new Operation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
+        return new ExpressionOperation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
     }
 
     private static List<List<Token>> split(List<Token> tokens, TokenType type) {

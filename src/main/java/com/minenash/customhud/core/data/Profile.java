@@ -3,9 +3,9 @@ package com.minenash.customhud.core.data;
 import com.minenash.customhud.core.elements.ConditionalElement;
 import com.minenash.customhud.core.elements.FunctionalElement;
 import com.minenash.customhud.core.elements.HudElement;
-import com.minenash.customhud.core.VariableParser;
-import com.minenash.customhud.core.conditionals.ConditionalParser;
-import com.minenash.customhud.core.conditionals.Operation;
+import com.minenash.customhud.core.parsing.VariableParser;
+import com.minenash.customhud.core.parsing.ExpressionParser;
+import com.minenash.customhud.core.parsing.ExpressionOperation;
 import com.minenash.customhud.core.errors.ErrorType;
 import com.minenash.customhud.core.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
@@ -120,19 +120,19 @@ public class Profile {
                 profile.sections.add(section = new Section.TopLeft());
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
-                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ConditionalParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
+                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ExpressionParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
 
             else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
                 if (profile.tempIfStack.isEmpty())
                     Errors.addError(profileID, i, line+1, ErrorType.CONDITIONAL_NOT_STARTED, "=else if: §ocond§r=");
                 else
-                    profile.tempIfStack.peek().setConditional(ConditionalParser.parseConditional(matcher.group(1), line, profileID, i + 1, profile.enabled));
+                    profile.tempIfStack.peek().setConditional(ExpressionParser.parseConditional(matcher.group(1), line, profileID, i + 1, profile.enabled));
 
             else if (line.equalsIgnoreCase("=else="))
                 if (profile.tempIfStack.isEmpty())
                     Errors.addError(profileID, i+1, line, ErrorType.CONDITIONAL_NOT_STARTED, "=else=");
                 else
-                    profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
+                    profile.tempIfStack.peek().setConditional(new ExpressionOperation.Literal(1));
 
             else if (line.equalsIgnoreCase("=endif="))
                 if (profile.tempIfStack.isEmpty())

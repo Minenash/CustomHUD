@@ -1,6 +1,6 @@
 package com.minenash.customhud.mc1_20.errors;
 
-import com.minenash.customhud.core.CustomHudCore;
+import com.minenash.customhud.core.ProfileHandler;
 import com.minenash.customhud.core.errors.ErrorType;
 import com.minenash.customhud.core.errors.Errors;
 import net.fabricmc.api.EnvType;
@@ -32,7 +32,7 @@ public class ErrorScreen extends Screen {
     public int sourceSectionWidth = 120;
 
     public ErrorScreen(Screen parent) {
-        this(parent, CustomHudCore.activeProfile);
+        this(parent, ProfileHandler.activeProfile);
     }
 
     public ErrorScreen(Screen parent, int profile) {
@@ -67,7 +67,7 @@ public class ErrorScreen extends Screen {
                 .position(this.width / 2 - 40 + 90, 24).size(80, 20).build() );
 
         this.addDrawableChild( ButtonWidget.builder(Text.literal("Open Profile"),
-                button -> new Thread(() -> Util.getOperatingSystem().open(CustomHudCore.getProfilePath(profile).toFile())).start())
+                button -> new Thread(() -> Util.getOperatingSystem().open(ProfileHandler.getProfilePath(profile).toFile())).start())
                 .position(this.width / 2 - 155, this.height - 26).size(150, 20).build() );
 
         this.addDrawableChild( ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(parent))

@@ -11,7 +11,7 @@ public class HudTheme {
     public int fgColor = 0xffffffff;
     public int lineSpacing = 2;
     public float scale = 1;
-    public String font = null;
+    public String font = "default";
     public boolean textShadow = true;
 
     private HudTheme(){}

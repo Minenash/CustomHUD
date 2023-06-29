@@ -1,6 +1,6 @@
 package com.minenash.customhud.mc1_20;
 
-import com.minenash.customhud.core.CustomHudCore;
+import com.minenash.customhud.core.ProfileHandler;
 import com.minenash.customhud.mc1_20.errors.ErrorScreen;
 import com.minenash.customhud.core.errors.Errors;
 import net.fabricmc.api.EnvType;
@@ -48,19 +48,19 @@ public class ModMenuIntegration implements ModMenuApi {
             this.addDrawableChild(ButtonWidget.builder(Text.translatable("config.custom_hud.done"), button -> close())
                     .dimensions(mid - 100, this.height - 28, 200, 20).build());
 
-            this.addDrawableChild(ButtonWidget.builder(Text.translatable(getEnableDisableLabel(CustomHudCore.enabled)), button -> {
-                CustomHudCore.enabled = !CustomHudCore.enabled;
-                button.setMessage(Text.translatable(getEnableDisableLabel(CustomHudCore.enabled)));
+            this.addDrawableChild(ButtonWidget.builder(Text.translatable(getEnableDisableLabel(ProfileHandler.enabled)), button -> {
+                ProfileHandler.enabled = !ProfileHandler.enabled;
+                button.setMessage(Text.translatable(getEnableDisableLabel(ProfileHandler.enabled)));
             }).dimensions(buttonX, OPTION_START, buttonWidth, 20).build());
-            this.addDrawableChild(ButtonWidget.builder(Text.literal(Integer.toString(CustomHudCore.activeProfile)), (button) -> {
-                CustomHudCore.activeProfile = CustomHudCore.activeProfile == 3 ? 1 : CustomHudCore.activeProfile + 1;
-                button.setMessage(Text.literal(Integer.toString(CustomHudCore.activeProfile)));
+            this.addDrawableChild(ButtonWidget.builder(Text.literal(Integer.toString(ProfileHandler.activeProfile)), (button) -> {
+                ProfileHandler.activeProfile = ProfileHandler.activeProfile == 3 ? 1 : ProfileHandler.activeProfile + 1;
+                button.setMessage(Text.literal(Integer.toString(ProfileHandler.activeProfile)));
             }).dimensions(buttonX, OPTION_START + OPTION_BUFFER, buttonWidth, 20).build());
 
             for (int i = 1; i <= 3; i++) {
                 int ii = i;
                 this.addDrawableChild(ButtonWidget.builder(Text.translatable("config.custom_hud.open_profile", i), (button) ->
-                        new Thread(() -> Util.getOperatingSystem().open(CustomHudCore.getProfilePath(ii).toFile())).start()
+                        new Thread(() -> Util.getOperatingSystem().open(ProfileHandler.getProfilePath(ii).toFile())).start()
                 ).dimensions(mid - 75, OPTION_START + OPTION_BUFFER * (i + 1) + 5, 150, 20).build());
             }
 
@@ -84,7 +84,7 @@ public class ModMenuIntegration implements ModMenuApi {
         @Override
         public void close() {
             CustomHud.justSaved = true;
-            CustomHudCore.saveConfig();
+            ProfileHandler.saveConfig();
             MinecraftClient.getInstance().setScreen(parent);
         }
 

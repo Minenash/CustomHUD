@@ -1,13 +1,12 @@
 package com.minenash.customhud.mc1_20;
 
-import com.minenash.customhud.core.CustomHudCore;
+import com.minenash.customhud.core.ProfileHandler;
 import com.minenash.customhud.core.UpdateChecker;
 import com.minenash.customhud.core.data.Enabled;
 import com.minenash.customhud.core.data.Profile;
 import com.minenash.customhud.mc1_20.errors.ErrorScreen;
 import com.minenash.customhud.core.errors.Errors;
 import com.minenash.customhud.mc1_20.mod_compat.BuiltInModCompat;
-import com.minenash.customhud.mc1_20.render.CustomHudRenderer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -25,7 +24,7 @@ import org.lwjgl.glfw.GLFW;
 import java.io.IOException;
 import java.nio.file.*;
 
-import static com.minenash.customhud.core.CustomHudCore.*;
+import static com.minenash.customhud.core.ProfileHandler.*;
 
 public class CustomHud implements ModInitializer {
 
@@ -46,7 +45,7 @@ public class CustomHud implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		CustomHudCore.setup();
+		ProfileHandler.setup();
 		Variables.registerVars();
 		BuiltInModCompat.register();
 
