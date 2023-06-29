@@ -206,7 +206,7 @@ public class ErrorScreen extends Screen {
                     int extendedHeight = ErrorListWidget.this.getSelectedOrNull() == this ? (18 * expandedMsg.size()) : 0;
                     context.fill(0, y + y_offset, width, y + y_offset + 18 + extendedHeight, 0x22FFFFFF);
                     if (mouseX >= refX && mouseX <= refX + refLength)
-                        context.drawTooltip(textRenderer, Text.literal("§eClick to open the " + error.type().linkText.getString() + " page"), mouseX, mouseY);
+                        context.drawTooltip(textRenderer, Text.literal("§eClick to open the " + error.type().linkText + " page"), mouseX, mouseY);
                 }
 
                 y += 6;

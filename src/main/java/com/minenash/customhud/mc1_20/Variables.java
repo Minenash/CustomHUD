@@ -145,7 +145,7 @@ public class Variables {
         register(NONE, INT, REGION_X, "region_x", "rex");
         register(NONE, INT, REGION_Z, "region_z", "rez");
         register(NONE, INT, REGION_RELATIVE_X, "region_relative_x", "rrx");
-        register(NONE, INT, REGION_Z, "region_relative_z", "rrz");
+        register(NONE, INT, REGION_RELATIVE_Z, "region_relative_z", "rrz");
         register(CLIENT_CHUNK, INT, CLIENT_LIGHT, "client_light", "light");
         register(CLIENT_CHUNK, INT, CLIENT_LIGHT_SKY, "client_light_sky", "light_sky");
         register(CLIENT_CHUNK, INT, CLIENT_LIGHT_SUN, "client_light_sun", "light_sun");

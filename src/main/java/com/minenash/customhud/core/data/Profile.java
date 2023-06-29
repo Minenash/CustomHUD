@@ -112,28 +112,8 @@ public class Profile {
             Matcher matcher = SECTION_DECORATION_PATTERN.matcher(lineLC);
             if (matcher.matches()) {
                 localTheme = profile.baseTheme.copy();
-                section = switch (matcher.group(1)) {
-                    case "topleft" -> new Section.TopLeft();
-                    case "topcenter" -> new Section.TopCenter();
-                    case "topright" -> new Section.TopRight();
-
-                    case "centerleft" -> new Section.CenterLeft();
-                    case "centercenter" -> new Section.CenterCenter();
-                    case "centerright" -> new Section.CenterRight();
-
-                    case "bottomleft" -> new Section.BottomLeft();
-                    case "bottomcenter" -> new Section.BottomCenter();
-                    case "bottomright" -> new Section.BottomRight();
-                    default -> null;
-                };
-
-                section.xOffset = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
-                section.yOffset = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
-                section.width   = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : -1;
-                section.hideOnChat = matcher.group(4) != null && Boolean.parseBoolean(matcher.group(4));
-
+                section = Section.parse(matcher, localTheme.scale);
                 profile.sections.add(section);
-
                 continue;
             }
             if (section == null)

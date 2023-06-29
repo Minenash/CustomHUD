@@ -6,7 +6,7 @@ import com.minenash.customhud.core.data.Section;
 import com.minenash.customhud.core.elements.ConditionalElement;
 import com.minenash.customhud.core.elements.FunctionalElement;
 import com.minenash.customhud.core.elements.HudElement;
-import com.minenash.customhud.mc1_20.elements.icon.ItemRenderUtil;
+import com.minenash.customhud.core.elements.IconElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 public class RenderBuilder {
 
-    public static List<RenderPiece> build(Profile profile, boolean isChatOpen, int width, Function<String,Integer> getWidth) {
+    public static List<RenderPiece> build(Profile profile, boolean isChatOpen, int width, int height, Function<String,Integer> getWidth) {
         List<RenderPiece> pieces = new ArrayList<>();
 
         for (Section section : profile.sections) {
@@ -44,7 +44,7 @@ public class RenderBuilder {
             }
 
             StringBuilder builder = new StringBuilder();
-            int y = section.getStartY(theme, lineCount);
+            int y = section.getStartY(theme, lineCount, height);
             int xOffset = 0;
 
             int staticWidthY = y;
@@ -78,7 +78,7 @@ public class RenderBuilder {
                             staticWidthY = y;
                         }
                         theme = cte.theme();
-                    } else if (e instanceof ItemRenderUtil ie) {
+                    } else if (e instanceof IconElement ie) {
                         xOffset += ie.getTextWidth();
                     }
                 } else {

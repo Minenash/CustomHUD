@@ -32,7 +32,7 @@ public class CustomHudRenderer {
         BufferBuilder bgBuilder = Tessellator.getInstance().getBuffer();
         bgBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        List<RenderPiece> pieces = RenderBuilder.build(profile, client.currentScreen instanceof ChatScreen, client.getWindow().getScaledWidth(), client.textRenderer::getWidth);
+        List<RenderPiece> pieces = RenderBuilder.build(profile, client.currentScreen instanceof ChatScreen, client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), client.textRenderer::getWidth);
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

@@ -25,24 +25,22 @@ public class VariableParser {
     public static List<HudElement> addElements(String str, int profile, int debugLine, Enabled enabled, boolean line) {
         List<String> parts = new ArrayList<>();
 
-//        System.out.println("[Line " + debugLine+ "] '" + str + "'");
         Matcher matcher = LINE_PARING_PATTERN.matcher(str);
         while (matcher.find()) {
             String left = matcher.group(1);
 
-            List<String> sections = new ArrayList<>();
+            List<String> elements = new ArrayList<>();
             int j = 0;
             for (int i = 0; i < left.length()-1; i++) {
                 if (left.charAt(i) == '\\' && left.charAt(i+1) == 'n') {
-                    sections.add(left.substring(j,i));
-                    sections.add("\n");
+                    elements.add(left.substring(j,i));
+                    elements.add("\n");
                     i+=2;
                     j=i;
                 }
             }
-            sections.add(left.substring(j));
-//            System.out.println(sections + "\n");
-            parts.addAll(sections);
+            elements.add(left.substring(j));
+            parts.addAll(elements);
 
             parts.add(matcher.group(2));
         }
