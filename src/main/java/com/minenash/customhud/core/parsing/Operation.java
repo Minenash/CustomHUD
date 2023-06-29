@@ -1,17 +1,18 @@
 package com.minenash.customhud.core.parsing;
 
 import com.minenash.customhud.core.elements.HudElement;
+import com.minenash.customhud.core.elements.SudoElements;
 
 import java.util.List;
 
-public interface ExpressionOperation {
+public interface Operation {
 
-    int getValue();
+    double getValue();
     void printTree(int indent);
 
-    record Or(List<ExpressionOperation> elements) implements ExpressionOperation {
-        public int getValue() {
-            for (ExpressionOperation element : elements)
+    record Or(List<Operation> elements) implements Operation {
+        public double getValue() {
+            for (Operation element : elements)
                 if (element.getValue() > 0)
                     return 1;
             return 0;
@@ -22,14 +23,14 @@ public interface ExpressionOperation {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
             System.out.println("- Or: ");
-            for (ExpressionOperation elem : elements)
+            for (Operation elem : elements)
                 elem.printTree(indent + 2);
         }
     }
 
-    record And(List<ExpressionOperation> elements) implements ExpressionOperation {
-        public int getValue() {
-            for (ExpressionOperation element : elements)
+    record And(List<Operation> elements) implements Operation {
+        public double getValue() {
+            for (Operation element : elements)
                 if (element.getValue() == 0)
                     return 0;
             return 1;
@@ -40,12 +41,25 @@ public interface ExpressionOperation {
             for (int i = 0; i < indent; i++)
                 System.out.print(" ");
             System.out.println("- And:");
-            for (ExpressionOperation elem : elements)
+            for (Operation elem : elements)
                 elem.printTree(indent+2);
         }
     }
-    record Comparison(HudElement left, HudElement right, ExpressionParser.Comparison comparison, boolean checkBool, boolean checkNum) implements ExpressionOperation {
-        public int getValue() {
+
+    class Comparison implements Operation {
+        public final HudElement left, right;
+        public final boolean checkBool, checkNum;
+        public final ExpressionParser.Comparison comparison;
+
+        Comparison(HudElement left, HudElement right, ExpressionParser.Comparison comparison) {
+            this.left = left;
+            this.right = right;
+            this.comparison = comparison;
+            this.checkBool = left instanceof SudoElements.Bool || right instanceof SudoElements.Bool;
+            this.checkNum = left instanceof SudoElements.Num || right instanceof SudoElements.Num;
+        }
+
+        public double getValue() {
             return getValueInternal() ? 1 : 0;
         }
 
@@ -73,10 +87,21 @@ public interface ExpressionOperation {
         }
     }
 
-    record MathOperation(HudElement left, HudElement right, ExpressionParser.MathOperator operation, boolean checkBool, boolean checkNum) implements ExpressionOperation {
-        public int getValue() {
-            return switch (operation) {
-                default -> 0;
+    record MathOperation(List<HudElement> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
+        public double getValue() {
+            double value = elements().isEmpty() ? 0 : elements.get(0).getNumber().doubleValue();
+            for (int i = 1; i < elements.size()-1; i++)
+                value = apply(value, elements.get(i).getNumber().doubleValue(), operations.get(i-1));
+            return value;
+        }
+
+        public static double apply(double value, double second, ExpressionParser.MathOperator op) {
+            return switch (op) {
+                case ADD -> value + second;
+                case SUBTRACT -> value - second;
+                case MULTIPLY -> value * second;
+                case DIVIDE -> value / second;
+                case MOD -> value % second;
             };
         }
 
@@ -89,8 +114,25 @@ public interface ExpressionOperation {
         }
     }
 
-    record Literal(int value) implements ExpressionOperation {
-        public int getValue() {
+    record MathOperationOp(List<Operation> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
+        public double getValue() {
+            double value = elements().isEmpty() ? 0 : elements.get(0).getValue();
+            for (int i = 1; i < elements.size()-1; i++)
+                value = MathOperation.apply(value, elements.get(i).getValue(), operations.get(i-1));
+            return value;
+        }
+
+
+        @Override
+        public void printTree(int indent) {
+            for (int i = 0; i < indent; i++)
+                System.out.print(" ");
+            //TODO
+        }
+    }
+
+    record Literal(int value) implements Operation {
+        public double getValue() {
             return value;
         }
 
@@ -101,8 +143,8 @@ public interface ExpressionOperation {
             System.out.println("- Literal: " + value);
         }
     }
-    record BooleanVariable(HudElement variable) implements ExpressionOperation {
-        public int getValue() {
+    record BooleanVariable(HudElement variable) implements Operation {
+        public double getValue() {
             return variable == null ? 0 : variable.getBoolean() ? 1 : 0;
         }
 

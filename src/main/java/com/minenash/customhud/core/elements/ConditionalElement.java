@@ -1,6 +1,6 @@
 package com.minenash.customhud.core.elements;
 
-import com.minenash.customhud.core.parsing.ExpressionOperation;
+import com.minenash.customhud.core.parsing.Operation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ConditionalElement implements HudElement {
 
-    public record ConditionalPair(ExpressionOperation conditional, List<HudElement> ifTrue) {}
+    public record ConditionalPair(Operation conditional, List<HudElement> ifTrue) {}
 
     private final List<ConditionalPair> pairs;
 
@@ -55,14 +55,14 @@ public class ConditionalElement implements HudElement {
     public static class MultiLineBuilder {
         private final List<ConditionalPair> pairs = new ArrayList<>();
 
-        private ExpressionOperation conditional = null;
+        private Operation conditional = null;
         private List<HudElement> elements = new ArrayList<>();
 
-        public MultiLineBuilder(ExpressionOperation conditional) {
+        public MultiLineBuilder(Operation conditional) {
             setConditional(conditional);
         }
 
-        public void setConditional(ExpressionOperation conditional) {
+        public void setConditional(Operation conditional) {
             if (this.conditional != null) {
                 pairs.add(new ConditionalPair(this.conditional, elements));
                 elements = new ArrayList<>();

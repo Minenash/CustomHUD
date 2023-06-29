@@ -6,6 +6,7 @@ import com.minenash.customhud.core.elements.SudoElements;
 import com.minenash.customhud.core.errors.ErrorException;
 import com.minenash.customhud.core.errors.ErrorType;
 import com.minenash.customhud.core.errors.Errors;
+import com.mojang.datafixers.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +24,12 @@ public class ExpressionParser {
         }
     }
 
-    public static ExpressionOperation parseConditional(String input, String source, int profile, int debugLine, Enabled enabled) {
+    public static Operation parseConditional(String input, String source, int profile, int debugLine, Enabled enabled) {
         if (input.isBlank() || input.equals(",") || input.equals(", "))
-            return new ExpressionOperation.Literal(1);
+            return new Operation.Literal(1);
         try {
             List<Token> tokens = getTokens(input, profile, debugLine, enabled);
-            ExpressionOperation c = getConditional(tokens);
+            Operation c = getConditional(tokens);
 //            System.out.println("Tree for Conditional on line " + debugLine + ":");
 //            c.printTree(0);
 //            System.out.println();
@@ -38,7 +39,7 @@ public class ExpressionParser {
             Errors.addError(profile, debugLine, source, e.type, e.context);
             System.out.println("[Line: " + debugLine + "] Conditional Couldn't Be Parsed: " + e.getMessage());
             System.out.println("Input: \"" + input + "\"");
-            return new ExpressionOperation.Literal(1);
+            return new Operation.Literal(1);
         }
     }
 
@@ -154,98 +155,95 @@ public class ExpressionParser {
             original.remove(end);
     }
 
-    private static ExpressionOperation getConditional(List<Token> tokens) throws ErrorException {
+    private static Operation getConditional(List<Token> tokens) throws ErrorException {
         List<List<Token>> ors = split(tokens, TokenType.OR);
-        List<ExpressionOperation> conditionals = new ArrayList<>();
+        List<Operation> conditionals = new ArrayList<>();
         for (var or : ors)
             conditionals.add(getAndConditional(or));
 
-        return conditionals.size() == 1 ? conditionals.get(0) : new ExpressionOperation.Or(conditionals);
+        return conditionals.size() == 1 ? conditionals.get(0) : new Operation.Or(conditionals);
 
     }
 
-    private static ExpressionOperation getAndConditional(List<Token> tokens) throws ErrorException {
+    private static Operation getAndConditional(List<Token> tokens) throws ErrorException {
         List<List<Token>> ands = split(tokens, TokenType.AND);
-        List<ExpressionOperation> conditionals = new ArrayList<>();
+        List<Operation> conditionals = new ArrayList<>();
         for (var and : ands)
             conditionals.add(getComparisonOperation(and));
 
-        return conditionals.size() == 1 ? conditionals.get(0) : new ExpressionOperation.And(conditionals);
+        return conditionals.size() == 1 ? conditionals.get(0) : new Operation.And(conditionals);
     }
 
     @SuppressWarnings("unchecked")
-    private static ExpressionOperation getComparisonOperation(List<Token> tokens) throws ErrorException {
-        if (tokens.size() == 1) {
-            Token token = tokens.get(0);
-            switch (token.type) {
-                case FULL_PREN: return getConditional( (List<Token>) token.value());
-                case BOOLEAN: return new ExpressionOperation.Literal( (Integer) token.value());
-                case VARIABLE: return new ExpressionOperation.BooleanVariable( (HudElement) token.value());
+    private static Operation getComparisonOperation(List<Token> tokens) throws ErrorException {
+        if (tokens.size() == 1)
+            return getPrimitiveOperation(tokens.get(0));
+
+        int comparatorIndex = -1;
+        for (int i = 0; i < tokens.size(); i++) {
+            if (tokens.get(i).type == TokenType.COMPARISON) {
+                comparatorIndex = i;
+                break;
             }
-            throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
-        }
-        if (tokens.size() != 3 || tokens.get(1).type() != TokenType.COMPARISON) {
-            if (tokens.size() != 3)
-                throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "" + tokens.size());
-            throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(1).type().toString());
         }
 
-        boolean checkBool = false;
-        boolean checkNum = false;
-        HudElement left = switch (tokens.get(0).type()) {
-            case VARIABLE -> (HudElement) tokens.get(0).value();
-            case STRING -> new SudoElements.Str((String)tokens.get(0).value());
-            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(0).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(0).value());}
-            default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
-        };
-        HudElement right = switch (tokens.get(2).type()) {
-            case VARIABLE -> (HudElement) tokens.get(2).value();
-            case STRING -> new SudoElements.Str((String)tokens.get(2).value());
-            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(2).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(2).value());}
-            default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(2).type().toString());
-        };
+        if (comparatorIndex == -1)
+            return getMathOperation(tokens);
+        else if (comparatorIndex == 0 )
+            throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "No values on the left of comparison");
+        else if (comparatorIndex == tokens.size()-1)
+            throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "No values on the right of comparison");
 
-        return new ExpressionOperation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
+        HudElement left = comparatorIndex == 1 ?
+                getValueElement(tokens.get(0)) :
+                new SudoElements.Op(getMathOperation(tokens.subList(0, comparatorIndex)));
+        HudElement right = comparatorIndex == tokens.size()-2 ?
+                getValueElement(tokens.get(tokens.size()-1)) :
+                new SudoElements.Op(getMathOperation(tokens.subList(comparatorIndex+1, tokens.size())));
+
+        return new Operation.Comparison(left, right, (Comparison) tokens.get(comparatorIndex).value());
     }
 
     //TODO
-    private static ExpressionOperation getMathOperation(List<Token> tokens) throws ErrorException {
-        if (tokens.size() == 1) {
-            Token token = tokens.get(0);
-            switch (token.type) {
-                case FULL_PREN: return getConditional( (List<Token>) token.value());
-                case BOOLEAN: return new ExpressionOperation.Literal( (Integer) token.value());
-                case VARIABLE: return new ExpressionOperation.BooleanVariable( (HudElement) token.value());
+    private static Operation getMathOperation(List<Token> tokens) throws ErrorException {
+        if (tokens.size() == 1)
+            return getPrimitiveOperation(tokens.get(0));
+
+        Pair<List<List<Token>>, List<MathOperator>> multiplyPairs = split(tokens, List.of(MathOperator.MULTIPLY, MathOperator.DIVIDE, MathOperator.MOD));
+        List<Operation> ops = new ArrayList<>();
+
+        for (var partTokens : multiplyPairs.getFirst()) {
+            Pair<List<List<Token>>, List<MathOperator>> addingPairs = split(partTokens, List.of(MathOperator.ADD, MathOperator.SUBTRACT));
+            List<HudElement> elements = new ArrayList<>();
+            for (var partPartToken : addingPairs.getFirst()) {
+                if (partPartToken.size() > 1)
+                    throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "No operation between values");
+                elements.add( getValueElement(partPartToken.get(0)) );
             }
-            throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
+            ops.add(new Operation.MathOperation(elements, addingPairs.getSecond()));
         }
+        return new Operation.MathOperationOp(ops, multiplyPairs.getSecond());
 
-        if (tokens.size() != 3 || tokens.get(1).type() != TokenType.COMPARISON) {
-            if (tokens.size() != 3)
-                throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "" + tokens.size());
-            throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(1).type().toString());
-        }
+    }
 
-        boolean checkBool = false;
-        boolean checkNum = false;
-        HudElement left = switch (tokens.get(0).type()) {
-            case VARIABLE -> (HudElement) tokens.get(0).value();
-            case STRING -> new SudoElements.Str((String)tokens.get(0).value());
-            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(0).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(0).value());}
-            default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());
+    private static HudElement getValueElement(Token token) throws ErrorException {
+        return switch (token.type()) {
+            case VARIABLE -> (HudElement) token.value();
+            case STRING -> new SudoElements.Str((String) token.value());
+            case NUMBER -> new SudoElements.Num((Number) token.value());
+            case BOOLEAN -> new SudoElements.Bool((Boolean) token.value());
+            default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, token.type().toString());
         };
-        HudElement right = switch (tokens.get(2).type()) {
-            case VARIABLE -> (HudElement) tokens.get(2).value();
-            case STRING -> new SudoElements.Str((String)tokens.get(2).value());
-            case NUMBER -> { checkNum = true; yield new SudoElements.Num((Number)tokens.get(2).value()); }
-            case BOOLEAN -> {checkBool = true; yield new SudoElements.Bool((Boolean)tokens.get(2).value());}
-            default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(2).type().toString());
-        };
+    }
 
-        return new ExpressionOperation.Comparison(left, right, (Comparison) tokens.get(1).value(), checkBool, checkNum);
+    @SuppressWarnings("unchecked")
+    private static Operation getPrimitiveOperation(Token token) throws ErrorException {
+        return switch (token.type) {
+            case FULL_PREN -> getConditional((List<Token>) token.value());
+            case BOOLEAN -> new Operation.Literal((Integer) token.value());
+            case VARIABLE -> new Operation.BooleanVariable((HudElement) token.value());
+            default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, token.type().toString());
+        };
     }
 
     private static List<List<Token>> split(List<Token> tokens, TokenType type) {
@@ -262,6 +260,25 @@ public class ExpressionParser {
         }
         sections.add(current);
         return sections;
+    }
+
+    private static Pair<List<List<Token>>, List<MathOperator>> split(List<Token> tokens, List<MathOperator> ops) {
+        List<List<Token>> sections = new ArrayList<>();
+        List<MathOperator> operators = new ArrayList<>();
+        List<Token> current = new ArrayList<>();
+
+        for (Token token : tokens) {
+            MathOperator op = (MathOperator) token.value();
+            if ( ops.contains(op)) {
+                sections.add(current);
+                operators.add(op);
+                current = new ArrayList<>();
+            }
+            else
+                current.add(token);
+        }
+        sections.add(current);
+        return Pair.of(sections, operators);
     }
 
 

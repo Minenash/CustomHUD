@@ -1,5 +1,7 @@
 package com.minenash.customhud.core.elements;
 
+import com.minenash.customhud.core.parsing.Operation;
+
 public class SudoElements {
 
     public record Str(String str) implements HudElement {
@@ -18,6 +20,12 @@ public class SudoElements {
         @Override public String getString() { return Boolean.toString(bool); }
         @Override public Number getNumber() { return bool ? 1 : 0; }
         @Override public boolean getBoolean() { return bool; }
+    }
+
+    public record Op(Operation op) implements HudElement {
+        @Override public String getString() { return Double.toString(op.getValue()); }
+        @Override public Number getNumber() { return op.getValue(); }
+        @Override public boolean getBoolean() { return op.getValue() != 0; }
     }
 
 }
