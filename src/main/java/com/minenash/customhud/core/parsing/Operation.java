@@ -20,9 +20,7 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- Or: ");
+            System.out.println(indent(indent) + "- Or: ");
             for (Operation elem : elements)
                 elem.printTree(indent + 2);
         }
@@ -38,9 +36,7 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- And:");
+            System.out.println(indent(indent) + "- And:");
             for (Operation elem : elements)
                 elem.printTree(indent+2);
         }
@@ -80,17 +76,22 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
             String bool = (comparison == ExpressionParser.Comparison.EQUALS || comparison == ExpressionParser.Comparison.NOT_EQUALS) && checkBool ? "BOOL_" : "";
-            System.out.println("- Conditional(" + bool + comparison + "): " + left.getString() + ", " + right.getString());
+            System.out.println(indent(indent) + "- Conditional(" + bool + comparison + "): " + left.getString() + ", " + right.getString());
+            if (left instanceof SudoElements.Op op) {
+                op.op().printTree(indent + 2);
+            }
+            if (right instanceof SudoElements.Op op) {
+                op.op().printTree(indent + 2);
+            }
         }
     }
 
     record MathOperation(List<HudElement> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
         public double getValue() {
-            double value = elements().isEmpty() ? 0 : elements.get(0).getNumber().doubleValue();
-            for (int i = 1; i < elements.size()-1; i++)
+            if (elements.isEmpty()) return 0;
+            double value = elements.get(0).getNumber().doubleValue();
+            for (int i = 1; i < elements.size(); i++)
                 value = apply(value, elements.get(i).getNumber().doubleValue(), operations.get(i-1));
             return value;
         }
@@ -108,9 +109,10 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            //TODO
+            System.out.println(indent(indent) + "- Operations: " + operations.toString());
+            for (HudElement element : elements) {
+                System.out.println(indent(indent) + "- " + element.getString());
+            }
         }
     }
 
@@ -125,22 +127,20 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            //TODO
+            System.out.println(indent(indent) + "- Operations: " + operations.toString());
+            for (Operation op : elements)
+                op.printTree(indent + 2);
         }
     }
 
-    record Literal(int value) implements Operation {
+    record Literal(double value) implements Operation {
         public double getValue() {
             return value;
         }
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- Literal: " + value);
+            System.out.println(indent(indent) + "- Literal: " + value);
         }
     }
     record BooleanVariable(HudElement variable) implements Operation {
@@ -150,10 +150,12 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- BooleanVariable");
+            System.out.println(indent(indent) + "- BooleanVariable");
         }
+    }
+
+    static String indent(int indent) {
+        return " ".repeat(indent);
     }
 
 }

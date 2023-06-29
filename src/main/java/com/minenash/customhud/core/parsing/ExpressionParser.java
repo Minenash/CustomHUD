@@ -30,9 +30,9 @@ public class ExpressionParser {
         try {
             List<Token> tokens = getTokens(input, profile, debugLine, enabled);
             Operation c = getConditional(tokens);
-//            System.out.println("Tree for Conditional on line " + debugLine + ":");
-//            c.printTree(0);
-//            System.out.println();
+            System.out.println("Tree for Conditional on line " + debugLine + ":");
+            c.printTree(0);
+            System.out.println();
             return c;
         }
         catch (ErrorException e) {
@@ -226,12 +226,14 @@ public class ExpressionParser {
 
     }
 
+    @SuppressWarnings("unchecked")
     private static HudElement getValueElement(Token token) throws ErrorException {
         return switch (token.type()) {
             case VARIABLE -> (HudElement) token.value();
             case STRING -> new SudoElements.Str((String) token.value());
             case NUMBER -> new SudoElements.Num((Number) token.value());
             case BOOLEAN -> new SudoElements.Bool((Boolean) token.value());
+            case FULL_PREN -> new SudoElements.Op(getConditional((List<Token>) token.value()));
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, token.type().toString());
         };
     }
@@ -241,6 +243,7 @@ public class ExpressionParser {
         return switch (token.type) {
             case FULL_PREN -> getConditional((List<Token>) token.value());
             case BOOLEAN -> new Operation.Literal((Integer) token.value());
+            case NUMBER -> new Operation.Literal((Double) token.value());
             case VARIABLE -> new Operation.BooleanVariable((HudElement) token.value());
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, token.type().toString());
         };
@@ -262,16 +265,16 @@ public class ExpressionParser {
         return sections;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     private static Pair<List<List<Token>>, List<MathOperator>> split(List<Token> tokens, List<MathOperator> ops) {
         List<List<Token>> sections = new ArrayList<>();
         List<MathOperator> operators = new ArrayList<>();
         List<Token> current = new ArrayList<>();
 
         for (Token token : tokens) {
-            MathOperator op = (MathOperator) token.value();
-            if ( ops.contains(op)) {
+            if ( token.type == TokenType.MATH && ops.contains(token.value())) {
                 sections.add(current);
-                operators.add(op);
+                operators.add((MathOperator) token.value());
                 current = new ArrayList<>();
             }
             else
