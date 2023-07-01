@@ -59,7 +59,7 @@ public class DefaultVariables {
                     context.profile().toggles.put((int) code.charAt(1), false);
                     return new ToggleElement(code.charAt(1));
                 }
-                Errors.addError(context, ErrorType.NOT_A_WHOLE_NUMBER, "\"" + code + "\"");
+                Errors.addError(context, ErrorType.INVALID_KEY, "\"" + code + "\"");
                 return new FunctionalElement.Error();
             }
         });

@@ -16,6 +16,7 @@ public class ErrorType {
     public static final ErrorType UNKNOWN_CROSSHAIR = internal("Theming", "references/theming", "Unknown Crosshair: §e");
     public static final ErrorType ILLEGAL_GLOBAL_THEME_FLAG = internal("Theming", "references/theming", "This theme option is global-only");
     public static final ErrorType INVALID_TIME_FORMAT = internal("Time Formatting", "references/real_time", "Invalid Time Format: ");
+    public static final ErrorType INVALID_KEY = internal("Input for Toggle", "references/", "Invalid Key or Scan Code: ");
     public static final ErrorType UNKNOWN_STATISTIC = internal("Statistics", "references/stats", "Unknown Statistic: §e");
     public static final ErrorType UNKNOWN_ITEM_ID = internal(null, null, "Unknown Item ID: §e");
     
