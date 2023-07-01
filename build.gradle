@@ -40,6 +40,11 @@ dependencies {
 	implementation include("com.github.LlamaLad7:MixinExtras:0.1.1")
 	annotationProcessor("com.github.LlamaLad7:MixinExtras:0.1.1")
 
+	implementation "org.joml:joml:1.10.2" //sodium
+	modImplementation "org.anarres:jcpp:1.4.14" //iris
+	modImplementation "io.github.douira:glsl-transformer:2.0.0-pre13" //iris
+	modImplementation "org.antlr:antlr4-runtime:4.11.1" //iris
+
 	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
 	modImplementation "maven.modrinth:iris:${project.iris_version}"
 
@@ -50,9 +55,6 @@ dependencies {
 		exclude module: "fabric-api"
 	}
 
-	implementation "org.joml:joml:1.10.2" //sodium
-	modImplementation "org.anarres:jcpp:1.4.14" //iris
-	modImplementation "io.github.douira:glsl-transformer:2.0.0-pre9" //iris
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
