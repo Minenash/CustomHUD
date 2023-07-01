@@ -27,7 +27,7 @@ public class Errors {
     }
 
     public static void addError(VariableParseContext varContext, ErrorType type, String context) {
-        addError(varContext.profile(), Integer.toString(varContext.line()), varContext.raw(), type, context);
+        addError(varContext.profileNum(), Integer.toString(varContext.line()), varContext.raw(), type, context);
     }
 
     public static void addError(int profile, int line, String source, ErrorType type, String context) {

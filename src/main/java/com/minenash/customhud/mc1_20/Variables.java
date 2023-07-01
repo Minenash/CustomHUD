@@ -1,9 +1,11 @@
 package com.minenash.customhud.mc1_20;
 
+import com.minenash.customhud.core.ProfileHandler;
 import com.minenash.customhud.core.data.Enabled;
 import com.minenash.customhud.core.elements.FormattedElement;
 import com.minenash.customhud.core.elements.FunctionalElement;
 import com.minenash.customhud.core.elements.HudElement;
+import com.minenash.customhud.core.elements.ToggleElement;
 import com.minenash.customhud.core.errors.ErrorType;
 import com.minenash.customhud.core.errors.Errors;
 import com.minenash.customhud.core.registry.VariableParseContext;
@@ -17,6 +19,7 @@ import com.minenash.customhud.mc1_20.elements.stats.CustomStatElement;
 import com.minenash.customhud.mc1_20.elements.stats.TypedStatElement;
 import com.minenash.customhud.mc1_20.elements.supplier.DecimalSuppliers;
 import com.minenash.customhud.mc1_20.elements.supplier.SpecialSuppliers;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -198,12 +201,12 @@ public class Variables {
         register(NONE, DEC, HOOKED_ENTITY_DISTANCE, "hooked_entity_distance", "hed");
         register(NONE, DEC, REACH_DISTANCE, "reach_distance", "reach");
         register(NONE, DEC, FISHING_HOOK_DISTANCE, "fishing_hook_distance");
-        register(NONE, DEC, VELOCITY_XZ, "velocity_xz");
-        register(NONE, DEC, VELOCITY_Y, "velocity_y");
-        register(NONE, DEC, VELOCITY_XYZ, "velocity_xyz");
-        register(NONE, DEC, VELOCITY_XZ_KMH, "velocity_xz_kmh");
-        register(NONE, DEC, VELOCITY_Y_KMH, "velocity_y_kmh");
-        register(NONE, DEC, VELOCITY_XYZ_KMH, "velocity_xyz_kmh");
+        register(VELOCITY, DEC, VELOCITY_XZ, "velocity_xz");
+        register(VELOCITY, DEC, VELOCITY_Y, "velocity_y");
+        register(VELOCITY, DEC, VELOCITY_XYZ, "velocity_xyz");
+        register(VELOCITY, DEC, VELOCITY_XZ_KMH, "velocity_xz_kmh");
+        register(VELOCITY, DEC, VELOCITY_Y_KMH, "velocity_y_kmh");
+        register(VELOCITY, DEC, VELOCITY_XYZ_KMH, "velocity_xyz_kmh");
         register(NONE, DEC, YAW, "yaw");
         register(NONE, DEC, PITCH, "pitch");
         register(NONE, DEC, DAY, "day");

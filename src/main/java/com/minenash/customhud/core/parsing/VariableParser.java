@@ -1,6 +1,7 @@
 package com.minenash.customhud.core.parsing;
 
 import com.minenash.customhud.core.data.Enabled;
+import com.minenash.customhud.core.data.Profile;
 import com.minenash.customhud.core.registry.VariableParseContext;
 import com.minenash.customhud.core.registry.VariableRegistry;
 import com.minenash.customhud.core.elements.*;
@@ -21,7 +22,7 @@ public class VariableParser {
     private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
 
-    public static List<HudElement> addElements(String str, int profile, int debugLine, Enabled enabled, boolean line) {
+    public static List<HudElement> addElements(String str, Profile profile, int profileNum, int debugLine, Enabled enabled, boolean line) {
         List<String> parts = new ArrayList<>();
 
         Matcher matcher = LINE_PARING_PATTERN.matcher(str);
@@ -47,7 +48,7 @@ public class VariableParser {
         List<HudElement> elements = new ArrayList<>();
 
         for (String part : parts) {
-            HudElement element = parseElement(part, profile, debugLine, enabled);
+            HudElement element = parseElement(part, profile, profileNum, debugLine, enabled);
             if (element != null)
                 elements.add(element);
         }
@@ -57,16 +58,16 @@ public class VariableParser {
         return elements;
     }
 
-    private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, String original, int profile, int debugLine, Enabled enabled) {
+    private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, String original, Profile profile, int profileNum, int debugLine, Enabled enabled) {
         List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
         while (args.find()) {
 //            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
-            pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseConditional(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
+            pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseConditional(args.group(1), original, profile, profileNum, debugLine, enabled), addElements(args.group(2), profile, profileNum, debugLine, enabled, false)));
         }
         return pairs;
     }
 
-    public static HudElement parseElement(String part, int profile, int debugLine, Enabled enabled) {
+    public static HudElement parseElement(String part, Profile profile, int profileNum, int debugLine, Enabled enabled) {
         if (part == null || part.isEmpty())
             return null;
 
@@ -82,7 +83,7 @@ public class VariableParser {
                 Integer color = HudTheme.parseColorName(colorStr);
                 if (color != null)
                     return new FunctionalElement.ChangeColor(color);
-                Errors.addError(profile, debugLine, part, ErrorType.UNKNOWN_COLOR, colorStr);
+                Errors.addError(profileNum, debugLine, part, ErrorType.UNKNOWN_COLOR, colorStr);
                 return null;
             }
         }
@@ -95,20 +96,20 @@ public class VariableParser {
         if (part.startsWith("{") && part.length() > 1) {
             part = part.substring(1, part.length() - 1);
 
-            List<ConditionalElement.ConditionalPair> pairs = parseConditional(CONDITIONAL_PARSING_PATTERN.matcher(part), original, profile, debugLine, enabled);
+            List<ConditionalElement.ConditionalPair> pairs = parseConditional(CONDITIONAL_PARSING_PATTERN.matcher(part), original, profile, profileNum, debugLine, enabled);
             if (pairs.isEmpty())
-                pairs = parseConditional(CONDITIONAL_PARSING_ALT_PATTERN.matcher(part), original, profile, debugLine, enabled);
+                pairs = parseConditional(CONDITIONAL_PARSING_ALT_PATTERN.matcher(part), original, profile, profileNum, debugLine, enabled);
             if (pairs.isEmpty()) {
-                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
+                Errors.addError(profileNum, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
                 return null;
             }
             return new ConditionalElement(pairs);
         }
 
         String[] parts = part.split(" ");
-        Flags flags = Flags.parse(profile, debugLine, parts);
+        Flags flags = Flags.parse(profileNum, debugLine, parts);
 
-        VariableParseContext context = new VariableParseContext(original, parts, parts[0], flags, enabled, profile, debugLine);
+        VariableParseContext context = new VariableParseContext(original, parts, parts[0], flags, enabled, profile, profileNum, debugLine);
         HudElement element = VariableRegistry.get(context);
 
         if (element instanceof FunctionalElement.Error)

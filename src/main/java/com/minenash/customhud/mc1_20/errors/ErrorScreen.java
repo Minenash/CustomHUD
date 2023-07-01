@@ -45,7 +45,7 @@ public class ErrorScreen extends Screen {
         this.profile = profile;
 //        if (listWidget != null)
 //            this.remove(listWidget);
-//        this.listWidget = new ErrorListWidget(this.client, profile);
+//        this.listWidget = new ErrorListWidget(this.client, profileNum);
 //        this.addSelectableChild( listWidget );
         init();
     }

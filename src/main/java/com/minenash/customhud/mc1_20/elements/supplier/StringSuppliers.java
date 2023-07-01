@@ -35,7 +35,7 @@ public class StringSuppliers {
 
     public static final Supplier<String> DIMENSION = () -> WordUtils.capitalize(client.world.getRegistryKey().getValue().getPath().replace("_"," "));
     public static final Supplier<String> DIMENSION_ID = () -> client.world.getRegistryKey().getValue().toString();
-    public static final Supplier<String> BIOME = () -> WordUtils.capitalize(client.world.getBiome(blockPos()).getKey().get().getValue().getPath().replace("_", " "));
+    public static final Supplier<String> BIOME = () -> I18n.translate("biome." + client.world.getBiome(blockPos()).getKey().get().getValue().toString().replace(':', '.'));
     public static final Supplier<String> BIOME_ID = () -> client.world.getBiome(blockPos()).getKey().get().getValue().toString();
 
     private static final String[] moon_phases = new String[]{"full moon", "waning gibbous", "last quarter", "waning crescent", "new moon", "waxing crescent", "first quarter", "waxing gibbous"};

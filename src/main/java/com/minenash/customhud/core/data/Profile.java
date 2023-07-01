@@ -27,8 +27,8 @@ public class Profile {
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
     private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
 
-    private static final Pattern IF_PATTERN = Pattern.compile("=if ?: ?(.+)=");
-    private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=");
+    private static final Pattern IF_PATTERN = Pattern.compile("=if ?: ?(.+)=", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=", Pattern.CASE_INSENSITIVE);
 
     public Enabled enabled = new Enabled();
 
@@ -38,6 +38,8 @@ public class Profile {
     public float targetDistance = 20;
     public Crosshairs crosshair = Crosshairs.NORMAL;
 
+    public Map<Integer, Boolean> toggles = new TreeMap<>();
+
 
     private Stack<ConditionalElement.MultiLineBuilder> tempIfStack = new Stack<>();
 
@@ -46,7 +48,7 @@ public class Profile {
 
         if (!Errors.getErrors(profileID).isEmpty()) {
             System.out.println("\n");
-            System.out.println("Errors Found in profile " + profileID);
+            System.out.println("Errors Found in profileNum " + profileID);
             for (var e : Errors.getErrors(profileID))
                 System.out.println(e.line() + " | " + e.type() + " | " + e.source() + " | " + e.context());
             System.out.println();
@@ -119,14 +121,14 @@ public class Profile {
             if (section == null)
                 profile.sections.add(section = new Section.TopLeft());
 
-            if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
-                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ExpressionParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
+            if (( matcher = IF_PATTERN.matcher(line) ).matches())
+                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ExpressionParser.parseConditional(matcher.group(1), line, profile, profileID, i+1, profile.enabled) ));
 
-            else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
+            else if (( matcher = ELSEIF_PATTERN.matcher(line) ).matches())
                 if (profile.tempIfStack.isEmpty())
                     Errors.addError(profileID, i, line+1, ErrorType.CONDITIONAL_NOT_STARTED, "=else if: §ocond§r=");
                 else
-                    profile.tempIfStack.peek().setConditional(ExpressionParser.parseConditional(matcher.group(1), line, profileID, i + 1, profile.enabled));
+                    profile.tempIfStack.peek().setConditional(ExpressionParser.parseConditional(matcher.group(1), line, profile, profileID, i + 1, profile.enabled));
 
             else if (line.equalsIgnoreCase("=else="))
                 if (profile.tempIfStack.isEmpty())
@@ -151,13 +153,13 @@ public class Profile {
                 Errors.addError(profileID, i+1, line, ErrorType.ILLEGAL_GLOBAL_THEME_FLAG, "");
 
             else
-                addAllElement(profile, section, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true));
+                addAllElement(profile, section, VariableParser.addElements(line, profile, profileID, i + 1, profile.enabled, true));
 
         }
 
         while (!profile.tempIfStack.empty()) {
             addElement(profile, section, profile.tempIfStack.pop().build());
-            Errors.addError(profileID, lines.size()+1, "end of profile", ErrorType.CONDITIONAL_NOT_ENDED, "");
+            Errors.addError(profileID, lines.size()+1, "end of profileNum", ErrorType.CONDITIONAL_NOT_ENDED, "");
         }
 
         profile.tempIfStack = null;

@@ -2,6 +2,7 @@ package com.minenash.customhud.core;
 
 import com.minenash.customhud.core.elements.FunctionalElement;
 import com.minenash.customhud.core.elements.RealTimeElement;
+import com.minenash.customhud.core.elements.ToggleElement;
 import com.minenash.customhud.core.errors.ErrorType;
 import com.minenash.customhud.core.errors.Errors;
 import com.minenash.customhud.core.registry.VariableRegistry;
@@ -24,7 +25,6 @@ public class DefaultVariables {
                 Errors.addError(context, ErrorType.NOT_A_WHOLE_NUMBER, "\"" + widthStr + "\"");
                 return new FunctionalElement.Error();
             }
-
         });
 
         VariableRegistry.register("customhud:real_time", context -> {
@@ -37,7 +37,31 @@ public class DefaultVariables {
                 Errors.addError(context, ErrorType.INVALID_TIME_FORMAT, e.getMessage());
                 return new FunctionalElement.Error();
             }
+        });
 
+        VariableRegistry.register("customhud:toggle", context -> {
+            if (!context.startsWith("toggle:")) return null;
+
+            String code = context.base().substring(7);
+            try {
+                int scancode = Integer.parseInt(code);
+                System.out.println("WATCH: " + scancode);
+                context.profile().toggles.put(scancode, false);
+                return new ToggleElement(scancode);
+            }
+            catch (NumberFormatException e) {
+                code = code.toUpperCase();
+                if (code.length() == 1) {
+                    context.profile().toggles.put((int) code.charAt(0), false);
+                    return new ToggleElement(code.charAt(0));
+                }
+                if (code.length() == 2 && code.charAt(0) == 'N' && Character.isDefined( code.charAt(1) )) {
+                    context.profile().toggles.put((int) code.charAt(1), false);
+                    return new ToggleElement(code.charAt(1));
+                }
+                Errors.addError(context, ErrorType.NOT_A_WHOLE_NUMBER, "\"" + code + "\"");
+                return new FunctionalElement.Error();
+            }
         });
     }
 

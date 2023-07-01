@@ -49,6 +49,17 @@ public class ProfileHandler {
         return getActiveProfile() == null ? Crosshairs.NORMAL : getActiveProfile().crosshair;
     }
 
+    public static boolean toggleKey(int code) {
+        Profile profile = getActiveProfile();
+
+        if (profile != null && profile.toggles.containsKey(code)) {
+            profile.toggles.put(code, !profile.toggles.get(code));
+            return true;
+        }
+        else
+            return false;
+    }
+
     public static Path getProfilePath(int i) {
         return CONFIG_FOLDER.resolve("profile" + i + ".txt");
     }

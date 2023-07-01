@@ -1,6 +1,7 @@
 package com.minenash.customhud.core.parsing;
 
 import com.minenash.customhud.core.data.Enabled;
+import com.minenash.customhud.core.data.Profile;
 import com.minenash.customhud.core.elements.HudElement;
 import com.minenash.customhud.core.elements.SudoElements;
 import com.minenash.customhud.core.errors.ErrorException;
@@ -24,11 +25,11 @@ public class ExpressionParser {
         }
     }
 
-    public static Operation parseConditional(String input, String source, int profile, int debugLine, Enabled enabled) {
+    public static Operation parseConditional(String input, String source, Profile profile, int profileNum, int debugLine, Enabled enabled) {
         if (input.isBlank() || input.equals(",") || input.equals(", "))
             return new Operation.Literal(1);
         try {
-            List<Token> tokens = getTokens(input, profile, debugLine, enabled);
+            List<Token> tokens = getTokens(input, profile, profileNum, debugLine, enabled);
             Operation c = getConditional(tokens);
             System.out.println("Tree for Conditional on line " + debugLine + ":");
             c.printTree(0);
@@ -36,14 +37,14 @@ public class ExpressionParser {
             return c;
         }
         catch (ErrorException e) {
-            Errors.addError(profile, debugLine, source, e.type, e.context);
+            Errors.addError(profileNum, debugLine, source, e.type, e.context);
             System.out.println("[Line: " + debugLine + "] Conditional Couldn't Be Parsed: " + e.getMessage());
             System.out.println("Input: \"" + input + "\"");
             return new Operation.Literal(1);
         }
     }
 
-    private static List<Token> getTokens(String original, int profile, int debugLine, Enabled enabled) throws ErrorException {
+    private static List<Token> getTokens(String original, Profile profile, int profileNum, int debugLine, Enabled enabled) throws ErrorException {
 
         List<Token> tokens = new ArrayList<>();
         char[] chars = original.toCharArray();
@@ -112,7 +113,7 @@ public class ExpressionParser {
                     i++;
                 }
                 builder.append('}');
-                tokens.add(new Token(TokenType.VARIABLE, VariableParser.parseElement(builder.toString(), profile, debugLine, enabled)));
+                tokens.add(new Token(TokenType.VARIABLE, VariableParser.parseElement(builder.toString(), profile, profileNum, debugLine, enabled)));
                 continue;
             }
             i++;

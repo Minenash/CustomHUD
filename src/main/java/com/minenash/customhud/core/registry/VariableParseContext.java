@@ -2,6 +2,7 @@ package com.minenash.customhud.core.registry;
 
 import com.minenash.customhud.core.data.Enabled;
 import com.minenash.customhud.core.data.Flags;
+import com.minenash.customhud.core.data.Profile;
 
 public record VariableParseContext(
     String raw,
@@ -10,8 +11,9 @@ public record VariableParseContext(
     String base,
     Flags flags,
     Enabled enabled,
+    Profile profile,
 
-    int profile,
+    int profileNum,
     int line
 
 ) {
