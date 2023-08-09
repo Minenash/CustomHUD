@@ -55,7 +55,7 @@ public class StringSuppliers {
 
     public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();
     public static final Supplier<String> FACING_SHORT = () -> cameraEntity().getHorizontalFacing().getName().substring(0, 1).toUpperCase();
-    public static final Supplier<String> FACING_TOWARDS_XZ = () ->
+    public static final Supplier<String> FACING_XZ = () ->
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");

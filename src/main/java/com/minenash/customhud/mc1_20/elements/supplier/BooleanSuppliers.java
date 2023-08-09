@@ -18,7 +18,7 @@ public class BooleanSuppliers {
     private static boolean isInDim(Identifier id) { return client.world.getRegistryKey().getValue().equals(id); }
     private static BlockPos blockPos() { return client.getCameraEntity().getBlockPos(); }
 
-    public static final Supplier<Boolean> VSYNC = () -> client.options.getEnableVsync().getValue();
+    @Deprecated public static final Supplier<Boolean> VSYNC = () -> client.options.getEnableVsync().getValue();
 
     public static final Supplier<Boolean> SINGLEPLAYER = client::isInSingleplayer;
     public static final Supplier<Boolean> MULTIPLAYER = () -> !client.isInSingleplayer();

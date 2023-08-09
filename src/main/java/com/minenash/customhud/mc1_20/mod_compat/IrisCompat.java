@@ -1,6 +1,7 @@
 package com.minenash.customhud.mc1_20.mod_compat;
 
 import com.minenash.customhud.core.data.Enabled;
+import com.minenash.customhud.core.registry.MetaData;
 import com.minenash.customhud.core.registry.VariableRegistry;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.shaderpack.ShaderPack;
@@ -8,7 +9,10 @@ import net.coderbot.iris.shaderpack.ShaderPack;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static com.minenash.customhud.core.data.Enabled.*;
+import static com.minenash.customhud.core.registry.MetaData.DefaultCategories.FROM_MODS;
 import static com.minenash.customhud.core.registry.VariableRegistry.SupplierEntryType.*;
+import static com.minenash.customhud.core.registry.VariableRegistry.register;
 
 public class IrisCompat {
 
@@ -26,11 +30,11 @@ public class IrisCompat {
 
     public static void registerCompat() {
 
-        VariableRegistry.register(Enabled.NONE, STRING, VERSION, "iris_version");
-        VariableRegistry.register(Enabled.NONE, BOOLEAN, ENABLED, "iris_version");
-        VariableRegistry.register(Enabled.NONE, STRING, SHADERPACK, "iris_version");
-        VariableRegistry.register(Enabled.NONE, STRING, SHADERPACK_PROFILE, "iris_version");
-        VariableRegistry.register(Enabled.NONE, STRING, SHADERPACK_CHANGES, "iris_version");
+        register(NONE, STRING, VERSION, "iris_version").meta(FROM_MODS, "v2.0", "Iris Version", "");
+        register(NONE, BOOLEAN, ENABLED, "iris_enabled").meta(FROM_MODS, "v2.0", "Iris Enabled", "If Iris's shaders are enabled"); //TODO: Add to docs
+        register(NONE, STRING, SHADERPACK, "iris_shaderpack").meta(FROM_MODS, "v2.0", "Iris Shaderpack", "Shaderpack file loaded");
+        register(NONE, STRING, SHADERPACK_PROFILE, "iris_shaderpack_profile").meta(FROM_MODS, "v2.0", "Iris Shaderpack Profile", "Shaderpack profile loaded");
+        register(NONE, STRING, SHADERPACK_CHANGES, "iris_shaderpack_changes").meta(FROM_MODS, "v2.0", "Iris Shaderpack Changes", "How many changes the user made to the profile");
 
         VariableRegistry.registerComplexData("iris:get_pack_info", () -> {
             Optional<ShaderPack> pack = Iris.getCurrentPack();

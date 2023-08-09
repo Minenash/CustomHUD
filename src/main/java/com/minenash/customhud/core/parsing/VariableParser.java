@@ -61,7 +61,7 @@ public class VariableParser {
     private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, String original, Profile profile, int profileNum, int debugLine, Enabled enabled) {
         List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
         while (args.find()) {
-//            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
+//            System.out.println("Cond: '" + vars.group(1) + "', Value: '" + vars.group(2) + "'");
             pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseConditional(args.group(1), original, profile, profileNum, debugLine, enabled), addElements(args.group(2), profile, profileNum, debugLine, enabled, false)));
         }
         return pairs;

@@ -49,11 +49,11 @@ public class SpecialSuppliers {
     public static final Entry TARGET_FLUID_ID = of( () -> Registries.FLUID.getId(ComplexData.targetFluid.getFluid()).toString(),
                                                     () -> Fluid.STATE_IDS.getRawId(ComplexData.targetFluid),
                                                     () -> !ComplexData.targetFluid.isEmpty());
-
+    @Deprecated
     public static final Entry ITEM = of( () -> I18n.translate(client.player.getMainHandStack().getItem().getTranslationKey()),
                                          () -> Item.getRawId(client.player.getMainHandStack().getItem()),
                                          () -> !client.player.getMainHandStack().isEmpty());
-
+    @Deprecated
     public static final Entry ITEM_NAME = of( () -> client.player.getMainHandStack().getName().getString(),
             () -> client.player.getMainHandStack().getName().getString().length(),
             () -> !client.player.getMainHandStack().isEmpty());
@@ -83,11 +83,11 @@ public class SpecialSuppliers {
                                            () -> client.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? 0 : (client.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? 1 : 2),
                                            () -> client.options.getCloudRenderMode().getValue() != CloudRenderMode.OFF);
 
-    public static final Entry FACING_TOWARDS_PN_WORD = of( () -> isFacingEastOrSouth() ? "positive" : "negative",
+    public static final Entry FACING_PN_WORD = of( () -> isFacingEastOrSouth() ? "positive" : "negative",
             () -> isFacingEastOrSouth() ? 1 : 0,
             SpecialSuppliers::isFacingEastOrSouth);
 
-    public static final Entry FACING_TOWARDS_PN_SIGN = of( () -> isFacingEastOrSouth() ? "+" : "-",
+    public static final Entry FACING_PN_SIGN = of( () -> isFacingEastOrSouth() ? "+" : "-",
             () -> isFacingEastOrSouth() ? 1 : 0,
             SpecialSuppliers::isFacingEastOrSouth);
 

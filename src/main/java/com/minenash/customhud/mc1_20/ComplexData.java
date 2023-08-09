@@ -99,7 +99,7 @@ public class ComplexData {
         if (profile.enabled.has(WORLD))
             world = DataFixUtils.orElse(Optional.ofNullable(client.getServer()).flatMap((integratedServer) -> Optional.ofNullable(integratedServer.getWorld(client.world.getRegistryKey()))), client.world);
 
-        if (profile.enabled.has(TARGET_BLOCK)) {
+        if (profile.enabled.has(TARGET_BLOCK_EN)) {
             HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, false);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
@@ -112,7 +112,7 @@ public class ComplexData {
             }
         }
 
-        if (profile.enabled.has(TARGET_FLUID)) {
+        if (profile.enabled.has(TARGET_FLUID_EN)) {
             HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, true);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
@@ -125,7 +125,7 @@ public class ComplexData {
             }
         }
 
-        if (profile.enabled.has(LOCAL_DIFFICULTY))
+        if (profile.enabled.has(DIFFICULTY))
             localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getMoonSize());
 
         if (profile.enabled.has(SOUND))

@@ -3,6 +3,7 @@ package com.minenash.customhud.core;
 import com.google.gson.*;
 import com.minenash.customhud.core.data.Crosshairs;
 import com.minenash.customhud.core.data.Profile;
+import com.minenash.customhud.core.editor.EditorWindow;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +40,7 @@ public class ProfileHandler {
             e.printStackTrace();
         }
         loadConfig();
+        EditorWindow.main(new String[]{});
     }
 
     public static Profile getActiveProfile() {

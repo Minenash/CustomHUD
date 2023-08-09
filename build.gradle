@@ -55,6 +55,10 @@ dependencies {
 		exclude module: "fabric-api"
 	}
 
+	implementation include("com.fifesoft:rsyntaxtextarea:3.3.3")
+	implementation include("com.formdev:flatlaf:3.1.1")
+	implementation include("com.fifesoft:autocomplete:3.3.1")
+
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.

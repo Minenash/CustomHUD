@@ -12,6 +12,7 @@
     "MinecraftClientMixin",
     "TitleScreenMixin",
     "WorldRendererAccess",
+    "editor.AutoCompletion$AutoActivationListenerMixin",
     "fonts.TextHandlerMixin",
     "fonts.TextRendererMixin"
   ],

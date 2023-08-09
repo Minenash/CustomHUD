@@ -43,16 +43,16 @@ public class IntegerSuppliers {
 
 
     public static final Supplier<Number> FPS = client::getCurrentFps;
-    public static final Supplier<Number> MAX_FPS = () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FRAMERATE ? null : client.options.getMaxFps().getValue();
-    public static final Supplier<Number> BIOME_BLEND = () -> client.options.getBiomeBlendRadius().getValue();
-    public static final Supplier<Number> SIMULATION_DISTANCE = () -> client.options.getSimulationDistance().getValue();
+    @Deprecated public static final Supplier<Number> MAX_FPS = () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FRAMERATE ? null : client.options.getMaxFps().getValue();
+    @Deprecated public static final Supplier<Number> BIOME_BLEND = () -> client.options.getBiomeBlendRadius().getValue();
+    @Deprecated public static final Supplier<Number> SIMULATION_DISTANCE = () -> client.options.getSimulationDistance().getValue();
 
     public static final Supplier<Number> PACKETS_SENT = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsSent();
     public static final Supplier<Number> PACKETS_RECEIVED = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsReceived();
     public static final Supplier<Number> CHUNKS_RENDERED = () -> worldRender().getCompletedChunks();
     public static final Supplier<Number> CHUNKS_LOADED = () -> worldRender().getChunks().chunks.length;
     @SuppressWarnings("Convert2MethodRef" )
-    public static final Supplier<Number> RENDER_DISTANCE = () -> client.options.getClampedViewDistance();
+    @Deprecated public static final Supplier<Number> RENDER_DISTANCE = () -> client.options.getClampedViewDistance();
     public static final Supplier<Number> QUEUED_TASKS = () -> chunkBuilder().getQueuedTaskCount();
     public static final Supplier<Number> UPLOAD_QUEUE = () -> chunkBuilder().getUploadQueue().size();
     public static final Supplier<Number> BUFFER_COUNT = () -> chunkBuilder().getBufferCount();
@@ -103,9 +103,9 @@ public class IntegerSuppliers {
 
     public static final Supplier<Number> CLIENT_HEIGHT_MAP_SURFACE = () -> chunk(ComplexData.clientChunk, Heightmap.Type.WORLD_SURFACE);
     public static final Supplier<Number> CLIENT_HEIGHT_MAP_MOTION_BLOCKING = () -> chunk(ComplexData.clientChunk, Heightmap.Type.MOTION_BLOCKING);
-    public static final Supplier<Number> SERVER_HEIGHT_MAP_SURFACE = () -> chunk(ComplexData.serverChunk, Heightmap.Type.WORLD_SURFACE);
+    @Deprecated public static final Supplier<Number> SERVER_HEIGHT_MAP_SURFACE = () -> chunk(ComplexData.serverChunk, Heightmap.Type.WORLD_SURFACE);
     public static final Supplier<Number> SERVER_HEIGHT_MAP_OCEAN_FLOOR = () -> chunk(ComplexData.serverChunk, Heightmap.Type.OCEAN_FLOOR);
-    public static final Supplier<Number> SERVER_HEIGHT_MAP_MOTION_BLOCKING = () -> chunk(ComplexData.serverChunk, Heightmap.Type.MOTION_BLOCKING);
+    @Deprecated public static final Supplier<Number> SERVER_HEIGHT_MAP_MOTION_BLOCKING = () -> chunk(ComplexData.serverChunk, Heightmap.Type.MOTION_BLOCKING);
     public static final Supplier<Number> SERVER_HEIGHT_MAP_MOTION_BLOCKING_NO_LEAVES = () -> chunk(ComplexData.serverChunk, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
 
     public static final Supplier<Number> MOON_PHASE = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getMoonPhase()+1;

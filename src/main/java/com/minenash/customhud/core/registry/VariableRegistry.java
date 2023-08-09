@@ -11,12 +11,14 @@ import java.util.function.Supplier;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class VariableRegistry {
 
-    private static final Map<String, Function<VariableParseContext, HudElement>> registry = new TreeMap<>();
+    public static final Map<String, MetaData> metadata = new LinkedHashMap<>();
+
+    public static final Map<String, Function<VariableParseContext, HudElement>> registry = new TreeMap<>();
     private static final Map<String, Runnable> complexData = new TreeMap<>();
 
     public enum SupplierEntryType {BOOLEAN, STRING, STR_INT, INT, DEC, SPECIAL}
     private record SupplierEntry<T>(int enabledMask, SupplierEntryType type, T entry) {}
-    private static final Map<String, SupplierEntry<?>> supplierRegistry = new HashMap<>();
+    public static final Map<String, SupplierEntry<?>> supplierRegistry = new HashMap<>();
 
     public static boolean register(String id, Function<VariableParseContext, HudElement> parser) {
         if (registry.containsKey(id)) return false;
@@ -28,9 +30,11 @@ public class VariableRegistry {
         register(Enabled.NONE, type, supplier, names);
     }
 
-    public static <T> void register(int en, SupplierEntryType type, T supplier, String... names) {
-        for (String name : names)
-            supplierRegistry.put(name, new SupplierEntry<>(en, type, supplier));
+
+    public static <T> MetaData.MetaDataBuilder register(int en, SupplierEntryType type, T supplier, String... vars) {
+        for (String var : vars)
+            supplierRegistry.put(var, new SupplierEntry<>(en, type, supplier));
+        return new MetaData.MetaDataBuilder(vars, MetaData.DefaultAvailableFlags.fromEntryType(type));
     }
 
     public static boolean unregister(String id) {

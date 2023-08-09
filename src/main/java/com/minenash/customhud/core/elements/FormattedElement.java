@@ -46,7 +46,7 @@ public class FormattedElement implements HudElement {
         return base.getBoolean();
     }
 
-    private static String smallcaps(String text) {
+    public static String smallcaps(String text) {
         char[] chars = text.toCharArray();
         for (int i = 0; i < chars.length; i++) {
             switch (chars[i]) {
