@@ -16,7 +16,6 @@ public class SodiumCompat {
     private static List<String> debugLines;
 
     public static final Supplier<String> VERSION = SodiumClientMod::getVersion;
-    public static final Supplier<String> CHUNK_ARENA_ALLOCATOR = () -> SodiumClientMod.options().advanced.arenaMemoryAllocator.name();
     public static final Supplier<String> STAGING_BUFFER = () -> debugLines.get(3).substring(16);
 
     public static final Supplier<String> BUFFER_OBJECTS = () -> debugLines.get(1).substring(23);
@@ -26,7 +25,6 @@ public class SodiumCompat {
     public static void registerCompat() {
 
         registerElement("sodium_version", (_str) -> new StringSupplierElement(VERSION));
-        registerElement("sodium_chunk_arena_allocator", (_str) -> new StringSupplierElement(CHUNK_ARENA_ALLOCATOR));
         registerElement("sodium_staging_buffers", (_str) -> new StringSupplierElement(STAGING_BUFFER));
 
         registerElement("sodium_buffer_objects", (_str) -> new StringIntSupplierElement(BUFFER_OBJECTS));
@@ -36,7 +34,7 @@ public class SodiumCompat {
         registerComplexData(() -> {
             SodiumWorldRenderer renderer = SodiumWorldRenderer.instanceNullable();
             if (renderer != null)
-                debugLines = (List<String>) renderer.getMemoryDebugStrings();
+                debugLines = (List<String>) renderer.getDebugStrings();
         });
 
     }
