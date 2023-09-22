@@ -12,9 +12,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Environment(EnvType.CLIENT)
 @Mixin(WorldRenderer.class)
 public interface WorldRendererAccess {
-    @Accessor BuiltChunkStorage getChunks();
-    @Invoker(value = "getCompletedChunkCount") int getCompletedChunks();
-    @Accessor ChunkBuilder getChunkBuilder();
-
     @Accessor int getRegularEntityCount();
 }

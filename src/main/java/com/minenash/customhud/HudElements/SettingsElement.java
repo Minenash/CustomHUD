@@ -7,6 +7,7 @@ import com.minenash.customhud.mixin.GameOptionsAccessor;
 import com.minenash.customhud.mixin.KeyBindingAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.*;
+import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Pair;

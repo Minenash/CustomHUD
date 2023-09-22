@@ -1,33 +1,27 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.mixin.DebugHudAccessor;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.MetricsData;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import org.joml.Matrix4f;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
@@ -71,7 +65,12 @@ public class ComplexData {
     public static int[] clicksPerSeconds = new int[]{0,0};
     public static ArrayDeque<Integer>[] clicks = null;
 
-    public static double[] performanceMetrics = new double[3];
+    public static double[] frameTimeMetrics = new double[4];
+    public static double[] tickTimeMetrics = new double[4];
+    public static double[] pingMetrics = new double[4];
+    public static double[] packetSizeMetrics = new double[4];
+
+    private static long lastStatUpdate = 0;
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -196,27 +195,36 @@ public class ComplexData {
         }
 
         if (profile.enabled.performanceMetrics) {
-            long[] ls = client.getMetricsData().getSamples();
-            double avg = 0L;
-
-            performanceMetrics[0] = 0;
-            performanceMetrics[1] = Integer.MAX_VALUE; //MIN
-            performanceMetrics[2] = Integer.MIN_VALUE; //MAX
-
-            for (int r = 0; r < ls.length; ++r) {
-                double s = (ls[r] / 1000000D);
-                performanceMetrics[1] = Math.min(performanceMetrics[1], s);
-                performanceMetrics[2] = Math.max(performanceMetrics[2], s);
-                avg += s;
-            }
-            performanceMetrics[0] = avg / ls.length;
+            processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240, frameTimeMetrics);
+            processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), 0.000001, 120, tickTimeMetrics);
+            processLog(client.inGameHud.getDebugHud().getPingLog(), 1, 120, pingMetrics);
+            processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20/1024D, 120, packetSizeMetrics);
         }
 
         CustomHudRegistry.runComplexData();
 
     }
 
-    static long lastStatUpdate = 0;
+    public static void processLog(PerformanceLog log, double multiplier, int samples, double[] metrics) {
+        if (log.getMaxIndex() == 0) {
+            metrics[0] = metrics[1] = metrics[2] = metrics[3] = Double.NaN;
+            return;
+        }
+
+        metrics[0] = 0; //AVG
+        metrics[1] = Integer.MAX_VALUE; //MIN
+        metrics[2] = Integer.MIN_VALUE; //MAX
+        metrics[3] = Math.min(samples, log.getMaxIndex()); //SAMPLES
+
+        double avg = 0L;
+        for (int r = 0; r <  metrics[3]; ++r) {
+            double s = log.get(r) * multiplier;
+            metrics[1] = Math.min(metrics[1], s);
+            metrics[2] = Math.max(metrics[2], s);
+            avg += s;
+        }
+        metrics[0] = avg / metrics[3];
+    }
 
     public static void reset() {
         clientChunk = null;
@@ -227,7 +235,7 @@ public class ComplexData {
         sounds = null;
         clientChunkCache = null;
         clicks = null;
-        performanceMetrics = new double[3];
+        frameTimeMetrics = new double[4];
         x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
         clicksSoFar[0] = clicksSoFar[1] = 0;
         clicksPerSeconds[0] = clicksPerSeconds[1] = 0;

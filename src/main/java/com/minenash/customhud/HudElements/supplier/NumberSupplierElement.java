@@ -37,6 +37,8 @@ public class NumberSupplierElement implements HudElement {
     public String getString() {
         try {
             double num = supplier.get().doubleValue() * scale;
+            if (Double.isNaN(num))
+                return "-";
             if (precision == 0)
                 return Integer.toString((int)num);
 

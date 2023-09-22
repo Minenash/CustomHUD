@@ -133,11 +133,6 @@ public class ErrorScreen extends Screen {
         }
 
         @Override
-        protected void renderBackground(DrawContext context) {
-            ErrorScreen.this.renderBackground(context);
-        }
-
-        @Override
         public boolean isFocused() {
             return ErrorScreen.this.getFocused() == this;
         }

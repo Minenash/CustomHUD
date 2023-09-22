@@ -89,7 +89,7 @@ public class ModMenuIntegration implements ModMenuApi {
 
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-            this.renderBackground(context);
+            this.renderBackground(context, mouseX, mouseY, delta);
             if (MinecraftClient.getInstance().cameraEntity == null)
                 context.fill(0,36,this.width,this.height - 30-9, 0x88000000);
 

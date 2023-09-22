@@ -455,6 +455,7 @@ public class VariableParser {
             case "display_refresh_rate" -> DISPLAY_REFRESH_RATE;
             case "mods" -> MODS;
             case "ping" -> PING;
+            case "latency" -> LATENCY;
             case "time", "solar_time" -> SOLAR_TIME;
             case "lunar_time" -> LUNAR_TIME;
             case "item_durability", "item_dur" -> ITEM_DURABILITY;
@@ -514,7 +515,6 @@ public class VariableParser {
             case "memory_total" -> TOTAL_MEMORY;
             case "memory_allocated_percentage" -> ALLOCATED_PERCENTAGE;
             case "memory_allocated" -> ALLOCATED;
-//            case "memory_off_heap" -> OFF_HEAP; TODO
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
             case "gpu_usage", "gpu" -> {enabled.performanceMetrics = true; yield GPU_USAGE;}
             case "ms_ticks", "tick_ms" -> TICK_MS;
@@ -522,6 +522,18 @@ public class VariableParser {
             case "frame_ms_max" -> { enabled.performanceMetrics = true; yield FRAME_MS_MAX;}
             case "frame_ms_avg" -> { enabled.performanceMetrics = true; yield FRAME_MS_AVG;}
             case "frame_ms_samples" -> { enabled.performanceMetrics = true; yield FRAME_MS_SAMPLES;}
+            case "tick_ms_min" -> { enabled.performanceMetrics = true; yield TICK_MS_MIN;}
+            case "tick_ms_max" -> { enabled.performanceMetrics = true; yield TICK_MS_MAX;}
+            case "tick_ms_avg" -> { enabled.performanceMetrics = true; yield TICK_MS_AVG;}
+            case "tick_ms_samples" -> { enabled.performanceMetrics = true; yield TICK_MS_SAMPLES;}
+            case "ping_min" -> { enabled.performanceMetrics = true; yield PING_MIN;}
+            case "ping_max" -> { enabled.performanceMetrics = true; yield PING_MAX;}
+            case "ping_avg" -> { enabled.performanceMetrics = true; yield PING_AVG;}
+            case "ping_samples" -> { enabled.performanceMetrics = true; yield PING_SAMPLES;}
+            case "packet_size_min" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_MIN;}
+            case "packet_size_max" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_MAX;}
+            case "packet_size_avg" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_AVG;}
+            case "packet_size_samples" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_SAMPLES;}
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
             case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
             case "local_difficulty" -> { enabled.localDifficulty = enabled.world = true; yield LOCAL_DIFFICULTY; }

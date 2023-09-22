@@ -30,7 +30,7 @@
   "depends": {
     "fabricloader": ">=0.12.12",
     "fabric": "*",
-    "minecraft": ">=1.20.1- <1.20.2-"
+    "minecraft": ">=1.20.2- <1.20.3-"
   },
   "breaks": {
     "sodium": "<0.5.0"

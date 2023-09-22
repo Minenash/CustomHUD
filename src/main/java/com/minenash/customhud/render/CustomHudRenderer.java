@@ -28,7 +28,7 @@ public class CustomHudRenderer {
     public static void render(DrawContext context, float _tickDelta) {
 
         Profile profile = CustomHud.getActiveProfile();
-        if (profile == null || client.options.debugEnabled)
+        if (profile == null || client.getDebugHud().shouldShowDebugHud())
             return;
 
         boolean isChatOpen = client.currentScreen instanceof ChatScreen;

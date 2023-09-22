@@ -7,6 +7,8 @@ import com.mojang.blaze3d.platform.GLX;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -21,11 +23,11 @@ import java.util.function.Supplier;
 public class IntegerSuppliers {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
-    private static WorldRendererAccess worldRender() {
-        return (WorldRendererAccess)client.worldRenderer;
+    private static WorldRenderer worldRender() {
+        return client.worldRenderer;
     }
-    private static ChunkBuilderAccess chunkBuilder() {
-        return (ChunkBuilderAccess)worldRender().getChunkBuilder();
+    private static ChunkBuilder chunkBuilder() {
+        return worldRender().getChunkBuilder();
     }
     private static BlockPos blockPos() { return client.getCameraEntity().getBlockPos(); }
     private static LightingProvider serverLighting() { return ComplexData.world.getChunkManager().getLightingProvider(); }
@@ -49,14 +51,14 @@ public class IntegerSuppliers {
 
     public static final Supplier<Number> PACKETS_SENT = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsSent();
     public static final Supplier<Number> PACKETS_RECEIVED = () -> (int)client.getNetworkHandler().getConnection().getAveragePacketsReceived();
-    public static final Supplier<Number> CHUNKS_RENDERED = () -> worldRender().getCompletedChunks();
-    public static final Supplier<Number> CHUNKS_LOADED = () -> worldRender().getChunks().chunks.length;
+    public static final Supplier<Number> CHUNKS_RENDERED = () -> worldRender().getCompletedChunkCount();
+    public static final Supplier<Number> CHUNKS_LOADED = () -> worldRender().getChunkCount();
     @SuppressWarnings("Convert2MethodRef" )
     public static final Supplier<Number> RENDER_DISTANCE = () -> client.options.getClampedViewDistance();
-    public static final Supplier<Number> QUEUED_TASKS = () -> chunkBuilder().getQueuedTaskCount();
-    public static final Supplier<Number> UPLOAD_QUEUE = () -> chunkBuilder().getUploadQueue().size();
-    public static final Supplier<Number> BUFFER_COUNT = () -> chunkBuilder().getBufferCount();
-    public static final Supplier<Number> ENTITIES_RENDERED = () -> worldRender().getRegularEntityCount();
+    public static final Supplier<Number> QUEUED_TASKS = () -> chunkBuilder().getToBatchCount();
+    public static final Supplier<Number> UPLOAD_QUEUE = () -> chunkBuilder().getChunksToUpload();
+    public static final Supplier<Number> BUFFER_COUNT = () -> chunkBuilder().getFreeBufferCount();
+    public static final Supplier<Number> ENTITIES_RENDERED = () -> ((WorldRendererAccess)worldRender()).getRegularEntityCount();
     public static final Supplier<Number> ENTITIES_LOADED = () -> client.world.getRegularEntityCount();
 
     public static final Supplier<Number> FORCED_LOADED_CHUNKS = () -> ComplexData.world instanceof ServerWorld ? ((ServerWorld)ComplexData.world).getForcedChunks().size() : null;
@@ -131,7 +133,8 @@ public class IntegerSuppliers {
     public static final Supplier<Number> DISPLAY_HEIGHT = () -> client.getWindow().getFramebufferHeight();
     public static final Supplier<Number> DISPLAY_REFRESH_RATE = () -> GLX._getRefreshRate(client.getWindow());
     public static final Supplier<Number> MODS = () -> FabricLoader.getInstance().getAllMods().size();
-    public static final Supplier<Number> PING = () -> client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency();
+    public static final Supplier<Number> PING = () -> Math.round(ComplexData.pingMetrics[0]);
+    public static final Supplier<Number> LATENCY = () -> client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency();
     public static final Supplier<Number> SOLAR_TIME = () -> client.world.getTimeOfDay() % 24000;
     public static final Supplier<Number> LUNAR_TIME = () -> client.world.getTimeOfDay();
 

@@ -7,8 +7,6 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import java.util.function.Supplier;
-
 import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.*;
 
 public class DecimalSuppliers {
@@ -54,10 +52,25 @@ public class DecimalSuppliers {
     public static final Entry MOOD = of( () -> client.player.getMoodPercentage() * 100.0F, 0);
 
     public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getTickTime(), 0);
-    public static final Entry FRAME_MS_MIN = of( () -> ComplexData.performanceMetrics[1], 0);
-    public static final Entry FRAME_MS_MAX = of( () -> ComplexData.performanceMetrics[2], 0);
-    public static final Entry FRAME_MS_AVG = of( () -> ComplexData.performanceMetrics[0], 1);
-    public static final Entry FRAME_MS_SAMPLES = of( () -> 0, 0);
+    public static final Entry FRAME_MS_MIN = of( () -> ComplexData.frameTimeMetrics[1], 0);
+    public static final Entry FRAME_MS_MAX = of( () -> ComplexData.frameTimeMetrics[2], 0);
+    public static final Entry FRAME_MS_AVG = of( () -> ComplexData.frameTimeMetrics[0], 1);
+    public static final Entry FRAME_MS_SAMPLES = of( () -> ComplexData.frameTimeMetrics[3], 0);
+
+    public static final Entry TICK_MS_MIN = of( () -> ComplexData.tickTimeMetrics[1], 0);
+    public static final Entry TICK_MS_MAX = of( () -> ComplexData.tickTimeMetrics[2], 0);
+    public static final Entry TICK_MS_AVG = of( () -> ComplexData.tickTimeMetrics[0], 1);
+    public static final Entry TICK_MS_SAMPLES = of( () -> ComplexData.tickTimeMetrics[3], 0);
+
+    public static final Entry PING_MIN = of( () -> ComplexData.pingMetrics[1], 0);
+    public static final Entry PING_MAX = of( () -> ComplexData.pingMetrics[2], 0);
+    public static final Entry PING_AVG = of( () -> ComplexData.pingMetrics[0], 1);
+    public static final Entry PING_SAMPLES = of( () -> ComplexData.pingMetrics[3], 0);
+
+    public static final Entry PACKET_SIZE_MIN = of( () -> ComplexData.packetSizeMetrics[1], 0);
+    public static final Entry PACKET_SIZE_MAX = of( () -> ComplexData.packetSizeMetrics[2], 0);
+    public static final Entry PACKET_SIZE_AVG = of( () -> ComplexData.packetSizeMetrics[0], 1);
+    public static final Entry PACKET_SIZE_SAMPLES = of( () -> ComplexData.packetSizeMetrics[3], 0);
 
     @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
     @Deprecated public static final Entry OFFHAND_ITEM_DURABILITY_PERCENT = of( () -> client.player.getOffHandStack().getDamage() / (float) client.player.getOffHandStack().getMaxDamage() * 100, 0);

@@ -5,10 +5,13 @@
   "compatibilityLevel": "JAVA_16",
   "client": [
     "ChunkBuilderAccess",
+    "ClientPlayNetworkHandlerMixin",
+    "DebugHudAccessor",
     "GameOptionsAccessor",
     "InGameHudMixin",
     "KeyBindingAccessor",
     "MinecraftClientMixin",
+    "PingMeasurerMixin",
     "TitleScreenMixin",
     "WorldRendererAccess",
     "fonts.TextHandlerMixin",
