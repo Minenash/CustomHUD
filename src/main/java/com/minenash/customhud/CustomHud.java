@@ -18,6 +18,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
@@ -72,7 +73,7 @@ public class CustomHud implements ModInitializer {
 
 	}
 
-	public static void loadProfiles() {
+	public static void delayedInitialize() {
 		for (int i = 1; i <=3; i++ ) {
 			profiles[i - 1] = Profile.parseProfile(getProfilePath(i), i);
 		}

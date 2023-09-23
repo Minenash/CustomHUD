@@ -2,6 +2,7 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.MusicAndRecordTracker;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
@@ -62,6 +63,12 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
     public static final Supplier<String> CPU_NAME = () -> ComplexData.cpu.getProcessorIdentifier().getName();
     public static final Supplier<String> GPU_NAME = () -> GlDebugInfo.getRenderer().substring(0, GlDebugInfo.getRenderer().indexOf('/'));
+
+    public static final Supplier<String> MUSIC_ID = () -> MusicAndRecordTracker.isMusicPlaying ? MusicAndRecordTracker.musicId : "";
+    public static final Supplier<String> MUSIC_NAME = () -> MusicAndRecordTracker.isMusicPlaying ? MusicAndRecordTracker.musicName : "";
+    public static final Supplier<String> RECORD_NAME = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordName : "";
+    public static final Supplier<String> RECORD_ID = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordId : "";
+
 
     //TODO: Item Name
     //public static final Supplier<String> ITEM_NAME = () -> client.player.getMainHandStack().getItem().getName().;

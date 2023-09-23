@@ -355,6 +355,12 @@ public class VariableParser {
             case "cpu_name" -> CPU_NAME;
             case "gpu_name" -> GPU_NAME;
             case "server_brand" -> SERVER_BRAND;
+
+            case "music_id" -> {enabled.music = true; yield MUSIC_ID;}
+            case "music_name" -> {enabled.music = true; yield MUSIC_NAME;}
+            case "record_id" -> {enabled.music = true; yield RECORD_ID;}
+            case "record_name" -> {enabled.music = true; yield RECORD_NAME;}
+
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
             default -> null;
         };
@@ -387,6 +393,10 @@ public class VariableParser {
             case "fishing_is_hooked" -> FISHING_IS_HOOKED;
             case "fishing_has_caught" -> FISHING_HAS_CAUGHT;
             case "fishing_in_open_water" -> FISHING_IN_OPEN_WATER;
+
+            case "music_playing" -> {enabled.music = true; yield MUSIC_PLAYING;}
+            case "record_playing" -> {enabled.music = true; yield RECORD_PLAYING;}
+
             default -> null;
         };
     }
@@ -478,6 +488,10 @@ public class VariableParser {
             case "xp" -> XP_POINTS;
             case "xp_needed" -> XP_POINTS_NEEDED;
 
+            case "record_length" -> {enabled.music = true; yield RECORD_LENGTH;}
+            case "record_elapsed" -> {enabled.music = true; yield RECORD_ELAPSED;}
+            case "record_remaining" -> {enabled.music = true; yield RECORD_REMAINING;}
+
             case "item_durability", "item_dur" -> ITEM_DURABILITY;
             case "item_max_durability", "item_max_dur" -> ITEM_MAX_DURABILITY;
             case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
@@ -558,6 +572,7 @@ public class VariableParser {
             case "packet_size_avg" -> { enabled.packetMetrics = true; yield PACKET_SIZE_AVG;}
             case "packet_size_samples" -> { enabled.packetMetrics = true; yield PACKET_SIZE_SAMPLES;}
             case "slots_percentage", "slots_per" -> {enabled.slots = true; yield SLOTS_PERCENTAGE;}
+            case "record_elapsed_percentage","record_elapsed_per" -> {enabled.music = true; yield RECORD_ELAPSED_PER;}
 
             case "xp_per", "xp_percentage" -> XP_POINTS_PER;
             case "air_per", "air_percentage" -> AIR_LEVEL_PERCENTAGE;

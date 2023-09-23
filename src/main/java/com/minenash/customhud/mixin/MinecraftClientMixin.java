@@ -35,7 +35,7 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(RunArgs args, CallbackInfo ci) {
-        CustomHud.loadProfiles();
+        CustomHud.delayedInitialize();
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/String;format(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;"))

@@ -16,7 +16,10 @@
     "TitleScreenMixin",
     "WorldRendererAccess",
     "fonts.TextHandlerMixin",
-    "fonts.TextRendererMixin"
+    "fonts.TextRendererMixin",
+    "music.MinecraftClientAccess",
+    "music.MusicTrackerAccess",
+    "music.WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -215,6 +215,10 @@ public class ComplexData {
             }
         }
 
+        if (profile.enabled.music) {
+            MusicAndRecordTracker.tick();
+        }
+
         CustomHudRegistry.runComplexData();
 
     }
@@ -274,6 +278,7 @@ public class ComplexData {
         public boolean cpu = false;
         public boolean updateStats = false;
         public boolean clicksPerSeconds = false;
+        public boolean music = false;
 
         public boolean gpuMetrics = false;
         public boolean frameMetrics = false;

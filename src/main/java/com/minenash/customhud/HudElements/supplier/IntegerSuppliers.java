@@ -1,7 +1,7 @@
 package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.mixin.ChunkBuilderAccess;
+import com.minenash.customhud.MusicAndRecordTracker;
 import com.minenash.customhud.mixin.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GLX;
 import net.fabricmc.loader.api.FabricLoader;
@@ -10,10 +10,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
@@ -157,6 +154,10 @@ public class IntegerSuppliers {
     public static final Supplier<Number> FOOD_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getFoodLevel() * 5;
     public static final Supplier<Number> SATURATION_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getSaturationLevel() * 5;
     public static final Supplier<Number> ARMOR_LEVEL_PERCENTAGE = () -> client.player.getArmor() * 5;
+
+    public static final Supplier<Number> RECORD_LENGTH = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordLength / 20 : 0;
+    public static final Supplier<Number> RECORD_ELAPSED = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordElapsed / 20 : 0;
+    public static final Supplier<Number> RECORD_REMAINING = () -> MusicAndRecordTracker.isRecordPlaying ? (MusicAndRecordTracker.recordLength - MusicAndRecordTracker.recordElapsed) / 20 : 0;
 
     @Deprecated public static final Supplier<Number> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
     @Deprecated public static final Supplier<Number> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();

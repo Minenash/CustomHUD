@@ -2,6 +2,7 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.MusicAndRecordTracker;
 import com.minenash.customhud.mixin.PlayerListHudAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -45,6 +46,9 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> SCREEN_OPEN = () -> client.currentScreen != null;
     public static final Supplier<Boolean> CHAT_OPEN = () -> client.currentScreen instanceof ChatScreen;
     public static final Supplier<Boolean> PLAYER_LIST_OPEN = () -> ((PlayerListHudAccess)client.inGameHud.getPlayerListHud()).getVisible();
+
+    public static final Supplier<Boolean> RECORD_PLAYING = () -> MusicAndRecordTracker.isRecordPlaying;
+    public static final Supplier<Boolean> MUSIC_PLAYING = () -> MusicAndRecordTracker.isMusicPlaying;
 
     public static final Supplier<Boolean> FISHING_IS_CAST = () -> client.player.fishHook != null;
     public static final Supplier<Boolean> FISHING_IS_HOOKED = () -> client.player.fishHook != null && client.player.fishHook.getHookedEntity() != null;

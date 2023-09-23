@@ -1,13 +1,12 @@
 package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
+import com.minenash.customhud.MusicAndRecordTracker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-
-import java.util.function.Supplier;
 
 import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.*;
 
@@ -79,6 +78,7 @@ public class DecimalSuppliers {
     public static final Entry PACKET_SIZE_SAMPLES = of( () -> ComplexData.packetSizeMetrics[3], 0);
 
     public static final Entry SLOTS_PERCENTAGE = of( () -> 100F * ComplexData.slots_used / client.player.getInventory().main.size(), 0);
+    public static final Entry RECORD_ELAPSED_PER = of( () -> 100F * MusicAndRecordTracker.recordElapsed / MusicAndRecordTracker.recordLength, 0);
 
     public static final Entry XP_POINTS_PER = of(() -> client.player.experienceProgress * 100, 0);
     public static final Entry AIR_LEVEL_PERCENTAGE = of(() -> 100F * client.player.getAir() / client.player.getMaxAir(), 0);
