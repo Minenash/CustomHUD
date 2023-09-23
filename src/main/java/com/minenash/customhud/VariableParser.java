@@ -458,7 +458,7 @@ public class VariableParser {
             case "display_height" -> DISPLAY_HEIGHT;
             case "display_refresh_rate" -> DISPLAY_REFRESH_RATE;
             case "mods" -> MODS;
-            case "ping" -> {enabled.performanceMetrics = true; yield PING;}
+            case "ping" -> {enabled.pingMetrics = true; yield PING;}
             case "latency" -> LATENCY;
             case "time", "solar_time" -> SOLAR_TIME;
             case "lunar_time" -> LUNAR_TIME;
@@ -536,24 +536,24 @@ public class VariableParser {
             case "memory_allocated_percentage" -> ALLOCATED_PERCENTAGE;
             case "memory_allocated" -> ALLOCATED;
             case "cpu_usage", "cpu" -> {enabled.cpu = true; yield CPU_USAGE;}
-            case "gpu_usage", "gpu" -> {enabled.performanceMetrics = true; yield GPU_USAGE;}
+            case "gpu_usage", "gpu" -> {enabled.gpuMetrics = true; yield GPU_USAGE;}
             case "ms_ticks", "tick_ms" -> TICK_MS;
-            case "frame_ms_min" -> { enabled.performanceMetrics = true; yield FRAME_MS_MIN;}
-            case "frame_ms_max" -> { enabled.performanceMetrics = true; yield FRAME_MS_MAX;}
-            case "frame_ms_avg" -> { enabled.performanceMetrics = true; yield FRAME_MS_AVG;}
-            case "frame_ms_samples" -> { enabled.performanceMetrics = true; yield FRAME_MS_SAMPLES;}
-            case "tick_ms_min" -> { enabled.performanceMetrics = true; yield TICK_MS_MIN;}
-            case "tick_ms_max" -> { enabled.performanceMetrics = true; yield TICK_MS_MAX;}
-            case "tick_ms_avg" -> { enabled.performanceMetrics = true; yield TICK_MS_AVG;}
-            case "tick_ms_samples" -> { enabled.performanceMetrics = true; yield TICK_MS_SAMPLES;}
-            case "ping_min" -> { enabled.performanceMetrics = true; yield PING_MIN;}
-            case "ping_max" -> { enabled.performanceMetrics = true; yield PING_MAX;}
-            case "ping_avg" -> { enabled.performanceMetrics = true; yield PING_AVG;}
-            case "ping_samples" -> { enabled.performanceMetrics = true; yield PING_SAMPLES;}
-            case "packet_size_min" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_MIN;}
-            case "packet_size_max" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_MAX;}
-            case "packet_size_avg" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_AVG;}
-            case "packet_size_samples" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_SAMPLES;}
+            case "frame_ms_min" -> { enabled.frameMetrics = true; yield FRAME_MS_MIN;}
+            case "frame_ms_max" -> { enabled.frameMetrics = true; yield FRAME_MS_MAX;}
+            case "frame_ms_avg" -> { enabled.frameMetrics = true; yield FRAME_MS_AVG;}
+            case "frame_ms_samples" -> { enabled.frameMetrics = true; yield FRAME_MS_SAMPLES;}
+            case "tick_ms_min" -> { enabled.tickMetrics = true; yield TICK_MS_MIN;}
+            case "tick_ms_max" -> { enabled.tickMetrics = true; yield TICK_MS_MAX;}
+            case "tick_ms_avg" -> { enabled.tickMetrics = true; yield TICK_MS_AVG;}
+            case "tick_ms_samples" -> { enabled.tickMetrics = true; yield TICK_MS_SAMPLES;}
+            case "ping_min" -> { enabled.pingMetrics = true; yield PING_MIN;}
+            case "ping_max" -> { enabled.pingMetrics = true; yield PING_MAX;}
+            case "ping_avg" -> { enabled.pingMetrics = true; yield PING_AVG;}
+            case "ping_samples" -> { enabled.pingMetrics = true; yield PING_SAMPLES;}
+            case "packet_size_min" -> { enabled.packetMetrics = true; yield PACKET_SIZE_MIN;}
+            case "packet_size_max" -> { enabled.packetMetrics = true; yield PACKET_SIZE_MAX;}
+            case "packet_size_avg" -> { enabled.packetMetrics = true; yield PACKET_SIZE_AVG;}
+            case "packet_size_samples" -> { enabled.packetMetrics = true; yield PACKET_SIZE_SAMPLES;}
             case "slots_percentage", "slots_per" -> {enabled.slots = true; yield SLOTS_PERCENTAGE;}
 
             case "xp_per", "xp_percentage" -> XP_POINTS_PER;

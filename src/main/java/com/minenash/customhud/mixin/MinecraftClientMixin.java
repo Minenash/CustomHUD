@@ -46,7 +46,7 @@ public abstract class MinecraftClientMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
     public boolean getGpuUsageAndOtherPerformanceMetrics(DebugHud hud) {
-        return hud.shouldShowDebugHud() || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.performanceMetrics);
+        return hud.shouldShowDebugHud() || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.gpuMetrics);
     }
 
 }

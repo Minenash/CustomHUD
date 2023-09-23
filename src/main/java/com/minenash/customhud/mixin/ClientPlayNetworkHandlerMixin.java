@@ -12,7 +12,7 @@ public class ClientPlayNetworkHandlerMixin {
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;showShowPacketSizeAndPingCharts()Z"))
     private boolean pingForMetricVariables(DebugHud hud) {
-        return hud.showShowPacketSizeAndPingCharts() || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.performanceMetrics);
+        return hud.showShowPacketSizeAndPingCharts() || (CustomHud.getActiveProfile() != null && CustomHud.getActiveProfile().enabled.pingMetrics);
     }
 
 }

@@ -199,12 +199,10 @@ public class ComplexData {
             cpsWaitCounter++;
         }
 
-        if (profile.enabled.performanceMetrics) {
-            processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240, frameTimeMetrics);
-            processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), 0.000001, 120, tickTimeMetrics);
-            processLog(client.inGameHud.getDebugHud().getPingLog(), 1, 120, pingMetrics);
-            processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20/1024D, 120, packetSizeMetrics);
-        }
+         if (profile.enabled.frameMetrics) processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240, frameTimeMetrics);
+         if (profile.enabled.tickMetrics) processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), 0.000001, 120, tickTimeMetrics);
+         if (profile.enabled.pingMetrics) processLog(client.inGameHud.getDebugHud().getPingLog(), 1, 120, pingMetrics);
+         if (profile.enabled.packetMetrics) processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20/1024D, 120, packetSizeMetrics);
 
         if (profile.enabled.slots) {
             slots_used = slots_empty = 0;
@@ -276,7 +274,13 @@ public class ComplexData {
         public boolean cpu = false;
         public boolean updateStats = false;
         public boolean clicksPerSeconds = false;
-        public boolean performanceMetrics = false;
+
+        public boolean gpuMetrics = false;
+        public boolean frameMetrics = false;
+        public boolean tickMetrics = false;
+        public boolean pingMetrics = false;
+        public boolean packetMetrics = false;
+
         public boolean slots = false;
     }
 
