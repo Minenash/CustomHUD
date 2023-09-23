@@ -12,6 +12,7 @@
     "KeyBindingAccessor",
     "MinecraftClientMixin",
     "PingMeasurerMixin",
+    "PlayerListHudAccess",
     "TitleScreenMixin",
     "WorldRendererAccess",
     "fonts.TextHandlerMixin",

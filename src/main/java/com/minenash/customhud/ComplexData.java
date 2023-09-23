@@ -10,9 +10,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -69,6 +71,9 @@ public class ComplexData {
     public static double[] tickTimeMetrics = new double[4];
     public static double[] pingMetrics = new double[4];
     public static double[] packetSizeMetrics = new double[4];
+
+    public static int slots_used = 0;
+    public static int slots_empty = 0;
 
     private static long lastStatUpdate = 0;
 
@@ -201,6 +206,17 @@ public class ComplexData {
             processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20/1024D, 120, packetSizeMetrics);
         }
 
+        if (profile.enabled.slots) {
+            slots_used = slots_empty = 0;
+            DefaultedList<ItemStack> inv = client.player.getInventory().main;
+            for (ItemStack itemStack : inv) {
+                if (itemStack == ItemStack.EMPTY)
+                    slots_empty++;
+                else
+                    slots_used++;
+            }
+        }
+
         CustomHudRegistry.runComplexData();
 
     }
@@ -236,7 +252,11 @@ public class ComplexData {
         clientChunkCache = null;
         clicks = null;
         frameTimeMetrics = new double[4];
+        tickTimeMetrics = new double[4];
+        pingMetrics = new double[4];
+        packetSizeMetrics = new double[4];
         x1 = y1 = z1 = velocityXZ = velocityY = velocityXYZ = 0;
+        slots_used = slots_empty = 0;
         clicksSoFar[0] = clicksSoFar[1] = 0;
         clicksPerSeconds[0] = clicksPerSeconds[1] = 0;
     }
@@ -257,7 +277,7 @@ public class ComplexData {
         public boolean updateStats = false;
         public boolean clicksPerSeconds = false;
         public boolean performanceMetrics = false;
-
+        public boolean slots = false;
     }
 
 

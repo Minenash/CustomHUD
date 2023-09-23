@@ -10,7 +10,10 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
@@ -137,6 +140,23 @@ public class IntegerSuppliers {
     public static final Supplier<Number> LATENCY = () -> client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency();
     public static final Supplier<Number> SOLAR_TIME = () -> client.world.getTimeOfDay() % 24000;
     public static final Supplier<Number> LUNAR_TIME = () -> client.world.getTimeOfDay();
+
+    public static final Supplier<Number> SLOTS_USED = () -> ComplexData.slots_used;
+    public static final Supplier<Number> SLOTS_EMPTY = () -> ComplexData.slots_empty;
+
+    public static final Supplier<Number> FOOD_LEVEL = () -> client.player.getHungerManager().getFoodLevel();
+    public static final Supplier<Number> SATURATION_LEVEL = () -> client.player.getHungerManager().getSaturationLevel();
+    public static final Supplier<Number> ARMOR_LEVEL = () -> client.player.getArmor();
+    public static final Supplier<Number> AIR_LEVEL = () -> Math.round(20F * client.player.getAir() / client.player.getMaxAir());
+    public static final Supplier<Number> XP_LEVEL = () -> client.player.experienceLevel;
+    public static final Supplier<Number> XP_POINTS = () -> client.player.experienceProgress * client.player.getNextLevelExperience();
+    public static final Supplier<Number> XP_POINTS_NEEDED = () -> client.player.getNextLevelExperience();
+    public static final Supplier<Number> HEALTH = () -> client.player.getHealth() + client.player.getAbsorptionAmount();
+    public static final Supplier<Number> HEALTH_MAX = () -> client.player.getMaxHealth();
+
+    public static final Supplier<Number> FOOD_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getFoodLevel() * 5;
+    public static final Supplier<Number> SATURATION_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getSaturationLevel() * 5;
+    public static final Supplier<Number> ARMOR_LEVEL_PERCENTAGE = () -> client.player.getArmor() * 5;
 
     @Deprecated public static final Supplier<Number> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
     @Deprecated public static final Supplier<Number> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();

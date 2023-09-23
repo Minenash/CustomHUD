@@ -377,6 +377,10 @@ public class VariableParser {
             case "sneaking" -> SNEAKING;
             case "swimming" -> SWIMMING;
             case "on_ground" -> ON_GROUND;
+            case "sprint_held" -> SPRINT_HELD;
+            case "screen_open" -> SCREEN_OPEN;
+            case "chat_open" -> CHAT_OPEN;
+            case "player_list_open","tab_open" -> PLAYER_LIST_OPEN;
             case "item_has_durability", "item_has_dur" -> ITEM_HAS_DURABILITY;
             case "offhand_item_has_durability", "oitem_has_dur" -> OFFHAND_ITEM_HAS_DURABILITY;
             case "fishing_is_cast" -> FISHING_IS_CAST;
@@ -454,10 +458,26 @@ public class VariableParser {
             case "display_height" -> DISPLAY_HEIGHT;
             case "display_refresh_rate" -> DISPLAY_REFRESH_RATE;
             case "mods" -> MODS;
-            case "ping" -> PING;
+            case "ping" -> {enabled.performanceMetrics = true; yield PING;}
             case "latency" -> LATENCY;
             case "time", "solar_time" -> SOLAR_TIME;
             case "lunar_time" -> LUNAR_TIME;
+            case "slots_used" -> {enabled.slots = true; yield SLOTS_USED;}
+            case "slots_empty" -> {enabled.slots = true; yield SLOTS_EMPTY;}
+
+            case "health","hp" -> HEALTH;
+            case "max_health","max_hp" -> HEALTH_MAX;
+            case "food","hunger" -> FOOD_LEVEL;
+            case "food_per","food_percentage" -> FOOD_LEVEL_PERCENTAGE;
+            case "saturation" -> SATURATION_LEVEL;
+            case "saturation_per","saturation_percentage" -> SATURATION_LEVEL_PERCENTAGE;
+            case "armor","armour" -> ARMOR_LEVEL;
+            case "armor_per","armor_percentage","armour_per","armour_percentage" -> ARMOR_LEVEL_PERCENTAGE;
+            case "air" -> AIR_LEVEL;
+            case "xp_level" -> XP_LEVEL;
+            case "xp" -> XP_POINTS;
+            case "xp_needed" -> XP_POINTS_NEEDED;
+
             case "item_durability", "item_dur" -> ITEM_DURABILITY;
             case "item_max_durability", "item_max_dur" -> ITEM_MAX_DURABILITY;
             case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
@@ -534,6 +554,12 @@ public class VariableParser {
             case "packet_size_max" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_MAX;}
             case "packet_size_avg" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_AVG;}
             case "packet_size_samples" -> { enabled.performanceMetrics = true; yield PACKET_SIZE_SAMPLES;}
+            case "slots_percentage", "slots_per" -> {enabled.slots = true; yield SLOTS_PERCENTAGE;}
+
+            case "xp_per", "xp_percentage" -> XP_POINTS_PER;
+            case "air_per", "air_percentage" -> AIR_LEVEL_PERCENTAGE;
+            case "health_per", "health_percentage", "hp_per" -> HEALTH_PERCENTAGE;
+
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
             case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
             case "local_difficulty" -> { enabled.localDifficulty = enabled.world = true; yield LOCAL_DIFFICULTY; }
