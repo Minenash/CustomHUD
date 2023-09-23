@@ -155,10 +155,6 @@ public class IntegerSuppliers {
     public static final Supplier<Number> SATURATION_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getSaturationLevel() * 5;
     public static final Supplier<Number> ARMOR_LEVEL_PERCENTAGE = () -> client.player.getArmor() * 5;
 
-    public static final Supplier<Number> RECORD_LENGTH = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordLength / 20 : 0;
-    public static final Supplier<Number> RECORD_ELAPSED = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordElapsed / 20 : 0;
-    public static final Supplier<Number> RECORD_REMAINING = () -> MusicAndRecordTracker.isRecordPlaying ? (MusicAndRecordTracker.recordLength - MusicAndRecordTracker.recordElapsed) / 20 : 0;
-
     @Deprecated public static final Supplier<Number> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
     @Deprecated public static final Supplier<Number> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();
     @Deprecated public static final Supplier<Number> OFFHAND_ITEM_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() - client.player.getOffHandStack().getDamage();
