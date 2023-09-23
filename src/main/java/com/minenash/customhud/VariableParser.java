@@ -541,7 +541,10 @@ public class VariableParser {
             case "frame_ms_min" -> { enabled.frameMetrics = true; yield FRAME_MS_MIN;}
             case "frame_ms_max" -> { enabled.frameMetrics = true; yield FRAME_MS_MAX;}
             case "frame_ms_avg" -> { enabled.frameMetrics = true; yield FRAME_MS_AVG;}
-            case "frame_ms_samples" -> { enabled.frameMetrics = true; yield FRAME_MS_SAMPLES;}
+            case "fps_min" -> { enabled.frameMetrics = true; yield FPS_MIN;}
+            case "fps_max" -> { enabled.frameMetrics = true; yield FPS_MAX;}
+            case "fps_avg" -> { enabled.frameMetrics = true; yield FPS_AVG;}
+            case "frame_ms_samples","fps_samples" -> { enabled.frameMetrics = true; yield FRAME_MS_SAMPLES;}
             case "tick_ms_min" -> { enabled.tickMetrics = true; yield TICK_MS_MIN;}
             case "tick_ms_max" -> { enabled.tickMetrics = true; yield TICK_MS_MAX;}
             case "tick_ms_avg" -> { enabled.tickMetrics = true; yield TICK_MS_AVG;}

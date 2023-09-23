@@ -53,12 +53,16 @@ public class DecimalSuppliers {
     public static final Entry CLAMPED_LOCAL_DIFFICULTY = of( () -> ComplexData.localDifficulty.getClampedLocalDifficulty(), 2);
     public static final Entry MOOD = of( () -> client.player.getMoodPercentage() * 100.0F, 0);
 
-    public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getTickTime(), 0);
     public static final Entry FRAME_MS_MIN = of( () -> ComplexData.frameTimeMetrics[1], 0);
     public static final Entry FRAME_MS_MAX = of( () -> ComplexData.frameTimeMetrics[2], 0);
     public static final Entry FRAME_MS_AVG = of( () -> ComplexData.frameTimeMetrics[0], 1);
     public static final Entry FRAME_MS_SAMPLES = of( () -> ComplexData.frameTimeMetrics[3], 0);
 
+    public static final Entry FPS_MIN = of( () -> 1000 / ComplexData.frameTimeMetrics[1], 0);
+    public static final Entry FPS_MAX = of( () -> 1000 / ComplexData.frameTimeMetrics[2], 0);
+    public static final Entry FPS_AVG = of( () -> 1000 / ComplexData.frameTimeMetrics[0], 1);
+
+    public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getTickTime(), 0);
     public static final Entry TICK_MS_MIN = of( () -> ComplexData.tickTimeMetrics[1], 0);
     public static final Entry TICK_MS_MAX = of( () -> ComplexData.tickTimeMetrics[2], 0);
     public static final Entry TICK_MS_AVG = of( () -> ComplexData.tickTimeMetrics[0], 1);
