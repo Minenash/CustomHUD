@@ -3,10 +3,7 @@ package com.minenash.customhud;
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.HudElement;
-import com.minenash.customhud.HudElements.icon.DebugGizmoElement;
-import com.minenash.customhud.HudElements.icon.ItemIconElement;
-import com.minenash.customhud.HudElements.icon.SpaceElement;
-import com.minenash.customhud.HudElements.icon.TextureIconElement;
+import com.minenash.customhud.HudElements.icon.*;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
@@ -246,6 +243,9 @@ public class VariableParser {
 
         else if (part.equals("gizmo"))
             return new DebugGizmoElement(flags);
+
+        else if (part.equals("record_icon"))
+            return new RecordIcon(flags);
 
         else if (part.startsWith("space:")) {
             String widthStr = part.substring(6);
