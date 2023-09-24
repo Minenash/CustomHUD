@@ -20,6 +20,7 @@ public class FunctionalElement implements HudElement {
     }
 
     public static class NewLine extends FunctionalElement {}
+    public static class IgnoreNewLineIfSurroundedByNewLine extends FunctionalElement {}
 
 
 

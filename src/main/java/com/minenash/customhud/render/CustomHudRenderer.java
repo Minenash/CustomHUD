@@ -72,7 +72,8 @@ public class CustomHudRenderer {
 
             int staticWidthY = y;
 
-            for (HudElement e : elements) {
+            for (int ei = 0; ei < elements.size(); ei++) {
+                HudElement e = elements.get(ei);
                 if (e instanceof FunctionalElement) {
                     String str = builder.toString();
                     pieces.add( new RenderPiece(str, theme.font, xOffset, y, color, theme.textShadow) );
@@ -91,6 +92,12 @@ public class CustomHudRenderer {
                         y += 9 + theme.lineSpacing;
                         xOffset = 0;
                         color = theme.fgColor;
+                    } else if (e instanceof FunctionalElement.IgnoreNewLineIfSurroundedByNewLine) {
+                        if ( (ei-1 < 0 || elements.get(ei-1) instanceof FunctionalElement.NewLine)
+                        && (ei+1 >= elements.size() || elements.get(ei+1) instanceof FunctionalElement.NewLine) ) {
+                            ei++;
+                        }
+
                     } else if (e instanceof FunctionalElement.ChangeColor cce) {
                         color = cce.color;
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
@@ -143,6 +150,11 @@ public class CustomHudRenderer {
     private static int addElement(List<HudElement> allElements, HudElement element) {
         if (element instanceof ConditionalElement ce) {
             int nl = 0;
+            List<HudElement> elements = ce.get();
+            if (elements.isEmpty()) {
+                allElements.add(new FunctionalElement.IgnoreNewLineIfSurroundedByNewLine());
+                return nl;
+            }
             for (HudElement e : ce.get())
                 nl += addElement(allElements, e);
             return nl;
