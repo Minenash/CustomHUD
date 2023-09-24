@@ -42,7 +42,6 @@ public class CustomHudRenderer {
 
         for (Section section : profile.sections) {
             HudTheme theme = profile.baseTheme;
-            font = profile.baseTheme.font;
 
             if (section == null || isChatOpen && section.hideOnChat)
                 continue;
@@ -76,7 +75,7 @@ public class CustomHudRenderer {
             for (HudElement e : elements) {
                 if (e instanceof FunctionalElement) {
                     String str = builder.toString();
-                    pieces.add( new RenderPiece(str, xOffset, y, color, theme.textShadow) );
+                    pieces.add( new RenderPiece(str, theme.font, xOffset, y, color, theme.textShadow) );
                     xOffset += client.textRenderer.getWidth(str);
                     builder.setLength(0);
 
@@ -102,7 +101,7 @@ public class CustomHudRenderer {
                         }
                         theme = cte.theme;
                     } else if (e instanceof IconElement ie) {
-                        pieces.add( new RenderPiece(ie, xOffset, y, 0, false) );
+                        pieces.add( new RenderPiece(ie, null, xOffset, y, 0, false) );
                         xOffset += ie.getTextWidth();
                     }
                 } else {
@@ -124,8 +123,10 @@ public class CustomHudRenderer {
         RenderSystem.disableBlend();
 
         for (RenderPiece piece : pieces) {
-            if (piece.element instanceof String value && !value.isEmpty())
+            if (piece.element instanceof String value && !value.isEmpty()) {
+                font = piece.font;
                 context.drawText(client.textRenderer, value, piece.x, piece.y, piece.color, piece.shadow);
+            }
 
         }
 

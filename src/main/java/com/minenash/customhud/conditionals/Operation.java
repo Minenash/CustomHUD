@@ -52,7 +52,7 @@ public interface Operation {
         public boolean getValueInternal() {
             if (left == null || right == null)
                 return false;
-            return switch (comparison) { //TODO: Test
+            return switch (comparison) {
                 case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : checkNum ? left.getNumber().doubleValue() == right.getNumber().doubleValue() : left.getString().equalsIgnoreCase(right.getString());
                 case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : checkNum ? left.getNumber().doubleValue() != right.getNumber().doubleValue() : !left.getString().equalsIgnoreCase(right.getString());
 
