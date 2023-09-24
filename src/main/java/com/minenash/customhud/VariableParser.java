@@ -361,6 +361,9 @@ public class VariableParser {
             case "record_id" -> {enabled.music = true; yield RECORD_ID;}
             case "record_name" -> {enabled.music = true; yield RECORD_NAME;}
 
+            case "bb_peaks","biome_builder_peaks" -> {enabled.serverWorld = true; yield BIOME_BUILDER_PEAKS;}
+            case "bb_cont","biome_builder_continents" -> {enabled.serverWorld = true; yield BIOME_BUILDER_CONTINENTS;}
+
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
             default -> null;
         };
@@ -488,6 +491,10 @@ public class VariableParser {
             case "xp" -> XP_POINTS;
             case "xp_needed" -> XP_POINTS_NEEDED;
 
+            case "bb_erosion","biome_builder_erosion" -> {enabled.serverWorld = true; yield BIOME_BUILDER_EROSION;}
+            case "bb_temp","biome_builder_temperature" -> {enabled.serverWorld = true; yield BIOME_BUILDER_TEMPERATURE;}
+            case "bb_veg","biome_builder_vegetation" -> {enabled.serverWorld = true; yield BIOME_BUILDER_VEGETATION;}
+
             case "item_durability", "item_dur" -> ITEM_DURABILITY;
             case "item_max_durability", "item_max_dur" -> ITEM_MAX_DURABILITY;
             case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
@@ -580,6 +587,16 @@ public class VariableParser {
             case "xp_per", "xp_percentage" -> XP_POINTS_PER;
             case "air_per", "air_percentage" -> AIR_LEVEL_PERCENTAGE;
             case "health_per", "health_percentage", "hp_per" -> HEALTH_PERCENTAGE;
+
+            case "nr_temp","noise_temperature" -> {enabled.serverWorld = true; yield NOISE_ROUTER_TEMPERATURE;}
+            case "nr_veg","noise_vegetation" -> {enabled.serverWorld = true; yield NOISE_ROUTER_VEGETATION;}
+            case "nr_cont","noise_continents" -> {enabled.serverWorld = true; yield NOISE_ROUTER_CONTINENTS;}
+            case "nr_erosion","noise_erosion" -> {enabled.serverWorld = true; yield NOISE_ROUTER_EROSION;}
+            case "nr_depth","noise_depth" -> {enabled.serverWorld = true; yield NOISE_ROUTER_DEPTH;}
+            case "nr_ridges","noise_ridged" -> {enabled.serverWorld = true; yield NOISE_ROUTER_RIDGES;}
+            case "nr_peaks","noise_peaks" -> {enabled.serverWorld = true; yield NOISE_ROUTER_PEAKS;}
+            case "nr_init","noise_init_density" -> {enabled.serverWorld = true; yield NOISE_ROUTER_INIT_DENSITY;}
+            case "nr_final","noise_final_density" -> {enabled.serverWorld = true; yield NOISE_ROUTER_FINAL_DENSITY;}
 
             case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
             case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;

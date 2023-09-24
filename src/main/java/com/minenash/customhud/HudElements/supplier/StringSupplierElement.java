@@ -12,9 +12,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
+import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.function.Supplier;
+
+import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
 
 public class StringSupplierElement implements HudElement {
 
@@ -68,6 +72,9 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> MUSIC_NAME = () -> MusicAndRecordTracker.isMusicPlaying ? MusicAndRecordTracker.musicName : "";
     public static final Supplier<String> RECORD_NAME = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordName : "";
     public static final Supplier<String> RECORD_ID = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordId : "";
+
+    public static final Supplier<String> BIOME_BUILDER_PEAKS = () -> VanillaBiomeParameters.getPeaksValleysDescription(DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges())));
+    public static final Supplier<String> BIOME_BUILDER_CONTINENTS = () -> par.getContinentalnessDescription(sample(sampler().continents()));
 
 
     //TODO: Item Name

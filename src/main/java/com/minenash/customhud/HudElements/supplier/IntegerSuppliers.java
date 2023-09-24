@@ -15,10 +15,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
+import net.minecraft.world.gen.noise.NoiseRouter;
 
 import java.util.function.Supplier;
+
+import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.par;
+import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.sampler;
 
 public class IntegerSuppliers {
 
@@ -41,6 +48,14 @@ public class IntegerSuppliers {
     private static Integer spawnGroup(SpawnGroup group) {
         SpawnHelper.Info info = ComplexData.serverWorld.getChunkManager().getSpawnInfo();
         return info == null ? null : info.getGroupToCount().getInt(group);
+    }
+
+    private static double biome(DensityFunction function, MultiNoiseUtil.ParameterRange[] range) {
+        double d = (double)MultiNoiseUtil.toLong((float)DecimalSuppliers.sample(function));
+        for(int i = 0; i < range.length; ++i)
+            if (d < (double)range[i].max())
+                return i;
+        return Double.NaN;
     }
 
 
@@ -154,6 +169,10 @@ public class IntegerSuppliers {
     public static final Supplier<Number> FOOD_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getFoodLevel() * 5;
     public static final Supplier<Number> SATURATION_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getSaturationLevel() * 5;
     public static final Supplier<Number> ARMOR_LEVEL_PERCENTAGE = () -> client.player.getArmor() * 5;
+
+    public static final Supplier<Number> BIOME_BUILDER_EROSION = () -> biome(sampler().erosion(), par.getErosionParameters());
+    public static final Supplier<Number> BIOME_BUILDER_TEMPERATURE = () -> biome(sampler().temperature(), par.getTemperatureParameters());
+    public static final Supplier<Number> BIOME_BUILDER_VEGETATION = () -> biome(sampler().vegetation(), par.getHumidityParameters());
 
     @Deprecated public static final Supplier<Number> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
     @Deprecated public static final Supplier<Number> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();
