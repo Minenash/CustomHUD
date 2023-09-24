@@ -8,6 +8,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -16,11 +18,15 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -43,6 +49,7 @@ public class ComplexData {
     public static BlockState targetBlock = null;
     public static BlockPos targetFluidPos = null;
     public static FluidState targetFluid = null;
+    public static Entity targetEntity = null;
     public static String[] sounds = null;
     public static String[] clientChunkCache = null;
     public static int timeOfDay = -1;
@@ -134,6 +141,21 @@ public class ComplexData {
                 targetFluidPos = null;
                 targetFluid = Fluids.EMPTY.getDefaultState();
             }
+        }
+
+        if (profile.enabled.targetEntity) {
+            double dist = profile.targetDistance;
+
+            Vec3d min = client.cameraEntity.getCameraPosVec(0);
+            Vec3d rot = client.cameraEntity.getRotationVec(1.0F);
+            Vec3d max = min.add(rot.x * dist, rot.y * dist, rot.z * dist);
+            Box box = client.cameraEntity.getBoundingBox().stretch(rot.multiply(dist)).expand(1.0, 1.0, 1.0);
+
+            HitResult block = client.cameraEntity.raycast(dist, 0, false);
+            double dist2 = block == null ? dist*dist : block.getPos().squaredDistanceTo(min);
+
+            EntityHitResult result = ProjectileUtil.raycast(client.cameraEntity, min, max, box, (en) -> !en.isSpectator(), dist2);
+            targetEntity = result == null ? null : result.getEntity();
         }
 
         if (profile.enabled.localDifficulty)
@@ -296,6 +318,7 @@ public class ComplexData {
         public boolean sound = false;
         public boolean targetBlock = false;
         public boolean targetFluid = false;
+        public boolean targetEntity = false;
         public boolean time = false;
         public boolean velocity = false;
         public boolean cpu = false;

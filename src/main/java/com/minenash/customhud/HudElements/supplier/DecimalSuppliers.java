@@ -28,10 +28,10 @@ public class DecimalSuppliers {
     public static final Entry NETHER_X = of( () -> inNether() ? cameraEntity().getX() * 8 : cameraEntity().getX() / 8, 0);
     public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
 
-    public static final Entry TARGET_ENTITY_X = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getX(), 0);
-    public static final Entry TARGET_ENTITY_Y = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getY(), 0);
-    public static final Entry TARGET_ENTITY_Z = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getZ(), 0);
-    public static final Entry TARGET_ENTITY_DISTANCE = of( () -> client.targetedEntity == null ? null : client.targetedEntity.getPos().distanceTo(client.cameraEntity.getPos()), 1);
+    public static final Entry TARGET_ENTITY_X = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getX(), 0);
+    public static final Entry TARGET_ENTITY_Y = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getY(), 0);
+    public static final Entry TARGET_ENTITY_Z = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getZ(), 0);
+    public static final Entry TARGET_ENTITY_DISTANCE = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getPos().distanceTo(client.cameraEntity.getPos()), 1);
 
     public static final Entry REACH_DISTANCE = of ( () -> client.interactionManager.getReachDistance(), 1);
     public static final Entry FISHING_HOOK_DISTANCE = of ( () -> client.player.fishHook.distanceTo(client.player), 1);

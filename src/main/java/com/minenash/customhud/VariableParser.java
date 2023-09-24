@@ -133,11 +133,6 @@ public class VariableParser {
             return new ConditionalElement(pairs);
         }
 
-        String[] flagParts = part.split(" ");
-        Flags flags = Flags.parse(profile, debugLine, flagParts);
-        part = flagParts[0];
-
-
         if (part.startsWith("real_time:")) {
             try {
                 return new RealTimeElement(new SimpleDateFormat(part.substring(10)));
@@ -147,8 +142,13 @@ public class VariableParser {
             }
         }
 
+        String[] flagParts = part.split(" ");
+        Flags flags = Flags.parse(profile, debugLine, flagParts);
+        part = flagParts[0];
 
-        else if (part.startsWith("stat:")) {
+
+
+        if (part.startsWith("stat:")) {
             String stat = part.substring(5);
 
             HudElement element = stat("mined:",   Stats.MINED,   Registries.BLOCK, stat, flags, enabled);
@@ -340,10 +340,10 @@ public class VariableParser {
             case "biome" -> BIOME;
             case "biome_id" -> BIOME_ID;
             case "moon_phase_word" -> { enabled.clientChunk = true; yield MOON_PHASE_WORD; }
-            case "target_entity", "te" -> TARGET_ENTITY;
-            case "target_entity_id", "tei" -> TARGET_ENTITY_ID;
-            case "target_entity_name", "ten" -> TARGET_ENTITY_NAME;
-            case "target_entity_uuid", "teu" -> TARGET_ENTITY_UUID;
+            case "target_entity", "te" -> {enabled.targetEntity = true; yield TARGET_ENTITY;}
+            case "target_entity_id", "tei" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ID;}
+            case "target_entity_name", "ten" -> {enabled.targetEntity = true; yield TARGET_ENTITY_NAME;}
+            case "target_entity_uuid", "teu" -> {enabled.targetEntity = true; yield TARGET_ENTITY_UUID;}
             case "hooked_entity", "he" -> HOOKED_ENTITY;
             case "hooked_entity_id", "hei" -> HOOKED_ENTITY_ID;
             case "hooked_entity_name", "hen" -> HOOKED_ENTITY_NAME;
@@ -519,10 +519,10 @@ public class VariableParser {
             case "z" -> Z;
             case "nether_x", "nx" -> NETHER_X;
             case "nether_z", "nz" -> NETHER_Z;
-            case "target_entity_x", "tex" -> TARGET_ENTITY_X;
-            case "target_entity_y", "tey" -> TARGET_ENTITY_Y;
-            case "target_entity_z", "tez" -> TARGET_ENTITY_Z;
-            case "target_entity_distance", "ted" -> TARGET_ENTITY_DISTANCE;
+            case "target_entity_x", "tex" -> {enabled.targetEntity = true; yield TARGET_ENTITY_X;}
+            case "target_entity_y", "tey" -> {enabled.targetEntity = true; yield TARGET_ENTITY_Y;}
+            case "target_entity_z", "tez" -> {enabled.targetEntity = true; yield TARGET_ENTITY_Z;}
+            case "target_entity_distance", "ted" -> {enabled.targetEntity = true; yield TARGET_ENTITY_DISTANCE;}
             case "hooked_entity_x", "hex" -> HOOKED_ENTITY_X;
             case "hooked_entity_y", "hey" -> HOOKED_ENTITY_Y;
             case "hooked_entity_z", "hez" -> HOOKED_ENTITY_Z;
