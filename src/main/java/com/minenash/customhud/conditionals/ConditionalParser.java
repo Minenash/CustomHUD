@@ -179,7 +179,7 @@ public class ConditionalParser {
             Token token = tokens.get(0);
             switch (token.type) {
                 case FULL_PREN: return getConditional( (List<Token>) token.value());
-                case BOOLEAN: return new Operation.Literal( (Integer) token.value());
+                case BOOLEAN: return new Operation.Literal( (Boolean) token.value() ? 1 : 0);
                 case VARIABLE: return new Operation.BooleanVariable( (HudElement) token.value());
             }
             throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, tokens.get(0).type().toString());

@@ -488,10 +488,6 @@ public class VariableParser {
             case "xp" -> XP_POINTS;
             case "xp_needed" -> XP_POINTS_NEEDED;
 
-            case "record_length" -> {enabled.music = true; yield RECORD_LENGTH;}
-            case "record_elapsed" -> {enabled.music = true; yield RECORD_ELAPSED;}
-            case "record_remaining" -> {enabled.music = true; yield RECORD_REMAINING;}
-
             case "item_durability", "item_dur" -> ITEM_DURABILITY;
             case "item_max_durability", "item_max_dur" -> ITEM_MAX_DURABILITY;
             case "offhand_item_durability", "oitem_dur" -> OFFHAND_ITEM_DURABILITY;
@@ -573,6 +569,9 @@ public class VariableParser {
             case "packet_size_samples" -> { enabled.packetMetrics = true; yield PACKET_SIZE_SAMPLES;}
             case "slots_percentage", "slots_per" -> {enabled.slots = true; yield SLOTS_PERCENTAGE;}
             case "record_elapsed_percentage","record_elapsed_per" -> {enabled.music = true; yield RECORD_ELAPSED_PER;}
+            case "record_length" -> {enabled.music = true; yield RECORD_LENGTH;}
+            case "record_elapsed" -> {enabled.music = true; yield RECORD_ELAPSED;}
+            case "record_remaining" -> {enabled.music = true; yield RECORD_REMAINING;}
 
             case "xp_per", "xp_percentage" -> XP_POINTS_PER;
             case "air_per", "air_percentage" -> AIR_LEVEL_PERCENTAGE;

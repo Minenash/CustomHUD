@@ -52,9 +52,9 @@ public interface Operation {
         public boolean getValueInternal() {
             if (left == null || right == null)
                 return false;
-            return switch (comparison) {
-                case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : checkNum ? left.getNumber().doubleValue() == right.getNumber().doubleValue() : left.getString().equals(right.getString());
-                case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : checkNum ? left.getNumber().doubleValue() != right.getNumber().doubleValue() : !left.getString().equals(right.getString());
+            return switch (comparison) { //TODO: Test
+                case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : checkNum ? left.getNumber().doubleValue() == right.getNumber().doubleValue() : left.getString().equalsIgnoreCase(right.getString());
+                case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : checkNum ? left.getNumber().doubleValue() != right.getNumber().doubleValue() : !left.getString().equalsIgnoreCase(right.getString());
 
                 case LESS_THAN -> left.getNumber().doubleValue() < right.getNumber().doubleValue();
                 case GREATER_THAN -> left.getNumber().doubleValue() > right.getNumber().doubleValue();
