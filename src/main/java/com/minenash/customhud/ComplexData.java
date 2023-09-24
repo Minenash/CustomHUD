@@ -71,6 +71,7 @@ public class ComplexData {
     public static double[] tickTimeMetrics = new double[4];
     public static double[] pingMetrics = new double[4];
     public static double[] packetSizeMetrics = new double[4];
+    public static double[] tpsMetrics = new double[4];
 
     public static int slots_used = 0;
     public static int slots_empty = 0;
@@ -199,10 +200,11 @@ public class ComplexData {
             cpsWaitCounter++;
         }
 
-         if (profile.enabled.frameMetrics) processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240, frameTimeMetrics);
-         if (profile.enabled.tickMetrics) processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), 0.000001, 120, tickTimeMetrics);
-         if (profile.enabled.pingMetrics) processLog(client.inGameHud.getDebugHud().getPingLog(), 1, 120, pingMetrics);
-         if (profile.enabled.packetMetrics) processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20/1024D, 120, packetSizeMetrics);
+        if (profile.enabled.frameMetrics) processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240, frameTimeMetrics);
+        if (profile.enabled.tickMetrics) processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), 0.000001, 120, tickTimeMetrics);
+        if (profile.enabled.pingMetrics) processLog(client.inGameHud.getDebugHud().getPingLog(), 1, 120, pingMetrics);
+        if (profile.enabled.packetMetrics) processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20/1024D, 120, packetSizeMetrics);
+        if (profile.enabled.tpsMetrics) processTPSLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), tpsMetrics);
 
         if (profile.enabled.slots) {
             slots_used = slots_empty = 0;
@@ -237,6 +239,27 @@ public class ComplexData {
         double avg = 0L;
         for (int r = 0; r <  metrics[3]; ++r) {
             double s = log.get(r) * multiplier;
+            metrics[1] = Math.min(metrics[1], s);
+            metrics[2] = Math.max(metrics[2], s);
+            avg += s;
+        }
+        metrics[0] = avg / metrics[3];
+    }
+
+    public static void processTPSLog(PerformanceLog log, double[] metrics) {
+        if (log.getMaxIndex() == 0) {
+            metrics[0] = metrics[1] = metrics[2] = metrics[3] = Double.NaN;
+            return;
+        }
+
+        metrics[0] = 0; //AVG
+        metrics[1] = Integer.MAX_VALUE; //MIN
+        metrics[2] = Integer.MIN_VALUE; //MAX
+        metrics[3] = Math.min(120, log.getMaxIndex()); //SAMPLES
+
+        double avg = 0L;
+        for (int r = 0; r <  metrics[3]; ++r) {
+            double s = Math.min(20, 1000F / (log.get(r) * 0.000001));
             metrics[1] = Math.min(metrics[1], s);
             metrics[2] = Math.max(metrics[2], s);
             avg += s;
@@ -283,6 +306,7 @@ public class ComplexData {
         public boolean gpuMetrics = false;
         public boolean frameMetrics = false;
         public boolean tickMetrics = false;
+        public boolean tpsMetrics = false;
         public boolean pingMetrics = false;
         public boolean packetMetrics = false;
 
