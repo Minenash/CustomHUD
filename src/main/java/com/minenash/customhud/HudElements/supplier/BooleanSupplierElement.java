@@ -13,6 +13,7 @@ import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 import java.util.function.Supplier;
 
@@ -54,6 +55,9 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> FISHING_IS_HOOKED = () -> client.player.fishHook != null && client.player.fishHook.getHookedEntity() != null;
     public static final Supplier<Boolean> FISHING_HAS_CAUGHT = () -> client.player.fishHook != null && client.player.fishHook.getDataTracker().get(FishingBobberEntity.CAUGHT_FISH);
     public static final Supplier<Boolean> FISHING_IN_OPEN_WATER = () -> client.player.fishHook != null && client.player.fishHook.isOpenOrWaterAround(client.player.fishHook.getBlockPos());
+
+    public static final Supplier<Boolean> HAS_NOISE = () -> ComplexData.serverWorld.getChunkManager().getChunkGenerator() instanceof NoiseChunkGenerator;
+
 
     @Deprecated public static final Supplier<Boolean> ITEM_HAS_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() > 0;
     @Deprecated public static final Supplier<Boolean> OFFHAND_ITEM_HAS_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() > 0;

@@ -73,8 +73,8 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> RECORD_NAME = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordName : "";
     public static final Supplier<String> RECORD_ID = () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordId : "";
 
-    public static final Supplier<String> BIOME_BUILDER_PEAKS = () -> VanillaBiomeParameters.getPeaksValleysDescription(DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges())));
-    public static final Supplier<String> BIOME_BUILDER_CONTINENTS = () -> par.getContinentalnessDescription(sample(sampler().continents()));
+    public static final Supplier<String> BIOME_BUILDER_PEAKS = () -> isNoise() ? VanillaBiomeParameters.getPeaksValleysDescription(DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges()))) : null;
+    public static final Supplier<String> BIOME_BUILDER_CONTINENTS = () -> isNoise() ? par.getContinentalnessDescription(sample(sampler().continents())) : null;
 
 
     //TODO: Item Name

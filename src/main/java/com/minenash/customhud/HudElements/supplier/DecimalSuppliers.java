@@ -10,6 +10,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.noise.NoiseRouter;
@@ -28,6 +29,8 @@ public class DecimalSuppliers {
     private static boolean inNether() { return client.world.getRegistryKey().getValue().equals(World.NETHER.getValue()); }
     private static double toMiB(long bytes) { return bytes / 1024D / 1024L; }
     private static Entity hooked() { return client.player.fishHook == null ? null : client.player.fishHook.getHookedEntity(); }
+
+    public static boolean isNoise() { return ComplexData.serverWorld.getChunkManager().getChunkGenerator() instanceof NoiseChunkGenerator; }
     public static NoiseRouter sampler() { return ComplexData.serverWorld.getChunkManager().getNoiseConfig().getNoiseRouter(); }
     public static double sample(DensityFunction function) {
         BlockPos pos = client.player.getBlockPos();
@@ -106,15 +109,15 @@ public class DecimalSuppliers {
     public static final Entry AIR_LEVEL_PERCENTAGE = of( () -> 100F * client.player.getAir() / client.player.getMaxAir(), 0);
     public static final Entry HEALTH_PERCENTAGE = of( () -> 100F * (client.player.getHealth() + client.player.getAbsorptionAmount()) / client.player.getMaxHealth(), 0);
 
-    public static final Entry NOISE_ROUTER_TEMPERATURE = of( () -> sample(sampler().temperature()), 3);
-    public static final Entry NOISE_ROUTER_VEGETATION = of( () -> sample(sampler().vegetation()), 3);
-    public static final Entry NOISE_ROUTER_CONTINENTS = of( () -> sample(sampler().continents()), 3);
-    public static final Entry NOISE_ROUTER_EROSION = of( () -> sample(sampler().erosion()), 3);
-    public static final Entry NOISE_ROUTER_DEPTH = of( () -> sample(sampler().depth()), 3);
-    public static final Entry NOISE_ROUTER_RIDGES = of( () -> sample(sampler().ridges()), 3);
-    public static final Entry NOISE_ROUTER_PEAKS = of( () -> DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges())), 3);
-    public static final Entry NOISE_ROUTER_INIT_DENSITY = of( () -> sample(sampler().initialDensityWithoutJaggedness()), 3);
-    public static final Entry NOISE_ROUTER_FINAL_DENSITY = of( () -> sample(sampler().finalDensity()), 3);
+    public static final Entry NOISE_ROUTER_TEMPERATURE = of( () -> isNoise() ? sample(sampler().temperature()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_VEGETATION = of( () -> isNoise() ? sample(sampler().vegetation()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_CONTINENTS = of( () -> isNoise() ? sample(sampler().continents()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_EROSION = of( () -> isNoise() ? sample(sampler().erosion()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_DEPTH = of( () -> isNoise() ? sample(sampler().depth()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_RIDGES = of( () -> isNoise() ? sample(sampler().ridges()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_PEAKS = of( () -> isNoise() ? DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges())) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_INIT_DENSITY = of( () -> isNoise() ? sample(sampler().initialDensityWithoutJaggedness()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_FINAL_DENSITY = of( () -> isNoise() ? sample(sampler().finalDensity()) : Double.NaN, 3);
 
     @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
     @Deprecated public static final Entry OFFHAND_ITEM_DURABILITY_PERCENT = of( () -> client.player.getOffHandStack().getDamage() / (float) client.player.getOffHandStack().getMaxDamage() * 100, 0);

@@ -400,6 +400,8 @@ public class VariableParser {
             case "music_playing" -> {enabled.music = true; yield MUSIC_PLAYING;}
             case "record_playing" -> {enabled.music = true; yield RECORD_PLAYING;}
 
+            case "nr_has_noise" -> {enabled.serverWorld = true; yield HAS_NOISE;}
+
             default -> null;
         };
     }

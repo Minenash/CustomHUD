@@ -24,8 +24,7 @@ import net.minecraft.world.gen.noise.NoiseRouter;
 
 import java.util.function.Supplier;
 
-import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.par;
-import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.sampler;
+import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
 
 public class IntegerSuppliers {
 
@@ -170,9 +169,9 @@ public class IntegerSuppliers {
     public static final Supplier<Number> SATURATION_LEVEL_PERCENTAGE = () -> client.player.getHungerManager().getSaturationLevel() * 5;
     public static final Supplier<Number> ARMOR_LEVEL_PERCENTAGE = () -> client.player.getArmor() * 5;
 
-    public static final Supplier<Number> BIOME_BUILDER_EROSION = () -> biome(sampler().erosion(), par.getErosionParameters());
-    public static final Supplier<Number> BIOME_BUILDER_TEMPERATURE = () -> biome(sampler().temperature(), par.getTemperatureParameters());
-    public static final Supplier<Number> BIOME_BUILDER_VEGETATION = () -> biome(sampler().vegetation(), par.getHumidityParameters());
+    public static final Supplier<Number> BIOME_BUILDER_EROSION = () -> isNoise() ? biome(sampler().erosion(), par.getErosionParameters()) : Double.NaN;
+    public static final Supplier<Number> BIOME_BUILDER_TEMPERATURE = () -> isNoise() ? biome(sampler().temperature(), par.getTemperatureParameters()) : Double.NaN;
+    public static final Supplier<Number> BIOME_BUILDER_VEGETATION = () -> isNoise() ? biome(sampler().vegetation(), par.getHumidityParameters()) : Double.NaN;
 
     @Deprecated public static final Supplier<Number> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
     @Deprecated public static final Supplier<Number> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();
