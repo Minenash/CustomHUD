@@ -400,7 +400,7 @@ public class VariableParser {
             case "music_playing" -> {enabled.music = true; yield MUSIC_PLAYING;}
             case "record_playing" -> {enabled.music = true; yield RECORD_PLAYING;}
 
-            case "nr_has_noise" -> {enabled.serverWorld = true; yield HAS_NOISE;}
+            case "has_noise" -> {enabled.serverWorld = true; yield HAS_NOISE;}
 
             default -> null;
         };
@@ -595,7 +595,7 @@ public class VariableParser {
             case "nr_cont","noise_continents" -> {enabled.serverWorld = true; yield NOISE_ROUTER_CONTINENTS;}
             case "nr_erosion","noise_erosion" -> {enabled.serverWorld = true; yield NOISE_ROUTER_EROSION;}
             case "nr_depth","noise_depth" -> {enabled.serverWorld = true; yield NOISE_ROUTER_DEPTH;}
-            case "nr_ridges","noise_ridged" -> {enabled.serverWorld = true; yield NOISE_ROUTER_RIDGES;}
+            case "nr_ridges","noise_ridges" -> {enabled.serverWorld = true; yield NOISE_ROUTER_RIDGES;}
             case "nr_peaks","noise_peaks" -> {enabled.serverWorld = true; yield NOISE_ROUTER_PEAKS;}
             case "nr_init","noise_init_density" -> {enabled.serverWorld = true; yield NOISE_ROUTER_INIT_DENSITY;}
             case "nr_final","noise_final_density" -> {enabled.serverWorld = true; yield NOISE_ROUTER_FINAL_DENSITY;}
