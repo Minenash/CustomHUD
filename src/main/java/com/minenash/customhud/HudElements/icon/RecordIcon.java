@@ -4,9 +4,12 @@ import com.minenash.customhud.MusicAndRecordTracker;
 import com.minenash.customhud.data.Flags;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 public class RecordIcon extends IconElement {
 
+    private static final ItemStack NO_RECORD = new ItemStack(Items.BARRIER);
     private final int width;
 
     public RecordIcon(Flags flags) {
@@ -16,12 +19,12 @@ public class RecordIcon extends IconElement {
 
     @Override
     public Number getNumber() {
-        return Item.getRawId(MusicAndRecordTracker.recordIcon.getItem());
+        return MusicAndRecordTracker.isRecordPlaying ? Item.getRawId(MusicAndRecordTracker.recordIcon.getItem()) : 0;
     }
 
     @Override
     public boolean getBoolean() {
-        return MusicAndRecordTracker.recordIcon.isEmpty();
+        return MusicAndRecordTracker.isRecordPlaying && MusicAndRecordTracker.recordIcon.isEmpty();
     }
 
     @Override
@@ -30,7 +33,7 @@ public class RecordIcon extends IconElement {
     }
 
     public void render(DrawContext context, int x, int y, float profileScale) {
-        renderItemStack(x+shiftX, y+shiftY, profileScale, MusicAndRecordTracker.recordIcon);
+        renderItemStack(x+shiftX, y+shiftY, profileScale, MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordIcon : NO_RECORD);
     }
 
 }

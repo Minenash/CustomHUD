@@ -100,9 +100,9 @@ public class DecimalSuppliers {
 
     public static final Entry SLOTS_PERCENTAGE = of( () -> 100F * ComplexData.slots_used / client.player.getInventory().main.size(), 0);
 
-    public static final Entry RECORD_LENGTH = of( () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordLength / 20F : 0, 0);
-    public static final Entry RECORD_ELAPSED = of( () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordElapsed / 20F : 0, 0);
-    public static final Entry RECORD_REMAINING = of( () -> MusicAndRecordTracker.isRecordPlaying ? (MusicAndRecordTracker.recordLength - MusicAndRecordTracker.recordElapsed) / 20F : 0, 0);
+    public static final Entry RECORD_LENGTH = of( () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordLength / 20F : Double.NaN, 0);
+    public static final Entry RECORD_ELAPSED = of( () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordElapsed / 20F : Double.NaN, 0);
+    public static final Entry RECORD_REMAINING = of( () -> MusicAndRecordTracker.isRecordPlaying ? (MusicAndRecordTracker.recordLength - MusicAndRecordTracker.recordElapsed) / 20F : Double.NaN, 0);
     public static final Entry RECORD_ELAPSED_PER = of( () -> 100F * MusicAndRecordTracker.recordElapsed / MusicAndRecordTracker.recordLength, 0);
 
     public static final Entry XP_POINTS_PER = of( () -> client.player.experienceProgress * 100, 0);
