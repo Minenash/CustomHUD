@@ -374,6 +374,10 @@ public class VariableParser {
             case "vsync" -> VSYNC;
             case "sp", "singleplayer" -> SINGLEPLAYER;
             case "mp", "multiplayer" -> MULTIPLAYER;
+            case "survival" -> SURVIVAL;
+            case "creative" -> CREATIVE;
+            case "adventure" -> ADVENTURE;
+            case "spectator" -> SPECTATOR;
             case "chunks_culling" -> CHUNK_CULLING;
             case "overworld" -> IN_OVERWORLD;
             case "nether" -> IN_NETHER;
@@ -385,6 +389,7 @@ public class VariableParser {
             case "sprinting" -> SPRINTING;
             case "sneaking" -> SNEAKING;
             case "swimming" -> SWIMMING;
+            case "flying" -> FLYING;
             case "on_ground" -> ON_GROUND;
             case "sprint_held" -> SPRINT_HELD;
             case "screen_open" -> SCREEN_OPEN;
@@ -627,6 +632,7 @@ public class VariableParser {
             case "graphics_mode": return GRAPHICS_MODE;
             case "facing_towards_pn_word": return FACING_TOWARDS_PN_WORD;
             case "facing_towards_pn_sign": return FACING_TOWARDS_PN_SIGN;
+            case "gamemode": return GAMEMODE;
             default: return null;
         }
     }

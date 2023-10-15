@@ -10,6 +10,7 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -28,6 +29,13 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> SINGLEPLAYER = client::isInSingleplayer;
     public static final Supplier<Boolean> MULTIPLAYER = () -> !client.isInSingleplayer();
 
+    public static final Supplier<Boolean> SURVIVAL = () -> client.interactionManager.getCurrentGameMode() == GameMode.SURVIVAL;
+    public static final Supplier<Boolean> CREATIVE = () -> client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE;
+    public static final Supplier<Boolean> ADVENTURE = () -> client.interactionManager.getCurrentGameMode() == GameMode.ADVENTURE;
+    public static final Supplier<Boolean> SPECTATOR = () -> client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR;
+
+//    public static final Supplier<Boolean> INVULNERABLE = () -> client.player.getAbilities().invulnerable;
+
     public static final Supplier<Boolean> CHUNK_CULLING = () -> client.chunkCullingEnabled;
     public static final Supplier<Boolean> IN_OVERWORLD = () -> isInDim(World.OVERWORLD.getValue());
     public static final Supplier<Boolean> IN_NETHER = () -> isInDim(World.NETHER.getValue());
@@ -41,6 +49,7 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> SPRINTING = () -> client.player.isSprinting() && !client.player.isSwimming();
     public static final Supplier<Boolean> SNEAKING = () -> client.player.isSneaking();
     public static final Supplier<Boolean> SWIMMING = () -> client.player.isSwimming();
+    public static final Supplier<Boolean> FLYING = () -> client.player.getAbilities().flying;
     public static final Supplier<Boolean> ON_GROUND = () -> client.player.isOnGround();
     public static final Supplier<Boolean> SPRINT_HELD = client.options.sprintKey::isPressed;
 
