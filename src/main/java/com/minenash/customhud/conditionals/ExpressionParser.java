@@ -16,7 +16,7 @@ public class ExpressionParser {
 
     enum TokenType { START_PREN, END_PREN, FULL_PREN, AND, OR, MATH, COMPARISON, NUMBER, STRING, BOOLEAN, VARIABLE }
     enum Comparison { LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUALS, EQUALS, NOT_EQUALS }
-    enum MathOperator { ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD }
+    enum MathOperator { ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD, EXPONENT }
 
     record Token(TokenType type, Object value) {
         public String toString() {
@@ -63,6 +63,7 @@ public class ExpressionParser {
             else if (c == '*') tokens.add(new Token(TokenType.MATH, MathOperator.MULTIPLY));
             else if (c == '/') tokens.add(new Token(TokenType.MATH, MathOperator.DIVIDE));
             else if (c == '%') tokens.add(new Token(TokenType.MATH, MathOperator.MOD));
+            else if (c == '^') tokens.add(new Token(TokenType.MATH, MathOperator.EXPONENT));
             else if (c == '-' && i+1 < chars.length && SUBTRACTABLE.contains( tokens.isEmpty() ? null : tokens.get(tokens.size()-1).type))
                 tokens.add(new Token(TokenType.MATH, MathOperator.SUBTRACT));
             else if (c == '!') {
@@ -179,7 +180,6 @@ public class ExpressionParser {
         return conditionals.size() == 1 ? conditionals.get(0) : new Operation.And(conditionals);
     }
 
-    @SuppressWarnings("unchecked")
     private static Operation getComparisonOperation(List<Token> tokens) throws ErrorException {
         if (tokens.size() == 1)
             return getPrimitiveOperation(tokens.get(0));
@@ -214,23 +214,31 @@ public class ExpressionParser {
         if (tokens.size() == 1)
             return getPrimitiveOperation(tokens.get(0));
 
-        Pair<List<List<Token>>, List<MathOperator>> multiplyPairs = split(tokens, List.of(MathOperator.MULTIPLY, MathOperator.DIVIDE, MathOperator.MOD));
+        Pair<List<List<Token>>, List<MathOperator>> addPairs = split(tokens, List.of(MathOperator.ADD, MathOperator.SUBTRACT));
         List<Operation> ops = new ArrayList<>();
 
-        for (var partTokens : multiplyPairs.getFirst()) {
-            Pair<List<List<Token>>, List<MathOperator>> addingPairs = split(partTokens, List.of(MathOperator.ADD, MathOperator.SUBTRACT));
-            List<HudElement> elements = new ArrayList<>();
-            for (var partPartToken : addingPairs.getFirst()) {
-                if (partPartToken.size() > 1)
-                    throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "No operation between values");
-                elements.add( getValueElement(partPartToken.get(0)) );
+        for (var partTokens : addPairs.getFirst()) {
+            Pair<List<List<Token>>, List<MathOperator>> multiplyPairs = split(partTokens, List.of(MathOperator.MULTIPLY, MathOperator.DIVIDE, MathOperator.MOD));
+            List<Operation> ops2 = new ArrayList<>();
+
+            for (var partPartToken : multiplyPairs.getFirst()) {
+                Pair<List<List<Token>>, List<MathOperator>> exponentPairs = split(partPartToken, List.of(MathOperator.EXPONENT));
+                List<HudElement> elements = new ArrayList<>();
+                for (var partPartPartToken : exponentPairs.getFirst()) {
+                    if (partPartPartToken.size() > 1)
+                        throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "No operation between values");
+                    elements.add( getValueElement(partPartPartToken.get(0)) );
+                }
+                if (elements.size() == 1)
+                    ops2.add(new Operation.Element(elements.get(0)));
+                else
+                    ops2.add(new Operation.MathOperation(elements, exponentPairs.getSecond()));
             }
-            if (elements.size() == 1)
-                ops.add(new Operation.Element(elements.get(0)));
-            else
-                ops.add(new Operation.MathOperation(elements, addingPairs.getSecond()));
+            ops.add(ops2.size() == 1 ? ops2.get(0) : new Operation.MathOperationsOp(ops2, multiplyPairs.getSecond()));
         }
-        return new Operation.MathOperationOp(ops, multiplyPairs.getSecond());
+        return ops.size() == 1 ? ops.get(0) : new Operation.MathOperationsOp(ops, addPairs.getSecond());
+
+
 
     }
 

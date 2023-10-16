@@ -106,6 +106,7 @@ public interface Operation {
                 case MULTIPLY -> value * second;
                 case DIVIDE -> value / second;
                 case MOD -> value % second;
+                case EXPONENT -> Math.pow(value, second);
             };
         }
 
@@ -119,7 +120,7 @@ public interface Operation {
         }
     }
 
-    record MathOperationOp(List<Operation> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
+    record MathOperationsOp(List<Operation> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
         public double getValue() {
             double value = elements().isEmpty() ? 0 : elements.get(0).getValue();
             for (int i = 1; i < elements.size(); i++)
