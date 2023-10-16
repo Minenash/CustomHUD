@@ -140,13 +140,13 @@ public class Profile {
                 profile.sections.add(section = new Section.TopLeft());
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
-                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ExpressionParser.parseConditional(matcher.group(1), line, profileID, i+1, profile.enabled) ));
+                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ExpressionParser.parseExpression(matcher.group(1), line, profileID, i+1, profile.enabled) ));
 
             else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
                 if (profile.tempIfStack.isEmpty())
                     Errors.addError(profileID, i, line+1, ErrorType.CONDITIONAL_NOT_STARTED, "=else if: §ocond§r=");
                 else
-                    profile.tempIfStack.peek().setConditional(ExpressionParser.parseConditional(matcher.group(1), line, profileID, i + 1, profile.enabled));
+                    profile.tempIfStack.peek().setConditional(ExpressionParser.parseExpression(matcher.group(1), line, profileID, i + 1, profile.enabled));
 
             else if (line.equalsIgnoreCase("=else="))
                 if (profile.tempIfStack.isEmpty())

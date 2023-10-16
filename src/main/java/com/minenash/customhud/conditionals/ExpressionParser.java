@@ -24,7 +24,7 @@ public class ExpressionParser {
         }
     }
 
-    public static Operation parseConditional(String input, String source, int profileNum, int debugLine, ComplexData.Enabled enabled) {
+    public static Operation parseExpression(String input, String source, int profileNum, int debugLine, ComplexData.Enabled enabled) {
         if (input.isBlank() || input.equals(",") || input.equals(", "))
             return new Operation.Literal(1);
         try {
@@ -43,10 +43,14 @@ public class ExpressionParser {
         }
     }
 
+    private static final List<TokenType> SUBTRACTABLE = List.of(TokenType.NUMBER, TokenType.BOOLEAN,
+            TokenType.STRING, TokenType.VARIABLE, TokenType.END_PREN);
     private static List<Token> getTokens(String original, int profileNum, int debugLine, ComplexData.Enabled enabled) throws ErrorException {
 
         List<Token> tokens = new ArrayList<>();
         char[] chars = original.toCharArray();
+
+
 
         for (int i = 0; i < chars.length;) {
             char c = chars[i];
@@ -59,7 +63,8 @@ public class ExpressionParser {
             else if (c == '*') tokens.add(new Token(TokenType.MATH, MathOperator.MULTIPLY));
             else if (c == '/') tokens.add(new Token(TokenType.MATH, MathOperator.DIVIDE));
             else if (c == '%') tokens.add(new Token(TokenType.MATH, MathOperator.MOD));
-            else if (c == '-' && i+1 < chars.length && !isNum(chars[i+1])) tokens.add(new Token(TokenType.MATH, MathOperator.SUBTRACT));
+            else if (c == '-' && i+1 < chars.length && SUBTRACTABLE.contains( tokens.isEmpty() ? null : tokens.get(tokens.size()-1).type))
+                tokens.add(new Token(TokenType.MATH, MathOperator.SUBTRACT));
             else if (c == '!') {
                 if (i + 1 == chars.length || chars[i + 1] != '=')
                     throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, "!");
@@ -220,7 +225,10 @@ public class ExpressionParser {
                     throw new ErrorException(ErrorType.CONDITIONAL_WRONG_NUMBER_OF_TOKENS, "No operation between values");
                 elements.add( getValueElement(partPartToken.get(0)) );
             }
-            ops.add(new Operation.MathOperation(elements, addingPairs.getSecond()));
+            if (elements.size() == 1)
+                ops.add(new Operation.Element(elements.get(0)));
+            else
+                ops.add(new Operation.MathOperation(elements, addingPairs.getSecond()));
         }
         return new Operation.MathOperationOp(ops, multiplyPairs.getSecond());
 
@@ -242,9 +250,9 @@ public class ExpressionParser {
     private static Operation getPrimitiveOperation(Token token) throws ErrorException {
         return switch (token.type) {
             case FULL_PREN -> getConditional((List<Token>) token.value());
-            case BOOLEAN -> new Operation.Literal((Integer) token.value());
+            case BOOLEAN -> new Operation.Literal(((Boolean) token.value()) ? 1 : 0);
             case NUMBER -> new Operation.Literal((Double) token.value());
-            case VARIABLE -> new Operation.BooleanVariable((HudElement) token.value());
+            case VARIABLE -> new Operation.Element((HudElement) token.value());
             default -> throw new ErrorException(ErrorType.CONDITIONAL_UNEXPECTED_VALUE, token.type().toString());
         };
     }

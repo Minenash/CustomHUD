@@ -46,6 +46,7 @@ public class VariableParser {
     private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("((?:[a-z0-9/._-]+:)?[a-z0-9/._-]+)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
+    private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
 
     public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line) {
         List<String> parts = new ArrayList<>();
@@ -89,7 +90,7 @@ public class VariableParser {
         List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
         while (args.find()) {
 //            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
-            pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseConditional(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
+            pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseExpression(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
         }
         return pairs;
     }
@@ -131,6 +132,19 @@ public class VariableParser {
                 return null;
             }
             return new ConditionalElement(pairs);
+        }
+
+        if (part.startsWith("$")) {
+            try {
+                Matcher matcher = EXPRESSION_WITH_PRECISION.matcher(part);
+                matcher.matches();
+                int precision = matcher.group(1) == null ? -1 : Integer.parseInt(matcher.group(1));
+                return new ExpressionElement( ExpressionParser.parseExpression(matcher.group(2), original, profile, debugLine, enabled), precision );
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         if (part.startsWith("real_time:")) {

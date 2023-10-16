@@ -7,12 +7,16 @@ import java.util.List;
 public interface Operation {
 
     double getValue();
+
+    default boolean getBooleanValue() {
+        return getValue() != 0;
+    }
     void printTree(int indent);
 
     record Or(List<Operation> elements) implements Operation {
         public double getValue() {
             for (Operation element : elements)
-                if (element.getValue() > 0)
+                if (element.getBooleanValue())
                     return 1;
             return 0;
         }
@@ -28,7 +32,7 @@ public interface Operation {
     record And(List<Operation> elements) implements Operation {
         public double getValue() {
             for (Operation element : elements)
-                if (element.getValue() == 0)
+                if (!element.getBooleanValue())
                     return 0;
             return 1;
         }
@@ -118,7 +122,7 @@ public interface Operation {
     record MathOperationOp(List<Operation> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
         public double getValue() {
             double value = elements().isEmpty() ? 0 : elements.get(0).getValue();
-            for (int i = 1; i < elements.size()-1; i++)
+            for (int i = 1; i < elements.size(); i++)
                 value = MathOperation.apply(value, elements.get(i).getValue(), operations.get(i-1));
             return value;
         }
@@ -142,14 +146,20 @@ public interface Operation {
             System.out.println(indent(indent) + "- Literal: " + value);
         }
     }
-    record BooleanVariable(HudElement variable) implements Operation {
+
+    record Element(HudElement element) implements Operation {
         public double getValue() {
-            return variable == null ? 0 : variable.getBoolean() ? 1 : 0;
+            return element.getNumber().doubleValue();
+        }
+
+        @Override
+        public boolean getBooleanValue() {
+            return element.getBoolean();
         }
 
         @Override
         public void printTree(int indent) {
-            System.out.println(indent(indent) + "- BooleanVariable");
+            System.out.println(indent(indent) + "- Element: " + element);
         }
     }
 
