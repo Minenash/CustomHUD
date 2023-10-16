@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface Operation {
 
-    int getValue();
+    double getValue();
     void printTree(int indent);
 
     record Or(List<Operation> elements) implements Operation {
-        public int getValue() {
+        public double getValue() {
             for (Operation element : elements)
                 if (element.getValue() > 0)
                     return 1;
@@ -19,16 +19,14 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- Or: ");
+            System.out.println(indent(indent) + "- Or: ");
             for (Operation elem : elements)
                 elem.printTree(indent + 2);
         }
     }
 
     record And(List<Operation> elements) implements Operation {
-        public int getValue() {
+        public double getValue() {
             for (Operation element : elements)
                 if (element.getValue() == 0)
                     return 0;
@@ -37,15 +35,26 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- And:");
+            System.out.println(indent(indent) + "- And:");
             for (Operation elem : elements)
                 elem.printTree(indent+2);
         }
     }
-    record Comparison(HudElement left, HudElement right, ConditionalParser.Comparison comparison, boolean checkBool, boolean checkNum) implements Operation {
-        public int getValue() {
+
+    class Comparison implements Operation {
+        public final HudElement left, right;
+        public final boolean checkBool, checkNum;
+        public final ExpressionParser.Comparison comparison;
+
+        Comparison(HudElement left, HudElement right, ExpressionParser.Comparison comparison) {
+            this.left = left;
+            this.right = right;
+            this.comparison = comparison;
+            this.checkBool = left instanceof SudoElements.Bool || right instanceof SudoElements.Bool;
+            this.checkNum = left instanceof SudoElements.Num || right instanceof SudoElements.Num;
+        }
+
+        public double getValue() {
             return getValueInternal() ? 1 : 0;
         }
 
@@ -53,8 +62,8 @@ public interface Operation {
             if (left == null || right == null)
                 return false;
             return switch (comparison) {
-                case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : checkNum ? left.getNumber().doubleValue() == right.getNumber().doubleValue() : left.getString().equalsIgnoreCase(right.getString());
-                case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : checkNum ? left.getNumber().doubleValue() != right.getNumber().doubleValue() : !left.getString().equalsIgnoreCase(right.getString());
+                case EQUALS -> checkBool ? left.getBoolean() == right.getBoolean() : checkNum ? left.getNumber().doubleValue() == right.getNumber().doubleValue() : left.getString().equals(right.getString());
+                case NOT_EQUALS -> checkBool ? left.getBoolean() != right.getBoolean() : checkNum ? left.getNumber().doubleValue() != right.getNumber().doubleValue() : !left.getString().equals(right.getString());
 
                 case LESS_THAN -> left.getNumber().doubleValue() < right.getNumber().doubleValue();
                 case GREATER_THAN -> left.getNumber().doubleValue() > right.getNumber().doubleValue();
@@ -66,52 +75,86 @@ public interface Operation {
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            String bool = (comparison == ConditionalParser.Comparison.EQUALS || comparison == ConditionalParser.Comparison.NOT_EQUALS) && checkBool ? "BOOL_" : "";
-            System.out.println("- Conditional(" + bool + comparison + "): " + left.getString() + ", " + right.getString());
+            String bool = (comparison == ExpressionParser.Comparison.EQUALS || comparison == ExpressionParser.Comparison.NOT_EQUALS) && checkBool ? "BOOL_" : "";
+            System.out.println(indent(indent) + "- Conditional(" + bool + comparison + "): " + left.getString() + ", " + right.getString());
+            if (left instanceof SudoElements.Op op) {
+                op.op().printTree(indent + 2);
+            }
+            if (right instanceof SudoElements.Op op) {
+                op.op().printTree(indent + 2);
+            }
         }
     }
 
-    record MathOperation(HudElement left, HudElement right, ConditionalParser.MathOperator operation, boolean checkBool, boolean checkNum) implements Operation {
-        public int getValue() {
-            return switch (operation) {
-                default -> 0;
+    record MathOperation(List<HudElement> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
+        public double getValue() {
+            if (elements.isEmpty()) return 0;
+            double value = elements.get(0).getNumber().doubleValue();
+            for (int i = 1; i < elements.size(); i++)
+                value = apply(value, elements.get(i).getNumber().doubleValue(), operations.get(i-1));
+            return value;
+        }
+
+        public static double apply(double value, double second, ExpressionParser.MathOperator op) {
+            return switch (op) {
+                case ADD -> value + second;
+                case SUBTRACT -> value - second;
+                case MULTIPLY -> value * second;
+                case DIVIDE -> value / second;
+                case MOD -> value % second;
             };
         }
 
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            //TODO
+            System.out.println(indent(indent) + "- Operations: " + operations.toString());
+            for (HudElement element : elements) {
+                System.out.println(indent(indent) + "- " + element.getString());
+            }
         }
     }
 
-    record Literal(int value) implements Operation {
-        public int getValue() {
+    record MathOperationOp(List<Operation> elements, List<ExpressionParser.MathOperator> operations) implements Operation {
+        public double getValue() {
+            double value = elements().isEmpty() ? 0 : elements.get(0).getValue();
+            for (int i = 1; i < elements.size()-1; i++)
+                value = MathOperation.apply(value, elements.get(i).getValue(), operations.get(i-1));
+            return value;
+        }
+
+
+        @Override
+        public void printTree(int indent) {
+            System.out.println(indent(indent) + "- Operations: " + operations.toString());
+            for (Operation op : elements)
+                op.printTree(indent + 2);
+        }
+    }
+
+    record Literal(double value) implements Operation {
+        public double getValue() {
             return value;
         }
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- Literal: " + value);
+            System.out.println(indent(indent) + "- Literal: " + value);
         }
     }
     record BooleanVariable(HudElement variable) implements Operation {
-        public int getValue() {
+        public double getValue() {
             return variable == null ? 0 : variable.getBoolean() ? 1 : 0;
         }
 
         @Override
         public void printTree(int indent) {
-            for (int i = 0; i < indent; i++)
-                System.out.print(" ");
-            System.out.println("- BooleanVariable");
+            System.out.println(indent(indent) + "- BooleanVariable");
         }
+    }
+
+    static String indent(int indent) {
+        return " ".repeat(indent);
     }
 
 }

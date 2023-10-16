@@ -7,7 +7,7 @@ import com.minenash.customhud.HudElements.icon.*;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
-import com.minenash.customhud.conditionals.ConditionalParser;
+import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
@@ -89,7 +89,7 @@ public class VariableParser {
         List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
         while (args.find()) {
 //            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
-            pairs.add(new ConditionalElement.ConditionalPair(ConditionalParser.parseConditional(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
+            pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseConditional(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
         }
         return pairs;
     }
