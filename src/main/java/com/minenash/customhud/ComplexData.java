@@ -50,6 +50,9 @@ public class ComplexData {
     public static BlockPos targetFluidPos = null;
     public static FluidState targetFluid = null;
     public static Entity targetEntity = null;
+    public static Vec3d targetEntityHitPos = null;
+    public static Entity lastHitEntity = null;
+    public static double lastHitEntityDist = Double.NaN;
     public static String[] sounds = null;
     public static String[] clientChunkCache = null;
     public static int timeOfDay = -1;
@@ -156,6 +159,7 @@ public class ComplexData {
 
             EntityHitResult result = ProjectileUtil.raycast(client.cameraEntity, min, max, box, (en) -> !en.isSpectator(), dist2);
             targetEntity = result == null ? null : result.getEntity();
+            targetEntityHitPos = result == null ? null : result.getPos();
         }
 
         if (profile.enabled.localDifficulty)

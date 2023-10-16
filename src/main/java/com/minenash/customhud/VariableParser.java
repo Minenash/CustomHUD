@@ -358,6 +358,10 @@ public class VariableParser {
             case "target_entity_id", "tei" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ID;}
             case "target_entity_name", "ten" -> {enabled.targetEntity = true; yield TARGET_ENTITY_NAME;}
             case "target_entity_uuid", "teu" -> {enabled.targetEntity = true; yield TARGET_ENTITY_UUID;}
+            case "last_hit", "lh" -> {enabled.targetEntity = true; yield LAST_HIT_ENTITY;}
+            case "last_hit_id", "lhi" -> {enabled.targetEntity = true; yield LAST_HIT_ENTITY_ID;}
+            case "last_hit_name", "lhn" -> {enabled.targetEntity = true; yield LAST_HIT_ENTITY_NAME;}
+            case "last_hit_uuid", "lhu" -> {enabled.targetEntity = true; yield LAST_HIT_ENTITY_UUID;}
             case "hooked_entity", "he" -> HOOKED_ENTITY;
             case "hooked_entity_id", "hei" -> HOOKED_ENTITY_ID;
             case "hooked_entity_name", "hen" -> HOOKED_ENTITY_NAME;
@@ -551,6 +555,7 @@ public class VariableParser {
             case "target_entity_y", "tey" -> {enabled.targetEntity = true; yield TARGET_ENTITY_Y;}
             case "target_entity_z", "tez" -> {enabled.targetEntity = true; yield TARGET_ENTITY_Z;}
             case "target_entity_distance", "ted" -> {enabled.targetEntity = true; yield TARGET_ENTITY_DISTANCE;}
+            case "last_hit_distance", "lhd" -> {enabled.targetEntity = true; yield LAST_HIT_ENTITY_DISTANCE;}
             case "hooked_entity_x", "hex" -> HOOKED_ENTITY_X;
             case "hooked_entity_y", "hey" -> HOOKED_ENTITY_Y;
             case "hooked_entity_z", "hez" -> HOOKED_ENTITY_Z;

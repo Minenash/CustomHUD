@@ -47,6 +47,7 @@ public class DecimalSuppliers {
     public static final Entry TARGET_ENTITY_Y = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getY(), 0);
     public static final Entry TARGET_ENTITY_Z = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getZ(), 0);
     public static final Entry TARGET_ENTITY_DISTANCE = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getPos().distanceTo(client.cameraEntity.getPos()), 1);
+    public static final Entry LAST_HIT_ENTITY_DISTANCE = of( () -> ComplexData.lastHitEntityDist, 1);
 
     public static final Entry REACH_DISTANCE = of ( () -> client.interactionManager.getReachDistance(), 1);
     public static final Entry FISHING_HOOK_DISTANCE = of ( () -> client.player.fishHook.distanceTo(client.player), 1);
