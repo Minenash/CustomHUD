@@ -1,5 +1,7 @@
-package com.minenash.customhud.HudElements;
+package com.minenash.customhud.HudElements.list;
 
+import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.MultiElement;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ public class ListElement implements HudElement, MultiElement {
     }
 
     public List<HudElement> expand() {
+        if (elements == null)
+            return List.of(this);
         List<Object> values = supplier.get();
         if (values.isEmpty())
             return Collections.emptyList();

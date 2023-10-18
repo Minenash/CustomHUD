@@ -15,7 +15,7 @@ public class PlayerEntityMixin {
 
     @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;resetLastAttackedTicks()V"))
     private void logAttack(Entity target, CallbackInfo ci) {
-        if (((Object)this) == MinecraftClient.getInstance().player) {
+        if (((Object)this) == MinecraftClient.getInstance().player && ComplexData.targetEntityHitPos != null) {
             ComplexData.lastHitEntity = target;
             ComplexData.lastHitEntityDist = ComplexData.targetEntityHitPos.distanceTo(MinecraftClient.getInstance().getCameraEntity().getPos());
         }

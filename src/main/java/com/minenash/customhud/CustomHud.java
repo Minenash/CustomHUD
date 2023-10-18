@@ -32,7 +32,7 @@ import java.util.Objects;
 public class CustomHud implements ModInitializer {
 
 	//Debug: LD_PRELOAD=/home/jakob/Programs/renderdoc_1.25/lib/librenderdoc.so
-	private static final MinecraftClient client = MinecraftClient.getInstance();
+	public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
 	public static Profile[] profiles = new Profile[3];
 	public static int activeProfile = 1;
@@ -227,7 +227,7 @@ public class CustomHud implements ModInitializer {
 						CustomHud.profiles[profile - 1] = Profile.parseProfile(original, profile);
 						LOGGER.info("Updated Profile " + profile);
 						showToast(profile, false);
-						if (client.currentScreen instanceof ErrorScreen screen)
+						if (CLIENT.currentScreen instanceof ErrorScreen screen)
 							screen.changeProfile(profile);
 						break;
 					}
@@ -246,11 +246,11 @@ public class CustomHud implements ModInitializer {
 	}
 
 	public static void showToast(int profile, boolean mainMenu) {
-		client.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
+		CLIENT.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
 				Text.translatable("gui.custom_hud.profile_updated", profile).formatted(Formatting.WHITE),
 				Errors.hasErrors(profile) ?
 						Text.literal("§cFound " + Errors.getErrors(profile).size() + " errors")
-							.append(client.currentScreen instanceof TitleScreen ?
+							.append(CLIENT.currentScreen instanceof TitleScreen ?
 								Text.literal("§7, view in config screen via modmenu ")
 								: Text.literal("§7, press ")
 									.append(((MutableText)kb_showErrors.getBoundKeyLocalizedText()).formatted(Formatting.AQUA))

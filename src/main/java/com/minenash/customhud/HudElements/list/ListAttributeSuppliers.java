@@ -1,4 +1,4 @@
-package com.minenash.customhud.HudElements.supplier;
+package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.complex.ListManager;
@@ -10,5 +10,7 @@ public abstract class ListAttributeSuppliers {
 
     public static final Supplier<Number> INDEX = ListManager::getIndex;
     public static final Supplier<String> RAW = () -> ListManager.getValue().toString();
+
+
 
 }

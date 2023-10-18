@@ -4,11 +4,15 @@ import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.*;
+import com.minenash.customhud.HudElements.list.ListAttributeSuppliers;
+import com.minenash.customhud.HudElements.list.ListCountElement;
+import com.minenash.customhud.HudElements.list.ListElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.conditionals.ExpressionParser;
+import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
@@ -38,47 +42,25 @@ import java.util.stream.Collectors;
 import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
+import static com.minenash.customhud.HudElements.list.ListSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
 
 public class VariableParser {
 
-    private static final Pattern LINE_PARING_PATTERN = Pattern.compile("([^{}&]*)(\\{\\{(?:.*?, ?([\"']).*?\\3 ?)?}}|&?\\{.*?})?");
-    private static final Pattern CONDITIONAL_PARSING_PATTERN = Pattern.compile("(.*?), ?\"(.*?)\"");
-    private static final Pattern CONDITIONAL_PARSING_ALT_PATTERN = Pattern.compile("(.*?), ?'(.*?)'");
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("((?:[a-z0-9/._-]+:)?[a-z0-9/._-]+)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
     private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
 
     public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line) {
-        List<String> parts = new ArrayList<>();
-
 //        System.out.println("[Line " + debugLine+ "] '" + str + "'");
-        Matcher matcher = LINE_PARING_PATTERN.matcher(str);
-        while (matcher.find()) {
-            String left = matcher.group(1);
-
-            List<String> sections = new ArrayList<>();
-            int j = 0;
-            for (int i = 0; i < left.length()-1; i++) {
-                if (left.charAt(i) == '\\' && left.charAt(i+1) == 'n') {
-                    sections.add(left.substring(j,i));
-                    sections.add("\n");
-                    i+=2;
-                    j=i;
-                }
-            }
-            sections.add(left.substring(j));
-//            System.out.println(sections + "\n");
-            parts.addAll(sections);
-
-            parts.add(matcher.group(2));
-        }
 
         List<HudElement> elements = new ArrayList<>();
 
-        for (String part : parts) {
+        System.out.println("PARTITION:");
+        for (String part : partition(str)) {
+            System.out.println("`" + part + "`");
             HudElement element = parseElement(part, profile, debugLine, enabled);
             if (element != null)
                 elements.add(element);
@@ -87,6 +69,100 @@ public class VariableParser {
         if (line)
             elements.add(new FunctionalElement.NewLine());
         return elements;
+    }
+
+    private static List<String> partition(String str) {
+        char[] chars = str.toCharArray();
+        List<String> parts = new ArrayList<>();
+
+        int nest = 0;
+        int startIndex = 0;
+
+        for (int i = 0; i < str.length(); i++) {
+            char c = chars[i];
+
+            switch (c) {
+                case '\\' -> {
+                    if (nest == 0 && i+1 < chars.length && chars[i+1] == 'n') {
+                        parts.add(str.substring(startIndex, i));
+                        parts.add("\n");
+                        startIndex = i+2;
+                        i++;
+                    }
+                }
+                case '&' -> {
+                    if (i < chars.length-1 && chars[i+1] == '{') {
+                        if (nest == 0 && i != startIndex) {
+                            parts.add(str.substring(startIndex, i));
+                            startIndex = i;
+                        }
+                        nest++;
+                    }
+                }
+                case '{' -> {
+                    if (i > 0 && (chars[i-1] == '{' || chars[i-1] == '&')) continue;
+                    if (nest == 0 && i != startIndex) {
+                        parts.add(str.substring(startIndex, i));
+                        startIndex = i;
+                    }
+                    nest++;
+                }
+                case '}' -> {
+                    if (i < chars.length-1 && chars[i+1] == '}') continue;
+                    if (nest == 1) {
+                        parts.add(str.substring(startIndex, i+1));
+                        startIndex = i+1;
+                    }
+                    nest--;
+                }
+            }
+        }
+        if (startIndex < chars.length)
+            parts.add(str.substring(startIndex, chars.length));
+
+        return parts;
+    }
+
+    private static List<String> partitionConditional(String str) {
+        char[] chars = str.toCharArray();
+        List<String> parts = new ArrayList<>();
+
+        int nest = 0;
+        int qNest = 0;
+        int startIndex = 0;
+
+        for (int i = 0; i < str.length(); i++) {
+            char c = chars[i];
+
+            switch (c) {
+                case '&' -> {
+                    if (i < chars.length-1 && chars[i+1] == '{')
+                        nest++;
+                }
+                case '{' -> {
+                    if (i > 0 && (chars[i-1] == '{' || chars[i-1] == '&')) continue;
+                    nest++;
+                }
+                case '}' -> {
+                    if (i < chars.length-1 && chars[i+1] == '}') continue;
+                    nest--;
+                }
+                case ',' -> {
+                    if (nest == 0 && qNest == 0) {
+                        parts.add(str.substring(startIndex, i));
+                        startIndex = i+1;
+                    }
+                }
+                case '"' -> {
+                    if (qNest == nest) qNest++;
+                    else qNest--;
+                }
+            }
+        }
+        if (startIndex < chars.length-1)
+            parts.add(str.substring(startIndex, chars.length));
+
+        return parts;
     }
 
     private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, String original, int profile, int debugLine, ComplexData.Enabled enabled) {
@@ -127,9 +203,39 @@ public class VariableParser {
         if (part.startsWith("{") && part.length() > 1) {
             part = part.substring(1, part.length() - 1);
 
-            List<ConditionalElement.ConditionalPair> pairs = parseConditional(CONDITIONAL_PARSING_PATTERN.matcher(part), original, profile, debugLine, enabled);
-            if (pairs.isEmpty())
-                pairs = parseConditional(CONDITIONAL_PARSING_ALT_PATTERN.matcher(part), original, profile, debugLine, enabled);
+            System.out.println("COND:");
+            List<String> ps = partitionConditional(part);
+            for (String p : ps)
+                System.out.println("`" + p + "`");
+
+            if (ps.size() < 2) {
+                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
+                return null;
+            }
+            List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
+
+            for (int i = 0; i < ps.size()-1; i+=2) {
+                String cond = ps.get(i);
+                String result = ps.get(i+1).trim();
+                if (!result.startsWith("\"") || !result.endsWith("\"")) {
+                    Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
+                    return null;
+                }
+                result = result.substring(1, result.length()-1);
+
+                pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseExpression(cond, original, profile, debugLine, enabled), addElements(result, profile, debugLine, enabled, false)));
+            }
+            if (ps.size() % 2 == 1) {
+                String result = ps.get(ps.size()-1).trim();
+                if (!result.startsWith("\"") || !result.endsWith("\"")) {
+                    Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
+                    return null;
+                }
+                result = result.substring(1, result.length()-1);
+
+                pairs.add(new ConditionalElement.ConditionalPair(new Operation.Literal(1), addElements(result, profile, debugLine, enabled, false)));
+            }
+
             if (pairs.isEmpty()) {
                 Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
                 return null;
@@ -150,6 +256,9 @@ public class VariableParser {
             }
         }
 
+        HudElement he = getListSupplierElements(part, profile, debugLine, enabled, original);
+        if (he != null) return he;
+
         if (part.startsWith("real_time:")) {
             try {
                 return new RealTimeElement(new SimpleDateFormat(part.substring(10)));
@@ -159,10 +268,11 @@ public class VariableParser {
             }
         }
 
+
+
         String[] flagParts = part.split(" ");
         Flags flags = Flags.parse(profile, debugLine, flagParts);
         part = flagParts[0];
-
 
 
         if (part.startsWith("stat:")) {
@@ -668,5 +778,41 @@ public class VariableParser {
             default: return null;
         }
     }
+
+    private static HudElement getListSupplierElements(String part, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
+        int commaIndex = part.indexOf(",");
+        String variable = part;
+        if (commaIndex != -1)
+            variable = variable.substring(0, commaIndex);
+
+        Supplier<List<Object>> supplier = switch (variable) {
+            case "effects" -> STATUS_EFFECTS;
+            default -> null;
+        };
+        if (supplier == null)
+            return null;
+
+        if (commaIndex == -1)
+            return new ListCountElement(supplier);
+
+        List<String> parts = partitionConditional(part);
+        System.out.println("SUPPLIER");
+        for (String p : parts) {
+            System.out.println("`" + p + "`");
+        }
+        if (parts.size() < 2)
+            return null;
+
+        String format = parts.get(1).trim();
+        if (!format.startsWith("\"") || !format.endsWith("\"")) {
+            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
+            return null;
+        }
+        format = format.substring(1, format.length()-1);
+        System.out.println("Format: " + format);
+
+        return new ListElement(supplier, addElements(format, profile, debugLine, enabled, false));
+    }
+
     
 }
