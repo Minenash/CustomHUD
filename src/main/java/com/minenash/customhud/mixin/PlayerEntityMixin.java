@@ -1,7 +1,7 @@
 package com.minenash.customhud.mixin;
 
 
-import com.minenash.customhud.ComplexData;
+import com.minenash.customhud.complex.ComplexData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;

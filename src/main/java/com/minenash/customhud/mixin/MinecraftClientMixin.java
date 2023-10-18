@@ -1,6 +1,6 @@
 package com.minenash.customhud.mixin;
 
-import com.minenash.customhud.ComplexData;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.CustomHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;

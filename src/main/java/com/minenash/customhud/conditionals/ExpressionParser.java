@@ -1,6 +1,6 @@
 package com.minenash.customhud.conditionals;
 
-import com.minenash.customhud.ComplexData;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.VariableParser;
 import com.minenash.customhud.errors.ErrorException;

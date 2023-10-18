@@ -1,13 +1,12 @@
 package com.minenash.customhud.HudElements;
 
-import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.conditionals.Operation;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ConditionalElement implements HudElement {
+public class ConditionalElement implements HudElement, MultiElement {
 
     public record ConditionalPair(Operation conditional, List<HudElement> ifTrue) {}
 
@@ -17,7 +16,7 @@ public class ConditionalElement implements HudElement {
         this.pairs = pairs;
     }
 
-    public List<HudElement> get() {
+    public List<HudElement> expand() {
         for (ConditionalPair pair : pairs) {
             if (pair.conditional.getValue() != 0) {
                 return pair.ifTrue;
@@ -28,7 +27,7 @@ public class ConditionalElement implements HudElement {
 
     @Override
     public String getString() {
-        List<HudElement> elements = get();
+        List<HudElement> elements = expand();
 
         StringBuilder builder = new StringBuilder();
         for (HudElement element : elements)

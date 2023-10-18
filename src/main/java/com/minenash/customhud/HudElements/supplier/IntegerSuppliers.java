@@ -1,7 +1,6 @@
 package com.minenash.customhud.HudElements.supplier;
 
-import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.MusicAndRecordTracker;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.mixin.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GLX;
 import net.fabricmc.loader.api.FabricLoader;
@@ -16,11 +15,9 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
-import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
-import net.minecraft.world.gen.noise.NoiseRouter;
 
 import java.util.function.Supplier;
 

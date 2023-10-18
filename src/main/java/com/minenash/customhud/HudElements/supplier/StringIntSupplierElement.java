@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements.supplier;
 
-import com.minenash.customhud.ComplexData;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
 import net.minecraft.client.MinecraftClient;
 

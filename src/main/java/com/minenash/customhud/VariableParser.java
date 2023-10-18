@@ -7,12 +7,14 @@ import com.minenash.customhud.HudElements.icon.*;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -31,6 +33,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
@@ -270,6 +273,16 @@ public class VariableParser {
                 Errors.addError(profile, debugLine, original, ErrorType.NOT_A_WHOLE_NUMBER, "\"" + widthStr + "\"");
                 return null;
             }
+        }
+
+        else if (part.equals("test")) {
+            List<HudElement> es = new ArrayList<>();
+            es.add(new NumberSupplierElement(ListAttributeSuppliers.INDEX, 1));
+            es.add(new StringElement(" - "));
+            es.add(new StringSupplierElement(ListAttributeSuppliers.RAW));
+            es.add(new FunctionalElement.NewLine());
+
+            return new ListElement(() -> MinecraftClient.getInstance().player.getStatusEffects().stream().map(instance -> instance.getEffectType().getName().getString()).collect(Collectors.toList()), es);
         }
 
         else {

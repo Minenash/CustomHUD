@@ -1,21 +1,18 @@
 package com.minenash.customhud.HudElements.supplier;
 
-import com.minenash.customhud.ComplexData;
-import com.minenash.customhud.MusicAndRecordTracker;
+import com.minenash.customhud.complex.ComplexData;
+import com.minenash.customhud.complex.MusicAndRecordTracker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.noise.NoiseRouter;
-
-import java.util.function.Supplier;
 
 import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.*;
 

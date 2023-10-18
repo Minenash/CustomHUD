@@ -1,10 +1,11 @@
 package com.minenash.customhud.render;
 
 import com.minenash.customhud.CustomHud;
-import com.minenash.customhud.HudElements.ConditionalElement;
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.MultiElement;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.icon.IconElement;
+import com.minenash.customhud.complex.ListManager;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.data.Section;
@@ -111,6 +112,10 @@ public class CustomHudRenderer {
                         pieces.add( new RenderPiece(ie, null, xOffset, y, 0, false) );
                         xOffset += ie.getTextWidth();
                     }
+                    else if (e instanceof FunctionalElement.AdvanceList)    ListManager.advance();
+                    else if (e instanceof FunctionalElement.PushList push)  ListManager.push(push.values);
+                    else if (e instanceof FunctionalElement.PopList)        ListManager.pop();
+
                 } else {
                     builder.append(e.getString());
                 }
@@ -148,14 +153,14 @@ public class CustomHudRenderer {
 
 
     private static int addElement(List<HudElement> allElements, HudElement element) {
-        if (element instanceof ConditionalElement ce) {
+        if (element instanceof MultiElement me) {
             int nl = 0;
-            List<HudElement> elements = ce.get();
+            List<HudElement> elements = me.expand();
             if (elements.isEmpty()) {
                 allElements.add(new FunctionalElement.IgnoreNewLineIfSurroundedByNewLine());
                 return nl;
             }
-            for (HudElement e : ce.get())
+            for (HudElement e : me.expand())
                 nl += addElement(allElements, e);
             return nl;
         }

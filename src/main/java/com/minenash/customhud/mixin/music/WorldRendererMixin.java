@@ -1,6 +1,6 @@
 package com.minenash.customhud.mixin.music;
 
-import com.minenash.customhud.MusicAndRecordTracker;
+import com.minenash.customhud.complex.MusicAndRecordTracker;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundEvent;

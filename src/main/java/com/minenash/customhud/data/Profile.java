@@ -1,6 +1,6 @@
 package com.minenash.customhud.data;
 
-import com.minenash.customhud.ComplexData;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.VariableParser;

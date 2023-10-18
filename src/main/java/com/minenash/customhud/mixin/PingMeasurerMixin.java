@@ -1,9 +1,7 @@
 package com.minenash.customhud.mixin;
 
-import com.minenash.customhud.ComplexData;
 import net.minecraft.client.network.PingMeasurer;
 import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
-import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

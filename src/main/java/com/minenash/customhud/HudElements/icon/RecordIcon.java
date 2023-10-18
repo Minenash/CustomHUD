@@ -1,6 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.MusicAndRecordTracker;
+import com.minenash.customhud.complex.MusicAndRecordTracker;
 import com.minenash.customhud.data.Flags;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;

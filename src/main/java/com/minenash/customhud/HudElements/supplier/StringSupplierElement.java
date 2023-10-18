@@ -1,8 +1,8 @@
 package com.minenash.customhud.HudElements.supplier;
 
-import com.minenash.customhud.ComplexData;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
-import com.minenash.customhud.MusicAndRecordTracker;
+import com.minenash.customhud.complex.MusicAndRecordTracker;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;

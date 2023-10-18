@@ -1,4 +1,4 @@
-package com.minenash.customhud;
+package com.minenash.customhud.complex;
 
 import com.minenash.customhud.mixin.music.MinecraftClientAccess;
 import com.minenash.customhud.mixin.music.MusicTrackerAccess;

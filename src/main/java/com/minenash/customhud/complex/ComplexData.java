@@ -1,4 +1,4 @@
-package com.minenash.customhud;
+package com.minenash.customhud.complex;
 
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.mixin.DebugHudAccessor;
@@ -26,7 +26,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;

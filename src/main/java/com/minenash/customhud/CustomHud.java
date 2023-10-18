@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.google.gson.*;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.data.Crosshairs;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.ErrorScreen;
@@ -18,7 +19,6 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
