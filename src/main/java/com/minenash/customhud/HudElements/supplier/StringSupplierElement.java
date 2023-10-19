@@ -18,7 +18,7 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.function.Supplier;
 
-import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
+import static com.minenash.customhud.HudElements.supplier.EntryNumberSuppliers.*;
 
 public class StringSupplierElement implements HudElement {
 

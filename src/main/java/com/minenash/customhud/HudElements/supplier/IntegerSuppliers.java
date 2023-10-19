@@ -21,7 +21,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 
 import java.util.function.Supplier;
 
-import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
+import static com.minenash.customhud.HudElements.supplier.EntryNumberSuppliers.*;
 
 public class IntegerSuppliers {
 
@@ -47,7 +47,7 @@ public class IntegerSuppliers {
     }
 
     private static double biome(DensityFunction function, MultiNoiseUtil.ParameterRange[] range) {
-        double d = (double)MultiNoiseUtil.toLong((float)DecimalSuppliers.sample(function));
+        double d = (double)MultiNoiseUtil.toLong((float) EntryNumberSuppliers.sample(function));
         for(int i = 0; i < range.length; ++i)
             if (d < (double)range[i].max())
                 return i;

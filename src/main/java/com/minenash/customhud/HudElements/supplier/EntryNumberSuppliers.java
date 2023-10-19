@@ -16,7 +16,7 @@ import net.minecraft.world.gen.noise.NoiseRouter;
 
 import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.*;
 
-public class DecimalSuppliers {
+public class EntryNumberSuppliers {
 
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final Runtime runtime = Runtime.getRuntime();

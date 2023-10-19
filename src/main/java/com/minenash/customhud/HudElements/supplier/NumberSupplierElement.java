@@ -1,35 +1,33 @@
 package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.HudElements.HudElement;
+import net.minecraft.stat.StatFormatter;
 
 import java.util.function.Supplier;
 
 public class NumberSupplierElement implements HudElement {
 
-    public record Entry(Supplier<Number> supplier, int precision) {}
+    public record Entry(Supplier<Number> supplier, int precision, StatFormatter formatter) {}
     public static Entry of(Supplier<Number> supplier, int precision) {
-        return new Entry(supplier, precision);
+        return new Entry(supplier, precision, null);
+    }
+    public static Entry of(Supplier<Number> supplier, int precision, StatFormatter formatter) {
+        return new Entry(supplier, precision, formatter);
     }
 
     private final Supplier<Number> supplier;
     private final int precision;
     private final double scale;
+    private StatFormatter formatter = null;
 
-    public NumberSupplierElement(Entry entry, double scale) {
-        this(entry.supplier, scale, entry.precision);
-    }
-
-    public NumberSupplierElement(Entry entry, double scale, int precision) {
-        this(entry.supplier, scale, precision);
-    }
-
-    public NumberSupplierElement(Supplier<Number> supplier, double scale) {
-        this(supplier, scale, 0);
+    public NumberSupplierElement(Entry entry, double scale, int precision, boolean format) {
+        this(entry.supplier, scale, precision == -1 ? entry.precision : precision);
+        formatter = format ? entry.formatter : null;
     }
 
     public NumberSupplierElement(Supplier<Number> supplier, double scale, int precision) {
         this.supplier = supplier;
-        this.precision = precision;
+        this.precision = precision == -1 ? 0 : precision;
         this.scale = scale;
     }
 
@@ -39,6 +37,8 @@ public class NumberSupplierElement implements HudElement {
             double num = supplier.get().doubleValue() * scale;
             if (Double.isNaN(num))
                 return "-";
+            if (formatter != null)
+                return formatter.format((int)Math.round(num));
             if (precision == 0)
                 return Integer.toString((int)num);
 

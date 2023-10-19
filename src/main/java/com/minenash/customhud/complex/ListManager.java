@@ -22,6 +22,10 @@ public class ListManager {
         ListManager.index.push(ListManager.index.pop()+1);
     }
 
+    public static int getCount() {
+        return values.peek().size();
+    }
+
     public static int getIndex() {
         return index.peek();
     }

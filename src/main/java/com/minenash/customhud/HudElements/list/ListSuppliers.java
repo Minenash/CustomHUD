@@ -5,7 +5,6 @@ import net.minecraft.client.MinecraftClient;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
 

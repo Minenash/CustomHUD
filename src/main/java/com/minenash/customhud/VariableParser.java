@@ -4,7 +4,6 @@ import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.*;
-import com.minenash.customhud.HudElements.list.ListAttributeSuppliers;
 import com.minenash.customhud.HudElements.list.ListCountElement;
 import com.minenash.customhud.HudElements.list.ListElement;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
@@ -18,7 +17,6 @@ import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -37,10 +35,10 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+import static com.minenash.customhud.HudElements.list.ListAttributeSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
-import static com.minenash.customhud.HudElements.supplier.DecimalSuppliers.*;
+import static com.minenash.customhud.HudElements.supplier.EntryNumberSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
 import static com.minenash.customhud.HudElements.list.ListSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.*;
@@ -53,7 +51,7 @@ public class VariableParser {
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
     private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
 
-    public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line) {
+    public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line, Supplier<?> listSupplier) {
 //        System.out.println("[Line " + debugLine+ "] '" + str + "'");
 
         List<HudElement> elements = new ArrayList<>();
@@ -61,7 +59,7 @@ public class VariableParser {
         System.out.println("PARTITION:");
         for (String part : partition(str)) {
             System.out.println("`" + part + "`");
-            HudElement element = parseElement(part, profile, debugLine, enabled);
+            HudElement element = parseElement(part, profile, debugLine, enabled, listSupplier);
             if (element != null)
                 elements.add(element);
         }
@@ -165,16 +163,7 @@ public class VariableParser {
         return parts;
     }
 
-    private static List<ConditionalElement.ConditionalPair> parseConditional(Matcher args, String original, int profile, int debugLine, ComplexData.Enabled enabled) {
-        List<ConditionalElement.ConditionalPair> pairs = new ArrayList<>();
-        while (args.find()) {
-//            System.out.println("Cond: '" + args.group(1) + "', Value: '" + args.group(2) + "'");
-            pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseExpression(args.group(1), original, profile, debugLine, enabled), addElements(args.group(2), profile, debugLine, enabled, false)));
-        }
-        return pairs;
-    }
-
-    public static HudElement parseElement(String part, int profile, int debugLine, ComplexData.Enabled enabled) {
+    public static HudElement parseElement(String part, int profile, int debugLine, ComplexData.Enabled enabled, Supplier<?> listSupplier) {
         if (part == null || part.isEmpty())
             return null;
 
@@ -223,7 +212,7 @@ public class VariableParser {
                 }
                 result = result.substring(1, result.length()-1);
 
-                pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseExpression(cond, original, profile, debugLine, enabled), addElements(result, profile, debugLine, enabled, false)));
+                pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseExpression(cond, original, profile, debugLine, enabled, listSupplier), addElements(result, profile, debugLine, enabled, false, listSupplier)));
             }
             if (ps.size() % 2 == 1) {
                 String result = ps.get(ps.size()-1).trim();
@@ -233,7 +222,7 @@ public class VariableParser {
                 }
                 result = result.substring(1, result.length()-1);
 
-                pairs.add(new ConditionalElement.ConditionalPair(new Operation.Literal(1), addElements(result, profile, debugLine, enabled, false)));
+                pairs.add(new ConditionalElement.ConditionalPair(new Operation.Literal(1), addElements(result, profile, debugLine, enabled, false, listSupplier)));
             }
 
             if (pairs.isEmpty()) {
@@ -248,7 +237,7 @@ public class VariableParser {
                 Matcher matcher = EXPRESSION_WITH_PRECISION.matcher(part);
                 matcher.matches();
                 int precision = matcher.group(1) == null ? -1 : Integer.parseInt(matcher.group(1));
-                return new ExpressionElement( ExpressionParser.parseExpression(matcher.group(2), original, profile, debugLine, enabled), precision );
+                return new ExpressionElement( ExpressionParser.parseExpression(matcher.group(2), original, profile, debugLine, enabled, listSupplier), precision );
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -273,6 +262,12 @@ public class VariableParser {
         String[] flagParts = part.split(" ");
         Flags flags = Flags.parse(profile, debugLine, flagParts);
         part = flagParts[0];
+
+        if (listSupplier != null) {
+            HudElement element = getListAttributeSupplierElement(part, enabled, flags, listSupplier);
+            if (element != null)
+                return element;
+        }
 
 
         if (part.startsWith("stat:")) {
@@ -385,16 +380,6 @@ public class VariableParser {
             }
         }
 
-        else if (part.equals("test")) {
-            List<HudElement> es = new ArrayList<>();
-            es.add(new NumberSupplierElement(ListAttributeSuppliers.INDEX, 1));
-            es.add(new StringElement(" - "));
-            es.add(new StringSupplierElement(ListAttributeSuppliers.RAW));
-            es.add(new FunctionalElement.NewLine());
-
-            return new ListElement(() -> MinecraftClient.getInstance().player.getStatusEffects().stream().map(instance -> instance.getEffectType().getName().getString()).collect(Collectors.toList()), es);
-        }
-
         else {
             HudElement element = getSupplierElement(part, enabled, flags);
             if (element != null) {
@@ -444,11 +429,11 @@ public class VariableParser {
 
         supplier = getIntegerSupplier(name, enabled);
         if (supplier != null)
-            return flags.precision == -1 ? new NumberSupplierElement(supplier, flags.scale) : new NumberSupplierElement(supplier, flags.scale, flags.precision);
+            return new NumberSupplierElement(supplier, flags.scale, flags.precision);
 
         NumberSupplierElement.Entry entry = getDecimalSupplier(name, enabled);
         if (entry != null)
-            return flags.precision == -1 ? new NumberSupplierElement(entry, flags.scale) : new NumberSupplierElement(entry, flags.scale, flags.precision);
+            return new NumberSupplierElement(entry, flags.scale, flags.precision, flags.formatted);
 
         supplier = getStringIntSupplier(name, enabled);
         if (supplier != null)
@@ -811,7 +796,17 @@ public class VariableParser {
         format = format.substring(1, format.length()-1);
         System.out.println("Format: " + format);
 
-        return new ListElement(supplier, addElements(format, profile, debugLine, enabled, false));
+        return new ListElement(supplier, addElements(format, profile, debugLine, enabled, false, supplier));
+    }
+
+    private static HudElement getListAttributeSupplierElement(String name, ComplexData.Enabled enabled, Flags flags, Supplier<?> listSupplier) {
+        return switch (name) {
+            case "count", "c" -> new NumberSupplierElement(COUNT, flags.scale, flags.precision);
+            case "index", "i" -> new NumberSupplierElement(INDEX, flags.scale, flags.precision);
+            case "raw" -> new StringSupplierElement(RAW);
+            default -> ATTRIBUTE_MAP.get(listSupplier).apply(name, flags);
+        };
+
     }
 
     

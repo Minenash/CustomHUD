@@ -165,9 +165,13 @@ public class CustomHudRenderer {
             return nl;
         }
         else {
+            if (element instanceof FunctionalElement.AdvanceList) ListManager.advance();
+            else if (element instanceof FunctionalElement.PushList push) ListManager.push(push.values);
+            else if (element instanceof FunctionalElement.PopList) ListManager.pop();
             allElements.add(element);
             return element instanceof FunctionalElement.NewLine ? 1 : 0;
         }
+
 
     }
 
