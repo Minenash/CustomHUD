@@ -1,6 +1,7 @@
 package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.icon.StatusEffectIconElement;
 import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;
 import com.minenash.customhud.HudElements.supplier.NumberSupplierElement;
 import com.minenash.customhud.HudElements.supplier.SpecialSupplierElement;
@@ -14,10 +15,11 @@ import net.minecraft.stat.StatFormatter;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+
+import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.of;
 
 public abstract class ListAttributeSuppliers {
 
@@ -42,8 +44,7 @@ public abstract class ListAttributeSuppliers {
 
     public static final Supplier<String> STATUS_NAME = () -> I18n.translate(status().getTranslationKey());
     public static final Supplier<String> STATUS_ID = () -> Registries.STATUS_EFFECT.getId(status().getEffectType()).toString();
-    public static final NumberSupplierElement.Entry STATUS_DURATION = new NumberSupplierElement.Entry(
-            () -> status().getDuration(), 0, HMS);
+    public static final NumberSupplierElement.Entry STATUS_DURATION = of(() -> status().getDuration(), 0, HMS);
     public static final Supplier<Number> STATUS_AMPLIFICATION = () -> status().getAmplifier();
 
     public static final Supplier<Boolean> STATUS_AMBIENT = () -> status().isAmbient();
@@ -66,6 +67,8 @@ public abstract class ListAttributeSuppliers {
             case "show_particles", "particles" -> new BooleanSupplierElement(STATUS_SHOW_PARTICLES);
             case "show_icon" -> new BooleanSupplierElement(STATUS_SHOW_ICON);
             case "category", "cat" -> new SpecialSupplierElement(STATUS_CATEGORY);
+            case "icon" -> new StatusEffectIconElement(flags, true);
+            case "icon_no_bg" -> new StatusEffectIconElement(flags, false);
             default -> null;
         });
     }

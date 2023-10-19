@@ -8,7 +8,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
@@ -70,4 +69,7 @@ public abstract class IconElement extends FunctionalElement {
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
     }
+
+    public void setListValue(int index, Object value) {}
+
 }

@@ -3,6 +3,7 @@ package com.minenash.customhud.HudElements.list;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.MultiElement;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
+import com.minenash.customhud.HudElements.icon.IconElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +33,11 @@ public class ListElement implements HudElement, MultiElement {
         List<HudElement> expanded = new ArrayList<>();
         expanded.add(new FunctionalElement.PushList(values));
         for (int i = 0; i < values.size(); i++) {
-            expanded.addAll(elements);
+            for (HudElement element : elements) {
+                if (element instanceof IconElement ie)
+                    ie.setListValue(i, values.get(i));
+                expanded.add(element);
+            }
             expanded.add(ADVANCE_LIST_ELEMENT);
         }
         expanded.set(expanded.size()-1, POP_LIST_ELEMENT);
