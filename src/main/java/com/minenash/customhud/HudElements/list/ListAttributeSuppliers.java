@@ -52,7 +52,7 @@ public abstract class ListAttributeSuppliers {
     public static final Supplier<Boolean> STATUS_SHOW_ICON = () -> status().shouldShowIcon();
 
     public static final SpecialSupplierElement.Entry STATUS_CATEGORY = new SpecialSupplierElement.Entry(
-            () -> WordUtils.capitalize(status().getEffectType().getCategory().name()),
+            () -> WordUtils.capitalize(status().getEffectType().getCategory().name().toLowerCase()),
             () -> status().getEffectType().getCategory().ordinal(),
             () -> status().getEffectType().getCategory().ordinal() != 1);
 
