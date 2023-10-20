@@ -2,7 +2,9 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.mixin.PlayerListHudAccess;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -23,6 +25,10 @@ public class BooleanSupplierElement implements HudElement {
 
     public static final Supplier<Boolean> SINGLEPLAYER = client::isInSingleplayer;
     public static final Supplier<Boolean> MULTIPLAYER = () -> !client.isInSingleplayer();
+
+    public static final Supplier<Boolean> SCREEN_OPEN = () -> client.currentScreen != null;
+    public static final Supplier<Boolean> CHAT_OPEN = () -> client.currentScreen instanceof ChatScreen;
+    public static final Supplier<Boolean> PLAYER_LIST_OPEN = () -> ((PlayerListHudAccess)client.inGameHud.getPlayerListHud()).getVisible();
 
     public static final Supplier<Boolean> CHUNK_CULLING = () -> client.chunkCullingEnabled;
     public static final Supplier<Boolean> IN_OVERWORLD = () -> isInDim(World.OVERWORLD.getValue());

@@ -364,6 +364,9 @@ public class VariableParser {
             case "vsync" -> VSYNC;
             case "sp", "singleplayer" -> SINGLEPLAYER;
             case "mp", "multiplayer" -> MULTIPLAYER;
+            case "screen_open" -> SCREEN_OPEN;
+            case "chat_open" -> CHAT_OPEN;
+            case "player_list_open", "tab_open" -> PLAYER_LIST_OPEN;
             case "chunks_culling" -> CHUNK_CULLING;
             case "overworld" -> IN_OVERWORLD;
             case "nether" -> IN_NETHER;
