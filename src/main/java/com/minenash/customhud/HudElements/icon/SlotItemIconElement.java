@@ -53,18 +53,17 @@ public class SlotItemIconElement extends IconElement {
 
         renderItemStack(x, y, profileScale, stack);
         if (showCount)
-            renderCount(context, stack.getCount(), x, y, profileScale);
+            renderCount(context, stack.getCount(), x, y);
         if (showDur)
-            renderDur(context, stack, x, y, profileScale);
+            renderDur(context, stack, x, y);
         if (showCooldown)
-            renderCooldown(context, stack, x, y, profileScale);
+            renderCooldown(context, stack, x, y);
     }
 
-    private void renderCount(DrawContext context, int count, int x, int y, float profileScale) {
+    private void renderCount(DrawContext context, int count, int x, int y) {
         if (count != 1) {
             MatrixStack matrixStack = context.getMatrices();
             matrixStack.push();
-            matrixStack.scale(profileScale, profileScale, 1);
             matrixStack.translate(x + (scale-1)/4,y + (scale-1)/4,200);
             if (referenceCorner)
                 matrixStack.translate(0, (10*scale-10)/2, 0);
@@ -72,47 +71,32 @@ public class SlotItemIconElement extends IconElement {
 
             String string = String.valueOf(count);
             context.drawTextWithShadow(client.textRenderer, string,
-                    (int) (7.5F - client.textRenderer.getWidth(string)),
-                    (int) (6 / scale + 0.5F),
-                    0xFFFFFF);
+                    7, (int) (6 / scale + 0.5F), 0xFFFFFF);
             matrixStack.pop();
         }
     }
 
-    public void renderDur(DrawContext context, ItemStack stack, int x, int y, float profileScale) {
+    public void renderDur(DrawContext context, ItemStack stack, int x, int y) {
         if (stack.isItemBarVisible()) {
-            //TODO: CHECK
-//            RenderSystem.disableDepthTest();
-//            RenderSystem.disableBlend();
             int i = stack.getItemBarStep();
             int j = stack.getItemBarColor();
-            this.renderGuiQuad(context, profileScale, x + scale, y + 0.5 + 6*(1+(scale-1)/2), 9, 2*11/16F, 0xFF000000);
-            this.renderGuiQuad(context, profileScale, x + scale, y + 0.5 + 6*(1+(scale-1)/2), i-4, 11/16F, 0xFF000000 | j);
-//            RenderSystem.enableBlend();
-//            RenderSystem.enableDepthTest();
+            this.renderGuiQuad(context, x + scale, y + 0.5 + 6*(1+(scale-1)/2), 9, 2*11/16F, 0xFF000000);
+            this.renderGuiQuad(context, x + scale, y + 0.5 + 6*(1+(scale-1)/2), i-4, 11/16F, 0xFF000000 | j);
         }
     }
 
-    public void renderCooldown(DrawContext context, ItemStack stack, int x, int y, float profileScale) {
+    public void renderCooldown(DrawContext context, ItemStack stack, int x, int y) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
         float f = player == null ? 0.0f : player.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getTickDelta());
         if (f > 0.0f) {
-//            RenderSystem.disableDepthTest();
-//            RenderSystem.enableBlend();
-//            RenderSystem.defaultBlendFunc();
-            this.renderGuiQuad(context, profileScale, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 0x40FFFFFF);
-//            RenderSystem.enableDepthTest();
+            this.renderGuiQuad(context, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 0x40FFFFFF);
         }
     }
 
-    private void renderGuiQuad(DrawContext context, float profileScale, double x, double y, double width, double height, int color) {
+    private void renderGuiQuad(DrawContext context, double x, double y, double width, double height, int color) {
         if (referenceCorner)
             y += (10*scale-10)/2;
-        x *= profileScale;
-        y *= profileScale;
-        width *= profileScale;
-        height *= profileScale;
         width *= scale;
         height *= scale;
 

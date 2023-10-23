@@ -210,7 +210,6 @@ public class ExpressionParser {
         return new Operation.Comparison(left, right, (Comparison) tokens.get(comparatorIndex).value());
     }
 
-    //TODO
     private static Operation getMathOperation(List<Token> tokens) throws ErrorException {
         if (tokens.size() == 1)
             return getPrimitiveOperation(tokens.get(0));

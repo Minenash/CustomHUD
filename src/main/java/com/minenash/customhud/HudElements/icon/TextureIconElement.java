@@ -86,12 +86,6 @@ public class TextureIconElement extends IconElement {
     public void render(DrawContext context, int x, int y, float profileScale) {
         if (width == 0)
             return;
-
-        //TODO: CHECK
-//        RenderSystem.setShaderTexture(0, texture);
-//        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-//        RenderSystem.enableBlend();
-//        RenderSystem.defaultBlendFunc();
         context.drawTexture(texture, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 

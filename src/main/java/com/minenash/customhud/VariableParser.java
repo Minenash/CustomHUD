@@ -366,8 +366,10 @@ public class VariableParser {
         else if (part.equals("gizmo"))
             return new DebugGizmoElement(flags);
 
-        else if (part.equals("record_icon"))
+        else if (part.equals("record_icon")) {
+            enabled.music = true;
             return new RecordIconElement(flags);
+        }
 
         else if (part.startsWith("space:")) {
             String widthStr = part.substring(6);

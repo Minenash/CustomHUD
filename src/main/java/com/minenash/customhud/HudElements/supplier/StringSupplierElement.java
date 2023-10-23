@@ -82,12 +82,6 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> BIOME_BUILDER_PEAKS = () -> isNoise() ? VanillaBiomeParameters.getPeaksValleysDescription(DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges()))) : null;
     public static final Supplier<String> BIOME_BUILDER_CONTINENTS = () -> isNoise() ? par.getContinentalnessDescription(sample(sampler().continents())) : null;
 
-
-    //TODO: Item Name
-    //public static final Supplier<String> ITEM_NAME = () -> client.player.getMainHandStack().getItem().getName().;
-
-
-
     private final Supplier<String> supplier;
 
     public StringSupplierElement(Supplier<String> supplier) {

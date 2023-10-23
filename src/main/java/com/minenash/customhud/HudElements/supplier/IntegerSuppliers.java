@@ -86,7 +86,6 @@ public class IntegerSuppliers {
     public static final Supplier<Number> TARGET_FLUID_Z = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getZ();
     public static final Supplier<Number> TARGET_FLUID_DISTANCE = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getManhattanDistance(client.player.getBlockPos());
 
-    //TODO: Make these Decimal ^ and v
     public static final Supplier<Number> IN_CHUNK_X = () -> blockPos().getX() & 15;
     public static final Supplier<Number> IN_CHUNK_Y = () -> blockPos().getY() & 15;
     public static final Supplier<Number> IN_CHUNK_Z = () -> blockPos().getZ() & 15;
