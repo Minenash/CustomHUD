@@ -3,7 +3,7 @@ package com.minenash.customhud.HudElements.supplier;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.complex.MusicAndRecordTracker;
-import com.minenash.customhud.mixin.PlayerListHudAccess;
+import com.minenash.customhud.mixin.accessors.PlayerListHudAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.entity.projectile.FishingBobberEntity;

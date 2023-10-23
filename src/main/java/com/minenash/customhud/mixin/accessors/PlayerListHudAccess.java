@@ -1,4 +1,4 @@
-package com.minenash.customhud.mixin;
+package com.minenash.customhud.mixin.accessors;
 
 import net.minecraft.client.gui.hud.PlayerListHud;
 import org.spongepowered.asm.mixin.Mixin;

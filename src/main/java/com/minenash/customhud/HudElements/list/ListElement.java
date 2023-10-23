@@ -15,10 +15,10 @@ public class ListElement implements HudElement, MultiElement {
     private static final HudElement POP_LIST_ELEMENT = new FunctionalElement.PopList();
     private static final HudElement ADVANCE_LIST_ELEMENT = new FunctionalElement.AdvanceList();
 
-    private final Supplier<List<Object>> supplier;
+    private final Supplier<List<?>> supplier;
     private final List<HudElement> elements;
 
-    public ListElement(Supplier<List<Object>> supplier, List<HudElement> format) {
+    public ListElement(Supplier<List<?>> supplier, List<HudElement> format) {
         this.supplier = supplier;
         this.elements = format;
     }
@@ -26,7 +26,7 @@ public class ListElement implements HudElement, MultiElement {
     public List<HudElement> expand() {
         if (elements == null)
             return List.of(this);
-        List<Object> values = supplier.get();
+        List<?> values = supplier.get();
         if (values.isEmpty())
             return Collections.emptyList();
 

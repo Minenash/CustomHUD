@@ -1,4 +1,4 @@
-package com.minenash.customhud.mixin;
+package com.minenash.customhud.mixin.accessors;
 
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
@@ -12,10 +12,8 @@ import java.util.Map;
 @Mixin(GameOptions.class)
 public interface GameOptionsAccessor {
 
-    @Invoker("accept")
-    void invokeAccept(GameOptions.Visitor visitor);
+    @Invoker("accept") void invokeAccept(GameOptions.Visitor visitor);
 
-    @Accessor
-    Map<SoundCategory, SimpleOption<Double>> getSoundVolumeLevels();
+    @Accessor Map<SoundCategory, SimpleOption<Double>> getSoundVolumeLevels();
 
 }

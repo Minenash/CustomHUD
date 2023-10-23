@@ -1,7 +1,7 @@
 package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.complex.ComplexData;
-import com.minenash.customhud.mixin.WorldRendererAccess;
+import com.minenash.customhud.mixin.accessors.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GLX;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;

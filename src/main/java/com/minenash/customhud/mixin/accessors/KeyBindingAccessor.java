@@ -1,4 +1,4 @@
-package com.minenash.customhud.mixin;
+package com.minenash.customhud.mixin.accessors;
 
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(KeyBinding.class)
 public interface KeyBindingAccessor {
 
-    @Accessor
-    InputUtil.Key getBoundKey();
+    @Accessor InputUtil.Key getBoundKey();
 
 }

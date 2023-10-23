@@ -42,6 +42,9 @@ public class StatusEffectIconElement extends IconElement {
 
 
         x-=2; y-=2;
+        if (!referenceCorner && scale != 1)
+           y-= (bgWidth-12)/2;
+
         Sprite sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
         int m = effect.getDuration();
         float f = !effect.isDurationBelow(200) ? 1.0f :

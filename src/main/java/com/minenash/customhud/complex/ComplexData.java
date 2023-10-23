@@ -1,7 +1,7 @@
 package com.minenash.customhud.complex;
 
 import com.minenash.customhud.data.Profile;
-import com.minenash.customhud.mixin.DebugHudAccessor;
+import com.minenash.customhud.mixin.accessors.DebugHudAccessor;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
 import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;

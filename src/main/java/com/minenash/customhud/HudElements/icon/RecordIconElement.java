@@ -7,12 +7,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
-public class RecordIcon extends IconElement {
+public class RecordIconElement extends IconElement {
 
     private static final ItemStack NO_RECORD = new ItemStack(Items.BARRIER);
     private final int width;
 
-    public RecordIcon(Flags flags) {
+    public RecordIconElement(Flags flags) {
         super(flags);
         this.width = flags.iconWidth != -1 ? flags.iconWidth : (int)(11*scale);
     }

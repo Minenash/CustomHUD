@@ -1,4 +1,4 @@
-package com.minenash.customhud.mixin;
+package com.minenash.customhud.mixin.accessors;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,5 +12,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Environment(EnvType.CLIENT)
 @Mixin(WorldRenderer.class)
 public interface WorldRendererAccess {
+
     @Accessor int getRegularEntityCount();
+
 }

@@ -2,13 +2,14 @@ package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.HudElements.HudElement;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
 public class ListCountElement implements HudElement {
-    private final Supplier<List<Object>> supplier;
+    private final Supplier<List<?>> supplier;
 
-    public ListCountElement(Supplier<List<Object>> supplier) {
+    public ListCountElement(Supplier<List<?>> supplier) {
         this.supplier = supplier;
     }
 

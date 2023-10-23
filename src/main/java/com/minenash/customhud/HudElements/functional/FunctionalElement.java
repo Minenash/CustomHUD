@@ -28,8 +28,8 @@ public class FunctionalElement implements HudElement {
     public static class AdvanceList extends FunctionalElement {}
     public static class PopList extends FunctionalElement {}
     public static class PushList extends FunctionalElement {
-        public final List<Object> values;
-        public PushList(List<Object> values) { this.values = values; }
+        public final List<?> values;
+        public PushList(List<?> values) { this.values = values; }
     }
 
 }

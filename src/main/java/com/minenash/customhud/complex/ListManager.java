@@ -6,9 +6,9 @@ import java.util.Stack;
 public class ListManager {
 
     private static final Stack<Integer> index = new Stack<>();
-    private static final Stack<List<Object>> values = new Stack<>();
+    private static final Stack<List<?>> values = new Stack<>();
 
-    public static void push(List<Object> values) {
+    public static void push(List<?> values) {
         ListManager.index.push(0);
         ListManager.values.push(values);
     }

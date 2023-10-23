@@ -367,7 +367,7 @@ public class VariableParser {
             return new DebugGizmoElement(flags);
 
         else if (part.equals("record_icon"))
-            return new RecordIcon(flags);
+            return new RecordIconElement(flags);
 
         else if (part.startsWith("space:")) {
             String widthStr = part.substring(6);
@@ -454,6 +454,7 @@ public class VariableParser {
             case "display_name", "name" -> DISPLAY_NAME;
             case "username" -> USERNAME;
             case "uuid" -> UUID;
+            case "team" -> TEAM;
             case "dimension" -> DIMENSION;
             case "dimension_id" -> DIMENSION_ID;
             case "facing" -> FACING;
@@ -770,8 +771,9 @@ public class VariableParser {
         if (commaIndex != -1)
             variable = variable.substring(0, commaIndex);
 
-        Supplier<List<Object>> supplier = switch (variable) {
+        Supplier<List<?>> supplier = switch (variable) {
             case "effects" -> STATUS_EFFECTS;
+            case "players" -> ONLINE_PLAYERS;
             default -> null;
         };
         if (supplier == null)
