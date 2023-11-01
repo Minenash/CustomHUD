@@ -50,6 +50,7 @@ public class VariableParser {
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("((?:[a-z0-9/._-]+:)?[a-z0-9/._-]+)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
     private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
+    private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("(\\w*)(?::(\\w*))?.*");
 
     public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line, Supplier<?> listSupplier) {
 //        System.out.println("[Line " + debugLine+ "] '" + str + "'");
@@ -257,6 +258,24 @@ public class VariableParser {
             }
         }
 
+        else if (part.startsWith("item:")) {
+            Matcher matcher = ITEM_VARIABLE_PATTERN.matcher(part.substring(5));
+
+            if (!matcher.matches()) return null;
+
+            String slot = matcher.group(1) == null ? "" : matcher.group(1);
+            String method = matcher.group(2) == null ? "" : matcher.group(2);
+
+            Flags flags = SlotItemElement.NO_FLAGS.contains(method) ? new Flags() : Flags.parse(profile, debugLine, part.split(" "));
+            Pair<HudElement,ErrorType> element = SlotItemElement.create(slot, method, flags, profile, debugLine, enabled, original);
+
+            if (element.getRight() != null) {
+                Errors.addError(profile, debugLine, original, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ITEM_PROPERTY ? method : slot);
+                return null;
+            }
+            return element.getLeft();
+        }
+
 
 
         String[] flagParts = part.split(" ");
@@ -336,20 +355,6 @@ public class VariableParser {
             catch (InvalidIdentifierException e) {
                 Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
             }
-        }
-
-        else if (part.startsWith("item:")) {
-            int firstCollinIndex = part.indexOf(':', 6);
-
-            String slot = firstCollinIndex == -1? part.substring(5) : part.substring(5, firstCollinIndex);
-            String method = firstCollinIndex == -1? "" : part.substring(firstCollinIndex+1);
-            Pair<HudElement,ErrorType> element = SlotItemElement.create(slot, method, flags);
-
-            if (element.getRight() != null) {
-                Errors.addError(profile, debugLine, original, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ITEM_PROPERTY ? method : slot);
-                return null;
-            }
-            return element.getLeft();
         }
 
         else if (part.startsWith("s:") || part.startsWith("setting:")) {
@@ -787,6 +792,10 @@ public class VariableParser {
         if (supplier == null)
             return null;
 
+        return listElement(supplier, part, commaIndex, profile, debugLine, enabled, original);
+    }
+
+    public static HudElement listElement(Supplier<List<?>> supplier, String part, int commaIndex, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
         if (commaIndex == -1)
             return new ListCountElement(supplier);
 

@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.gui.hud.SubtitlesHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
@@ -41,6 +42,7 @@ public abstract class ListAttributeSuppliers {
     private static SubtitlesHud.SubtitleEntry subtitle() { return (SubtitlesHud.SubtitleEntry) ListManager.getValue(); }
     private static Map.Entry<Property<?>,Comparable<?>> property() { return (Map.Entry<Property<?>,Comparable<?>>) ListManager.getValue(); }
     private static TagKey<Block> blockTag() { return (TagKey<Block>) ListManager.getValue(); }
+    private static Map.Entry<Enchantment,Integer> slotEnchant() { return (Map.Entry<Enchantment,Integer>) ListManager.getValue(); }
 
     private static final StatFormatter HMS = ticks -> {
         int rawSeconds = ticks / 20;
@@ -144,6 +146,25 @@ public abstract class ListAttributeSuppliers {
     public static final Supplier<String> BLOCK_TAG_NAME = () -> blockTag().id().getNamespace().equals("minecraft") ?
             blockTag().id().getPath() : blockTag().id().toString();
     public static final Supplier<String> BLOCK_TAG_ID = () -> blockTag().id().toString();
+
+
+    public static final Supplier<String> SLOT_ITEM_ENCHANT_NAME = () -> I18n.translate(slotEnchant().getKey().getTranslationKey());
+    public static final Supplier<String> SLOT_ITEM_ENCHANT_FULL = () -> I18n.translate(slotEnchant().getKey().getTranslationKey())
+            + " " + I18n.translate("enchantment.level." + slotEnchant().getValue());
+    public static final Supplier<Number> SLOT_ITEM_ENCHANT_NUM = () -> slotEnchant().getValue();
+    public static final SpecialSupplierElement.Entry SLOT_ITEM_ENCHANT_LEVEL = new SpecialSupplierElement.Entry (
+            () -> I18n.translate("enchantment.level." + slotEnchant().getValue()),
+            () -> slotEnchant().getValue(),
+            () -> true);
+
+
+    public static final BiFunction<String,Flags,HudElement> SLOT_ITEM_ENCHANTMENT = (name, flags) -> switch (name) {
+        case "name" -> new StringSupplierElement(SLOT_ITEM_ENCHANT_NAME);
+        case "full" -> new StringSupplierElement(SLOT_ITEM_ENCHANT_FULL);
+        case "level" -> new SpecialSupplierElement(SLOT_ITEM_ENCHANT_LEVEL);
+        case "num", "number" -> new NumberSupplierElement(SLOT_ITEM_ENCHANT_NUM, flags.scale, flags.precision);
+        default -> null;
+    };
 
     static {
 

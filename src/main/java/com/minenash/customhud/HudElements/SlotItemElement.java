@@ -1,5 +1,9 @@
 package com.minenash.customhud.HudElements;
 
+import com.minenash.customhud.HudElements.list.ListAttributeSuppliers;
+import com.minenash.customhud.HudElements.list.ListElement;
+import com.minenash.customhud.VariableParser;
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.HudElements.icon.SlotItemIconElement;
 import com.minenash.customhud.errors.ErrorType;
@@ -7,12 +11,16 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.ItemSlotArgumentType;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Pair;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class SlotItemElement implements HudElement {
 
@@ -55,7 +63,8 @@ public class SlotItemElement implements HudElement {
     public static final Function<Integer, Boolean> HAS_DURABILITY = (slot) ->  item(slot).getMaxDamage() - client.player.getMainHandStack().getDamage() > 0;
     public static final Function<Integer, Boolean> HAS_MAX_DURABILITY = (slot) ->  item(slot).getMaxDamage() > 0;
 
-    public static Pair<HudElement, ErrorType> create(String slotString, String method, Flags flags) {
+    public static final List<String> NO_FLAGS = List.of("enchants", "enchants,");
+    public static Pair<HudElement, ErrorType> create(String slotString, String method, Flags flags, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
         int slot = getSlotNumber(slotString);
         if (slot == -1)
             return new Pair<>(null, ErrorType.UNKNOWN_SLOT);
@@ -72,6 +81,11 @@ public class SlotItemElement implements HudElement {
             case "max_dur","max_durability" -> new SlotItemElement(slot, MAX_DURABILITY_STR, MAX_DURABILITY_NUM, HAS_MAX_DURABILITY);
             case "dur_per","durability_percentage" -> new SlotItemElement(slot, DURABILITY_PERCENT_STR, DURABILITY_PERCENT_NUM, HAS_MAX_DURABILITY, flags.precision == -1? 0 : flags.precision << 8);
             case "icon" -> new SlotItemIconElement(slot, flags);
+            case "enchants", "enchants," -> {
+                Supplier<List<?>> supplier = () -> Arrays.asList(EnchantmentHelper.get(client.player.getStackReference(slot).get()).entrySet().toArray());
+                ListAttributeSuppliers.ATTRIBUTE_MAP.put(supplier, ListAttributeSuppliers.SLOT_ITEM_ENCHANTMENT);
+                yield listElement(supplier, profile, debugLine, enabled, original);
+            }
             default -> null;
         };
 
@@ -102,6 +116,11 @@ public class SlotItemElement implements HudElement {
         } catch (CommandSyntaxException e) {
             return -1;
         }
+    }
+
+    private static HudElement listElement(Supplier<List<?>> supplier, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
+        String fullText = original.substring(1, original.length()-1);
+        return VariableParser.listElement(supplier, fullText, fullText.indexOf(','), profile, debugLine, enabled, original);
     }
 
 
