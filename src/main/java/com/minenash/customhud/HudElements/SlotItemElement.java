@@ -14,13 +14,27 @@ import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.trim.ArmorTrim;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static net.minecraft.item.ItemStack.DISPLAY_KEY;
+import static net.minecraft.item.ItemStack.LORE_KEY;
 
 public class SlotItemElement implements HudElement {
 
@@ -82,9 +96,12 @@ public class SlotItemElement implements HudElement {
             case "dur_per","durability_percentage" -> new SlotItemElement(slot, DURABILITY_PERCENT_STR, DURABILITY_PERCENT_NUM, HAS_MAX_DURABILITY, flags.precision == -1? 0 : flags.precision << 8);
             case "icon" -> new SlotItemIconElement(slot, flags);
             case "enchants", "enchants," -> {
-                Supplier<List<?>> supplier = () -> Arrays.asList(EnchantmentHelper.get(client.player.getStackReference(slot).get()).entrySet().toArray());
-                ListAttributeSuppliers.ATTRIBUTE_MAP.put(supplier, ListAttributeSuppliers.SLOT_ITEM_ENCHANTMENT);
-                yield listElement(supplier, profile, debugLine, enabled, original);
+                Supplier<List<?>> supplier = () -> Arrays.asList(EnchantmentHelper.get(stack(slot)).entrySet().toArray());
+                yield listElement(supplier, ListAttributeSuppliers.SLOT_ITEM_ENCHANTMENT, profile, debugLine, enabled, original);
+            }
+            case "lore", "lore," -> {
+                Supplier<List<?>> supplier = () -> getLore(stack(slot));
+                yield listElement(supplier, ListAttributeSuppliers.SLOT_ITEM_LORE, profile, debugLine, enabled, original);
             }
             default -> null;
         };
@@ -118,9 +135,31 @@ public class SlotItemElement implements HudElement {
         }
     }
 
-    private static HudElement listElement(Supplier<List<?>> supplier, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
+    private static HudElement listElement(Supplier<List<?>> supplier, BiFunction<String,Flags,HudElement> children, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
+        ListAttributeSuppliers.ATTRIBUTE_MAP.put(supplier,children);
         String fullText = original.substring(1, original.length()-1);
         return VariableParser.listElement(supplier, fullText, fullText.indexOf(','), profile, debugLine, enabled, original);
+    }
+
+    private static List<String> getLore(ItemStack stack) {
+        List<String> lines = new ArrayList<>();
+        if (stack.hasNbt()) {
+            if (stack.getNbt().contains(DISPLAY_KEY, NbtElement.COMPOUND_TYPE)) {
+                NbtCompound nbtCompound = stack.getNbt().getCompound(DISPLAY_KEY);
+                if (nbtCompound.getType(LORE_KEY) == NbtElement.LIST_TYPE) {
+                    NbtList nbtList = nbtCompound.getList(LORE_KEY, NbtElement.STRING_TYPE);
+                    for (int j = 0; j < nbtList.size(); ++j) {
+                        try {
+                            MutableText mutableText2 = Text.Serializer.fromJson(nbtList.getString(j));
+                            if (mutableText2 == null) continue;
+                            lines.add(mutableText2.getString());
+                        }
+                        catch (Exception ignored) {}
+                    }
+                }
+            }
+        }
+        return lines;
     }
 
 

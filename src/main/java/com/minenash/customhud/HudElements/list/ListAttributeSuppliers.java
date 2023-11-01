@@ -43,6 +43,7 @@ public abstract class ListAttributeSuppliers {
     private static Map.Entry<Property<?>,Comparable<?>> property() { return (Map.Entry<Property<?>,Comparable<?>>) ListManager.getValue(); }
     private static TagKey<Block> blockTag() { return (TagKey<Block>) ListManager.getValue(); }
     private static Map.Entry<Enchantment,Integer> slotEnchant() { return (Map.Entry<Enchantment,Integer>) ListManager.getValue(); }
+    private static String str() { return (String) ListManager.getValue(); }
 
     private static final StatFormatter HMS = ticks -> {
         int rawSeconds = ticks / 20;
@@ -156,6 +157,7 @@ public abstract class ListAttributeSuppliers {
             () -> I18n.translate("enchantment.level." + slotEnchant().getValue()),
             () -> slotEnchant().getValue(),
             () -> true);
+    public static final Supplier<String> SLOT_ITEM_ENCHANT_RARITY = () -> slotEnchant().getKey().getRarity().toString().toLowerCase();
 
 
     public static final BiFunction<String,Flags,HudElement> SLOT_ITEM_ENCHANTMENT = (name, flags) -> switch (name) {
@@ -163,8 +165,13 @@ public abstract class ListAttributeSuppliers {
         case "full" -> new StringSupplierElement(SLOT_ITEM_ENCHANT_FULL);
         case "level" -> new SpecialSupplierElement(SLOT_ITEM_ENCHANT_LEVEL);
         case "num", "number" -> new NumberSupplierElement(SLOT_ITEM_ENCHANT_NUM, flags.scale, flags.precision);
+        case "rarity" -> new StringSupplierElement(SLOT_ITEM_ENCHANT_RARITY);
         default -> null;
     };
+
+    public static final Supplier<String> SLOT_ITEM_LORE_LINE = ListAttributeSuppliers::str;
+    public static final BiFunction<String,Flags,HudElement> SLOT_ITEM_LORE = (name, flags) ->
+            name.equals("line") ? new StringSupplierElement(SLOT_ITEM_LORE_LINE) : null;
 
     static {
 
