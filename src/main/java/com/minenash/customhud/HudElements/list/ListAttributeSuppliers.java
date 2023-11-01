@@ -9,15 +9,18 @@ import com.minenash.customhud.HudElements.supplier.SpecialSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
 import com.minenash.customhud.complex.ListManager;
 import com.minenash.customhud.data.Flags;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.hud.SubtitlesHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.stat.StatFormatter;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
@@ -36,6 +39,8 @@ public abstract class ListAttributeSuppliers {
     private static StatusEffectInstance status() { return (StatusEffectInstance) ListManager.getValue(); }
     private static PlayerListEntry playerEntry() { return (PlayerListEntry) ListManager.getValue(); }
     private static SubtitlesHud.SubtitleEntry subtitle() { return (SubtitlesHud.SubtitleEntry) ListManager.getValue(); }
+    private static Map.Entry<Property<?>,Comparable<?>> property() { return (Map.Entry<Property<?>,Comparable<?>>) ListManager.getValue(); }
+    private static TagKey<Block> blockTag() { return (TagKey<Block>) ListManager.getValue(); }
 
     private static final StatFormatter HMS = ticks -> {
         int rawSeconds = ticks / 20;
@@ -118,6 +123,28 @@ public abstract class ListAttributeSuppliers {
         return -vec3d2.dotProduct(vec3d5) > 0.5 || e == 0? 0 : e < 0 ? 1 : -1;
     }
 
+
+    //BLOCKSTATE PROPERTIES
+    public static final Supplier<String> BLOCK_PROPERTY_NAME = () -> property().getKey().getName();
+    public static final Supplier<String> BLOCK_PROPERTY_VALUE = () -> property().getValue().toString();
+    public static final Supplier<String> BLOCK_PROPERTY_FULL_TYPE = () -> property().getKey().getType().getSimpleName();
+    public static final SpecialSupplierElement.Entry BLOCK_PROPERTY_TYPE = new SpecialSupplierElement.Entry (
+            () -> switch (getPropertyType(property().getKey().getType())) {
+                case 1 -> "Boolean";
+                case 2 -> "Number";
+                case 3 -> "Enum";
+                default -> "String"; },
+            () -> getPropertyType(property().getKey().getType()),
+            () -> getPropertyType(property().getKey().getType()) != 0);
+
+    public static int getPropertyType(Class<?> type) {
+        return type == Boolean.class ? 1 : Number.class.isAssignableFrom(type) ? 2 : type.isEnum() ? 3 : 0;
+    }
+
+    public static final Supplier<String> BLOCK_TAG_NAME = () -> blockTag().id().getNamespace().equals("minecraft") ?
+            blockTag().id().getPath() : blockTag().id().toString();
+    public static final Supplier<String> BLOCK_TAG_ID = () -> blockTag().id().toString();
+
     static {
 
         BiFunction<String,Flags,HudElement> effects = (name, flags) -> switch (name) {
@@ -170,6 +197,20 @@ public abstract class ListAttributeSuppliers {
             case "dir", "direction" -> new StringSupplierElement(SUBTITLES_DIRECTION);
             case "left" -> new BooleanSupplierElement(SUBTITLES_LEFT);
             case "right" -> new BooleanSupplierElement(SUBTITLES_RIGHT);
+            default -> null;
+        });
+
+        ATTRIBUTE_MAP.put(ListSuppliers.TARGET_BLOCK_PROPERTIES, (name, flags) -> switch (name) {
+            case "name" -> new StringSupplierElement(BLOCK_PROPERTY_NAME);
+            case "type" -> new SpecialSupplierElement(BLOCK_PROPERTY_TYPE);
+            case "full_type" -> new StringSupplierElement(BLOCK_PROPERTY_FULL_TYPE);
+            case "value" -> new StringSupplierElement(BLOCK_PROPERTY_VALUE);
+            default -> null;
+        });
+
+        ATTRIBUTE_MAP.put(ListSuppliers.TARGET_BLOCK_TAGS, (name, flags) -> switch (name) {
+            case "name" -> new StringSupplierElement(BLOCK_TAG_NAME);
+            case "id" -> new StringSupplierElement(BLOCK_TAG_ID);
             default -> null;
         });
     }

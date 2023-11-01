@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements.list;
 
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.mixin.accessors.InGameHudAccessor;
 import com.minenash.customhud.mixin.accessors.SubtitleHudAccessor;
 import net.minecraft.client.network.PlayerListEntry;
@@ -8,6 +9,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
@@ -28,8 +30,9 @@ public class ListSuppliers {
         STATUS_EFFECTS_NEUTRAL = () -> CLIENT.player.getStatusEffects().stream().filter(e -> e.getEffectType().getCategory() == StatusEffectCategory.NEUTRAL).toList(),
 
         ONLINE_PLAYERS = () -> CLIENT.getNetworkHandler().getPlayerList().stream().sorted(ENTRY_ORDERING).toList(),
-        SUBTITLES = () -> ((SubtitleHudAccessor)((InGameHudAccessor) CLIENT.inGameHud).getSubtitlesHud()).getEntries();
+        SUBTITLES = () -> ((SubtitleHudAccessor)((InGameHudAccessor) CLIENT.inGameHud).getSubtitlesHud()).getEntries(),
 
-
+        TARGET_BLOCK_PROPERTIES = () -> Arrays.asList(ComplexData.targetBlock.getEntries().entrySet().toArray()),
+        TARGET_BLOCK_TAGS = () -> ComplexData.targetBlock.streamTags().toList();
 
 }

@@ -780,6 +780,8 @@ public class VariableParser {
             case "neu_effects", "neutral_effects" -> STATUS_EFFECTS_NEUTRAL;
             case "players" -> ONLINE_PLAYERS;
             case "subtitles" -> SUBTITLES;
+            case "target_block_props", "target_block_properties", "tbp" -> {enabled.targetBlock = true; yield TARGET_BLOCK_PROPERTIES;}
+            case "target_block_tags", "tbt" -> {enabled.targetBlock = true; yield TARGET_BLOCK_TAGS;}
             default -> null;
         };
         if (supplier == null)
