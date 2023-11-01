@@ -1,18 +1,21 @@
 package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.complex.ComplexData;
+import com.minenash.customhud.complex.ListManager;
+import com.minenash.customhud.mixin.accessors.AttributeContainerAccessor;
+import com.minenash.customhud.mixin.accessors.DefaultAttributeContainerAccessor;
 import com.minenash.customhud.mixin.accessors.InGameHudAccessor;
 import com.minenash.customhud.mixin.accessors.SubtitleHudAccessor;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
@@ -34,6 +37,15 @@ public class ListSuppliers {
         SUBTITLES = () -> ((SubtitleHudAccessor)((InGameHudAccessor) CLIENT.inGameHud).getSubtitlesHud()).getEntries(),
 
         TARGET_BLOCK_PROPERTIES = () ->  ComplexData.targetBlock == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetBlock.getEntries().entrySet().toArray()),
-        TARGET_BLOCK_TAGS = () -> ComplexData.targetBlock == null ? Collections.EMPTY_LIST : ComplexData.targetBlock.streamTags().toList();
+        TARGET_BLOCK_TAGS = () -> ComplexData.targetBlock == null ? Collections.EMPTY_LIST : ComplexData.targetBlock.streamTags().toList(),
+        PLAYER_ATTRIBUTES = () -> getAttributes(CLIENT.player),
+        ATTRIBUTE_MODIFIERS = () -> ((EntityAttributeInstance) ListManager.getValue()).getModifiers().stream().toList();
+
+    public static List<EntityAttributeInstance> getAttributes(LivingEntity entity) {
+        AttributeContainerAccessor container = (AttributeContainerAccessor) entity.getAttributes();
+        Map<EntityAttribute, EntityAttributeInstance> instances = new HashMap<>(((DefaultAttributeContainerAccessor)container.getFallback()).getInstances());
+        instances.putAll(container.getCustom());
+        return instances.values().stream().toList();
+    }
 
 }

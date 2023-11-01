@@ -1,6 +1,7 @@
 package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.icon.PlayerHeadIconElement;
 import com.minenash.customhud.HudElements.icon.StatusEffectIconElement;
 import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;
@@ -14,6 +15,8 @@ import net.minecraft.client.gui.hud.SubtitlesHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
@@ -44,6 +47,8 @@ public abstract class ListAttributeSuppliers {
     private static TagKey<Block> blockTag() { return (TagKey<Block>) ListManager.getValue(); }
     private static Map.Entry<Enchantment,Integer> slotEnchant() { return (Map.Entry<Enchantment,Integer>) ListManager.getValue(); }
     private static String str() { return (String) ListManager.getValue(); }
+    private static EntityAttributeInstance attribute() { return (EntityAttributeInstance) ListManager.getValue(); }
+    private static EntityAttributeModifier attributeModifier() { return (EntityAttributeModifier) ListManager.getValue(); }
 
     private static final StatFormatter HMS = ticks -> {
         int rawSeconds = ticks / 20;
@@ -144,11 +149,14 @@ public abstract class ListAttributeSuppliers {
         return type == Boolean.class ? 1 : Number.class.isAssignableFrom(type) ? 2 : type.isEnum() ? 3 : 0;
     }
 
+
+    //BLOCKSTATE TAGS
     public static final Supplier<String> BLOCK_TAG_NAME = () -> blockTag().id().getNamespace().equals("minecraft") ?
             blockTag().id().getPath() : blockTag().id().toString();
     public static final Supplier<String> BLOCK_TAG_ID = () -> blockTag().id().toString();
 
 
+    //SLOT ITEM ENCHANTMENTS
     public static final Supplier<String> SLOT_ITEM_ENCHANT_NAME = () -> I18n.translate(slotEnchant().getKey().getTranslationKey());
     public static final Supplier<String> SLOT_ITEM_ENCHANT_FULL = () -> I18n.translate(slotEnchant().getKey().getTranslationKey())
             + " " + I18n.translate("enchantment.level." + slotEnchant().getValue());
@@ -158,8 +166,6 @@ public abstract class ListAttributeSuppliers {
             () -> slotEnchant().getValue(),
             () -> true);
     public static final Supplier<String> SLOT_ITEM_ENCHANT_RARITY = () -> slotEnchant().getKey().getRarity().toString().toLowerCase();
-
-
     public static final BiFunction<String,Flags,HudElement> SLOT_ITEM_ENCHANTMENT = (name, flags) -> switch (name) {
         case "name" -> new StringSupplierElement(SLOT_ITEM_ENCHANT_NAME);
         case "full" -> new StringSupplierElement(SLOT_ITEM_ENCHANT_FULL);
@@ -169,9 +175,27 @@ public abstract class ListAttributeSuppliers {
         default -> null;
     };
 
+
+    //SLOT ITEM LORE
     public static final Supplier<String> SLOT_ITEM_LORE_LINE = ListAttributeSuppliers::str;
     public static final BiFunction<String,Flags,HudElement> SLOT_ITEM_LORE = (name, flags) ->
             name.equals("line") ? new StringSupplierElement(SLOT_ITEM_LORE_LINE) : null;
+
+
+
+    //ATTRIBUTES
+    public static final Supplier<String> ATTRIBUTE_NAME = () -> I18n.translate(attribute().getAttribute().getTranslationKey());
+    public static final Supplier<String> ATTRIBUTE_ID = () -> attribute().getAttribute().getTranslationKey();
+    public static final Supplier<Boolean> ATTRIBUTE_TRACKED = () -> attribute().getAttribute().isTracked();
+    public static final Supplier<Number> ATTRIBUTE_VALUE_DEFAULT = () -> attribute().getAttribute().getDefaultValue();
+    public static final Supplier<Number> ATTRIBUTE_VALUE_BASE = () -> attribute().getBaseValue();
+    public static final Supplier<Number> ATTRIBUTE_VALUE = () -> attribute().getValue();
+
+    //ATTRIBUTE MODIFIERS
+    public static final Supplier<String> ATTRIBUTE_MODIFIER_NAME = () -> attributeModifier().getName();
+    public static final Supplier<String> ATTRIBUTE_MODIFIER_ID = () -> attributeModifier().getId().toString();
+    public static final Supplier<Number> ATTRIBUTE_MODIFIER_VALUE = () -> attributeModifier().getValue();
+    public static final Supplier<String> ATTRIBUTE_MODIFIER_OPERATION = () -> attributeModifier().getOperation().asString();
 
     static {
 
@@ -241,6 +265,27 @@ public abstract class ListAttributeSuppliers {
             case "id" -> new StringSupplierElement(BLOCK_TAG_ID);
             default -> null;
         });
+
+        BiFunction<String,Flags,HudElement> attributes = (name, flags) -> switch (name) {
+            case "name" -> new StringSupplierElement(ATTRIBUTE_NAME);
+            case "id" -> new StringSupplierElement(ATTRIBUTE_ID);
+            case "tracked" -> new BooleanSupplierElement(ATTRIBUTE_TRACKED);
+            case "default_value" -> new NumberSupplierElement(ATTRIBUTE_VALUE_DEFAULT, flags.scale, flags.precision);
+            case "base_value" -> new NumberSupplierElement(ATTRIBUTE_VALUE_BASE, flags.scale, flags.precision);
+            case "value" -> new NumberSupplierElement(ATTRIBUTE_VALUE, flags.scale, flags.precision);
+            case "modifiers" -> new FunctionalElement.CreateAttributeModifierList();
+            default -> null;
+        };
+        ATTRIBUTE_MAP.put(ListSuppliers.TARGET_BLOCK_TAGS, attributes);
+
+        ATTRIBUTE_MAP.put(ListSuppliers.ATTRIBUTE_MODIFIERS, (name, flags) -> switch (name) {
+            case "name" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_NAME);
+            case "id" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_ID);
+            case "value" -> new NumberSupplierElement(ATTRIBUTE_MODIFIER_VALUE, flags.scale, flags.precision);
+            case "op", "operation" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_OPERATION);
+            default -> null;
+        });
+
     }
 
 

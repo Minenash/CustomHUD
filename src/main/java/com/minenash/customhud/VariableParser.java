@@ -6,6 +6,7 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.*;
 import com.minenash.customhud.HudElements.list.ListCountElement;
 import com.minenash.customhud.HudElements.list.ListElement;
+import com.minenash.customhud.HudElements.list.ListSuppliers;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
@@ -284,6 +285,10 @@ public class VariableParser {
 
         if (listSupplier != null) {
             HudElement element = getListAttributeSupplierElement(part, enabled, flags, listSupplier);
+            if (element instanceof FunctionalElement.CreateAttributeModifierList) {
+                String p = original.substring(1, original.length() - 1);
+                return listElement(ATTRIBUTE_MODIFIERS, p, p.indexOf(','), profile, debugLine, enabled, original);
+            }
             if (element != null)
                 return element;
         }
