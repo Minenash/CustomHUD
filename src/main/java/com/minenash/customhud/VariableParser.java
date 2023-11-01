@@ -775,7 +775,11 @@ public class VariableParser {
 
         Supplier<List<?>> supplier = switch (variable) {
             case "effects" -> STATUS_EFFECTS;
+            case "pos_effects", "positive_effects" -> STATUS_EFFECTS_POSITIVE;
+            case "neg_effects", "negative_effects" -> STATUS_EFFECTS_NEGATIVE;
+            case "neu_effects", "neutral_effects" -> STATUS_EFFECTS_NEUTRAL;
             case "players" -> ONLINE_PLAYERS;
+            case "subtitles" -> SUBTITLES;
             default -> null;
         };
         if (supplier == null)
