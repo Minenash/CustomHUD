@@ -7,6 +7,8 @@ import com.minenash.customhud.mixin.accessors.DefaultAttributeContainerAccessor;
 import com.minenash.customhud.mixin.accessors.InGameHudAccessor;
 import com.minenash.customhud.mixin.accessors.SubtitleHudAccessor;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -39,13 +41,23 @@ public class ListSuppliers {
         TARGET_BLOCK_PROPERTIES = () ->  ComplexData.targetBlock == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetBlock.getEntries().entrySet().toArray()),
         TARGET_BLOCK_TAGS = () -> ComplexData.targetBlock == null ? Collections.EMPTY_LIST : ComplexData.targetBlock.streamTags().toList(),
         PLAYER_ATTRIBUTES = () -> getAttributes(CLIENT.player),
+        TARGET_ENTITY_ATTRIBUTES = () -> ComplexData.targetEntity == null ? Collections.EMPTY_LIST : getAttributes(ComplexData.targetEntity),
         ATTRIBUTE_MODIFIERS = () -> ((EntityAttributeInstance) ListManager.getValue()).getModifiers().stream().toList();
 
-    public static List<EntityAttributeInstance> getAttributes(LivingEntity entity) {
-        AttributeContainerAccessor container = (AttributeContainerAccessor) entity.getAttributes();
+    public static Entity getFullEntity(Entity entity) {
+        return CLIENT.getServer() == null ? entity :
+                CLIENT.getServer().getWorld(entity.getWorld().getRegistryKey()).getEntity(entity.getUuid());
+    }
+
+    public static List<EntityAttributeInstance> getAttributes(Entity entity) {
+        entity = getFullEntity(entity);
+        if (!(entity instanceof LivingEntity le) ) return Collections.EMPTY_LIST;
+        AttributeContainerAccessor container = (AttributeContainerAccessor) le.getAttributes();
         Map<EntityAttribute, EntityAttributeInstance> instances = new HashMap<>(((DefaultAttributeContainerAccessor)container.getFallback()).getInstances());
         instances.putAll(container.getCustom());
-        return instances.values().stream().toList();
+        return (entity.getWorld().isClient ?
+                instances.values().stream().filter(a -> a.getAttribute().isTracked()) : instances.values().stream())
+                .sorted(Comparator.comparing(a -> I18n.translate(a.getAttribute().getTranslationKey()))).toList();
     }
 
 }

@@ -26,6 +26,8 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "PlayerEntityMixin"
+    "PlayerEntityMixin",
+    "accessors.AttributeContainerAccessor",
+    "accessors.DefaultAttributeContainerAccessor"
   ]
 }

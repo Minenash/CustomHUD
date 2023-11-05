@@ -31,6 +31,7 @@ import net.minecraft.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -792,6 +793,8 @@ public class VariableParser {
             case "subtitles" -> SUBTITLES;
             case "target_block_props", "target_block_properties", "tbp" -> {enabled.targetBlock = true; yield TARGET_BLOCK_PROPERTIES;}
             case "target_block_tags", "tbt" -> {enabled.targetBlock = true; yield TARGET_BLOCK_TAGS;}
+            case "attributes" -> PLAYER_ATTRIBUTES;
+            case "target_entity_attributes", "target_entity_attr", "tea" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ATTRIBUTES;}
             default -> null;
         };
         if (supplier == null)

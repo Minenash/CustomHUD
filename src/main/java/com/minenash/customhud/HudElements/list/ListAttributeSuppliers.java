@@ -195,7 +195,16 @@ public abstract class ListAttributeSuppliers {
     public static final Supplier<String> ATTRIBUTE_MODIFIER_NAME = () -> attributeModifier().getName();
     public static final Supplier<String> ATTRIBUTE_MODIFIER_ID = () -> attributeModifier().getId().toString();
     public static final Supplier<Number> ATTRIBUTE_MODIFIER_VALUE = () -> attributeModifier().getValue();
-    public static final Supplier<String> ATTRIBUTE_MODIFIER_OPERATION = () -> attributeModifier().getOperation().asString();
+    public static final Supplier<String> ATTRIBUTE_MODIFIER_OPERATION_NAME = () -> switch (attributeModifier().getOperation()) {
+        case ADDITION -> "Addition";
+        case MULTIPLY_BASE -> "Multiplication Base";
+        case MULTIPLY_TOTAL -> "Multiplication Total";
+    };
+    public static final Supplier<String> ATTRIBUTE_MODIFIER_OPERATION = () -> switch (attributeModifier().getOperation()) {
+        case ADDITION -> "+";
+        case MULTIPLY_BASE -> "☒";
+        case MULTIPLY_TOTAL -> "×";
+    };
 
     static {
 
@@ -273,16 +282,18 @@ public abstract class ListAttributeSuppliers {
             case "default_value" -> new NumberSupplierElement(ATTRIBUTE_VALUE_DEFAULT, flags.scale, flags.precision);
             case "base_value" -> new NumberSupplierElement(ATTRIBUTE_VALUE_BASE, flags.scale, flags.precision);
             case "value" -> new NumberSupplierElement(ATTRIBUTE_VALUE, flags.scale, flags.precision);
-            case "modifiers" -> new FunctionalElement.CreateAttributeModifierList();
+            case "modifiers","modifiers," -> new FunctionalElement.CreateAttributeModifierList();
             default -> null;
         };
-        ATTRIBUTE_MAP.put(ListSuppliers.TARGET_BLOCK_TAGS, attributes);
+        ATTRIBUTE_MAP.put(ListSuppliers.PLAYER_ATTRIBUTES, attributes);
+        ATTRIBUTE_MAP.put(ListSuppliers.TARGET_ENTITY_ATTRIBUTES, attributes);
 
         ATTRIBUTE_MAP.put(ListSuppliers.ATTRIBUTE_MODIFIERS, (name, flags) -> switch (name) {
             case "name" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_NAME);
             case "id" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_ID);
             case "value" -> new NumberSupplierElement(ATTRIBUTE_MODIFIER_VALUE, flags.scale, flags.precision);
             case "op", "operation" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_OPERATION);
+            case "op_name", "operation_name" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_OPERATION_NAME);
             default -> null;
         });
 
