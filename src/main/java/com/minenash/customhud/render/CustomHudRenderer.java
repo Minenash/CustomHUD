@@ -170,6 +170,7 @@ public class CustomHudRenderer {
         }
 
         context.getMatrices().pop();
+        font = null;
 
     }
 

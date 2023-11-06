@@ -1,10 +1,6 @@
 {
     "providers": [
         {
-            "type": "reference",
-            "id": "minecraft:default"
-        },
-        {
             "type": "bitmap",
             "file": "minecraft:font/ascii_sga.png",
             "ascent": 7,
@@ -26,6 +22,10 @@
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
             ]
+        },
+        {
+            "type": "reference",
+            "id": "minecraft:default"
         }
     ]
 }
