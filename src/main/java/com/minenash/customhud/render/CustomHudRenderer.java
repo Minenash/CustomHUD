@@ -57,6 +57,13 @@ public class CustomHudRenderer {
             List<HudElement> elements = new ArrayList<>();
             for (HudElement e : section.elements)
                 lineCount += addElement(elements, e);
+            for (int j = 1; j < elements.size()-1; j++) {
+                if (elements.get(j) instanceof FunctionalElement.IgnoreNewLineIfSurroundedByNewLine
+                 && elements.get(j-1) instanceof FunctionalElement.NewLine
+                 && elements.get(j+1) instanceof FunctionalElement.NewLine)
+                    lineCount--;
+            }
+
 
             boolean removeExtraNewLines = false;
             for (int i = elements.size() - 1; i >= 0; i--) {
