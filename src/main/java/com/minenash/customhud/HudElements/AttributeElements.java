@@ -34,7 +34,7 @@ public class AttributeElements {
     public static Pair<HudElement, ErrorType> create(Supplier<Entity> entity, String attribute, String method, Flags flags, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
         EntityAttribute attr = Registries.ATTRIBUTE.get(Identifier.tryParse(attribute));
         if (attr == null)
-            return new Pair<>(null, ErrorType.UNKNOWN_SLOT);
+            return new Pair<>(null, ErrorType.UNKNOWN_ATTRIBUTE);
 
         Supplier<EntityAttributeInstance> attrS = () -> {
             Entity e = ListSuppliers.getFullEntity(entity.get());
@@ -60,7 +60,7 @@ public class AttributeElements {
         };
 
         if (element == null)
-            return new Pair<>(null, ErrorType.UNKNOWN_ITEM_PROPERTY);
+            return new Pair<>(null, ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY);
 
         if (flags.anyTextUsed())
             return new Pair<>(new FormattedElement(element, flags), null);

@@ -59,4 +59,28 @@ public class ListElement implements HudElement, MultiElement {
         return supplier.get().isEmpty();
     }
 
+    public static class MultiLineBuilder {
+        private static final Supplier<List<?>> EMPTY = () -> Collections.EMPTY_LIST;
+
+        public final Supplier<List<?>> supplier;
+        private final List<HudElement> elements = new ArrayList<>();
+
+        public MultiLineBuilder(Supplier<List<?>> supplier) {
+            this.supplier = supplier == null ? EMPTY : supplier;
+        }
+
+        public void add(HudElement element) {
+            this.elements.add(element);
+        }
+
+        public void addAll(List<HudElement> elements) {
+            this.elements.addAll(elements);
+        }
+
+        public ListElement build() {
+            return new ListElement(supplier, elements);
+        }
+
+    }
+
 }

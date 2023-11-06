@@ -24,13 +24,15 @@ public enum ErrorType {
     UNKNOWN_ITEM_PROPERTY ("Item Properties", "variables#items", "Unknown Item Property: §e"),
     UNKNOWN_ATTRIBUTE ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute: §e"),
     UNKNOWN_ATTRIBUTE_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute Property: §e"),
-
+    //TODO FIX ME
     UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),
 
     UNKNOWN_SETTING ("Settings", "references/settings", "Unknown Setting: §e"),
     UNKNOWN_KEYBOARD_KEY ("Settings", "references/settings", "Unknown Keyboard Key: §e"),
     UNKNOWN_SOUND_CATEGORY ("Settings", "references/settings", "Unknown Sound Category: §e"),
 
+    LIST_NOT_STARTED ("CHANGE ME", "CHANGE ME", "No =for: §olist§r= to end"),
+    LIST_NOT_ENDED ("CHANGE ME", "CHANGE ME", "Missing =endfor="),
     CONDITIONAL_NOT_STARTED ("Conditionals", "conditionals", "No =if: §ocond§r= to "),
     CONDITIONAL_NOT_ENDED ("Conditionals", "conditionals", "Missing =endif="),
     MALFORMED_CONDITIONAL ("Conditionals", "conditionals", "Malformed conditional: "),

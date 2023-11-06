@@ -808,7 +808,15 @@ public class VariableParser {
         if (commaIndex != -1)
             variable = variable.substring(0, commaIndex);
 
-        Supplier<List<?>> supplier = switch (variable) {
+        Supplier<List<?>> supplier = getListSupplier(variable, enabled);
+        if (supplier == null)
+            return null;
+
+        return listElement(supplier, part, commaIndex, profile, debugLine, enabled, original);
+    }
+
+    public static Supplier<List<?>> getListSupplier(String variable, ComplexData.Enabled enabled) {
+        return switch (variable) {
             case "effects" -> STATUS_EFFECTS;
             case "pos_effects", "positive_effects" -> STATUS_EFFECTS_POSITIVE;
             case "neg_effects", "negative_effects" -> STATUS_EFFECTS_NEGATIVE;
@@ -822,10 +830,6 @@ public class VariableParser {
             case "hooked_entity_attributes", "hooked_entity_attrs", "heas" -> HOOKED_ENTITY_ATTRIBUTES;
             default -> null;
         };
-        if (supplier == null)
-            return null;
-
-        return listElement(supplier, part, commaIndex, profile, debugLine, enabled, original);
     }
 
     public static HudElement listElement(Supplier<List<?>> supplier, String part, int commaIndex, int profile, int debugLine, ComplexData.Enabled enabled, String original) {

@@ -1,11 +1,7 @@
 package com.minenash.customhud.data;
 
 import com.minenash.customhud.complex.ComplexData;
-import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
-import com.minenash.customhud.VariableParser;
-import com.minenash.customhud.conditionals.ExpressionParser;
-import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
@@ -29,6 +25,7 @@ public class Profile {
 
     private static final Pattern IF_PATTERN = Pattern.compile("=if ?: ?(.+)=");
     private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=");
+    private static final Pattern FOR_PATTERN = Pattern.compile("=for ?: ?(.+)=");
 
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
 
@@ -38,8 +35,7 @@ public class Profile {
     public float targetDistance = 20;
     public Crosshairs crosshair = Crosshairs.NORMAL;
 
-
-    private Stack<ConditionalElement.MultiLineBuilder> tempIfStack = new Stack<>();
+    private MultiLineStacker stacker = new MultiLineStacker();
 
     public static Profile parseProfile(Path path, int profileID) {
         Profile profile = parseProfileInner(path, profileID);
@@ -112,6 +108,11 @@ public class Profile {
             Matcher matcher = SECTION_DECORATION_PATTERN.matcher(lineLC);
             if (matcher.matches()) {
                 localTheme = profile.baseTheme.copy();
+
+                if (section != null)
+                    section.elements = profile.stacker.finish(0, profileID, i-1, false);
+                profile.stacker = new MultiLineStacker();
+
                 section = switch (matcher.group(1)) {
                     case "topleft" -> new Section.TopLeft();
                     case "topcenter" -> new Section.TopCenter();
@@ -140,29 +141,26 @@ public class Profile {
                 profile.sections.add(section = new Section.TopLeft());
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
-                profile.tempIfStack.push(new ConditionalElement.MultiLineBuilder( ExpressionParser.parseExpression(matcher.group(1), line, profileID, i+1, profile.enabled, null) ));
+                profile.stacker.startIf(matcher.group(1), profileID, i, line, profile.enabled);
 
             else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
-                if (profile.tempIfStack.isEmpty())
-                    Errors.addError(profileID, i, line+1, ErrorType.CONDITIONAL_NOT_STARTED, "=else if: §ocond§r=");
-                else
-                    profile.tempIfStack.peek().setConditional(ExpressionParser.parseExpression(matcher.group(1), line, profileID, i + 1, profile.enabled, null));
+                profile.stacker.elseIf(matcher.group(1), profileID, i, line, profile.enabled);
 
             else if (line.equalsIgnoreCase("=else="))
-                if (profile.tempIfStack.isEmpty())
-                    Errors.addError(profileID, i+1, line, ErrorType.CONDITIONAL_NOT_STARTED, "=else=");
-                else
-                    profile.tempIfStack.peek().setConditional(new Operation.Literal(1));
+                profile.stacker.else1(profileID, i, line);
 
             else if (line.equalsIgnoreCase("=endif="))
-                if (profile.tempIfStack.isEmpty())
-                    Errors.addError(profileID, i+1, line, ErrorType.CONDITIONAL_NOT_STARTED, "end");
-                else
-                    addElement(profile, section, profile.tempIfStack.pop().build());
+                profile.stacker.endIf(profileID, i, line);
+
+            else if (( matcher = FOR_PATTERN.matcher(lineLC) ).matches())
+                profile.stacker.startFor(matcher.group(1), profile.enabled);
+
+            else if (line.equalsIgnoreCase("=endfor="))
+                profile.stacker.endFor(profileID, i, line);
 
             else if (( matcher = LOCAL_THEME_PATTERN.matcher(lineLC) ).matches()) {
                 if (localTheme.parse(false, matcher.group(1), profileID, i+1))
-                    addElement(profile, section, new FunctionalElement.ChangeTheme(localTheme.copy()));
+                    profile.stacker.addElement(new FunctionalElement.ChangeTheme(localTheme.copy()));
                 else
                     Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_THEME_FLAG, "");
             }
@@ -171,34 +169,17 @@ public class Profile {
                 Errors.addError(profileID, i+1, line, ErrorType.ILLEGAL_GLOBAL_THEME_FLAG, "");
 
             else
-                addAllElement(profile, section, VariableParser.addElements(line, profileID, i + 1, profile.enabled, true, null));
+                profile.stacker.addElements(line, profileID, i + 1, profile.enabled);
 
         }
 
-        while (!profile.tempIfStack.empty()) {
-            addElement(profile, section, profile.tempIfStack.pop().build());
-            Errors.addError(profileID, lines.size()+1, "end of profile", ErrorType.CONDITIONAL_NOT_ENDED, "");
-        }
-
-        profile.tempIfStack = null;
+        if (section != null)
+            section.elements = profile.stacker.finish(0, profileID, lines.size(), true);
+        profile.stacker = null;
 
         profile.sections.removeIf(s -> s.elements.isEmpty());
 
         return profile;
-    }
-
-    private static void addElement(Profile profile, Section section, HudElement element) {
-        if (profile.tempIfStack.empty())
-            section.elements.add(element);
-        else
-            profile.tempIfStack.peek().add(element);
-    }
-
-    private static void addAllElement(Profile profile, Section section, List<HudElement> elements) {
-        if (profile.tempIfStack.empty())
-            section.elements.addAll(elements);
-        else
-            profile.tempIfStack.peek().addAll(elements);
     }
 
 }
