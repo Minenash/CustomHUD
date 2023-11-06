@@ -24,7 +24,7 @@ import static com.minenash.customhud.CustomHud.CLIENT;
 
 public class ListSuppliers {
 
-    private static final Comparator<PlayerListEntry> ENTRY_ORDERING =
+    public static final Comparator<PlayerListEntry> ENTRY_ORDERING =
             Comparator.comparingInt((PlayerListEntry entry) -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
                     .thenComparing((entry) -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
                     .thenComparing((entry) -> entry.getProfile().getName(), String::compareToIgnoreCase);
@@ -43,7 +43,13 @@ public class ListSuppliers {
         PLAYER_ATTRIBUTES = () -> getAttributes(CLIENT.player),
         TARGET_ENTITY_ATTRIBUTES = () -> ComplexData.targetEntity == null ? Collections.EMPTY_LIST : getAttributes(ComplexData.targetEntity),
         HOOKED_ENTITY_ATTRIBUTES = () -> hooked() == null ? Collections.EMPTY_LIST : getAttributes(hooked()),
-        ATTRIBUTE_MODIFIERS = () -> ((EntityAttributeInstance) ListManager.getValue()).getModifiers().stream().toList();
+        ATTRIBUTE_MODIFIERS = () -> ((EntityAttributeInstance) ListManager.getValue()).getModifiers().stream().toList(),
+        TEAMS = () -> Arrays.asList(CLIENT.world.getScoreboard().getTeams().toArray()),
+        TEAM_MEMBERS = () -> Arrays.asList(((Team) ListManager.getValue()).getPlayerList().toArray()),
+        TEAM_PLAYER_FROM_LIST = () -> {
+            Team team = (Team) ListManager.getValue();
+            return CLIENT.getNetworkHandler().getPlayerList().stream().filter(p -> p.getScoreboardTeam() == team).sorted(ENTRY_ORDERING).toList();
+        };
 
     public static Entity getFullEntity(Entity entity) {
         return CLIENT.getServer() == null || entity == null? entity :

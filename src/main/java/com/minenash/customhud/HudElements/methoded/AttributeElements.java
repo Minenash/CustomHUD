@@ -1,5 +1,7 @@
-package com.minenash.customhud.HudElements;
+package com.minenash.customhud.HudElements.methoded;
 
+import com.minenash.customhud.HudElements.FormattedElement;
+import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.list.ListAttributeSuppliers;
 import com.minenash.customhud.HudElements.list.ListSuppliers;
 import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;

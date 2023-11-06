@@ -4,6 +4,7 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.data.HudTheme;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class FunctionalElement implements HudElement {
 
@@ -30,6 +31,9 @@ public class FunctionalElement implements HudElement {
         public final List<?> values;
         public PushList(List<?> values) { this.values = values; }
     }
-    public static class CreateAttributeModifierList extends FunctionalElement {}
+    public static class CreateListElement extends FunctionalElement {
+        public final Supplier<List<?>> supplier;
+        public CreateListElement(Supplier<List<?>> supplier) { this.supplier = supplier; }
+    }
 
 }

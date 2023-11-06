@@ -1,7 +1,8 @@
-package com.minenash.customhud.HudElements;
+package com.minenash.customhud.HudElements.methoded;
 
+import com.minenash.customhud.HudElements.FormattedElement;
+import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.list.ListAttributeSuppliers;
-import com.minenash.customhud.HudElements.list.ListElement;
 import com.minenash.customhud.VariableParser;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.data.Flags;
@@ -14,21 +15,17 @@ import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;

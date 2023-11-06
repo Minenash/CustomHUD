@@ -6,6 +6,9 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.*;
 import com.minenash.customhud.HudElements.list.ListCountElement;
 import com.minenash.customhud.HudElements.list.ListElement;
+import com.minenash.customhud.HudElements.methoded.AttributeElements;
+import com.minenash.customhud.HudElements.methoded.SlotItemElement;
+import com.minenash.customhud.HudElements.methoded.TeamElements;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
@@ -303,6 +306,24 @@ public class VariableParser {
             return element.getLeft();
         }
 
+        else if (part.startsWith("team:")) {
+            Matcher matcher = ITEM_VARIABLE_PATTERN.matcher(part.substring(5));
+
+            if (!matcher.matches()) return null;
+
+            String team = matcher.group(1) == null ? "" : matcher.group(1);
+            String method = matcher.group(2) == null ? "" : matcher.group(2);
+
+            Flags flags = SlotItemElement.NO_FLAGS.contains(method) ? new Flags() : Flags.parse(profile, debugLine, part.split(" "));
+            Pair<HudElement,ErrorType> element = TeamElements.create(team, method, flags, profile, debugLine, enabled, original);
+
+            if (element.getRight() != null) {
+                Errors.addError(profile, debugLine, original, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY ? method : team);
+                return null;
+            }
+            return element.getLeft();
+        }
+
 
 
         String[] flagParts = part.split(" ");
@@ -311,9 +332,9 @@ public class VariableParser {
 
         if (listSupplier != null) {
             HudElement element = getListAttributeSupplierElement(part, enabled, flags, listSupplier);
-            if (element instanceof FunctionalElement.CreateAttributeModifierList) {
+            if (element instanceof FunctionalElement.CreateListElement cle) {
                 String p = original.substring(1, original.length() - 1);
-                return listElement(ATTRIBUTE_MODIFIERS, p, p.indexOf(','), profile, debugLine, enabled, original);
+                return listElement(cle.supplier, p, p.indexOf(','), profile, debugLine, enabled, original);
             }
             if (element != null)
                 return element;
@@ -828,6 +849,8 @@ public class VariableParser {
             case "attributes" -> PLAYER_ATTRIBUTES;
             case "target_entity_attributes", "target_entity_attrs", "teas" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ATTRIBUTES;}
             case "hooked_entity_attributes", "hooked_entity_attrs", "heas" -> HOOKED_ENTITY_ATTRIBUTES;
+            case "teams" -> TEAMS;
+
             default -> null;
         };
     }

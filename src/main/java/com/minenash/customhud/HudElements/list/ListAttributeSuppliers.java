@@ -20,9 +20,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardDisplaySlot;
-import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.*;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Util;
@@ -49,6 +47,7 @@ public abstract class ListAttributeSuppliers {
     private static String str() { return (String) ListManager.getValue(); }
     private static EntityAttributeInstance attribute() { return (EntityAttributeInstance) ListManager.getValue(); }
     private static EntityAttributeModifier attributeModifier() { return (EntityAttributeModifier) ListManager.getValue(); }
+    private static Team team() { return (Team) ListManager.getValue(); }
 
     private static final StatFormatter HMS = ticks -> {
         int rawSeconds = ticks / 20;
@@ -85,6 +84,8 @@ public abstract class ListAttributeSuppliers {
     //PLAYERS (from PlayerList) TODO: ADD TEAM COLOR AND IS_VERIFIED
     public static final Supplier<String> PLAYER_ENTRY_NAME = () -> playerEntry().getProfile().getName();
     public static final Supplier<String> PLAYER_ENTRY_UUID = () -> playerEntry().getProfile().getId().toString();
+
+    //TODO: CHANGE TEAM VAR
     public static final Supplier<String> PLAYER_ENTRY_TEAM = () -> playerEntry().getScoreboardTeam().getName();
 
     public static final Supplier<Number> PLAYER_ENTRY_LATENCY = () -> playerEntry().getLatency();
@@ -102,6 +103,24 @@ public abstract class ListAttributeSuppliers {
             () -> playerEntry().getGameMode().getName(),
             () -> playerEntry().getGameMode().getId(),
             () -> true);
+
+    public static final BiFunction<String,Flags,HudElement> PLAYERS = (name, flags) -> switch (name) {
+        case "name" -> new StringSupplierElement(PLAYER_ENTRY_NAME);
+        case "id" -> new StringSupplierElement(PLAYER_ENTRY_UUID);
+        case "team" -> new StringSupplierElement(PLAYER_ENTRY_TEAM);
+
+        case "latency" -> new NumberSupplierElement(PLAYER_ENTRY_LATENCY, flags.scale, flags.precision);
+        case "list_score" -> new NumberSupplierElement(PLAYER_ENTRY_LIST_SCORE, flags.scale, flags.precision);
+
+        case "gamemode" -> new SpecialSupplierElement(PLAYER_ENTRY_GAMEMODE);
+        case "survival" -> new BooleanSupplierElement(PLAYER_ENTRY_SURVIVAL);
+        case "creative" -> new BooleanSupplierElement(PLAYER_ENTRY_CREATIVE);
+        case "adventure" -> new BooleanSupplierElement(PLAYER_ENTRY_ADVENTURE);
+        case "spectator" -> new BooleanSupplierElement(PLAYER_ENTRY_SPECTATOR);
+
+        case "head" -> new PlayerHeadIconElement(flags);
+        default -> null;
+    };
 
 
     //SUBTITLES TODO: ADD ALPHA COLOR
@@ -177,9 +196,9 @@ public abstract class ListAttributeSuppliers {
 
 
     //SLOT ITEM LORE
-    public static final Supplier<String> SLOT_ITEM_LORE_LINE = ListAttributeSuppliers::str;
+    public static final Supplier<String> STR_SUPPLIER = ListAttributeSuppliers::str;
     public static final BiFunction<String,Flags,HudElement> SLOT_ITEM_LORE = (name, flags) ->
-            name.equals("line") ? new StringSupplierElement(SLOT_ITEM_LORE_LINE) : null;
+            name.equals("line") ? new StringSupplierElement(STR_SUPPLIER) : null;
 
 
 
@@ -215,6 +234,38 @@ public abstract class ListAttributeSuppliers {
         default -> null;
     };
 
+    //TEAMS TODO: Add color
+    public static final Supplier<String> TEAM_NAME = () -> team().getDisplayName().getString();
+    public static final Supplier<String> TEAM_ID = () -> team().getName();
+    public static final Supplier<Boolean> TEAM_FRIENDLY_FIRE = () -> team().isFriendlyFireAllowed();
+    public static final Supplier<Boolean> TEAM_CAN_SEE_FRIENDLY_INVIS = () -> team().shouldShowFriendlyInvisibles();
+    public static final SpecialSupplierElement.Entry TEAM_NAME_TAG_VISIBILITY = SpecialSupplierElement.of(
+            () -> team().getNameTagVisibilityRule().getDisplayName().getString(),
+            () -> team().getNameTagVisibilityRule().value,
+            () -> visibleToPlayer(team(), team().getNameTagVisibilityRule())
+    );
+    public static final SpecialSupplierElement.Entry TEAM_DEATH_MGS_VISIBILITY = SpecialSupplierElement.of(
+            () -> team().getNameTagVisibilityRule().getDisplayName().getString(),
+            () -> team().getNameTagVisibilityRule().value,
+            () -> visibleToPlayer(team(), team().getDeathMessageVisibilityRule())
+    );
+    public static final SpecialSupplierElement.Entry TEAM_COLLISION = SpecialSupplierElement.of(
+            () -> team().getCollisionRule().getDisplayName().getString(),
+            () -> team().getCollisionRule().value,
+            () -> team().getCollisionRule() != AbstractTeam.CollisionRule.NEVER
+    );
+
+    //Team (non-list) Members
+    public static final BiFunction<String,Flags,HudElement> TEAM_MEMBERS = (name, flags) ->
+            name.equals("member") ? new StringSupplierElement(STR_SUPPLIER) : null;
+
+    public static boolean visibleToPlayer(Team team, AbstractTeam.VisibilityRule rule) {
+        return rule == AbstractTeam.VisibilityRule.ALWAYS
+                || (rule == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS && CLIENT.player.isTeamPlayer(team))
+                || (rule == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM && !CLIENT.player.isTeamPlayer(team));
+    }
+
+
     static {
 
         BiFunction<String,Flags,HudElement> effects = (name, flags) -> switch (name) {
@@ -236,23 +287,9 @@ public abstract class ListAttributeSuppliers {
         ATTRIBUTE_MAP.put(ListSuppliers.STATUS_EFFECTS_NEGATIVE, effects);
         ATTRIBUTE_MAP.put(ListSuppliers.STATUS_EFFECTS_NEUTRAL, effects);
 
-        ATTRIBUTE_MAP.put(ListSuppliers.ONLINE_PLAYERS, (name, flags) -> switch (name) {
-            case "name" -> new StringSupplierElement(PLAYER_ENTRY_NAME);
-            case "id" -> new StringSupplierElement(PLAYER_ENTRY_UUID);
-            case "team" -> new StringSupplierElement(PLAYER_ENTRY_TEAM);
-
-            case "latency" -> new NumberSupplierElement(PLAYER_ENTRY_LATENCY, flags.scale, flags.precision);
-            case "list_score" -> new NumberSupplierElement(PLAYER_ENTRY_LIST_SCORE, flags.scale, flags.precision);
-
-            case "gamemode" -> new SpecialSupplierElement(PLAYER_ENTRY_GAMEMODE);
-            case "survival" -> new BooleanSupplierElement(PLAYER_ENTRY_SURVIVAL);
-            case "creative" -> new BooleanSupplierElement(PLAYER_ENTRY_CREATIVE);
-            case "adventure" -> new BooleanSupplierElement(PLAYER_ENTRY_ADVENTURE);
-            case "spectator" -> new BooleanSupplierElement(PLAYER_ENTRY_SPECTATOR);
-
-            case "head" -> new PlayerHeadIconElement(flags);
-            default -> null;
-        });
+        ATTRIBUTE_MAP.put(ListSuppliers.ONLINE_PLAYERS, PLAYERS);
+        ATTRIBUTE_MAP.put(ListSuppliers.TEAM_PLAYER_FROM_LIST, PLAYERS);
+        ATTRIBUTE_MAP.put(ListSuppliers.TEAM_MEMBERS, TEAM_MEMBERS);
 
         ATTRIBUTE_MAP.put(ListSuppliers.SUBTITLES, (name, flags) -> switch (name) {
             case "name" -> new StringSupplierElement(SUBTITLES_NAME);
@@ -291,7 +328,7 @@ public abstract class ListAttributeSuppliers {
             case "default_value" -> new NumberSupplierElement(ATTRIBUTE_VALUE_DEFAULT, flags.scale, flags.precision);
             case "base_value" -> new NumberSupplierElement(ATTRIBUTE_VALUE_BASE, flags.scale, flags.precision);
             case "value" -> new NumberSupplierElement(ATTRIBUTE_VALUE, flags.scale, flags.precision);
-            case "modifiers","modifiers," -> new FunctionalElement.CreateAttributeModifierList();
+            case "modifiers","modifiers," -> new FunctionalElement.CreateListElement(ListSuppliers.ATTRIBUTE_MODIFIERS);
             default -> null;
         };
         ATTRIBUTE_MAP.put(ListSuppliers.PLAYER_ATTRIBUTES, attributes);
@@ -299,6 +336,19 @@ public abstract class ListAttributeSuppliers {
         ATTRIBUTE_MAP.put(ListSuppliers.HOOKED_ENTITY_ATTRIBUTES, attributes);
 
         ATTRIBUTE_MAP.put(ListSuppliers.ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIERS_CHILDREN);
+
+        ATTRIBUTE_MAP.put(ListSuppliers.TARGET_BLOCK_TAGS, (name, flags) -> switch (name) {
+            case "name" -> new StringSupplierElement(TEAM_NAME);
+            case "id" -> new StringSupplierElement(TEAM_ID);
+            case "friendly_fire" -> new BooleanSupplierElement(TEAM_FRIENDLY_FIRE);
+            case "see_friendly_invisibility", "friendly_invis" -> new BooleanSupplierElement(TEAM_CAN_SEE_FRIENDLY_INVIS);
+            case "name_tag_visibility", "name_tag" -> new SpecialSupplierElement(TEAM_NAME_TAG_VISIBILITY);
+            case "death_msg_visibility", "death_msg" -> new SpecialSupplierElement(TEAM_DEATH_MGS_VISIBILITY);
+            case "collision" -> new SpecialSupplierElement(TEAM_COLLISION);
+            case "members" -> new FunctionalElement.CreateListElement(ListSuppliers.TEAM_MEMBERS);
+            case "online_players", "players" -> new FunctionalElement.CreateListElement(ListSuppliers.TEAM_PLAYER_FROM_LIST);
+            default -> null;
+        });
 
     }
 
