@@ -43,11 +43,11 @@ public class AttributeElements {
         };
 
         HudElement element = switch (method) {
-            case "", "name" -> new StringSupplierElement( () ->  I18n.translate(attr.getTranslationKey()));
+            case "name" -> new StringSupplierElement( () ->  I18n.translate(attr.getTranslationKey()));
             case "tracked" -> new BooleanSupplierElement(attr::isTracked);
             case "default_value" -> new NumberSupplierElement(attr::getDefaultValue, flags.scale, flags.precision);
             case "base_value" -> new NumberSupplierElement( () -> {var a = attrS.get(); return a == null ? null : attrS.get().getBaseValue();}, flags.scale, flags.precision);
-            case "value" -> new NumberSupplierElement( () -> {var a = attrS.get(); return a == null ? null : attrS.get().getValue();}, flags.scale, flags.precision);
+            case "", "value" -> new NumberSupplierElement( () -> {var a = attrS.get(); return a == null ? null : attrS.get().getValue();}, flags.scale, flags.precision);
             case "modifiers", "modifiers," -> {
                 Supplier<List<?>> supplier = () -> {
                     var a = attrS.get();
