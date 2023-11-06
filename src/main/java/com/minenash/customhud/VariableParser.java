@@ -6,7 +6,6 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.*;
 import com.minenash.customhud.HudElements.list.ListCountElement;
 import com.minenash.customhud.HudElements.list.ListElement;
-import com.minenash.customhud.HudElements.list.ListSuppliers;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
@@ -18,6 +17,7 @@ import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -31,7 +31,6 @@ import net.minecraft.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -52,7 +51,7 @@ public class VariableParser {
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("((?:[a-z0-9/._-]+:)?[a-z0-9/._-]+)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
     private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
-    private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("(\\w*)(?::(\\w*))?.*");
+    private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("([\\w.]*)(?::([\\w.]*))?.*");
 
     public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line, Supplier<?> listSupplier) {
 //        System.out.println("[Line " + debugLine+ "] '" + str + "'");
@@ -278,6 +277,32 @@ public class VariableParser {
             return element.getLeft();
         }
 
+        else if (part.startsWith("attribute:")
+                || part.startsWith("target_entity_attribute:") || part.startsWith("target_entity_attr:") || part.startsWith("tea:")
+                || part.startsWith("hooked_entity_attribute:") || part.startsWith("hooked_entity_attr:") || part.startsWith("hea:")
+        ) {
+            Matcher matcher = ITEM_VARIABLE_PATTERN.matcher(part.substring(part.indexOf(':')+1));
+
+            if (!matcher.matches()) return null;
+
+            String attribute = matcher.group(1) == null ? "" : matcher.group(1);
+            String method = matcher.group(2) == null ? "" : matcher.group(2);
+            Supplier<Entity> entity = switch (part.charAt(0)) {
+                case 't' -> AttributeElements.TARGET_ENTITY;
+                case 'h' -> AttributeElements.HOOKED_ENTITY;
+                default -> AttributeElements.PLAYER;
+            };
+
+            Flags flags = AttributeElements.NO_FLAGS.contains(method) ? new Flags() : Flags.parse(profile, debugLine, part.split(" "));
+            Pair<HudElement,ErrorType> element = AttributeElements.create(entity, attribute, method, flags, profile, debugLine, enabled, original);
+
+            if (element.getRight() != null) {
+                Errors.addError(profile, debugLine, original, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY ? method : attribute);
+                return null;
+            }
+            return element.getLeft();
+        }
+
 
 
         String[] flagParts = part.split(" ");
@@ -293,7 +318,6 @@ public class VariableParser {
             if (element != null)
                 return element;
         }
-
 
         if (part.startsWith("stat:")) {
             String stat = part.substring(5);
@@ -794,7 +818,8 @@ public class VariableParser {
             case "target_block_props", "target_block_properties", "tbp" -> {enabled.targetBlock = true; yield TARGET_BLOCK_PROPERTIES;}
             case "target_block_tags", "tbt" -> {enabled.targetBlock = true; yield TARGET_BLOCK_TAGS;}
             case "attributes" -> PLAYER_ATTRIBUTES;
-            case "target_entity_attributes", "target_entity_attr", "tea" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ATTRIBUTES;}
+            case "target_entity_attributes", "target_entity_attrs", "teas" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ATTRIBUTES;}
+            case "hooked_entity_attributes", "hooked_entity_attrs", "heas" -> HOOKED_ENTITY_ATTRIBUTES;
             default -> null;
         };
         if (supplier == null)

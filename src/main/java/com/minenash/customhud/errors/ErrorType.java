@@ -22,6 +22,8 @@ public enum ErrorType {
     UNKNOWN_SLOT ("Slots", "references/item_slots", "Unknown Slot: §e"),
     UNAVAILABLE_SLOT ("Slots", "references/item_slots", "The §e" + "§r slot is not available for players"),
     UNKNOWN_ITEM_PROPERTY ("Item Properties", "variables#items", "Unknown Item Property: §e"),
+    UNKNOWN_ATTRIBUTE ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute: §e"),
+    UNKNOWN_ATTRIBUTE_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute Property: §e"),
 
     UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),
 

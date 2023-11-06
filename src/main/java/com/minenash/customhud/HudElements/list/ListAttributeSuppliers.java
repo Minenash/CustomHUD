@@ -185,7 +185,7 @@ public abstract class ListAttributeSuppliers {
 
     //ATTRIBUTES
     public static final Supplier<String> ATTRIBUTE_NAME = () -> I18n.translate(attribute().getAttribute().getTranslationKey());
-    public static final Supplier<String> ATTRIBUTE_ID = () -> attribute().getAttribute().getTranslationKey();
+    public static final Supplier<String> ATTRIBUTE_ID = () -> Registries.ATTRIBUTE.getId(attribute().getAttribute()).toString();
     public static final Supplier<Boolean> ATTRIBUTE_TRACKED = () -> attribute().getAttribute().isTracked();
     public static final Supplier<Number> ATTRIBUTE_VALUE_DEFAULT = () -> attribute().getAttribute().getDefaultValue();
     public static final Supplier<Number> ATTRIBUTE_VALUE_BASE = () -> attribute().getBaseValue();
@@ -204,6 +204,15 @@ public abstract class ListAttributeSuppliers {
         case ADDITION -> "+";
         case MULTIPLY_BASE -> "☒";
         case MULTIPLY_TOTAL -> "×";
+    };
+
+    public static final BiFunction<String,Flags,HudElement> ATTRIBUTE_MODIFIERS_CHILDREN = (name, flags) -> switch (name) {
+        case "name" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_NAME);
+        case "id" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_ID);
+        case "value" -> new NumberSupplierElement(ATTRIBUTE_MODIFIER_VALUE, flags.scale, flags.precision);
+        case "op", "operation" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_OPERATION);
+        case "op_name", "operation_name" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_OPERATION_NAME);
+        default -> null;
     };
 
     static {
@@ -287,15 +296,9 @@ public abstract class ListAttributeSuppliers {
         };
         ATTRIBUTE_MAP.put(ListSuppliers.PLAYER_ATTRIBUTES, attributes);
         ATTRIBUTE_MAP.put(ListSuppliers.TARGET_ENTITY_ATTRIBUTES, attributes);
+        ATTRIBUTE_MAP.put(ListSuppliers.HOOKED_ENTITY_ATTRIBUTES, attributes);
 
-        ATTRIBUTE_MAP.put(ListSuppliers.ATTRIBUTE_MODIFIERS, (name, flags) -> switch (name) {
-            case "name" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_NAME);
-            case "id" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_ID);
-            case "value" -> new NumberSupplierElement(ATTRIBUTE_MODIFIER_VALUE, flags.scale, flags.precision);
-            case "op", "operation" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_OPERATION);
-            case "op_name", "operation_name" -> new StringSupplierElement(ATTRIBUTE_MODIFIER_OPERATION_NAME);
-            default -> null;
-        });
+        ATTRIBUTE_MAP.put(ListSuppliers.ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIERS_CHILDREN);
 
     }
 

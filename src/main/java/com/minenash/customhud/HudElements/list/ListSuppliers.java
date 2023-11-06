@@ -42,10 +42,11 @@ public class ListSuppliers {
         TARGET_BLOCK_TAGS = () -> ComplexData.targetBlock == null ? Collections.EMPTY_LIST : ComplexData.targetBlock.streamTags().toList(),
         PLAYER_ATTRIBUTES = () -> getAttributes(CLIENT.player),
         TARGET_ENTITY_ATTRIBUTES = () -> ComplexData.targetEntity == null ? Collections.EMPTY_LIST : getAttributes(ComplexData.targetEntity),
+        HOOKED_ENTITY_ATTRIBUTES = () -> hooked() == null ? Collections.EMPTY_LIST : getAttributes(hooked()),
         ATTRIBUTE_MODIFIERS = () -> ((EntityAttributeInstance) ListManager.getValue()).getModifiers().stream().toList();
 
     public static Entity getFullEntity(Entity entity) {
-        return CLIENT.getServer() == null ? entity :
+        return CLIENT.getServer() == null || entity == null? entity :
                 CLIENT.getServer().getWorld(entity.getWorld().getRegistryKey()).getEntity(entity.getUuid());
     }
 
@@ -59,5 +60,6 @@ public class ListSuppliers {
                 instances.values().stream().filter(a -> a.getAttribute().isTracked()) : instances.values().stream())
                 .sorted(Comparator.comparing(a -> I18n.translate(a.getAttribute().getTranslationKey()))).toList();
     }
+    private static Entity hooked() {return CLIENT.player.fishHook == null ? null : CLIENT.player.fishHook.getHookedEntity();}
 
 }
