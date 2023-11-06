@@ -50,7 +50,10 @@ public class CustomHudRenderer {
             int color = theme.fgColor;
             int right = (int) (client.getWindow().getScaledWidth() * (1 / theme.scale)) - 3 + section.xOffset;
             boolean dynamicWidth = section.width == -1;
+            boolean maxWidth = section.width == -2;
             int piecesOffset = pieces.size();
+            int maxLineWidth = 0;
+            List<MaxLineRenderPiece> maxLineRenderPieces = maxWidth ? new ArrayList<>() : null;
 
 
             int lineCount = 0;
@@ -96,6 +99,8 @@ public class CustomHudRenderer {
 
                         if (dynamicWidth && xOffset != 0)
                             addLineBg(context, bgBuilder, x1-2, y - 2, x1 + xOffset + 2, y + 9 + theme.lineSpacing - 2, theme.bgColor);
+                        else if (maxWidth)
+                            maxLineWidth = Math.max(maxLineWidth, xOffset);
 
                         y += 9 + theme.lineSpacing;
                         xOffset = 0;
@@ -109,9 +114,12 @@ public class CustomHudRenderer {
                     } else if (e instanceof FunctionalElement.ChangeColor cce) {
                         color = cce.color;
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
-                        if (!dynamicWidth && theme.bgColor != cte.theme.bgColor) {
+                        if ((maxWidth || !dynamicWidth) && theme.bgColor != cte.theme.bgColor) {
                             int x1 = section.getStartX(right + 3, section.width) - 2;
-                            addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
+                            if (maxWidth)
+                                maxLineRenderPieces.add(new MaxLineRenderPiece(theme.bgColor, x1, staticWidthY - 2, y-2));
+                            else
+                                addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
                             staticWidthY = y;
                         }
                         theme = cte.theme;
@@ -128,10 +136,17 @@ public class CustomHudRenderer {
                 }
             }
 
-            if (!dynamicWidth) {
+            if (maxLineRenderPieces != null) {
+                for (MaxLineRenderPiece piece : maxLineRenderPieces)
+                    addLineBg(context, bgBuilder, piece.x, piece.y1, maxLineWidth+4, piece.y2, piece.color);
+                int x1 = section.getStartX(right + 3, section.width) - 2;
+                addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + maxLineWidth+4, y - 2, theme.bgColor);
+            }
+            else if (!dynamicWidth) {
                 int x1 = section.getStartX(right + 3, section.width) - 2;
                 addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
             }
+
 
         }
 

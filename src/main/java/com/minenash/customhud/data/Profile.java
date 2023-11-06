@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class Profile {
 
-    public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(\\d+))? ?==");
+    public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(-?\\d+|fit|max))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
     private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(.*) ?==");
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
@@ -130,8 +130,15 @@ public class Profile {
 
                 section.xOffset = matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
                 section.yOffset = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
-                section.width   = matcher.group(5) != null ? Integer.parseInt(matcher.group(5)) : -1;
                 section.hideOnChat = matcher.group(4) != null && Boolean.parseBoolean(matcher.group(4));
+
+                String width = matcher.group(5);
+                if (width == null) section.width = -1;
+                else section.width = switch (width) {
+                        case "fit" -> -1;
+                        case "max" -> -2;
+                        default -> Integer.parseInt(matcher.group(5));
+                    };
 
                 profile.sections.add(section);
 
