@@ -1,18 +1,16 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.HudElements.*;
+import com.minenash.customhud.HudElements.list.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.icon.*;
-import com.minenash.customhud.HudElements.list.ListCountElement;
-import com.minenash.customhud.HudElements.list.ListElement;
-import com.minenash.customhud.HudElements.methoded.AttributeElements;
 import com.minenash.customhud.HudElements.methoded.SlotItemElement;
-import com.minenash.customhud.HudElements.methoded.TeamElements;
 import com.minenash.customhud.HudElements.stats.CustomStatElement;
 import com.minenash.customhud.HudElements.stats.TypedStatElement;
 import com.minenash.customhud.HudElements.supplier.*;
 import com.minenash.customhud.complex.ComplexData;
+import com.minenash.customhud.complex.ListManager;
 import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
@@ -20,7 +18,6 @@ import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -36,11 +33,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.minenash.customhud.HudElements.list.ListAttributeSuppliers.*;
+import static com.minenash.customhud.CustomHud.CLIENT;
+import static com.minenash.customhud.HudElements.list.AttributeHelpers.ENTITY_ATTR_READER;
+import static com.minenash.customhud.HudElements.list.AttributeHelpers.getEntityAttr;
 import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.EntryNumberSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
@@ -56,7 +56,7 @@ public class VariableParser {
     private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
     private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("([\\w.]*)(?::([\\w.]*))?.*");
 
-    public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line, Supplier<?> listSupplier) {
+    public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line, ListProvider listProvider) {
 //        System.out.println("[Line " + debugLine+ "] '" + str + "'");
 
         List<HudElement> elements = new ArrayList<>();
@@ -64,7 +64,7 @@ public class VariableParser {
         System.out.println("PARTITION:");
         for (String part : partition(str)) {
             System.out.println("`" + part + "`");
-            HudElement element = parseElement(part, profile, debugLine, enabled, listSupplier);
+            HudElement element = parseElement(part, profile, debugLine, enabled, listProvider);
             if (element != null)
                 elements.add(element);
         }
@@ -168,7 +168,7 @@ public class VariableParser {
         return parts;
     }
 
-    public static HudElement parseElement(String part, int profile, int debugLine, ComplexData.Enabled enabled, Supplier<?> listSupplier) {
+    public static HudElement parseElement(String part, int profile, int debugLine, ComplexData.Enabled enabled, ListProvider listProvider) {
         if (part == null || part.isEmpty())
             return null;
 
@@ -217,7 +217,7 @@ public class VariableParser {
                 }
                 result = result.substring(1, result.length()-1);
 
-                pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseExpression(cond, original, profile, debugLine, enabled, listSupplier), addElements(result, profile, debugLine, enabled, false, listSupplier)));
+                pairs.add(new ConditionalElement.ConditionalPair(ExpressionParser.parseExpression(cond, original, profile, debugLine, enabled, listProvider), addElements(result, profile, debugLine, enabled, false, listProvider)));
             }
             if (ps.size() % 2 == 1) {
                 String result = ps.get(ps.size()-1).trim();
@@ -227,7 +227,7 @@ public class VariableParser {
                 }
                 result = result.substring(1, result.length()-1);
 
-                pairs.add(new ConditionalElement.ConditionalPair(new Operation.Literal(1), addElements(result, profile, debugLine, enabled, false, listSupplier)));
+                pairs.add(new ConditionalElement.ConditionalPair(new Operation.Literal(1), addElements(result, profile, debugLine, enabled, false, listProvider)));
             }
 
             if (pairs.isEmpty()) {
@@ -242,7 +242,7 @@ public class VariableParser {
                 Matcher matcher = EXPRESSION_WITH_PRECISION.matcher(part);
                 matcher.matches();
                 int precision = matcher.group(1) == null ? -1 : Integer.parseInt(matcher.group(1));
-                return new ExpressionElement( ExpressionParser.parseExpression(matcher.group(2), original, profile, debugLine, enabled, listSupplier), precision );
+                return new ExpressionElement( ExpressionParser.parseExpression(matcher.group(2), original, profile, debugLine, enabled, listProvider), precision );
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -264,7 +264,6 @@ public class VariableParser {
 
         else if (part.startsWith("item:")) {
             Matcher matcher = ITEM_VARIABLE_PATTERN.matcher(part.substring(5));
-
             if (!matcher.matches()) return null;
 
             String slot = matcher.group(1) == null ? "" : matcher.group(1);
@@ -280,49 +279,22 @@ public class VariableParser {
             return element.getLeft();
         }
 
-        else if (part.startsWith("attribute:")
-                || part.startsWith("target_entity_attribute:") || part.startsWith("target_entity_attr:") || part.startsWith("tea:")
-                || part.startsWith("hooked_entity_attribute:") || part.startsWith("hooked_entity_attr:") || part.startsWith("hea:")
-        ) {
-            Matcher matcher = ITEM_VARIABLE_PATTERN.matcher(part.substring(part.indexOf(':')+1));
+        else if (part.startsWith("attribute:"))
+            return attrElement(part, ENTITY_ATTR_READER, (attr) -> () -> getEntityAttr(CLIENT.player, attr),
+                    PLAYER_ATTRIBUTES, ErrorType.UNKNOWN_ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY, profile, debugLine, enabled, original);
 
-            if (!matcher.matches()) return null;
+        else if (part.startsWith("target_entity_attribute:") || part.startsWith("target_entity_attr:") || part.startsWith("tea:"))
+            return attrElement(part, ENTITY_ATTR_READER, (attr) -> () -> getEntityAttr(ComplexData.targetEntity, attr),
+                    TARGET_ENTITY_ATTRIBUTES, ErrorType.UNKNOWN_ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY, profile, debugLine, enabled, original);
 
-            String attribute = matcher.group(1) == null ? "" : matcher.group(1);
-            String method = matcher.group(2) == null ? "" : matcher.group(2);
-            Supplier<Entity> entity = switch (part.charAt(0)) {
-                case 't' -> AttributeElements.TARGET_ENTITY;
-                case 'h' -> AttributeElements.HOOKED_ENTITY;
-                default -> AttributeElements.PLAYER;
-            };
+        else if (part.startsWith("hooked_entity_attribute:") || part.startsWith("hooked_entity_attr:") || part.startsWith("hea:"))
+            return attrElement(part, ENTITY_ATTR_READER, (attr) -> () -> getEntityAttr(CLIENT.player.fishHook == null ? null : CLIENT.player.fishHook.getHookedEntity(), attr),
+                    HOOKED_ENTITY_ATTRIBUTES, ErrorType.UNKNOWN_ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY, profile, debugLine, enabled, original);
 
-            Flags flags = AttributeElements.NO_FLAGS.contains(method) ? new Flags() : Flags.parse(profile, debugLine, part.split(" "));
-            Pair<HudElement,ErrorType> element = AttributeElements.create(entity, attribute, method, flags, profile, debugLine, enabled, original);
+        else if (part.startsWith("team:"))
+            return attrElement(part, src -> src, (team) -> () -> CLIENT.world.getScoreboard().getTeam(team),
+                    TEAMS, null, ErrorType.UNKNOWN_TEAM_PROPERTY, profile, debugLine, enabled, original);
 
-            if (element.getRight() != null) {
-                Errors.addError(profile, debugLine, original, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY ? method : attribute);
-                return null;
-            }
-            return element.getLeft();
-        }
-
-        else if (part.startsWith("team:")) {
-            Matcher matcher = ITEM_VARIABLE_PATTERN.matcher(part.substring(5));
-
-            if (!matcher.matches()) return null;
-
-            String team = matcher.group(1) == null ? "" : matcher.group(1);
-            String method = matcher.group(2) == null ? "" : matcher.group(2);
-
-            Flags flags = SlotItemElement.NO_FLAGS.contains(method) ? new Flags() : Flags.parse(profile, debugLine, part.split(" "));
-            Pair<HudElement,ErrorType> element = TeamElements.create(team, method, flags, profile, debugLine, enabled, original);
-
-            if (element.getRight() != null) {
-                Errors.addError(profile, debugLine, original, element.getRight(), element.getRight() == ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY ? method : team);
-                return null;
-            }
-            return element.getLeft();
-        }
 
 
 
@@ -330,11 +302,11 @@ public class VariableParser {
         Flags flags = Flags.parse(profile, debugLine, flagParts);
         part = flagParts[0];
 
-        if (listSupplier != null) {
-            HudElement element = getListAttributeSupplierElement(part, enabled, flags, listSupplier);
+        if (listProvider != null) {
+            HudElement element = getListAttributeSupplierElement(part, enabled, flags, listProvider);
             if (element instanceof FunctionalElement.CreateListElement cle) {
                 String p = original.substring(1, original.length() - 1);
-                return listElement(cle.supplier, p, p.indexOf(','), profile, debugLine, enabled, original);
+                return listElement(cle.provider, p, p.indexOf(','), profile, debugLine, enabled, original);
             }
             if (element != null)
                 return element;
@@ -829,14 +801,14 @@ public class VariableParser {
         if (commaIndex != -1)
             variable = variable.substring(0, commaIndex);
 
-        Supplier<List<?>> supplier = getListSupplier(variable, enabled);
-        if (supplier == null)
+        ListProvider provider = getListSupplier(variable, enabled);
+        if (provider == null)
             return null;
 
-        return listElement(supplier, part, commaIndex, profile, debugLine, enabled, original);
+        return listElement(provider, part, commaIndex, profile, debugLine, enabled, original);
     }
 
-    public static Supplier<List<?>> getListSupplier(String variable, ComplexData.Enabled enabled) {
+    public static ListProvider getListSupplier(String variable, ComplexData.Enabled enabled) {
         return switch (variable) {
             case "effects" -> STATUS_EFFECTS;
             case "pos_effects", "positive_effects" -> STATUS_EFFECTS_POSITIVE;
@@ -844,7 +816,7 @@ public class VariableParser {
             case "neu_effects", "neutral_effects" -> STATUS_EFFECTS_NEUTRAL;
             case "players" -> ONLINE_PLAYERS;
             case "subtitles" -> SUBTITLES;
-            case "target_block_props", "target_block_properties", "tbp" -> {enabled.targetBlock = true; yield TARGET_BLOCK_PROPERTIES;}
+            case "target_block_props", "target_block_properties", "tbp" -> {enabled.targetBlock = true; yield TARGET_BLOCK_STATES;}
             case "target_block_tags", "tbt" -> {enabled.targetBlock = true; yield TARGET_BLOCK_TAGS;}
             case "attributes" -> PLAYER_ATTRIBUTES;
             case "target_entity_attributes", "target_entity_attrs", "teas" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ATTRIBUTES;}
@@ -855,9 +827,9 @@ public class VariableParser {
         };
     }
 
-    public static HudElement listElement(Supplier<List<?>> supplier, String part, int commaIndex, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
+    public static HudElement listElement(ListProvider provider, String part, int commaIndex, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
         if (commaIndex == -1)
-            return new ListCountElement(supplier);
+            return new ListCountElement(provider);
 
         List<String> parts = partitionConditional(part);
         System.out.println("SUPPLIER");
@@ -875,18 +847,48 @@ public class VariableParser {
         format = format.substring(1, format.length()-1);
         System.out.println("Format: " + format);
 
-        return new ListElement(supplier, addElements(format, profile, debugLine, enabled, false, supplier));
+        return new ListElement(provider, addElements(format, profile, debugLine, enabled, false, provider));
     }
 
-    private static HudElement getListAttributeSupplierElement(String name, ComplexData.Enabled enabled, Flags flags, Supplier<?> listSupplier) {
+    private static final Supplier<String> RAW = () -> ListManager.getValue().toString();
+    private static HudElement getListAttributeSupplierElement(String name, ComplexData.Enabled enabled, Flags flags, ListProvider listProvider) {
+        if (name.endsWith(",")) name = name.substring(0, name.length()-1);
         return switch (name) {
-            case "count", "c" -> new NumberSupplierElement(COUNT, flags.scale, flags.precision);
-            case "index", "i" -> new NumberSupplierElement(INDEX, flags.scale, flags.precision);
+            case "count", "c" -> new NumberSupplierElement(ListManager::getCount, flags.scale, flags.precision);
+            case "index", "i" -> new NumberSupplierElement(ListManager::getIndex, flags.scale, flags.precision);
             case "raw" -> new StringSupplierElement(RAW);
-            default -> ATTRIBUTE_MAP.get(listSupplier).apply(name, flags);
+            default -> Attributers.get(listProvider, ListManager::getValue, name, flags);
         };
 
     }
 
-    
+    private static <T> HudElement attrElement(String part, Function<String,T> reader, Function<T,Supplier<?>> supplier,
+                                              ListProvider provider, ErrorType unknownX, ErrorType unknownAttribute,
+                                              int profile, int debugLine, ComplexData.Enabled enabled, String original) {
+        Matcher matcher = ITEM_VARIABLE_PATTERN.matcher(part.substring(part.indexOf(':')+1));
+
+        if (!matcher.matches()) return null;
+
+        String src = matcher.group(1) == null ? "" : matcher.group(1);
+        String method = matcher.group(2) == null ? "" : matcher.group(2);
+
+        T value = reader.apply(src);
+        if (value == null) {
+            Errors.addError(profile, debugLine, original, unknownX, src);
+            return null;
+        }
+
+        int commaIndex = part.indexOf(',');
+        Flags flags = commaIndex == -1 ? Flags.parse(profile, debugLine, part.split(" ")) : new Flags();
+        HudElement element = Attributers.get(provider, supplier.apply(value), method, flags);
+
+        if (element instanceof FunctionalElement.CreateListElement cle)
+            return listElement(cle.provider, part, commaIndex, profile, debugLine, enabled, original);
+        if (element != null)
+            return element;
+        Errors.addError(profile, debugLine, original, unknownAttribute, method);
+        return null;
+    }
+
+
 }

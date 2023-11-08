@@ -1,5 +1,6 @@
 package com.minenash.customhud.conditionals;
 
+import com.minenash.customhud.HudElements.list.ListProvider;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.VariableParser;
@@ -10,7 +11,6 @@ import com.mojang.datafixers.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 @SuppressWarnings("DuplicatedCode")
 public class ExpressionParser {
@@ -25,7 +25,7 @@ public class ExpressionParser {
         }
     }
 
-    public static Operation parseExpression(String input, String source, int profileNum, int debugLine, ComplexData.Enabled enabled, Supplier<?> listSupplier) {
+    public static Operation parseExpression(String input, String source, int profileNum, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) {
         if (input.isBlank() || input.equals(",") || input.equals(", "))
             return new Operation.Literal(1);
         try {
@@ -46,7 +46,7 @@ public class ExpressionParser {
 
     private static final List<TokenType> SUBTRACTABLE = List.of(TokenType.NUMBER, TokenType.BOOLEAN,
             TokenType.STRING, TokenType.VARIABLE, TokenType.END_PREN);
-    private static List<Token> getTokens(String original, int profileNum, int debugLine, ComplexData.Enabled enabled, Supplier<?> listSupplier) throws ErrorException {
+    private static List<Token> getTokens(String original, int profileNum, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) throws ErrorException {
 
         List<Token> tokens = new ArrayList<>();
         char[] chars = original.toCharArray();

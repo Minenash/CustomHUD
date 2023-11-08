@@ -8,6 +8,7 @@ import com.minenash.customhud.HudElements.icon.IconElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ListElement implements HudElement, MultiElement {
@@ -15,18 +16,18 @@ public class ListElement implements HudElement, MultiElement {
     private static final HudElement POP_LIST_ELEMENT = new FunctionalElement.PopList();
     private static final HudElement ADVANCE_LIST_ELEMENT = new FunctionalElement.AdvanceList();
 
-    private final Supplier<List<?>> supplier;
+    private final ListProvider provider;
     private final List<HudElement> elements;
 
-    public ListElement(Supplier<List<?>> supplier, List<HudElement> format) {
-        this.supplier = supplier;
+    public ListElement(ListProvider provider, List<HudElement> format) {
+        this.provider = provider;
         this.elements = format;
     }
 
     public List<HudElement> expand() {
         if (elements == null)
             return List.of(this);
-        List<?> values = supplier.get();
+        List<?> values = provider.get();
         if (values.isEmpty())
             return Collections.emptyList();
 
@@ -51,22 +52,22 @@ public class ListElement implements HudElement, MultiElement {
 
     @Override
     public Number getNumber() {
-        return supplier.get().size();
+        return provider.get().size();
     }
 
     @Override
     public boolean getBoolean() {
-        return supplier.get().isEmpty();
+        return provider.get().isEmpty();
     }
 
     public static class MultiLineBuilder {
-        private static final Supplier<List<?>> EMPTY = () -> Collections.EMPTY_LIST;
+        private static final ListProvider EMPTY = () -> Collections.EMPTY_LIST;
 
-        public final Supplier<List<?>> supplier;
+        public final ListProvider provider;
         private final List<HudElement> elements = new ArrayList<>();
 
-        public MultiLineBuilder(Supplier<List<?>> supplier) {
-            this.supplier = supplier == null ? EMPTY : supplier;
+        public MultiLineBuilder(ListProvider provider) {
+            this.provider = provider == null ? EMPTY : provider;
         }
 
         public void add(HudElement element) {
@@ -78,9 +79,11 @@ public class ListElement implements HudElement, MultiElement {
         }
 
         public ListElement build() {
-            return new ListElement(supplier, elements);
+            return new ListElement(provider, elements);
         }
 
     }
+
+
 
 }

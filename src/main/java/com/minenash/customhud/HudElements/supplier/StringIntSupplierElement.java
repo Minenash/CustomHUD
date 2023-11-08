@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 public class StringIntSupplierElement implements HudElement {
 
+    //TODO: Convert to Normal Number Vars using accesswidener
     public static final Supplier<String> PARTICLES = () -> MinecraftClient.getInstance().particleManager.getDebugString();
 
     public static final Supplier<String> STREAMING_SOUNDS = () -> ComplexData.sounds[0];

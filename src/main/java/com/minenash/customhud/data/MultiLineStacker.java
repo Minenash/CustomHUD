@@ -3,6 +3,7 @@ package com.minenash.customhud.data;
 import com.minenash.customhud.HudElements.ConditionalElement;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.list.ListElement;
+import com.minenash.customhud.HudElements.list.ListProvider;
 import com.minenash.customhud.VariableParser;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.conditionals.ExpressionParser;
@@ -21,7 +22,7 @@ public class MultiLineStacker {
     private final Stack<Object> stack = new Stack<>();
 
     public void startIf(String cond, int profileID, int line, String source, ComplexData.Enabled enabled) {
-        Operation op = ExpressionParser.parseExpression(cond, source, profileID, line+1, enabled, getSuppler());
+        Operation op = ExpressionParser.parseExpression(cond, source, profileID, line+1, enabled, getProvider());
         stack.push(new ConditionalElement.MultiLineBuilder(op));
     }
 
@@ -29,7 +30,7 @@ public class MultiLineStacker {
         if (stack.isEmpty())
             Errors.addError(profileID, line+1, source, ErrorType.CONDITIONAL_NOT_STARTED, "else if");
         else if (stack.peek() instanceof ConditionalElement.MultiLineBuilder mlb)
-            mlb.setConditional(ExpressionParser.parseExpression(cond, source, profileID, line + 1, enabled, getSuppler()));
+            mlb.setConditional(ExpressionParser.parseExpression(cond, source, profileID, line + 1, enabled, getProvider()));
         else {
             for (int i = stack.size()-1; i >= 0; i--) {
                 if (stack.get(i) instanceof ConditionalElement.MultiLineBuilder mlb) {
@@ -37,7 +38,7 @@ public class MultiLineStacker {
                     break;
                 }
             }
-            ( (ConditionalElement.MultiLineBuilder)stack.peek() ).setConditional(ExpressionParser.parseExpression(cond, source, profileID, line + 1, enabled, getSuppler()));
+            ( (ConditionalElement.MultiLineBuilder)stack.peek() ).setConditional(ExpressionParser.parseExpression(cond, source, profileID, line + 1, enabled, getProvider()));
         }
     }
 
@@ -115,7 +116,7 @@ public class MultiLineStacker {
     }
 
     public void addElements(String source, int profileID, int line, ComplexData.Enabled enabled) {
-        List<HudElement> elements = VariableParser.addElements(source, profileID, line + 1, enabled, true, getSuppler());
+        List<HudElement> elements = VariableParser.addElements(source, profileID, line + 1, enabled, true, getProvider());
         if (stack.empty())
             base.addAll(elements);
         else if (stack.peek() instanceof ConditionalElement.MultiLineBuilder mlb)
@@ -141,10 +142,10 @@ public class MultiLineStacker {
         return base;
     }
 
-    public Supplier<List<?>> getSuppler() {
+    public ListProvider getProvider() {
         for (int i = stack.size()-1; i >= 0; i--)
             if (stack.get(i) instanceof ListElement.MultiLineBuilder mlb)
-                return mlb.supplier;
+                return mlb.provider;
         return null;
     }
 

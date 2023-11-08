@@ -2,7 +2,9 @@ package com.minenash.customhud.HudElements.methoded;
 
 import com.minenash.customhud.HudElements.FormattedElement;
 import com.minenash.customhud.HudElements.HudElement;
-import com.minenash.customhud.HudElements.list.ListAttributeSuppliers;
+import com.minenash.customhud.HudElements.list.Attributers;
+import com.minenash.customhud.HudElements.list.Attributers.Attributer;
+import com.minenash.customhud.HudElements.list.ListProvider;
 import com.minenash.customhud.VariableParser;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.data.Flags;
@@ -26,9 +28,7 @@ import net.minecraft.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static net.minecraft.item.ItemStack.DISPLAY_KEY;
 import static net.minecraft.item.ItemStack.LORE_KEY;
@@ -93,12 +93,12 @@ public class SlotItemElement implements HudElement {
             case "dur_per","durability_percentage" -> new SlotItemElement(slot, DURABILITY_PERCENT_STR, DURABILITY_PERCENT_NUM, HAS_MAX_DURABILITY, flags.precision == -1? 0 : flags.precision << 8);
             case "icon" -> new SlotItemIconElement(slot, flags);
             case "enchants", "enchants," -> {
-                Supplier<List<?>> supplier = () -> Arrays.asList(EnchantmentHelper.get(stack(slot)).entrySet().toArray());
-                yield listElement(supplier, ListAttributeSuppliers.SLOT_ITEM_ENCHANTMENT, profile, debugLine, enabled, original);
+                ListProvider provider = () -> Arrays.asList(EnchantmentHelper.get(stack(slot)).entrySet().toArray());
+                yield listElement(provider, Attributers.ENCHANTMENT, profile, debugLine, enabled, original);
             }
             case "lore", "lore," -> {
-                Supplier<List<?>> supplier = () -> getLore(stack(slot));
-                yield listElement(supplier, ListAttributeSuppliers.SLOT_ITEM_LORE, profile, debugLine, enabled, original);
+                ListProvider provider = () -> getLore(stack(slot));
+                yield listElement(provider, Attributers.ITEM_LORE, profile, debugLine, enabled, original);
             }
             default -> null;
         };
@@ -132,10 +132,10 @@ public class SlotItemElement implements HudElement {
         }
     }
 
-    private static HudElement listElement(Supplier<List<?>> supplier, BiFunction<String,Flags,HudElement> children, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
-        ListAttributeSuppliers.ATTRIBUTE_MAP.put(supplier,children);
+    private static HudElement listElement(ListProvider provider, Attributer attributer, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
+        Attributers.ATTRIBUTER_MAP.put(provider,attributer);
         String fullText = original.substring(1, original.length()-1);
-        return VariableParser.listElement(supplier, fullText, fullText.indexOf(','), profile, debugLine, enabled, original);
+        return VariableParser.listElement(provider, fullText, fullText.indexOf(','), profile, debugLine, enabled, original);
     }
 
     private static List<String> getLore(ItemStack stack) {

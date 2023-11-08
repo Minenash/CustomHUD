@@ -24,7 +24,6 @@ public enum ErrorType {
     UNKNOWN_ITEM_PROPERTY ("Item Properties", "variables#items", "Unknown Item Property: §e"),
     UNKNOWN_ATTRIBUTE ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute: §e"),
     UNKNOWN_ATTRIBUTE_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute Property: §e"),
-    UNKNOWN_TEAM ("CHANGE ME", "references/CHANGE ME", "Unknown Team: §e"),
     UNKNOWN_TEAM_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Team Property: §e"),
     //TODO FIX ME
     UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),

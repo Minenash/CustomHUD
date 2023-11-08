@@ -2,15 +2,11 @@ package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.HudElements.HudElement;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Supplier;
-
 public class ListCountElement implements HudElement {
-    private final Supplier<List<?>> supplier;
+    private final ListProvider provider;
 
-    public ListCountElement(Supplier<List<?>> supplier) {
-        this.supplier = supplier;
+    public ListCountElement(ListProvider provider) {
+        this.provider = provider;
     }
 
     @Override
@@ -20,12 +16,12 @@ public class ListCountElement implements HudElement {
 
     @Override
     public Number getNumber() {
-        return supplier.get().size();
+        return provider.get().size();
     }
 
     @Override
     public boolean getBoolean() {
-        return supplier.get().isEmpty();
+        return provider.get().isEmpty();
     }
 
 }
