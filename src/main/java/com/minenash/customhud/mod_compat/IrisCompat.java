@@ -2,8 +2,9 @@ package com.minenash.customhud.mod_compat;
 
 //import com.minenash.customhud.mixin.mod_compat.iris.ShadowRenderAccessor;
 import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;
-import com.minenash.customhud.HudElements.supplier.StringIntSupplierElement;
+import com.minenash.customhud.HudElements.supplier.NumberSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
+import com.minenash.customhud.data.Flags;
 import net.coderbot.iris.Iris;
 import net.coderbot.iris.shaderpack.ShaderPack;
 
@@ -19,16 +20,14 @@ public class IrisCompat {
 
     public static final Supplier<String> VERSION = Iris::getVersion;
     public static final Supplier<Boolean> ENABLED = () -> !off();
-    public static final Supplier<String> SHADERPACK = () -> off() ? null : Iris.getCurrentPackName();
+    public static final Supplier<String> SHADERPACK = () -> {
+        if (off()) return null;
+        String name = Iris.getCurrentPackName();
+        name = name.replace('_', ' ');
+        return name.endsWith(".zip") ? name.substring(0, name.length()-4) : name;
+    };
     public static final Supplier<String> SHADERPACK_PROFILE = () -> shaderPackInfo[0];
-    public static final Supplier<String> SHADERPACK_CHANGES = () -> shaderPackInfo[1];
-//    public static final Supplier<Number> SHADOW_HALF_PLANE = () -> off() ? null : shadow().getHalfPlaneLength();
-//    public static final Supplier<Integer> SHADOW_RESOLUTION = () -> off() ? null : shadow().getResolution();
-//    //Distance, Culling, terrain
-//    public static final Supplier<Boolean> SHOULD_RENDER_TERRAIN = () -> off() ? null : shadow().getShouldRenderTerrain();
-//    public static final Supplier<Boolean> SHOULD_RENDER_TRANSLUCENT = () -> off() ? null : shadow().getShouldRenderTranslucent();
-//    public static final Supplier<Integer> SHADOW_ENTITIES = () -> off() || !shadow().getShouldRenderEntities() ? null : shadow().getRenderedShadowEntities();
-//    public static final Supplier<Integer> SHADOW_BLOCK_ENTITIES = () -> off() || !shadow().getShouldRenderBlockEntities() ? null : shadow().getRenderedShadowBlockEntities();
+    public static final Supplier<Number> SHADERPACK_CHANGES = () -> Integer.parseInt(shaderPackInfo[1]);
 
 
     public static boolean off() {
@@ -45,7 +44,7 @@ public class IrisCompat {
         registerElement("iris_enabled", (_str) -> new BooleanSupplierElement(ENABLED));
         registerElement("iris_shaderpack", (_str) -> new StringSupplierElement(SHADERPACK));
         registerElement("iris_shaderpack_profile", (_str) -> new StringSupplierElement(SHADERPACK_PROFILE));
-        registerElement("iris_shaderpack_changes", (_str) -> new StringIntSupplierElement(SHADERPACK_CHANGES));
+        registerElement("iris_shaderpack_changes", (_str) -> new NumberSupplierElement(SHADERPACK_CHANGES, 1, 0));
 
         registerComplexData(() -> {
             Optional<ShaderPack> pack = Iris.getCurrentPack();

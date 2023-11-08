@@ -19,8 +19,10 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
+import static com.minenash.customhud.CustomHud.CLIENT;
 import static com.minenash.customhud.HudElements.supplier.EntryNumberSuppliers.*;
 
 public class IntegerSuppliers {
@@ -147,6 +149,12 @@ public class IntegerSuppliers {
     public static final Supplier<Number> LATENCY = () -> client.player.networkHandler.getPlayerListEntry(client.player.getUuid()).getLatency();
     public static final Supplier<Number> SOLAR_TIME = () -> client.world.getTimeOfDay() % 24000;
     public static final Supplier<Number> LUNAR_TIME = () -> client.world.getTimeOfDay();
+
+    public static final Supplier<Number> PARTICLES = () -> client.particleManager.particles.values().stream().mapToInt(Collection::size).sum();
+    public static final Supplier<Number> STREAMING_SOUNDS = () -> CLIENT.getSoundManager().soundSystem.soundEngine.streamingSources.getSourceCount();
+    public static final Supplier<Number> MAX_STREAMING_SOUNDS = () -> CLIENT.getSoundManager().soundSystem.soundEngine.streamingSources.getMaxSourceCount();
+    public static final Supplier<Number> STATIC_SOUNDS = () -> CLIENT.getSoundManager().soundSystem.soundEngine.staticSources.getSourceCount();
+    public static final Supplier<Number> MAX_STATIC_SOUNDS = () -> CLIENT.getSoundManager().soundSystem.soundEngine.staticSources.getMaxSourceCount();
 
     public static final Supplier<Number> SLOTS_USED = () -> ComplexData.slots_used;
     public static final Supplier<Number> SLOTS_EMPTY = () -> ComplexData.slots_empty;

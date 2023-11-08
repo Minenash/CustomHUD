@@ -3,3 +3,9 @@ accessible	class	net/minecraft/client/option/GameOptions$Visitor
 extendable	method	net/minecraft/client/gui/widget/EntryListWidget	getEntryAtPosition	(DD)Lnet/minecraft/client/gui/widget/EntryListWidget$Entry;
 accessible	field	net/minecraft/entity/projectile/FishingBobberEntity	CAUGHT_FISH	Lnet/minecraft/entity/data/TrackedData;
 accessible  method  net/minecraft/entity/projectile/FishingBobberEntity	isOpenOrWaterAround (Lnet/minecraft/util/math/BlockPos;)Z
+accessible	field	net/minecraft/client/sound/SoundManager	soundSystem	Lnet/minecraft/client/sound/SoundSystem;
+accessible	field	net/minecraft/client/sound/SoundSystem	soundEngine	Lnet/minecraft/client/sound/SoundEngine;
+accessible	field	net/minecraft/client/sound/SoundEngine	streamingSources	Lnet/minecraft/client/sound/SoundEngine$SourceSet;
+accessible	field	net/minecraft/client/sound/SoundEngine	staticSources	Lnet/minecraft/client/sound/SoundEngine$SourceSet;
+accessible	class	net/minecraft/client/sound/SoundEngine$SourceSet
+accessible	field	net/minecraft/client/particle/ParticleManager	particles	Ljava/util/Map;

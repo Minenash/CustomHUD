@@ -46,7 +46,6 @@ import static com.minenash.customhud.HudElements.supplier.EntryNumberSuppliers.*
 import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
 import static com.minenash.customhud.HudElements.list.ListSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.SpecialSupplierElement.*;
-import static com.minenash.customhud.HudElements.supplier.StringIntSupplierElement.*;
 import static com.minenash.customhud.HudElements.supplier.StringSupplierElement.*;
 
 public class VariableParser {
@@ -465,10 +464,6 @@ public class VariableParser {
         if (entry != null)
             return new NumberSupplierElement(entry, flags.scale, flags.precision, flags.formatted);
 
-        supplier = getStringIntSupplier(name, enabled);
-        if (supplier != null)
-            return new StringIntSupplierElement(supplier);
-
         SpecialSupplierElement.Entry entry2 = getSpecialSupplierElements(name, enabled);
         if (entry2 != null)
             return new SpecialSupplierElement(entry2);
@@ -639,6 +634,13 @@ public class VariableParser {
             case "latency" -> LATENCY;
             case "time", "solar_time" -> SOLAR_TIME;
             case "lunar_time" -> LUNAR_TIME;
+
+            case "particles", "p" -> PARTICLES;
+            case "streaming_sounds", "sounds" -> STREAMING_SOUNDS;
+            case "max_streaming_sounds", "max_sounds" -> MAX_STREAMING_SOUNDS;
+            case "static_sounds" -> STATIC_SOUNDS;
+            case "max_static_sounds" -> MAX_STATIC_SOUNDS;
+
             case "slots_used" -> {enabled.slots = true; yield SLOTS_USED;}
             case "slots_empty" -> {enabled.slots = true; yield SLOTS_EMPTY;}
 
@@ -668,17 +670,6 @@ public class VariableParser {
             case "rcps" -> { enabled.clicksPerSeconds = true; yield RCPS; }
             default -> null;
         };
-    }
-
-    private static Supplier<String> getStringIntSupplier(String element, ComplexData.Enabled enabled) {
-        switch (element) {
-            case "particles", "p": return PARTICLES;
-            case "streaming_sounds", "sounds": enabled.sound = true; return STREAMING_SOUNDS;
-            case "max_streaming_sounds", "max_sounds": enabled.sound = true; return MAX_STREAMING_SOUNDS;
-            case "static_sounds": enabled.sound = true; return STATIC_SOUNDS;
-            case "max_static_sounds": enabled.sound = true; return MAX_STATIC_SOUNDS;
-            default: return null;
-        }
     }
 
     private static NumberSupplierElement.Entry getDecimalSupplier(String element, ComplexData.Enabled enabled) {
