@@ -6,6 +6,7 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.FuncElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement.CreateListElement;
 import com.minenash.customhud.HudElements.icon.PlayerHeadIconElement;
+import com.minenash.customhud.HudElements.icon.SlotItemIconElement;
 import com.minenash.customhud.HudElements.icon.StatusEffectIconElement;
 import com.minenash.customhud.data.Flags;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.minenash.customhud.HudElements.list.AttributeFunctions.*;
+import static com.minenash.customhud.HudElements.list.AttributeFunctions.ITEM_ATTR_MODIFIER_NAME;
 import static com.minenash.customhud.HudElements.list.ListSuppliers.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -92,6 +94,40 @@ public class Attributers {
         default -> null;
     };
 
+    public static final Attributer ITEM_LORE_LINE = (sup, name, f) -> name.equals("line") ? new Str(sup, DIRECT) : null;
+
+    public static final Attributer ITEM_ATTRIBUTE_MODIFIER = (sup, name, flags) -> switch (name) {
+        case "slot" -> new Str(sup,ITEM_ATTR_SLOT);
+        case "attribute","attr" -> new Str(sup,ITEM_ATTR_NAME);
+        case "attribute_id","attr_id" -> new Str(sup,ITEM_ATTR_ID);
+        case "tracked" -> new Bool(sup,ITEM_ATTR_TRACKED);
+        case "default_value" -> new Num(sup,ITEM_ATTR_VALUE_DEFAULT, flags);
+        case "attribute_value","attr_value" -> new Num(sup,ITEM_ATTR_VALUE, flags);
+        case "modifier_name","mod_name" -> new Str(sup,ITEM_ATTR_MODIFIER_NAME);
+        case "modifier_id","mod_id" -> new Str(sup,ITEM_ATTR_MODIFIER_ID);
+        case "mod_amount","amount" -> new Num(sup,ITEM_ATTR_MODIFIER_VALUE, flags);
+        case "op", "operation" -> new Str(sup,ITEM_ATTR_MODIFIER_OPERATION);
+        case "op_name", "operation_name" -> new Str(sup,ITEM_ATTR_MODIFIER_OPERATION_NAME);
+        default -> null;
+    };
+
+    public static final Attributer ITEM = (sup, name, flags) -> switch (name) {
+        case "", "item" -> new Special(sup, ITEM_NAME, ITEM_RAW_ID, ITEM_IS_NOT_EMPTY);
+        case "id" -> new Special(sup, ITEM_ID, ITEM_RAW_ID, ITEM_IS_NOT_EMPTY);
+        case "name" -> new Special(sup, ITEM_CUSTOM_NAME);
+        case "count" -> new NumBool(sup, ITEM_COUNT, ITEM_IS_NOT_EMPTY, flags);
+        case "max_count" -> new NumBool(sup, ITEM_MAX_COUNT, ITEM_IS_STACKABLE, flags);
+        case "dur","durability" -> new NumBool(sup, ITEM_DURABILITY, ITEM_HAS_DURABILITY, flags);
+        case "max_dur","max_durability" -> new NumBool(sup, ITEM_MAX_DURABILITY, ITEM_HAS_MAX_DURABILITY, flags);
+        case "dur_per","durability_percentage" -> new NumBool(sup, ITEM_DURABILITY_PERCENT, ITEM_HAS_MAX_DURABILITY, flags);
+        case "icon" -> new SlotItemIconElement(sup, flags);
+
+        case "enchants" -> new CreateListElement(sup, ITEM_ENCHANTS, ENCHANTMENT);
+        case "lore" -> new CreateListElement(sup, ITEM_LORE_LINES, ITEM_LORE_LINE);
+        case "attributes", "attrs" -> new CreateListElement(sup, ITEM_ATTRIBUTES, ITEM_ATTRIBUTE_MODIFIER);
+        default -> null;
+    };
+
     public static final Attributer ATTRIBUTE_MODIFIER = (sup, name, flags) -> switch (name) {
         case "name" -> new Str(sup,ATTRIBUTE_MODIFIER_NAME);
         case "id" -> new Str(sup,ATTRIBUTE_MODIFIER_ID);
@@ -108,12 +144,11 @@ public class Attributers {
         case "default_value" -> new Num(sup,ATTRIBUTE_VALUE_DEFAULT, flags);
         case "base_value" -> new Num(sup,ATTRIBUTE_VALUE_BASE, flags);
         case "value" -> new Num(sup,ATTRIBUTE_VALUE, flags);
-        case "modifiers","modifiers," -> new CreateListElement(sup,ListSuppliers.ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIER);
+        case "modifiers" -> new CreateListElement(sup,ListSuppliers.ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIER);
         default -> null;
     };
 
     public static final Attributer TEAM_MEMBER = (sup, name, f) -> name.equals("member") ? new Str(sup, DIRECT) : null;
-    public static final Attributer ITEM_LORE = (sup, name, f) -> name.equals("line") ? new Str(sup, DIRECT) : null;
 
     public static final Attributer TEAM = (sup, name, flags) -> switch (name) {
         case "name" -> new Str(sup, TEAM_NAME);
@@ -144,6 +179,7 @@ public class Attributers {
         ATTRIBUTER_MAP.put(TARGET_ENTITY_ATTRIBUTES, ATTRIBUTE);
         ATTRIBUTER_MAP.put(HOOKED_ENTITY_ATTRIBUTES, ATTRIBUTE);
         ATTRIBUTER_MAP.put(TEAMS, TEAM);
+        ATTRIBUTER_MAP.put(ITEMS, ITEM);
 
         // ATTRIBUTER_MAP.put(ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIER);
         // ATTRIBUTER_MAP.put(TEAM_MEMBERS, TEAM_MEMBER);
@@ -155,8 +191,10 @@ public class Attributers {
 
     public static HudElement get(ListProvider list, Supplier<?> value, String name, Flags flags) {
         Attributer attributer = ATTRIBUTER_MAP.get(list);
-        if (attributer == null)
+        if (attributer == null) {
+            System.out.println("[FIX ME]: Attributer not in Map!");
             return null;
+        }
         HudElement element = attributer.get(value, name, flags);
         if (element instanceof FuncElements<?> && flags.anyTextUsed())
             return new FormattedElement(element, flags);

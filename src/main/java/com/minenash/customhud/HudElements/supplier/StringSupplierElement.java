@@ -33,7 +33,7 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> DISPLAY_NAME = () -> client.player.getDisplayName().getString();
     public static final Supplier<String> USERNAME = () -> client.player.getGameProfile().getName() == null ? null : client.player.getGameProfile().getName();
     public static final Supplier<String> UUID = () -> client.player.getGameProfile().getId().toString();
-    public static final Supplier<String> TEAM = () -> client.player.getScoreboardTeam().getName();
+    public static final Supplier<String> PLAYER_TEAM = () -> client.player.getScoreboardTeam().getName();
 
     public static final Supplier<String> SERVER_BRAND = () -> client.player.networkHandler.getBrand();
     public static final Supplier<String> SERVER_NAME = () -> client.getCurrentServerEntry().name;

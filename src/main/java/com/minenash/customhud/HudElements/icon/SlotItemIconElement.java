@@ -9,43 +9,41 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.function.Supplier;
+
 public class SlotItemIconElement extends IconElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
-    private final int slot;
+    private final Supplier<ItemStack> supplier;
     private final boolean showCount, showDur, showCooldown;
     private final int width;
 
-    public SlotItemIconElement(int slot, Flags flags) {
+    public SlotItemIconElement(Supplier<ItemStack> supplier, Flags flags) {
         super(flags);
-        this.slot = slot;
+        this.supplier = supplier;
         this.width = flags.iconWidth != -1 ? flags.iconWidth : MathHelper.ceil(11*scale);;
         this.showCount = flags.iconShowCount;
         this.showDur = flags.iconShowDur;
         this.showCooldown = flags.iconShowCooldown;
     }
 
-    private ItemStack getStack() {
-        return client.player.getStackReference(slot).get();
-    }
-
     @Override
     public Number getNumber() {
-        return Item.getRawId(getStack().getItem());
+        return Item.getRawId(supplier.get().getItem());
     }
 
     @Override
     public boolean getBoolean() {
-        return getStack().isEmpty();
+        return supplier.get().isEmpty();
     }
 
     @Override
     public int getTextWidth() {
-        return getStack().isEmpty() ? 0 : width;
+        return supplier.get().isEmpty() ? 0 : width;
     }
 
     public void render(DrawContext context, int x, int y, float profileScale) {
-        ItemStack stack = getStack();
+        ItemStack stack = supplier.get();
         if (stack == null || stack.isEmpty())
             return;
         x += shiftX;

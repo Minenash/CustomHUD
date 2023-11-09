@@ -72,11 +72,26 @@ public abstract class FuncElements<T> implements HudElement {
         }
     }
 
+    public static class NumBool<T> extends Num<T> {
+        private final Function<T,Boolean> bool;
+
+        public NumBool(Supplier<T> supplier, Function<T, Number> num, Function<T, Boolean> bool, Flags flags) {
+            super(supplier, num, flags);
+            this.bool = bool;
+        }
+
+        @Override public boolean getBoolean() { return sanitize(supplier, bool, false); }
+    }
+
     public static class Special<T> extends FuncElements<T> {
         public record Entry<T>(Function<T,String> str, Function<T,Number> num, Function<T,Boolean> bool) {}
 
         private final Entry<T> entry;
         public Special(Supplier<T> supplier, Entry<T> entry) { super(supplier); this.entry = entry; }
+        public Special(Supplier<T> supplier, Function<T,String> str, Function<T,Number> num, Function<T,Boolean> bool) {
+            super(supplier);
+            this.entry = new Entry<>(str,num,bool);
+        }
 
         @Override public String getString() { return sanitize(supplier, entry.str, "-"); }
         @Override public Number getNumber() { return sanitize(supplier, entry.num, Double.NaN); }

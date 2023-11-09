@@ -4,9 +4,11 @@ import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.mixin.accessors.InGameHudAccessor;
 import com.minenash.customhud.mixin.accessors.SubtitleHudAccessor;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
@@ -39,11 +41,17 @@ public class ListSuppliers {
         PLAYER_ATTRIBUTES = () -> getEntityAttributes(CLIENT.player),
         TARGET_ENTITY_ATTRIBUTES = () -> ComplexData.targetEntity == null ? Collections.EMPTY_LIST : getEntityAttributes(ComplexData.targetEntity),
         HOOKED_ENTITY_ATTRIBUTES = () -> hooked() == null ? Collections.EMPTY_LIST : getEntityAttributes(hooked()),
-        TEAMS = () -> Arrays.asList(CLIENT.world.getScoreboard().getTeams().toArray());
+        TEAMS = () -> Arrays.asList(CLIENT.world.getScoreboard().getTeams().toArray()),
+        ITEMS = () -> Collections.EMPTY_LIST;
 
     public static final Function<EntityAttributeInstance,List<?>> ATTRIBUTE_MODIFIERS = (attr) -> attr.getModifiers().stream().toList();
     public static final Function<Team,List<?>> TEAM_MEMBERS = (team) -> Arrays.asList(team.getPlayerList().toArray());
     public static final Function<Team,List<?>> TEAM_PLAYERS = (team) -> CLIENT.getNetworkHandler().getPlayerList().stream().filter(p -> p.getScoreboardTeam() == team).sorted(ENTRY_ORDERING).toList();
+
+
+    public static final Function<ItemStack,List<?>> ITEM_ATTRIBUTES = AttributeHelpers::getItemStackAttributes;
+    public static final Function<ItemStack,List<?>> ITEM_ENCHANTS = (stack) -> Arrays.asList(EnchantmentHelper.get(stack).entrySet().toArray());
+    public static final Function<ItemStack,List<?>> ITEM_LORE_LINES = AttributeHelpers::getLore;
 
 
     private static Entity hooked() {return CLIENT.player.fishHook == null ? null : CLIENT.player.fishHook.getHookedEntity();}

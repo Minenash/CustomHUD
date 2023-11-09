@@ -51,7 +51,7 @@ public class SpecialSupplierElement implements HudElement {
                                                     () -> Fluid.STATE_IDS.getRawId(ComplexData.targetFluid),
                                                     () -> !ComplexData.targetFluid.isEmpty());
 
-    public static final Entry ITEM = of( () -> I18n.translate(client.player.getMainHandStack().getItem().getTranslationKey()),
+    public static final Entry ITEM_OLD = of( () -> I18n.translate(client.player.getMainHandStack().getItem().getTranslationKey()),
                                          () -> Item.getRawId(client.player.getMainHandStack().getItem()),
                                          () -> !client.player.getMainHandStack().isEmpty());
 

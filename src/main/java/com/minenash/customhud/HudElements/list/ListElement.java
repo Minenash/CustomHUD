@@ -16,10 +16,12 @@ public class ListElement implements HudElement, MultiElement {
 
     private final ListProvider provider;
     private final List<HudElement> elements;
+    private final boolean removeLastNewLine;
 
     public ListElement(ListProvider provider, List<HudElement> format) {
         this.provider = provider;
         this.elements = format;
+        this.removeLastNewLine = elements.get(elements.size()-1) instanceof FunctionalElement.NewLine;
         this.elements.add(ADVANCE_LIST_ELEMENT);
     }
 
@@ -40,6 +42,8 @@ public class ListElement implements HudElement, MultiElement {
         for (int i = 0; i < values.size(); i++)
             expanded.addAll(elements);
         expanded.set(expanded.size()-1, POP_LIST_ELEMENT);
+        if (removeLastNewLine)
+            expanded.remove(expanded.size()-2);
         return expanded;
     }
 

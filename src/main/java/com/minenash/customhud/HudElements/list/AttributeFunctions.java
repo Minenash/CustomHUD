@@ -3,6 +3,7 @@ package com.minenash.customhud.HudElements.list;
 import com.minenash.customhud.HudElements.FuncElements.Num;
 import com.minenash.customhud.HudElements.FuncElements.Num.NumEntry;
 import com.minenash.customhud.HudElements.FuncElements.Special.Entry;
+import com.minenash.customhud.HudElements.list.AttributeHelpers.ItemAttribute;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.hud.SubtitlesHud.SubtitleEntry;
 import net.minecraft.client.network.PlayerListEntry;
@@ -11,6 +12,8 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.*;
@@ -25,8 +28,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
-import static com.minenash.customhud.HudElements.supplier.NumberSupplierElement.of;
-
 
 @SuppressWarnings("ALL")
 public class AttributeFunctions {
@@ -124,6 +125,26 @@ public class AttributeFunctions {
             (enchant) -> true);
 
 
+    // ITEMS
+    public static final Function<ItemStack, String> ITEM_ID = (stack) -> Registries.ITEM.getId(stack.getItem()).toString();
+    public static final Function<ItemStack, String> ITEM_NAME = (stack) -> stack.getItem().getName().getString();
+    public static final Function<ItemStack, Number> ITEM_RAW_ID = (stack) -> Item.getRawId(stack.getItem());
+    public static final Function<ItemStack, Boolean> ITEM_IS_NOT_EMPTY = (stack) -> !stack.isEmpty();
+    public static final Entry<ItemStack> ITEM_CUSTOM_NAME = new Entry<>(
+            (stack) -> stack.getName().getString(),
+            (stack) -> stack.getName().getString().length(),
+            (stack) -> !stack.getName().getString().equals(stack.getItem().getName().getString()));
+
+    public static final Function<ItemStack, Number> ITEM_COUNT = (stack) -> stack.getCount();
+    public static final Function<ItemStack, Number> ITEM_MAX_COUNT = (stack) -> stack.getMaxCount();
+    public static final Function<ItemStack, Boolean> ITEM_IS_STACKABLE = (stack) -> stack.getMaxCount() > 1;
+    public static final Function<ItemStack, Boolean> ITEM_HAS_DURABILITY = (stack) -> stack.getItem().getMaxDamage() - CLIENT.player.getMainHandStack().getDamage() > 0;
+    public static final Function<ItemStack, Boolean> ITEM_HAS_MAX_DURABILITY = (stack) -> stack.getItem().getMaxDamage() > 0;
+    public static final Function<ItemStack, Number> ITEM_DURABILITY = (stack) -> stack.getMaxDamage() - stack.getDamage();
+    public static final Function<ItemStack, Number> ITEM_MAX_DURABILITY = (stack) -> stack.getMaxDamage();
+    public static final Function<ItemStack, Number> ITEM_DURABILITY_PERCENT = (stack) -> 100 - stack.getDamage() / (float) stack.getMaxDamage() * 100;
+
+
     // ATTRIBUTES
     public static final Function<EntityAttributeInstance,String> ATTRIBUTE_NAME = (attr) -> I18n.translate(attr.getAttribute().getTranslationKey());
     public static final Function<EntityAttributeInstance,String> ATTRIBUTE_ID = (attr) -> Registries.ATTRIBUTE.getId(attr.getAttribute()).toString();
@@ -142,6 +163,27 @@ public class AttributeFunctions {
         case MULTIPLY_BASE -> "Multiplication Base";
         case MULTIPLY_TOTAL -> "Multiplication Total"; };
     public static final Function<EntityAttributeModifier,String> ATTRIBUTE_MODIFIER_OPERATION = (modifier) -> switch (modifier.getOperation()) {
+        case ADDITION -> "+";
+        case MULTIPLY_BASE -> "☒";
+        case MULTIPLY_TOTAL -> "×"; };
+
+
+    // ITEM ATTRIBUTE MODIFIERS
+    public static final Function<ItemAttribute,String> ITEM_ATTR_SLOT = (attr) -> attr.slot();
+    public static final Function<ItemAttribute,String> ITEM_ATTR_NAME = (attr) -> I18n.translate(attr.attribute().getTranslationKey());
+    public static final Function<ItemAttribute,String> ITEM_ATTR_ID = (attr) -> Registries.ATTRIBUTE.getId(attr.attribute()).toString();
+    public static final Function<ItemAttribute,Boolean> ITEM_ATTR_TRACKED = (attr) -> attr.attribute().isTracked();
+    public static final Function<ItemAttribute,Number> ITEM_ATTR_VALUE_DEFAULT = (attr) -> attr.attribute().getDefaultValue();
+    public static final Function<ItemAttribute,Number> ITEM_ATTR_VALUE_BASE = (attr) -> CLIENT.player.getAttributeBaseValue(attr.attribute());
+    public static final Function<ItemAttribute,Number> ITEM_ATTR_VALUE = (attr) -> CLIENT.player.getAttributeValue(attr.attribute());
+    public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_NAME = (attr) -> attr.modifier().getName();
+    public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_ID = (attr) -> attr.modifier().getId().toString();
+    public static final Function<ItemAttribute,Number> ITEM_ATTR_MODIFIER_VALUE = (attr) -> attr.modifier().getValue();
+    public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_OPERATION_NAME = (attr) -> switch (attr.modifier().getOperation()) {
+        case ADDITION -> "Addition";
+        case MULTIPLY_BASE -> "Multiplication Base";
+        case MULTIPLY_TOTAL -> "Multiplication Total"; };
+    public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_OPERATION = (attr) -> switch (attr.modifier().getOperation()) {
         case ADDITION -> "+";
         case MULTIPLY_BASE -> "☒";
         case MULTIPLY_TOTAL -> "×"; };
