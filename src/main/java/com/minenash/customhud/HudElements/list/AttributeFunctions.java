@@ -19,6 +19,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.*;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
@@ -176,7 +177,9 @@ public class AttributeFunctions {
     public static final Function<ItemAttribute,Number> ITEM_ATTR_VALUE_DEFAULT = (attr) -> attr.attribute().getDefaultValue();
     public static final Function<ItemAttribute,Number> ITEM_ATTR_VALUE_BASE = (attr) -> CLIENT.player.getAttributeBaseValue(attr.attribute());
     public static final Function<ItemAttribute,Number> ITEM_ATTR_VALUE = (attr) -> CLIENT.player.getAttributeValue(attr.attribute());
-    public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_NAME = (attr) -> attr.modifier().getName();
+    public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_NAME = (attr) -> {
+        String key = "attribute.name." + attr.modifier().getName();
+        return I18n.hasTranslation(key) ? I18n.translate(key) : attr.modifier().getName(); };
     public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_ID = (attr) -> attr.modifier().getId().toString();
     public static final Function<ItemAttribute,Number> ITEM_ATTR_MODIFIER_VALUE = (attr) -> attr.modifier().getValue();
     public static final Function<ItemAttribute,String> ITEM_ATTR_MODIFIER_OPERATION_NAME = (attr) -> switch (attr.modifier().getOperation()) {
