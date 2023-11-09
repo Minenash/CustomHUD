@@ -32,6 +32,8 @@ public class FormattedElement implements HudElement {
 
         if (flags.smallCaps)
             text = smallcaps(text);
+        if (flags.smallNums)
+            text = smallnums(text);
 
         return text;
     }
@@ -75,6 +77,15 @@ public class FormattedElement implements HudElement {
                 case 'w' -> chars[i] = 'ᴡ';
                 case 'y' -> chars[i] = 'ʏ';
                 case 'z' -> chars[i] = 'ᴢ';
+            }
+        }
+        return new String(chars);
+    }
+
+    private static String smallnums(String text) {
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]) {
                 case '0' -> chars[i] = '₀';
                 case '1' -> chars[i] = '₁';
                 case '2' -> chars[i] = '₂';

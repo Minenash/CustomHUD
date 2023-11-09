@@ -12,6 +12,7 @@ public class Flags {
 
     public TextCase textCase = null;
     public boolean smallCaps = false;
+    public boolean smallNums = false;
     public boolean noDelimiters = false;
 
     public int precision = -1;
@@ -28,7 +29,7 @@ public class Flags {
     public boolean iconShowCooldown = false;
 
     public boolean anyTextUsed() {
-        return textCase != null || smallCaps || noDelimiters;
+        return textCase != null || smallCaps || smallNums || noDelimiters;
     }
 
     private static final Pattern PRECISION_PATTERN = Pattern.compile("-(?:p|precision)(\\d+)");
@@ -49,6 +50,7 @@ public class Flags {
                 case "-lc", "-lowercase" -> flags.textCase = Flags.TextCase.LOWER;
                 case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
                 case "-sc", "-smallcaps" -> flags.smallCaps = true;
+                case "-sn", "-smallnums" -> flags.smallNums = true;
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
                 // Stat
                 case "-f", "-formatted" -> flags.formatted = true;

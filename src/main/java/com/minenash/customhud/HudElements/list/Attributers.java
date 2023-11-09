@@ -1,5 +1,7 @@
 package com.minenash.customhud.HudElements.list;
 
+import com.minenash.customhud.HudElements.FormattedElement;
+import com.minenash.customhud.HudElements.FuncElements;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.FuncElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement.CreateListElement;
@@ -155,7 +157,10 @@ public class Attributers {
         Attributer attributer = ATTRIBUTER_MAP.get(list);
         if (attributer == null)
             return null;
-        return attributer.get(value, name, flags);
+        HudElement element = attributer.get(value, name, flags);
+        if (element instanceof FuncElements<?> && flags.anyTextUsed())
+            return new FormattedElement(element, flags);
+        return element;
     }
 
 }
