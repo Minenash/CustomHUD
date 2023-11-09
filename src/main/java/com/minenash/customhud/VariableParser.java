@@ -800,6 +800,9 @@ public class VariableParser {
             case "target_entity_attributes", "target_entity_attrs", "teas" -> {enabled.targetEntity = true; yield TARGET_ENTITY_ATTRIBUTES;}
             case "hooked_entity_attributes", "hooked_entity_attrs", "heas" -> HOOKED_ENTITY_ATTRIBUTES;
             case "teams" -> TEAMS;
+            case "inventory_items", "inv_items" -> INV_ITEMS;
+            case "armor_items" -> ARMOR_ITEMS;
+            case "hotbar_items" -> HOTBAR_ITEMS;
 
             default -> null;
         };

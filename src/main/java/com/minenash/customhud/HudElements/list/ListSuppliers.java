@@ -42,7 +42,10 @@ public class ListSuppliers {
         TARGET_ENTITY_ATTRIBUTES = () -> ComplexData.targetEntity == null ? Collections.EMPTY_LIST : getEntityAttributes(ComplexData.targetEntity),
         HOOKED_ENTITY_ATTRIBUTES = () -> hooked() == null ? Collections.EMPTY_LIST : getEntityAttributes(hooked()),
         TEAMS = () -> Arrays.asList(CLIENT.world.getScoreboard().getTeams().toArray()),
-        ITEMS = () -> Collections.EMPTY_LIST;
+
+        INV_ITEMS = () -> CLIENT.player.getInventory().main.subList(9, CLIENT.player.getInventory().main.size()),
+        ARMOR_ITEMS = () -> CLIENT.player.getInventory().armor,
+        HOTBAR_ITEMS = () -> CLIENT.player.getInventory().main.subList(0,9);
 
     public static final Function<EntityAttributeInstance,List<?>> ATTRIBUTE_MODIFIERS = (attr) -> attr.getModifiers().stream().toList();
     public static final Function<Team,List<?>> TEAM_MEMBERS = (team) -> Arrays.asList(team.getPlayerList().toArray());

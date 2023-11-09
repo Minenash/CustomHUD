@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class SlotItemIconElement extends IconElement {
@@ -17,6 +18,9 @@ public class SlotItemIconElement extends IconElement {
     private final Supplier<ItemStack> supplier;
     private final boolean showCount, showDur, showCooldown;
     private final int width;
+
+    private List<ItemStack> stacks = null;
+    private int stackIndex = 0;
 
     public SlotItemIconElement(Supplier<ItemStack> supplier, Flags flags) {
         super(flags);
@@ -42,8 +46,9 @@ public class SlotItemIconElement extends IconElement {
         return supplier.get().isEmpty() ? 0 : width;
     }
 
+    //TODO FIX: Conditional in list?
     public void render(DrawContext context, int x, int y, float profileScale) {
-        ItemStack stack = supplier.get();
+        ItemStack stack = stacks == null ? supplier.get() : stacks.get(stackIndex++);
         if (stack == null || stack.isEmpty())
             return;
         x += shiftX;
@@ -101,4 +106,10 @@ public class SlotItemIconElement extends IconElement {
         context.fill((int) x, (int) y, (int) (x+width), (int) (y+height), color);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public void setList(List<?> values) {
+        stacks = (List<ItemStack>) values;
+        stackIndex = 0;
+    }
 }
