@@ -13,6 +13,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -122,6 +123,22 @@ public class AttributeHelpers {
             }
         }
         return lines;
+    }
+
+    public static List<ItemStack> compactItems(List<ItemStack> stacks) {
+        List<ItemStack> compact = new ArrayList<>();
+        outer:
+        for (ItemStack stack : stacks) {
+            if (stack.isEmpty()) continue;
+            for (ItemStack cStack : compact) {
+                if (ItemStack.canCombine(stack, cStack)) {
+                    cStack.setCount(cStack.getCount() + stack.getCount());
+                    continue outer;
+                }
+            }
+            compact.add(stack.copy());
+        }
+        return compact;
     }
 
 

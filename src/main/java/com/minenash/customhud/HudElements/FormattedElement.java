@@ -31,9 +31,11 @@ public class FormattedElement implements HudElement {
             }
 
         if (flags.smallCaps)
-            text = smallcaps(text);
-        if (flags.smallNums)
-            text = smallnums(text);
+            text = Flags.smallCaps(text);
+        if (flags.numSize == 1)
+            text = Flags.subNums(text);
+        if (flags.numSize == 2)
+            text = Flags.supNums(text);
 
         return text;
     }
@@ -46,59 +48,6 @@ public class FormattedElement implements HudElement {
     @Override
     public boolean getBoolean() {
         return base.getBoolean();
-    }
-
-    private static String smallcaps(String text) {
-        char[] chars = text.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            switch (chars[i]) {
-                case 'a' -> chars[i] = 'ᴀ';
-                case 'b' -> chars[i] = 'ʙ';
-                case 'c' -> chars[i] = 'ᴄ';
-                case 'd' -> chars[i] = 'ᴅ';
-                case 'e' -> chars[i] = 'ᴇ';
-                case 'f' -> chars[i] = 'ꜰ';
-                case 'g' -> chars[i] = 'ɢ';
-                case 'h' -> chars[i] = 'ʜ';
-                case 'i' -> chars[i] = 'ɪ';
-                case 'j' -> chars[i] = 'ᴊ';
-                case 'k' -> chars[i] = 'ᴋ';
-                case 'l' -> chars[i] = 'ʟ';
-                case 'm' -> chars[i] = 'ᴍ';
-                case 'n' -> chars[i] = 'ɴ';
-                case 'o' -> chars[i] = 'ᴏ';
-                case 'p' -> chars[i] = 'ᴘ';
-                case 'q' -> chars[i] = '\uA7AF';
-                case 'r' -> chars[i] = 'ʀ';
-                case 's' -> chars[i] = 'ꜱ';
-                case 't' -> chars[i] = 'ᴛ';
-                case 'u' -> chars[i] = 'ᴜ';
-                case 'v' -> chars[i] = 'ᴠ';
-                case 'w' -> chars[i] = 'ᴡ';
-                case 'y' -> chars[i] = 'ʏ';
-                case 'z' -> chars[i] = 'ᴢ';
-            }
-        }
-        return new String(chars);
-    }
-
-    private static String smallnums(String text) {
-        char[] chars = text.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            switch (chars[i]) {
-                case '0' -> chars[i] = '₀';
-                case '1' -> chars[i] = '₁';
-                case '2' -> chars[i] = '₂';
-                case '3' -> chars[i] = '₃';
-                case '4' -> chars[i] = '₄';
-                case '5' -> chars[i] = '₅';
-                case '6' -> chars[i] = '₆';
-                case '7' -> chars[i] = '₇';
-                case '8' -> chars[i] = '₈';
-                case '9' -> chars[i] = '₉';
-            }
-        }
-        return new String(chars);
     }
 
 }

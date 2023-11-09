@@ -12,7 +12,7 @@ public class Flags {
 
     public TextCase textCase = null;
     public boolean smallCaps = false;
-    public boolean smallNums = false;
+    public int numSize = 0;
     public boolean noDelimiters = false;
 
     public int precision = -1;
@@ -29,7 +29,7 @@ public class Flags {
     public boolean iconShowCooldown = false;
 
     public boolean anyTextUsed() {
-        return textCase != null || smallCaps || smallNums || noDelimiters;
+        return textCase != null || smallCaps || numSize != 0 || noDelimiters;
     }
 
     private static final Pattern PRECISION_PATTERN = Pattern.compile("-(?:p|precision)(\\d+)");
@@ -50,7 +50,8 @@ public class Flags {
                 case "-lc", "-lowercase" -> flags.textCase = Flags.TextCase.LOWER;
                 case "-tc", "-titlecase" -> flags.textCase = Flags.TextCase.TITLE;
                 case "-sc", "-smallcaps" -> flags.smallCaps = true;
-                case "-sn", "-smallnums" -> flags.smallNums = true;
+                case "-sub", "-subnums" -> flags.numSize = 1;
+                case "-sup", "-supnums" -> flags.numSize = 2;
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
                 // Stat
                 case "-f", "-formatted" -> flags.formatted = true;
@@ -95,6 +96,78 @@ public class Flags {
             }
         }
         return flags;
+    }
+
+    public static String smallCaps(String text) {
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]) {
+                case 'a' -> chars[i] = 'ᴀ';
+                case 'b' -> chars[i] = 'ʙ';
+                case 'c' -> chars[i] = 'ᴄ';
+                case 'd' -> chars[i] = 'ᴅ';
+                case 'e' -> chars[i] = 'ᴇ';
+                case 'f' -> chars[i] = 'ꜰ';
+                case 'g' -> chars[i] = 'ɢ';
+                case 'h' -> chars[i] = 'ʜ';
+                case 'i' -> chars[i] = 'ɪ';
+                case 'j' -> chars[i] = 'ᴊ';
+                case 'k' -> chars[i] = 'ᴋ';
+                case 'l' -> chars[i] = 'ʟ';
+                case 'm' -> chars[i] = 'ᴍ';
+                case 'n' -> chars[i] = 'ɴ';
+                case 'o' -> chars[i] = 'ᴏ';
+                case 'p' -> chars[i] = 'ᴘ';
+                case 'q' -> chars[i] = '\uA7AF';
+                case 'r' -> chars[i] = 'ʀ';
+                case 's' -> chars[i] = 'ꜱ';
+                case 't' -> chars[i] = 'ᴛ';
+                case 'u' -> chars[i] = 'ᴜ';
+                case 'v' -> chars[i] = 'ᴠ';
+                case 'w' -> chars[i] = 'ᴡ';
+                case 'y' -> chars[i] = 'ʏ';
+                case 'z' -> chars[i] = 'ᴢ';
+            }
+        }
+        return new String(chars);
+    }
+
+    public static String subNums(String text) {
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]) {
+                case '0' -> chars[i] = '₀';
+                case '1' -> chars[i] = '₁';
+                case '2' -> chars[i] = '₂';
+                case '3' -> chars[i] = '₃';
+                case '4' -> chars[i] = '₄';
+                case '5' -> chars[i] = '₅';
+                case '6' -> chars[i] = '₆';
+                case '7' -> chars[i] = '₇';
+                case '8' -> chars[i] = '₈';
+                case '9' -> chars[i] = '₉';
+            }
+        }
+        return new String(chars);
+    }
+
+    public static String supNums(String text) {
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]) {
+                case '0' -> chars[i] = '⁰';
+                case '1' -> chars[i] = '¹';
+                case '2' -> chars[i] = '²';
+                case '3' -> chars[i] = '³';
+                case '4' -> chars[i] = '⁴';
+                case '5' -> chars[i] = '⁵';
+                case '6' -> chars[i] = '⁶';
+                case '7' -> chars[i] = '⁷';
+                case '8' -> chars[i] = '⁸';
+                case '9' -> chars[i] = '⁹';
+            }
+        }
+        return new String(chars);
     }
 
 }

@@ -26,6 +26,7 @@ public class Attributers {
         HudElement get(Supplier supplier, String attr, Flags flags);
     }
 
+    //TODO: IS ONLY LIST ONLY
     public static final Attributer EFFECT = (sup, name, flags) -> switch (name) {
         case "name" -> new Str(sup,STATUS_NAME);
         case "id" -> new Str(sup,STATUS_ID);
@@ -35,8 +36,8 @@ public class Attributers {
         case "show_particles", "particles" -> new Bool(sup,STATUS_SHOW_PARTICLES);
         case "show_icon" -> new Bool(sup,STATUS_SHOW_ICON);
         case "category", "cat" -> new Special(sup,STATUS_CATEGORY);
-        case "icon" -> new StatusEffectIconElement(flags, true); //TODO FIX
-        case "icon_no_bg" -> new StatusEffectIconElement(flags, false); //TODO FIX
+        case "icon" -> new StatusEffectIconElement(flags, true); //LIST ONLY
+        case "icon_no_bg" -> new StatusEffectIconElement(flags, false); //LIST ONLY
         default -> null;
     };
 
@@ -120,6 +121,8 @@ public class Attributers {
         case "dur","durability" -> new NumBool(sup, ITEM_DURABILITY, ITEM_HAS_DURABILITY, flags);
         case "max_dur","max_durability" -> new NumBool(sup, ITEM_MAX_DURABILITY, ITEM_HAS_MAX_DURABILITY, flags);
         case "dur_per","durability_percentage" -> new NumBool(sup, ITEM_DURABILITY_PERCENT, ITEM_HAS_MAX_DURABILITY, flags);
+        case "unbreakable" -> new Bool(sup, ITEM_UNBREAKABLE);
+        case "repair_cost" -> new Num(sup, ITEM_REPAIR_COST, flags);
         case "icon" -> new SlotItemIconElement(sup, flags);
 
         case "enchants" -> new CreateListElement(sup, ITEM_ENCHANTS, ENCHANTMENT);
@@ -182,6 +185,7 @@ public class Attributers {
         ATTRIBUTER_MAP.put(INV_ITEMS, ITEM);
         ATTRIBUTER_MAP.put(ARMOR_ITEMS, ITEM);
         ATTRIBUTER_MAP.put(HOTBAR_ITEMS, ITEM);
+        ATTRIBUTER_MAP.put(ITEMS, ITEM);
 
         // ATTRIBUTER_MAP.put(ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIER);
         // ATTRIBUTER_MAP.put(TEAM_MEMBERS, TEAM_MEMBER);

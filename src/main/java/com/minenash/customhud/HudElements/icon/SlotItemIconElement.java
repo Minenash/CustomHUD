@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
+import com.minenash.customhud.HudElements.FormattedElement;
 import com.minenash.customhud.data.Flags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -18,6 +19,7 @@ public class SlotItemIconElement extends IconElement {
     private final Supplier<ItemStack> supplier;
     private final boolean showCount, showDur, showCooldown;
     private final int width;
+    private final int numSize;
 
     private List<ItemStack> stacks = null;
     private int stackIndex = 0;
@@ -29,6 +31,7 @@ public class SlotItemIconElement extends IconElement {
         this.showCount = flags.iconShowCount;
         this.showDur = flags.iconShowDur;
         this.showCooldown = flags.iconShowCooldown;
+        this.numSize = flags.numSize;
     }
 
     @Override
@@ -71,10 +74,15 @@ public class SlotItemIconElement extends IconElement {
             if (referenceCorner)
                 matrixStack.translate(0, (10*scale-10)/2, 0);
             matrixStack.scale(10/16F * scale, 10/16F * scale, 1);
+            matrixStack.translate(0.6,0.6,0);
 
             String string = String.valueOf(count);
+            string = numSize == 0 ? string : numSize == 1 ? Flags.subNums(string) : Flags.supNums(string);
+
+            int offset = numSize == 0 ? 0 : numSize == 1 ? 1 : 9;
+
             context.drawTextWithShadow(client.textRenderer, string,
-                    7, (int) (6 / scale + 0.5F), 0xFFFFFF);
+                    17 - client.textRenderer.getWidth(string), (int) (6 / scale + 0.5F) - offset, 0xFFFFFF);
             matrixStack.pop();
         }
     }

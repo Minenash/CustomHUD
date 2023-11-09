@@ -43,6 +43,7 @@ public class ListSuppliers {
         HOOKED_ENTITY_ATTRIBUTES = () -> hooked() == null ? Collections.EMPTY_LIST : getEntityAttributes(hooked()),
         TEAMS = () -> Arrays.asList(CLIENT.world.getScoreboard().getTeams().toArray()),
 
+        ITEMS = () -> AttributeHelpers.compactItems(CLIENT.player.getInventory().main),
         INV_ITEMS = () -> CLIENT.player.getInventory().main.subList(9, CLIENT.player.getInventory().main.size()),
         ARMOR_ITEMS = () -> CLIENT.player.getInventory().armor,
         HOTBAR_ITEMS = () -> CLIENT.player.getInventory().main.subList(0,9);
