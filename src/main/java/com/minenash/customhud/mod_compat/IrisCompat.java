@@ -1,6 +1,5 @@
 package com.minenash.customhud.mod_compat;
 
-//import com.minenash.customhud.mixin.mod_compat.iris.ShadowRenderAccessor;
 import com.minenash.customhud.HudElements.supplier.BooleanSupplierElement;
 import com.minenash.customhud.HudElements.supplier.NumberSupplierElement;
 import com.minenash.customhud.HudElements.supplier.StringSupplierElement;
@@ -33,10 +32,6 @@ public class IrisCompat {
     public static boolean off() {
         return !Iris.getIrisConfig().areShadersEnabled();
     }
-
-//    public static ShadowRenderAccessor shadow() {
-//        return (ShadowRenderAccessor)Iris.getPipelineManager().getPipeline().get();
-//    }
 
     public static void registerCompat() {
 

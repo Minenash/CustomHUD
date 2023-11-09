@@ -8,8 +8,6 @@ import com.minenash.customhud.HudElements.icon.IconElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ListElement implements HudElement, MultiElement {
 
@@ -22,6 +20,7 @@ public class ListElement implements HudElement, MultiElement {
     public ListElement(ListProvider provider, List<HudElement> format) {
         this.provider = provider;
         this.elements = format;
+        this.elements.add(ADVANCE_LIST_ELEMENT);
     }
 
     public List<HudElement> expand() {
@@ -33,14 +32,13 @@ public class ListElement implements HudElement, MultiElement {
 
         List<HudElement> expanded = new ArrayList<>();
         expanded.add(new FunctionalElement.PushList(values));
-        for (int i = 0; i < values.size(); i++) {
-            for (HudElement element : elements) {
-                if (element instanceof IconElement ie)
-                    ie.setListValue(i, values.get(i));
-                expanded.add(element);
-            }
-            expanded.add(ADVANCE_LIST_ELEMENT);
-        }
+
+        for (HudElement element : elements)
+            if (element instanceof IconElement ie)
+                ie.setList(values);
+
+        for (int i = 0; i < values.size(); i++)
+            expanded.addAll(elements);
         expanded.set(expanded.size()-1, POP_LIST_ELEMENT);
         return expanded;
     }

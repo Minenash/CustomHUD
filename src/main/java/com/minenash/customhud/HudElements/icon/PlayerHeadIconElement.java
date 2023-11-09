@@ -18,7 +18,7 @@ public class PlayerHeadIconElement extends IconElement {
 
     private final int width;
 
-    private final List<PlayerListEntry> players = new ArrayList<>();
+    private List<PlayerListEntry> players;
     private int playerIndex = 0;
 
     public PlayerHeadIconElement(Flags flags) {
@@ -48,10 +48,9 @@ public class PlayerHeadIconElement extends IconElement {
     }
 
     @Override
-    public void setListValue(int index, Object value) {
-        if (index == 0)
-            players.clear();
-        players.add(index, (PlayerListEntry) value);
+    @SuppressWarnings("unchecked")
+    public void setList(List<?> values) {
+        this.players = (List<PlayerListEntry>) values;
     }
 
 }

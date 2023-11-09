@@ -5,12 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class StatusEffectIconElement extends IconElement {
@@ -22,7 +20,7 @@ public class StatusEffectIconElement extends IconElement {
     private final int bgWidth;
     private final int effectOffset;
 
-    private final List<StatusEffectInstance> effects = new ArrayList<>();
+    private List<StatusEffectInstance> effects;
     private int effectIndex = 0;
 
     public StatusEffectIconElement(Flags flags, boolean background) {
@@ -37,11 +35,8 @@ public class StatusEffectIconElement extends IconElement {
     public void render(DrawContext context, int x, int y, float profileScale) {
         StatusEffectInstance effect = effects.get(effectIndex);
         effectIndex++;
-        if (effectIndex >= effects.size())
-            effectIndex = 0;
 
-
-        x-=2; y-=2;
+        y-=2;
         if (!referenceCorner && scale != 1)
            y-= (bgWidth-12)/2;
 
@@ -65,10 +60,11 @@ public class StatusEffectIconElement extends IconElement {
         return width;
     }
 
+
     @Override
-    public void setListValue(int index, Object value) {
-        if (index == 0)
-            effects.clear();
-        effects.add(index, (StatusEffectInstance) value);
+    @SuppressWarnings("unchecked")
+    public void setList(List<?> values) {
+        effects = (List<StatusEffectInstance>) values;
+        effectIndex = 0;
     }
 }

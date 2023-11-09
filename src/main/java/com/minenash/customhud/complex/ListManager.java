@@ -33,5 +33,8 @@ public class ListManager {
     public static Object getValue() {
         return values.peek().get(index.peek());
     }
+    public static Object getValue(int index) {
+        return values.peek().get(index);
+    }
 
 }

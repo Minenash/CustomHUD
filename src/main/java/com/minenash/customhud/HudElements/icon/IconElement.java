@@ -13,6 +13,8 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
+import java.util.List;
+
 public abstract class IconElement extends FunctionalElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -70,6 +72,6 @@ public abstract class IconElement extends FunctionalElement {
         RenderSystem.applyModelViewMatrix();
     }
 
-    public void setListValue(int index, Object value) {}
+    public void setList(List<?> values) {}
 
 }
