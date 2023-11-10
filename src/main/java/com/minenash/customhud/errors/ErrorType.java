@@ -25,6 +25,8 @@ public enum ErrorType {
     UNKNOWN_ATTRIBUTE ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute: §e"),
     UNKNOWN_ATTRIBUTE_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Attribute Property: §e"),
     UNKNOWN_TEAM_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Team Property: §e"),
+    UNKNOWN_OBJECTIVE_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Objective Property: §e"),
+    UNKNOWN_SCORE_PROPERTY ("CHANGE ME", "references/CHANGE ME", "Unknown Score Property: §e"),
     //TODO FIX ME
     UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),
 

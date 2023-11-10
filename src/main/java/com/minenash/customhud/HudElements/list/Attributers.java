@@ -6,7 +6,7 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.FuncElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement.CreateListElement;
 import com.minenash.customhud.HudElements.icon.PlayerHeadIconElement;
-import com.minenash.customhud.HudElements.icon.SlotItemIconElement;
+import com.minenash.customhud.HudElements.icon.ItemSupplierIconElement;
 import com.minenash.customhud.HudElements.icon.StatusEffectIconElement;
 import com.minenash.customhud.data.Flags;
 
@@ -123,7 +123,7 @@ public class Attributers {
         case "dur_per","durability_percentage" -> new NumBool(sup, ITEM_DURABILITY_PERCENT, ITEM_HAS_MAX_DURABILITY, flags);
         case "unbreakable" -> new Bool(sup, ITEM_UNBREAKABLE);
         case "repair_cost" -> new Num(sup, ITEM_REPAIR_COST, flags);
-        case "icon" -> new SlotItemIconElement(sup, flags);
+        case "icon" -> new ItemSupplierIconElement(sup, flags);
 
         case "enchants" -> new CreateListElement(sup, ITEM_ENCHANTS, ENCHANTMENT);
         case "lore" -> new CreateListElement(sup, ITEM_LORE_LINES, ITEM_LORE_LINE);
@@ -166,6 +166,32 @@ public class Attributers {
         default -> null;
     };
 
+    public static final Attributer SCOREBOARD_OBJECTIVE_SCORE = (sup, name, flags) -> switch (name) {
+        case "name", "holder" -> new Str(sup, OBJECTIVE_SCORE_HOLDER);
+        case "score", "value" -> new Num(sup, OBJECTIVE_SCORE_VALUE, flags);
+        default -> null;
+    };
+
+
+    public static final Attributer SCOREBOARD_OBJECTIVE = (sup, name, flags) -> switch (name) {
+        case "name" -> new Str(sup, OBJECTIVE_NAME);
+        case "id" -> new Str(sup, OBJECTIVE_ID);
+        case "criteria","criterion" -> new Str(sup, OBJECTIVE_CRITIERIA);
+        case "display_slot" -> new Str(sup, OBJECTIVE_DISPLAY_SLOT);
+        case "scores" -> new CreateListElement(sup, SCOREBOARD_OBJECTIVE_SCORES, SCOREBOARD_OBJECTIVE_SCORE);
+        case "online_scores" -> new CreateListElement(sup, SCOREBOARD_OBJECTIVE_SCORES_ONLINE, SCOREBOARD_OBJECTIVE_SCORE);
+        default -> null;
+    };
+
+    public static final Attributer SCOREBOARD_SCORE = (sup, name, flags) -> switch (name) {
+        case "name" -> new Str(sup, SCORES_OBJECTIVE_NAME);
+        case "id" -> new Str(sup, SCORES_OBJECTIVE_ID);
+        case "criteria","criterion" -> new Str(sup, SCORES_OBJECTIVE_CRITIERIA);
+        case "display_slot" -> new Str(sup, SCORES_OBJECTIVE_DISPLAY_SLOT);
+        case "score","value" -> new Num(sup, SCORES_VALUE, flags);
+        default -> null;
+    };
+
 
 
     public static final Map<ListProvider, Attributer> ATTRIBUTER_MAP = new HashMap<>();
@@ -186,6 +212,8 @@ public class Attributers {
         ATTRIBUTER_MAP.put(ARMOR_ITEMS, ITEM);
         ATTRIBUTER_MAP.put(HOTBAR_ITEMS, ITEM);
         ATTRIBUTER_MAP.put(ITEMS, ITEM);
+        ATTRIBUTER_MAP.put(SCOREBOARD_OBJECTIVES, SCOREBOARD_OBJECTIVE);
+        ATTRIBUTER_MAP.put(PLAYER_SCOREBOARD_SCORES, SCOREBOARD_SCORE);
 
         // ATTRIBUTER_MAP.put(ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIER);
         // ATTRIBUTER_MAP.put(TEAM_MEMBERS, TEAM_MEMBER);

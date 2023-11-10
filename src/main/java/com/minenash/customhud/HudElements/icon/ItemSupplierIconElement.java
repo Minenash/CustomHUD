@@ -1,6 +1,5 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.HudElements.FormattedElement;
 import com.minenash.customhud.data.Flags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -13,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class SlotItemIconElement extends IconElement {
+public class ItemSupplierIconElement extends IconElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     private final Supplier<ItemStack> supplier;
@@ -24,7 +23,7 @@ public class SlotItemIconElement extends IconElement {
     private List<ItemStack> stacks = null;
     private int stackIndex = 0;
 
-    public SlotItemIconElement(Supplier<ItemStack> supplier, Flags flags) {
+    public ItemSupplierIconElement(Supplier<ItemStack> supplier, Flags flags) {
         super(flags);
         this.supplier = supplier;
         this.width = flags.iconWidth != -1 ? flags.iconWidth : MathHelper.ceil(11*scale);;

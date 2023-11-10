@@ -117,7 +117,7 @@ public class CustomHudRenderer {
                         if ((maxWidth || !dynamicWidth) && theme.bgColor != cte.theme.bgColor) {
                             int x1 = section.getStartX(right + 3, section.width) - 2;
                             if (maxWidth)
-                                maxLineRenderPieces.add(new MaxLineRenderPiece(theme.bgColor, x1, staticWidthY - 2, y-2));
+                                maxLineRenderPieces.add(new MaxLineRenderPiece(theme.bgColor, staticWidthY - 2, y-2));
                             else
                                 addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + section.width, y - 2, theme.bgColor);
                             staticWidthY = y;
@@ -137,9 +137,9 @@ public class CustomHudRenderer {
             }
 
             if (maxLineRenderPieces != null) {
+                int x1 = section.getStartX(right + 3, maxLineWidth+4) - 2;
                 for (MaxLineRenderPiece piece : maxLineRenderPieces)
-                    addLineBg(context, bgBuilder, piece.x, piece.y1, maxLineWidth+4, piece.y2, piece.color);
-                int x1 = section.getStartX(right + 3, section.width) - 2;
+                    addLineBg(context, bgBuilder, x1, piece.y1, x1+maxLineWidth+4, piece.y2, piece.color);
                 addLineBg(context, bgBuilder, x1, staticWidthY - 2, x1 + maxLineWidth+4, y - 2, theme.bgColor);
             }
             else if (!dynamicWidth) {

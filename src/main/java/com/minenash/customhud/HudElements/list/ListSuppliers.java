@@ -9,6 +9,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
@@ -17,7 +20,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
-import static com.minenash.customhud.HudElements.list.AttributeHelpers.getEntityAttributes;
+import static com.minenash.customhud.HudElements.list.AttributeHelpers.*;
 
 @SuppressWarnings("DataFlowIssue")
 public class ListSuppliers {
@@ -46,18 +49,30 @@ public class ListSuppliers {
         ITEMS = () -> AttributeHelpers.compactItems(CLIENT.player.getInventory().main),
         INV_ITEMS = () -> CLIENT.player.getInventory().main.subList(9, CLIENT.player.getInventory().main.size()),
         ARMOR_ITEMS = () -> CLIENT.player.getInventory().armor,
-        HOTBAR_ITEMS = () -> CLIENT.player.getInventory().main.subList(0,9);
+        HOTBAR_ITEMS = () -> CLIENT.player.getInventory().main.subList(0,9),
+
+        SCOREBOARD_OBJECTIVES = () -> Arrays.asList(scoreboard().getObjectives().toArray()),
+        PLAYER_SCOREBOARD_SCORES = () -> Arrays.asList(scoreboard().getPlayerObjectives(CLIENT.getGameProfile().getName()).entrySet().toArray());
 
     public static final Function<EntityAttributeInstance,List<?>> ATTRIBUTE_MODIFIERS = (attr) -> attr.getModifiers().stream().toList();
     public static final Function<Team,List<?>> TEAM_MEMBERS = (team) -> Arrays.asList(team.getPlayerList().toArray());
     public static final Function<Team,List<?>> TEAM_PLAYERS = (team) -> CLIENT.getNetworkHandler().getPlayerList().stream().filter(p -> p.getScoreboardTeam() == team).sorted(ENTRY_ORDERING).toList();
 
-
     public static final Function<ItemStack,List<?>> ITEM_ATTRIBUTES = AttributeHelpers::getItemStackAttributes;
     public static final Function<ItemStack,List<?>> ITEM_ENCHANTS = (stack) -> Arrays.asList(EnchantmentHelper.get(stack).entrySet().toArray());
     public static final Function<ItemStack,List<?>> ITEM_LORE_LINES = AttributeHelpers::getLore;
 
+    public static final Function<ScoreboardObjective,List<?>> SCOREBOARD_OBJECTIVE_SCORES = (obj) -> scoreboard().getAllPlayerScores(obj).stream().sorted(ScoreboardPlayerScore.COMPARATOR).toList();
+    public static final Function<ScoreboardObjective,List<?>> SCOREBOARD_OBJECTIVE_SCORES_ONLINE = (obj) -> scoreboard().getAllPlayerScores(obj).stream()
+            .filter(score -> scoreboardPlayer(score.getPlayerName())) //TODO: Make Work with entities
+            .sorted(ScoreboardPlayerScore.COMPARATOR).toList();
+
+    public static final Function<String,List<?>> SCORES = (name) -> Arrays.asList(scoreboard().getPlayerObjectives(name).entrySet().toArray());
+
+
+
 
     private static Entity hooked() {return CLIENT.player.fishHook == null ? null : CLIENT.player.fishHook.getHookedEntity();}
+
 
 }

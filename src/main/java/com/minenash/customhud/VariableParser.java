@@ -23,6 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
@@ -31,6 +33,7 @@ import net.minecraft.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -249,8 +252,10 @@ public class VariableParser {
             }
         }
 
-        HudElement he = getListSupplierElements(part, profile, debugLine, enabled, original);
-        if (he != null) return he;
+        if (listProvider == null || !(part.startsWith("scores") && part.contains(","))) { //Fixes naming conflict
+            HudElement he = getListSupplierElements(part, profile, debugLine, enabled, original);
+            if (he != null) return he;
+        }
 
         if (part.startsWith("real_time:")) {
             try {
@@ -281,12 +286,16 @@ public class VariableParser {
             return attrElement(part, src -> src, (team) -> () -> CLIENT.world.getScoreboard().getTeam(team),
                     TEAM, null, ErrorType.UNKNOWN_TEAM_PROPERTY, profile, debugLine, enabled, original);
 
+        else if (part.startsWith("objective:"))
+            return attrElement(part, src -> src, (name) -> () -> CLIENT.world.getScoreboard().getNullableObjective(name),
+                    SCOREBOARD_OBJECTIVE, null, ErrorType.UNKNOWN_OBJECTIVE_PROPERTY, profile, debugLine, enabled, original);
+
 
 
 
         String[] flagParts = part.split(" ");
-        Flags flags = Flags.parse(profile, debugLine, flagParts);
         part = flagParts[0];
+        Flags flags = part.endsWith(",") ? new Flags() : Flags.parse(profile, debugLine, flagParts);
 
         if (listProvider != null) {
             HudElement element = getListAttributeSupplierElement(part, enabled, flags, listProvider);
@@ -296,6 +305,27 @@ public class VariableParser {
             }
             if (element != null)
                 return element;
+        }
+
+        if (part.startsWith("score:")) {
+            String p = part.substring(6);
+
+            int collinIndex = p.indexOf(':');
+            if (collinIndex == -1) {
+                int commaIndex = p.indexOf(',');
+                String pp = p.substring(0, commaIndex == -1 ? p.length() : commaIndex);
+                ListProvider provider = new ListProvider.ListFunctioner<>(() -> pp ,SCORES);
+                ATTRIBUTER_MAP.put(provider, SCOREBOARD_SCORE);
+                return listElement(provider, original.substring(1, original.length() - 1), commaIndex, profile, debugLine, enabled, original);
+            }
+            String player = p.substring(0, collinIndex);
+            String objective = p.substring(collinIndex+1);
+
+            return new NumberSupplierElement(() -> {
+                ScoreboardObjective obj = scoreboard().getNullableObjective(objective);
+                if (obj == null) return null;
+                return scoreboard().getPlayerScore(player, obj).getScore();
+            }, flags.scale, flags.precision);
         }
 
         if (part.startsWith("stat:")) {
@@ -804,6 +834,8 @@ public class VariableParser {
             case "inventory_items", "inv_items" -> INV_ITEMS;
             case "armor_items" -> ARMOR_ITEMS;
             case "hotbar_items" -> HOTBAR_ITEMS;
+            case "objectives" -> SCOREBOARD_OBJECTIVES;
+            case "scores" -> PLAYER_SCOREBOARD_SCORES;
 
             default -> null;
         };

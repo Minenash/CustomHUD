@@ -19,7 +19,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.*;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
@@ -144,8 +143,6 @@ public class AttributeFunctions {
     public static final Function<ItemStack, Number> ITEM_DURABILITY = (stack) -> stack.getMaxDamage() - stack.getDamage();
     public static final Function<ItemStack, Number> ITEM_MAX_DURABILITY = (stack) -> stack.getMaxDamage();
     public static final Function<ItemStack, Number> ITEM_DURABILITY_PERCENT = (stack) -> 100 - stack.getDamage() / (float) stack.getMaxDamage() * 100;
-
-
     public static final Function<ItemStack, Boolean> ITEM_UNBREAKABLE = (stack) -> stack.hasNbt() && stack.getNbt().getBoolean("Unbreakable");
     public static final Function<ItemStack, Number> ITEM_REPAIR_COST = (stack) -> stack.getRepairCost();
 
@@ -215,6 +212,37 @@ public class AttributeFunctions {
             (team) -> team.getCollisionRule() != AbstractTeam.CollisionRule.NEVER);
 
 
+    // SCOREBOARD OBJECTIVES
+    public static final Function<ScoreboardObjective,String> OBJECTIVE_NAME = (obj) -> obj.getDisplayName().getString();
+    public static final Function<ScoreboardObjective,String> OBJECTIVE_ID = (obj) -> obj.getName();
+    public static final Function<ScoreboardObjective,String> OBJECTIVE_CRITIERIA = (obj) -> CLIENT.getServer() == null ? "unknown" : obj.getCriterion().getName();
+    public static final Function<ScoreboardObjective,String> OBJECTIVE_DISPLAY_SLOT = (obj) -> {
+        Scoreboard scoreboard = AttributeHelpers.scoreboard();
+        for (ScoreboardDisplaySlot slot : ScoreboardDisplaySlot.values())
+            if (scoreboard.getObjectiveForSlot(slot) == obj)
+                return slot.name().toLowerCase();
+        return "none";
+    };
+
+
+    // SCOREBOARD OBJECTIVE SCORE
+    public static final Function<ScoreboardPlayerScore,String> OBJECTIVE_SCORE_HOLDER = (score) -> score.getPlayerName();
+    public static final Function<ScoreboardPlayerScore,Number> OBJECTIVE_SCORE_VALUE = (score) -> score.getScore();
+
+
+    // SCOREBOARD SCORE
+    public static final Function<Map.Entry<ScoreboardObjective, ScoreboardPlayerScore>,String> SCORES_OBJECTIVE_NAME = (entry) -> entry.getKey().getDisplayName().getString();
+    public static final Function<Map.Entry<ScoreboardObjective, ScoreboardPlayerScore>,String> SCORES_OBJECTIVE_ID = (entry) -> entry.getKey().getName();
+    public static final Function<Map.Entry<ScoreboardObjective, ScoreboardPlayerScore>,String> SCORES_OBJECTIVE = (entry) -> CLIENT.getServer() == null ? "unknown" : entry.getKey().getCriterion().getName();
+    public static final Function<Map.Entry<ScoreboardObjective, ScoreboardPlayerScore>,Number> SCORES_VALUE = (entry) -> entry.getValue().getScore();
+    public static final Function<Map.Entry<ScoreboardObjective, ScoreboardPlayerScore>,String> SCORES_OBJECTIVE_CRITIERIA = (entry) -> CLIENT.getServer() == null ? "unknown" : entry.getKey().getCriterion().getName();
+    public static final Function<Map.Entry<ScoreboardObjective, ScoreboardPlayerScore>,String> SCORES_OBJECTIVE_DISPLAY_SLOT = (entry) -> {
+        Scoreboard scoreboard = AttributeHelpers.scoreboard();
+        for (ScoreboardDisplaySlot slot : ScoreboardDisplaySlot.values())
+            if (scoreboard.getObjectiveForSlot(slot) == entry.getKey())
+                return slot.name().toLowerCase();
+        return "none";
+    };
 
 
 

@@ -18,6 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -139,6 +140,13 @@ public class AttributeHelpers {
             compact.add(stack.copy());
         }
         return compact;
+    }
+
+    public static Scoreboard scoreboard() {
+        return CLIENT.getServer() != null ? CLIENT.getServer().getScoreboard() : CLIENT.world.getScoreboard();
+    }
+    public static boolean scoreboardPlayer(String player) {
+        return  null != (CLIENT.getServer() != null ? CLIENT.getServer().getPlayerManager().getPlayer(player) : CLIENT.getNetworkHandler().getPlayerListEntry(player));
     }
 
 
