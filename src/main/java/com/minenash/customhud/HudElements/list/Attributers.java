@@ -96,6 +96,7 @@ public class Attributers {
     };
 
     public static final Attributer ITEM_LORE_LINE = (sup, name, f) -> name.equals("line") ? new Str(sup, DIRECT) : null;
+    public static final Attributer ITEM_INFO_INFO = (sup, name, f) -> name.equals("info") ? new Str(sup, DIRECT) : null;
 
     public static final Attributer ITEM_ATTRIBUTE_MODIFIER = (sup, name, flags) -> switch (name) {
         case "slot" -> new Str(sup,ITEM_ATTR_SLOT);
@@ -112,6 +113,12 @@ public class Attributers {
         default -> null;
     };
 
+    public static final Attributer ITEM_CAN_X = (sup, name, flags) -> switch (name) {
+        case "name" -> new Str(sup,BLOCK_NAME);
+        case "id" -> new Str(sup,BLOCK_ID);
+        default -> null;
+    };
+
     public static final Attributer ITEM = (sup, name, flags) -> switch (name) {
         case "", "item" -> new Special(sup, ITEM_NAME, ITEM_RAW_ID, ITEM_IS_NOT_EMPTY);
         case "id" -> new Special(sup, ITEM_ID, ITEM_RAW_ID, ITEM_IS_NOT_EMPTY);
@@ -124,10 +131,15 @@ public class Attributers {
         case "unbreakable" -> new Bool(sup, ITEM_UNBREAKABLE);
         case "repair_cost" -> new Num(sup, ITEM_REPAIR_COST, flags);
         case "icon" -> new ItemSupplierIconElement(sup, flags);
+        case "hide_flags" -> new Num(sup, ITEM_HIDE_FLAGS_NUM, flags);
 
         case "enchants" -> new CreateListElement(sup, ITEM_ENCHANTS, ENCHANTMENT);
         case "lore" -> new CreateListElement(sup, ITEM_LORE_LINES, ITEM_LORE_LINE);
         case "attributes", "attrs" -> new CreateListElement(sup, ITEM_ATTRIBUTES, ITEM_ATTRIBUTE_MODIFIER);
+        case "can_destroy" -> new CreateListElement(sup, ITEM_CAN_DESTROY, ITEM_CAN_X);
+        case "can_place_on" -> new CreateListElement(sup, ITEM_CAN_PLAY_ON, ITEM_CAN_X);
+        case "info_shown" -> new CreateListElement(sup, ITEM_SHOWN, ITEM_INFO_INFO);
+        case "info_hidden" -> new CreateListElement(sup, ITEM_HIDDEN, ITEM_INFO_INFO);
         default -> null;
     };
 

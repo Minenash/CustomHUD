@@ -4,6 +4,8 @@ import com.minenash.customhud.mixin.accessors.AttributeContainerAccessor;
 import com.minenash.customhud.mixin.accessors.DefaultAttributeContainerAccessor;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.entity.Entity;
@@ -13,7 +15,6 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -124,6 +125,35 @@ public class AttributeHelpers {
             }
         }
         return lines;
+    }
+
+    public static List<Block> getCanX(ItemStack stack, String tag) {
+        NbtCompound nbtCompound = stack.getNbt();
+
+        if (nbtCompound == null || !nbtCompound.contains(tag, NbtElement.LIST_TYPE))
+            return Collections.EMPTY_LIST;
+
+        List<Block> items = new ArrayList<>();
+        NbtList nbtList = nbtCompound.getList(tag, NbtElement.STRING_TYPE);
+
+        for(int i = 0; i < nbtList.size(); ++i) {
+            String string = nbtList.getString(i);
+
+           Block block = Registries.BLOCK.get(Identifier.tryParse(string));
+           if (block != Blocks.AIR)
+               items.add(block);
+        }
+
+        return items;
+    }
+
+    public static List<String> getHideFlagStrings(ItemStack stack, boolean shown) {
+        List<String> sections = new ArrayList<>();
+        int flags = stack.getHideFlags();
+        for (ItemStack.TooltipSection flag : ItemStack.TooltipSection.values())
+            if (shown == ((flags & flag.getFlag()) == 0))
+                sections.add(flag.name().toLowerCase());
+        return sections;
     }
 
     public static List<ItemStack> compactItems(List<ItemStack> stacks) {

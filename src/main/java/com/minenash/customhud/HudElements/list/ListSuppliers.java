@@ -61,6 +61,11 @@ public class ListSuppliers {
     public static final Function<ItemStack,List<?>> ITEM_ATTRIBUTES = AttributeHelpers::getItemStackAttributes;
     public static final Function<ItemStack,List<?>> ITEM_ENCHANTS = (stack) -> Arrays.asList(EnchantmentHelper.get(stack).entrySet().toArray());
     public static final Function<ItemStack,List<?>> ITEM_LORE_LINES = AttributeHelpers::getLore;
+    public static final Function<ItemStack,List<?>> ITEM_CAN_DESTROY = (stack) -> getCanX(stack, "CanDestroy");
+    public static final Function<ItemStack,List<?>> ITEM_CAN_PLAY_ON = (stack) -> getCanX(stack, "CanPlaceOn");
+    public static final Function<ItemStack,List<?>> ITEM_HIDDEN = (stack) -> getHideFlagStrings(stack, false);
+    public static final Function<ItemStack,List<?>> ITEM_SHOWN = (stack) -> getHideFlagStrings(stack, true);
+
 
     public static final Function<ScoreboardObjective,List<?>> SCOREBOARD_OBJECTIVE_SCORES = (obj) -> scoreboard().getAllPlayerScores(obj).stream().sorted(ScoreboardPlayerScore.COMPARATOR).toList();
     public static final Function<ScoreboardObjective,List<?>> SCOREBOARD_OBJECTIVE_SCORES_ONLINE = (obj) -> scoreboard().getAllPlayerScores(obj).stream()

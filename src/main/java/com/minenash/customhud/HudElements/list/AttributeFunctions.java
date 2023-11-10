@@ -145,7 +145,11 @@ public class AttributeFunctions {
     public static final Function<ItemStack, Number> ITEM_DURABILITY_PERCENT = (stack) -> 100 - stack.getDamage() / (float) stack.getMaxDamage() * 100;
     public static final Function<ItemStack, Boolean> ITEM_UNBREAKABLE = (stack) -> stack.hasNbt() && stack.getNbt().getBoolean("Unbreakable");
     public static final Function<ItemStack, Number> ITEM_REPAIR_COST = (stack) -> stack.getRepairCost();
+    public static final Function<ItemStack, Number> ITEM_HIDE_FLAGS_NUM = (stack) -> stack.getHideFlags();
 
+    // CAN X
+    public static final Function<Block, String> BLOCK_ID = (block) -> Registries.BLOCK.getId(block).toString();
+    public static final Function<Block, String> BLOCK_NAME = (block) -> I18n.translate(block.getTranslationKey());
 
     // ATTRIBUTES
     public static final Function<EntityAttributeInstance,String> ATTRIBUTE_NAME = (attr) -> I18n.translate(attr.getAttribute().getTranslationKey());
