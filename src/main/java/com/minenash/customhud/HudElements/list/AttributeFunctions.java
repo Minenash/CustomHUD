@@ -11,6 +11,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -247,6 +249,34 @@ public class AttributeFunctions {
                 return slot.name().toLowerCase();
         return "none";
     };
+
+
+    // BOSSBARS TODO: ADD COLOR
+    public static final Function<BossBar,String> BOSSBAR_NAME = (bar) -> bar.getName().getString();
+    public static final Function<BossBar,String> BOSSBAR_UUID = (bar) -> bar.getUuid().toString();
+    public static final Function<BossBar,Number> BOSSBAR_PERCENT = (bar) -> bar.getPercent();
+    public static final Function<BossBar,Boolean> BOSSBAR_DARKEN_SKY = (bar) -> bar.shouldDarkenSky();
+    public static final Function<BossBar,Boolean> BOSSBAR_DRAGON_MUSIC = (bar) -> bar.hasDragonMusic();
+    public static final Function<BossBar,Boolean> BOSSBAR_THICKENS_FOG = (bar) -> bar.shouldThickenFog();
+    public static final Function<BossBar,String> BOSSBAR_COLOR_NAME = (bar) -> WordUtils.capitalize(bar.getColor().getName().toLowerCase());
+    public static final Entry<BossBar> BOSSBAR_STYLE = new Entry<>(
+            (bar) -> switch (bar.getStyle()) {
+                case PROGRESS -> "Progress";
+                case NOTCHED_6 -> "Notched 6";
+                case NOTCHED_10 -> "Notched 10";
+                case NOTCHED_12 -> "Notched 12";
+                case NOTCHED_20 -> "Notched 20";
+            },
+            (bar) -> bar.getStyle().ordinal(),
+            (bar) -> bar.getStyle().ordinal() != 0
+    );
+    public static final Function<BossBar,String> BOSSBAR_ID = (bar) -> {
+        if (CLIENT.getServer() == null) return null;
+        for (var entry : CLIENT.getServer().getBossBarManager().commandBossBars.entrySet())
+            if (entry.getValue() == bar) return entry.getKey().toString();
+        return null;
+    };
+    public static final Function<BossBar,Boolean> BOSSBAR_IS_VISIBLE = (bar) -> bar instanceof CommandBossBar cbb ? cbb.isVisible() : null;
 
 
 

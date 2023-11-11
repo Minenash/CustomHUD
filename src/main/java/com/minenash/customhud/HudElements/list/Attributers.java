@@ -5,6 +5,7 @@ import com.minenash.customhud.HudElements.FuncElements;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.FuncElements.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement.CreateListElement;
+import com.minenash.customhud.HudElements.icon.BossbarIcon;
 import com.minenash.customhud.HudElements.icon.PlayerHeadIconElement;
 import com.minenash.customhud.HudElements.icon.ItemSupplierIconElement;
 import com.minenash.customhud.HudElements.icon.StatusEffectIconElement;
@@ -204,6 +205,22 @@ public class Attributers {
         default -> null;
     };
 
+    public static final Attributer BOSSBAR = (sup, name, flags) -> switch (name) {
+        case "name" -> new Str(sup, BOSSBAR_NAME);
+        case "uuid" -> new Str(sup, BOSSBAR_UUID);
+        case "id" -> new Str(sup, BOSSBAR_ID); //SP Only
+        case "percent","per","value","" -> new Num(sup, BOSSBAR_PERCENT, flags);
+        case "darken_sky" -> new Bool(sup, BOSSBAR_DARKEN_SKY);
+        case "dragon_music" -> new Bool(sup, BOSSBAR_DRAGON_MUSIC);
+        case "thickens_fog" -> new Bool(sup, BOSSBAR_THICKENS_FOG);
+        case "style" -> new Special(sup, BOSSBAR_STYLE);
+        case "color_name" -> new Str(sup, BOSSBAR_COLOR_NAME);
+        case "enabled", "visible" -> new Bool(sup, BOSSBAR_IS_VISIBLE); //SP Only
+        case "players" -> new CreateListElement(sup, BOSSBAR_PLAYERS, PLAYER); //SP Only
+        case "icon", "bar" -> new BossbarIcon(sup, flags);
+        default -> null;
+    };
+
 
 
     public static final Map<ListProvider, Attributer> ATTRIBUTER_MAP = new HashMap<>();
@@ -226,6 +243,8 @@ public class Attributers {
         ATTRIBUTER_MAP.put(ITEMS, ITEM);
         ATTRIBUTER_MAP.put(SCOREBOARD_OBJECTIVES, SCOREBOARD_OBJECTIVE);
         ATTRIBUTER_MAP.put(PLAYER_SCOREBOARD_SCORES, SCOREBOARD_SCORE);
+        ATTRIBUTER_MAP.put(BOSSBARS, BOSSBAR);
+        ATTRIBUTER_MAP.put(ALL_BOSSBARS, BOSSBAR);
 
         // ATTRIBUTER_MAP.put(ATTRIBUTE_MODIFIERS, ATTRIBUTE_MODIFIER);
         // ATTRIBUTER_MAP.put(TEAM_MEMBERS, TEAM_MEMBER);

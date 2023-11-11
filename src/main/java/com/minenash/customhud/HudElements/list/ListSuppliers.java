@@ -7,6 +7,8 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Scoreboard;
@@ -52,7 +54,10 @@ public class ListSuppliers {
         HOTBAR_ITEMS = () -> CLIENT.player.getInventory().main.subList(0,9),
 
         SCOREBOARD_OBJECTIVES = () -> Arrays.asList(scoreboard().getObjectives().toArray()),
-        PLAYER_SCOREBOARD_SCORES = () -> Arrays.asList(scoreboard().getPlayerObjectives(CLIENT.getGameProfile().getName()).entrySet().toArray());
+        PLAYER_SCOREBOARD_SCORES = () -> Arrays.asList(scoreboard().getPlayerObjectives(CLIENT.getGameProfile().getName()).entrySet().toArray()),
+
+        BOSSBARS = () -> bossbars(false),
+        ALL_BOSSBARS = () -> bossbars(true);
 
     public static final Function<EntityAttributeInstance,List<?>> ATTRIBUTE_MODIFIERS = (attr) -> attr.getModifiers().stream().toList();
     public static final Function<Team,List<?>> TEAM_MEMBERS = (team) -> Arrays.asList(team.getPlayerList().toArray());
@@ -65,6 +70,11 @@ public class ListSuppliers {
     public static final Function<ItemStack,List<?>> ITEM_CAN_PLAY_ON = (stack) -> getCanX(stack, "CanPlaceOn");
     public static final Function<ItemStack,List<?>> ITEM_HIDDEN = (stack) -> getHideFlagStrings(stack, false);
     public static final Function<ItemStack,List<?>> ITEM_SHOWN = (stack) -> getHideFlagStrings(stack, true);
+
+    public static final Function<BossBar,List<?>> BOSSBAR_PLAYERS = (bar) -> {
+        if (CLIENT.getServer() == null || !(bar instanceof CommandBossBar cboss)) return Collections.EMPTY_LIST;
+        return Arrays.asList(cboss.getPlayers().toArray());
+    };
 
 
     public static final Function<ScoreboardObjective,List<?>> SCOREBOARD_OBJECTIVE_SCORES = (obj) -> scoreboard().getAllPlayerScores(obj).stream().sorted(ScoreboardPlayerScore.COMPARATOR).toList();

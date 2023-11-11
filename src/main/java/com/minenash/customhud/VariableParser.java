@@ -290,6 +290,10 @@ public class VariableParser {
             return attrElement(part, src -> src, (name) -> () -> CLIENT.world.getScoreboard().getNullableObjective(name),
                     SCOREBOARD_OBJECTIVE, null, ErrorType.UNKNOWN_OBJECTIVE_PROPERTY, profile, debugLine, enabled, original);
 
+        else if (part.startsWith("bossbar:"))
+            return attrElement(part, src -> src, (name) -> () -> AttributeHelpers.getBossBar(name),
+                    BOSSBAR, null, ErrorType.UNKNOWN_OBJECTIVE_PROPERTY, profile, debugLine, enabled, original);
+
 
 
 
@@ -836,6 +840,8 @@ public class VariableParser {
             case "hotbar_items" -> HOTBAR_ITEMS;
             case "objectives" -> SCOREBOARD_OBJECTIVES;
             case "scores" -> PLAYER_SCOREBOARD_SCORES;
+            case "bossbars" -> BOSSBARS;
+            case "all_bossbars" -> ALL_BOSSBARS;
 
             default -> null;
         };
@@ -871,7 +877,7 @@ public class VariableParser {
             case "count", "c" -> new NumberSupplierElement(ListManager::getCount, flags.scale, flags.precision);
             case "index", "i" -> new NumberSupplierElement(ListManager::getIndex, flags.scale, flags.precision);
             case "raw" -> new StringSupplierElement(RAW);
-            default -> Attributers.get(listProvider, ListManager::getValue, name, flags);
+            default -> Attributers.get(listProvider, ListManager.SUPPLIER, name, flags);
         };
 
     }

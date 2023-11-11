@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.boss.BossBar;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -177,6 +178,45 @@ public class AttributeHelpers {
     }
     public static boolean scoreboardPlayer(String player) {
         return  null != (CLIENT.getServer() != null ? CLIENT.getServer().getPlayerManager().getPlayer(player) : CLIENT.getNetworkHandler().getPlayerListEntry(player));
+    }
+
+    public static List<?> bossbars(boolean all) {
+        if (CLIENT.getServer() == null)
+            return Arrays.asList(CLIENT.inGameHud.getBossBarHud().bossBars.entrySet().toArray());
+        if (all)
+            return Arrays.asList(CLIENT.getServer().getBossBarManager().commandBossBars.values().toArray());
+
+        Set<UUID> client = CLIENT.inGameHud.getBossBarHud().bossBars.keySet();
+        return CLIENT.getServer().getBossBarManager().commandBossBars.values().stream().filter(bar -> client.contains(bar.getUuid())).toList();
+    }
+
+    public static BossBar getBossBar(String input) {
+        boolean client = CLIENT.getServer() == null;
+        try {
+            UUID uuid = UUID.fromString(input);
+            if (client)
+                return CLIENT.inGameHud.getBossBarHud().bossBars.get(uuid);
+            for (BossBar bar : CLIENT.getServer().getBossBarManager().commandBossBars.values())
+                if (bar.getUuid() == uuid)
+                    return bar;
+        }
+        catch (Exception ignored) {}
+
+        if (client) {
+            for (BossBar bar : CLIENT.inGameHud.getBossBarHud().bossBars.values())
+                if (bar.getName().getString().equalsIgnoreCase(input))
+                    return bar;
+        }
+        else {
+            BossBar bar = CLIENT.getServer().getBossBarManager().get(Identifier.tryParse(input));
+            if (bar != null)
+                return bar;
+            for (BossBar bar2 : CLIENT.getServer().getBossBarManager().commandBossBars.values())
+                if (bar2.getName().getString().equalsIgnoreCase(input))
+                    return bar2;
+        }
+        return null;
+
     }
 
 

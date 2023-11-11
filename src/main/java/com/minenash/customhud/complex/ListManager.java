@@ -2,6 +2,7 @@ package com.minenash.customhud.complex;
 
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Supplier;
 
 public class ListManager {
 
@@ -36,5 +37,7 @@ public class ListManager {
     public static Object getValue(int index) {
         return values.peek().get(index);
     }
+
+    public static final Supplier<?> SUPPLIER = ListManager::getValue;
 
 }
