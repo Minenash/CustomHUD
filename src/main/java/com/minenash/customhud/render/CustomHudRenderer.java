@@ -15,7 +15,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,16 @@ public class CustomHudRenderer {
         List<RenderPiece> pieces = new ArrayList<>();
 
         context.getMatrices().push();
+
+        //TODO: remove prob
+        HudTheme themeO = profile.baseTheme;
+        context.getMatrices().translate(themeO.translation.getX(), themeO.translation.getY(), themeO.translation.getZ());
+        context.getMatrices().multiply(new Quaternionf()
+                .rotateX(themeO.rotation.getX() * 0.017453292F)
+                .rotateY(themeO.rotation.getY() * 0.017453292F)
+                .rotateZ(themeO.rotation.getZ() * 0.017453292F)
+        );
+
         context.getMatrices().scale(profile.baseTheme.scale, profile.baseTheme.scale, 1);
         BufferBuilder bgBuilder = Tessellator.getInstance().getBuffer();
         bgBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -166,7 +178,8 @@ public class CustomHudRenderer {
 
         for (RenderPiece piece : pieces) {
             if (piece.element instanceof IconElement ie )
-                ie.render(context, piece.x, piece.y, profile.baseTheme.scale);
+                try { ie.render(context, piece.x, piece.y, profile.baseTheme.scale); }
+                catch (Exception ignored){}
         }
 
         context.getMatrices().pop();

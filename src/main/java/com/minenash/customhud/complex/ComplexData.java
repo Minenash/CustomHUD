@@ -9,6 +9,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -32,9 +33,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
-import java.util.ArrayDeque;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class ComplexData {
@@ -86,6 +85,8 @@ public class ComplexData {
     public static int slots_empty = 0;
 
     private static long lastStatUpdate = 0;
+
+    public static final Map<UUID, BossBar> bossbars = new HashMap<>();
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {

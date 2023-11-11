@@ -23,6 +23,7 @@ public class Flags {
     public int iconWidth = -1;
     public int iconShiftX = 0;
     public int iconShiftY = 0;
+    public float rotation = 0;
     public boolean iconReferenceCorner = false;
     public boolean iconShowCount = false;
     public boolean iconShowDur = false;
@@ -36,6 +37,7 @@ public class Flags {
     private static final Pattern SCALE_PATTERN = Pattern.compile("-(?:s|scale)((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
     private static final Pattern WIDTH_PATTERN = Pattern.compile("-(?:w|width)(\\d+)");
     private static final Pattern SHIFT_PATTERN = Pattern.compile("-(?:sh|shift)(-?\\d+)(?:,(-?\\d+))?");
+    private static final Pattern ROTATE_PATTERN = Pattern.compile("-(?:r|rotation)(-?\\d+)");
 
     public static Flags parse(int profile, int line, String[] parts) {
         Flags flags = new Flags();
@@ -88,6 +90,11 @@ public class Flags {
                         flags.iconShiftX = Integer.parseInt(matcher.group(1));
                         if (matcher.group(2) != null)
                             flags.iconShiftY = Integer.parseInt(matcher.group(2));
+                        continue;
+                    }
+                    matcher = ROTATE_PATTERN.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        flags.rotation = Integer.parseInt(matcher.group(1)) * 0.017453292F;
                         continue;
                     }
 

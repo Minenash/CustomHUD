@@ -3,6 +3,7 @@ package com.minenash.customhud.data;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3i;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +15,9 @@ public class HudTheme {
     public float scale = 1;
     public Identifier font = null;
     public boolean textShadow = true;
+
+    public Vec3i rotation = new Vec3i(0,0,0);
+    public Vec3i translation = new Vec3i(0,0,0);
 
     private HudTheme(){}
 
@@ -39,6 +43,8 @@ public class HudTheme {
     private static final Pattern COLOR_FLAG_PATTERN_STR = Pattern.compile("(back|fore)groundcolou?r: ?(.*)");
     private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("font: ?(\\w*:?\\w+)");
     private static final Pattern TEXT_SHADOW_FLAG_PATTERN = Pattern.compile("textshadow: ?(true|false)");
+    private static final Pattern ROTATION_FLAG_PATTERN = Pattern.compile("rotate: ?(-?\\d+), ?(-?\\d+), ?(-?\\d+)");
+    private static final Pattern TRANSLATE_FLAG_PATTERN = Pattern.compile("translate: ?(-?\\d+), ?(-?\\d+), ?(-?\\d+)");
 
     public boolean parse(boolean global, String line, int profileID, int lineNum) {
         line = line.toLowerCase();
@@ -66,6 +72,17 @@ public class HudTheme {
 
         else if (global && (  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches())
             scale = Float.parseFloat(matcher.group(1));
+
+        else if (global && (  matcher = ROTATION_FLAG_PATTERN.matcher(line) ).matches())
+            rotation = new Vec3i(
+                    Integer.parseInt(matcher.group(1)),
+                    Integer.parseInt(matcher.group(2)),
+                    Integer.parseInt(matcher.group(3)));
+        else if (global && (  matcher = TRANSLATE_FLAG_PATTERN.matcher(line) ).matches())
+            translation = new Vec3i(
+                    Integer.parseInt(matcher.group(1)),
+                    Integer.parseInt(matcher.group(2)),
+                    Integer.parseInt(matcher.group(3)));
 
         else if (( matcher = FONT_FLAG_PATTERN.matcher(line) ).matches())
             font = new Identifier(matcher.group(1));

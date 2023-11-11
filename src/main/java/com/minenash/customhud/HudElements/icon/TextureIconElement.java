@@ -86,6 +86,7 @@ public class TextureIconElement extends IconElement {
     public void render(DrawContext context, int x, int y, float profileScale) {
         if (width == 0)
             return;
+        context.getMatrices().multiply(rotation);
         context.drawTexture(texture, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 

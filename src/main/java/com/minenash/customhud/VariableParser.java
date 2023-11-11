@@ -56,7 +56,7 @@ public class VariableParser {
     private static final Pattern TEXTURE_ICON_PATTERN = Pattern.compile("((?:[a-z0-9/._-]+:)?[a-z0-9/._-]+)(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?(?:,(\\d+))?");
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
     private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
-    private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("([\\w.]*)(?::([\\w.]*))?.*");
+    private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("([\\w.-]*)(?::([\\w.-]*))?.*");
 
     public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line, ListProvider listProvider) {
 //        System.out.println("[Line " + debugLine+ "] '" + str + "'");
@@ -191,7 +191,7 @@ public class VariableParser {
             }
         }
 
-        if (!part.startsWith("{"))
+        if (!part.startsWith("{") || part.length() < 2)
             return new StringElement(part);
 
         String original = part;
@@ -898,12 +898,12 @@ public class VariableParser {
             return null;
         }
 
-        int commaIndex = part.indexOf(',');
-        Flags flags = commaIndex == -1 ? Flags.parse(profile, debugLine, part.split(" ")) : new Flags();
+        boolean hasQuote = part.indexOf('"') != -1 && part.indexOf('\'') != -1;
+        Flags flags = hasQuote ? new Flags() : Flags.parse(profile, debugLine, part.split(" "));
         HudElement element = attributer.get(supplier.apply(value), method, flags);
 
         if (element instanceof FunctionalElement.CreateListElement cle)
-            return listElement(cle.provider, part, commaIndex, profile, debugLine, enabled, original);
+            return listElement(cle.provider, part, part.indexOf(','), profile, debugLine, enabled, original);
         if (element instanceof FuncElements<?> && flags.anyTextUsed() )
             return new FormattedElement(element, flags);
         if (element != null)

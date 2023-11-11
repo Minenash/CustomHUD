@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements.list;
 
+import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.mixin.accessors.AttributeContainerAccessor;
 import com.minenash.customhud.mixin.accessors.DefaultAttributeContainerAccessor;
 import com.mojang.brigadier.StringReader;
@@ -183,11 +184,16 @@ public class AttributeHelpers {
     public static List<?> bossbars(boolean all) {
         if (CLIENT.getServer() == null)
             return Arrays.asList(CLIENT.inGameHud.getBossBarHud().bossBars.entrySet().toArray());
+
+        List<BossBar> serverBossbars = new ArrayList<>();
+        serverBossbars.addAll(CLIENT.getServer().getBossBarManager().commandBossBars.values());
+        serverBossbars.addAll(ComplexData.bossbars.values());
+
         if (all)
-            return Arrays.asList(CLIENT.getServer().getBossBarManager().commandBossBars.values().toArray());
+            return serverBossbars;
 
         Set<UUID> client = CLIENT.inGameHud.getBossBarHud().bossBars.keySet();
-        return CLIENT.getServer().getBossBarManager().commandBossBars.values().stream().filter(bar -> client.contains(bar.getUuid())).toList();
+        return serverBossbars.stream().filter(bar -> client.contains(bar.getUuid())).toList();
     }
 
     public static BossBar getBossBar(String input) {
@@ -199,6 +205,9 @@ public class AttributeHelpers {
             for (BossBar bar : CLIENT.getServer().getBossBarManager().commandBossBars.values())
                 if (bar.getUuid() == uuid)
                     return bar;
+            BossBar bb = ComplexData.bossbars.get(uuid);
+            if (bb != null)
+                return bb;
         }
         catch (Exception ignored) {}
 
@@ -214,9 +223,11 @@ public class AttributeHelpers {
             for (BossBar bar2 : CLIENT.getServer().getBossBarManager().commandBossBars.values())
                 if (bar2.getName().getString().equalsIgnoreCase(input))
                     return bar2;
+            for (BossBar bar2 : ComplexData.bossbars.values())
+                if (bar2.getName().getString().equalsIgnoreCase(input))
+                    return bar2;
         }
         return null;
-
     }
 
 

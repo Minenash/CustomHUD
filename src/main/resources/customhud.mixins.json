@@ -26,6 +26,7 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "BossBarS2CPacketMixin",
     "PlayerEntityMixin",
     "accessors.AttributeContainerAccessor",
     "accessors.DefaultAttributeContainerAccessor"

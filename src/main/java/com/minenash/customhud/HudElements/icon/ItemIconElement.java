@@ -4,6 +4,7 @@ import com.minenash.customhud.data.Flags;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.RotationAxis;
 
 public class ItemIconElement extends IconElement {
 

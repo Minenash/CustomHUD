@@ -36,6 +36,8 @@ public class StatusEffectIconElement extends IconElement {
         StatusEffectInstance effect = effects.get(effectIndex);
         effectIndex++;
 
+
+
         y-=2;
         if (!referenceCorner && scale != 1)
            y-= (bgWidth-12)/2;
@@ -45,11 +47,15 @@ public class StatusEffectIconElement extends IconElement {
         float f = !effect.isDurationBelow(200) ? 1.0f :
             MathHelper.clamp((float)m / 10.0f / 5.0f * 0.5f, 0.0f, 0.5f) + MathHelper.cos((float)m * (float)Math.PI / 5.0f) * MathHelper.clamp((float)(10 - m / 20) / 10.0f * 0.25f, 0.0f, 0.25f);
 
+        context.getMatrices().translate(x, y, 0);
+        rotate(context, bgWidth, bgWidth);
+//        context.getMatrices().multiply(rotation);
+
         RenderSystem.enableBlend();
         if (background)
-            context.drawGuiTexture(effect.isAmbient() ? EFFECT_BACKGROUND_AMBIENT_TEXTURE : EFFECT_BACKGROUND_TEXTURE, x, y, bgWidth, bgWidth);
+            context.drawGuiTexture(effect.isAmbient() ? EFFECT_BACKGROUND_AMBIENT_TEXTURE : EFFECT_BACKGROUND_TEXTURE, 0, 0, bgWidth, bgWidth);
         context.setShaderColor(1.0f, 1.0f, 1.0f, f);
-        context.drawSprite(x+effectOffset, y+effectOffset, 0, (int)(9*scale), (int)(9*scale), sprite);
+        context.drawSprite(effectOffset, effectOffset, 0, (int)(9*scale), (int)(9*scale), sprite);
         context.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
 

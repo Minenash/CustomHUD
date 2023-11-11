@@ -12,6 +12,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import org.joml.Quaternionf;
 
 import java.util.List;
 
@@ -21,12 +22,16 @@ public abstract class IconElement extends FunctionalElement {
     protected final float scale;
     protected final int shiftX;
     protected final int shiftY;
+    protected final Quaternionf rotation;
+    protected final Quaternionf rotationInverse;
     protected final boolean referenceCorner;
 
     protected IconElement(Flags flags) {
         scale = (float) flags.scale;
         shiftX = flags.iconShiftX;
         shiftY = flags.iconShiftY;
+        rotation = new Quaternionf().rotationZ(flags.rotation);
+        rotationInverse = new Quaternionf().rotationZ(-flags.rotation);
         referenceCorner = flags.iconReferenceCorner;
     }
 
@@ -36,6 +41,13 @@ public abstract class IconElement extends FunctionalElement {
     @Override
     public String getString() {
         return "\uFFFE";
+    }
+
+    protected void rotate(DrawContext context, float renderWidth, float renderHeight) {
+        context.getMatrices().translate(renderWidth/2, renderHeight/2, 0);
+        context.getMatrices().multiply(rotation);
+        context.getMatrices().translate(-renderWidth/2, -renderHeight/2, 0);
+
     }
 
     public void renderItemStack(int x, int y, float profileScale, ItemStack stack) {
@@ -48,13 +60,13 @@ public abstract class IconElement extends FunctionalElement {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.scale(profileScale, profileScale, 1);
-
         matrixStack.translate(x+(5.5*scale), y+3.5, 100.0f); //+ client.getItemRenderer().zOffset
 
         if (referenceCorner)
             matrixStack.translate(0, (10*scale-10)/2, 0);
 
         matrixStack.scale(10 * scale, -10 * scale, 1);
+        matrixStack.multiply(rotationInverse);
 
         if (!model.isSideLit())
             DiffuseLighting.disableGuiDepthLighting();

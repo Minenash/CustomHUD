@@ -31,8 +31,11 @@ public class BossbarIcon extends IconElement{
         context.getMatrices().push();
         context.getMatrices().translate(x + shiftX, y + shiftY + 1, 0);
         context.getMatrices().scale(scale, scale, 0);
+        context.getMatrices().multiply(rotation); //TODO: TRANSLATE BACK
 
-        CLIENT.inGameHud.getBossBarHud().renderBossBar(context, 0, 0, useSupplier ? bossbarSupplier.get() : bossbars.get(bossbarsIndex++));
+        BossBar bossBar = useSupplier ? bossbarSupplier.get() : bossbars.get(bossbarsIndex++);
+        if (bossBar != null)
+            CLIENT.inGameHud.getBossBarHud().renderBossBar(context, 0, 0, bossBar);
 
         context.getMatrices().pop();
     }

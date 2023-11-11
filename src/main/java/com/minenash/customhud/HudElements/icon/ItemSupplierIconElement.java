@@ -56,7 +56,12 @@ public class ItemSupplierIconElement extends IconElement {
         x += shiftX;
         y += shiftY;
 
+
         renderItemStack(x, y, profileScale, stack);
+
+
+//        x = y = 0;
+
         if (showCount)
             renderCount(context, stack.getCount(), x, y);
         if (showDur)
@@ -70,6 +75,7 @@ public class ItemSupplierIconElement extends IconElement {
             MatrixStack matrixStack = context.getMatrices();
             matrixStack.push();
             matrixStack.translate(x + (scale-1)/4,y + (scale-1)/4,200);
+//            matrixStack.multiply(rotation);
             if (referenceCorner)
                 matrixStack.translate(0, (10*scale-10)/2, 0);
             matrixStack.scale(10/16F * scale, 10/16F * scale, 1);
@@ -80,8 +86,10 @@ public class ItemSupplierIconElement extends IconElement {
 
             int offset = numSize == 0 ? 0 : numSize == 1 ? 1 : 9;
 
-            context.drawTextWithShadow(client.textRenderer, string,
-                    17 - client.textRenderer.getWidth(string), (int) (6 / scale + 0.5F) - offset, 0xFFFFFF);
+//            rotate(context, 10, 10);
+            matrixStack.translate(17 - client.textRenderer.getWidth(string), (int) (6 / scale + 0.5F) - offset, 0);
+
+            context.drawTextWithShadow(client.textRenderer, string, 0, 0, 0xFFFFFF);
             matrixStack.pop();
         }
     }
@@ -100,7 +108,11 @@ public class ItemSupplierIconElement extends IconElement {
 
         float f = player == null ? 0.0f : player.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getTickDelta());
         if (f > 0.0f) {
-            this.renderGuiQuad(context, x+0.5*scale, y + MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 0x40FFFFFF);
+            context.getMatrices().push();
+            context.getMatrices().translate(x,y,0);
+            rotate(context, 11, 11);
+            this.renderGuiQuad(context, 0.5*scale, MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 0x40FFFFFF);
+            context.getMatrices().pop();
         }
     }
 

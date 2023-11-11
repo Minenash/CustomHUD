@@ -39,7 +39,10 @@ public class PlayerHeadIconElement extends IconElement {
         PlayerEntity playerEntity = CLIENT.world.getPlayerByUuid(playerEntry.getProfile().getId());
         boolean flip = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
         boolean hat = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
-        PlayerSkinDrawer.draw(context, playerEntry.getSkinTextures().texture(), x+((int)scale), y, (int)(8*scale), hat, flip);
+        context.getMatrices().translate(x+((int)scale), y, 0);
+        int size = (int)(8*scale);
+        rotate(context, size, size);
+        PlayerSkinDrawer.draw(context, playerEntry.getSkinTextures().texture(), 0, 0, size, hat, flip);
     }
 
     @Override

@@ -20,12 +20,14 @@ public class DebugGizmoElement extends IconElement {
         this.size = width / 2F;
     }
 
+    //TODO: Mark as non-rotatable
     @Override
     public void render(DrawContext context, int x, int y, float profileScale) {
         float scale = -1 * this.scale;
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-        MatrixStack matrixStack = context.getMatrices();
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
+        matrixStack.multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
         matrixStack.scale(profileScale,profileScale,1);
 
         float yaw = MathHelper.wrapDegrees(camera.getYaw());
