@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class HudTheme {
     public int bgColor = 0x44000000;
-    public int fgColor = 0xffffffff;
+    public CHFormatting fgColor = new CHFormatting().color(0xffffffff,0xffffffff);
     public int lineSpacing = 2;
     public float scale = 1;
     public Identifier font = null;
@@ -112,8 +112,8 @@ public class HudTheme {
         return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
     }
 
-    public static Integer parseColorName(String str) {
-        return switch (str) {
+    public static CHFormatting parseColorName(String str) {
+        int color = switch (str) {
             case "black"       -> 0x000000;
             case "dark_blue"   -> 0x0000AA;
             case "dark_green"  -> 0x00AA00;
@@ -130,6 +130,52 @@ public class HudTheme {
             case "light_purple", "purple" -> 0xFF55FF;
             case "yellow"      -> 0xFFFF55;
             case "white"       -> 0xFFFFFF;
+            //Bedrock:
+            case "minecoin_gold",      "minecoin"  -> 0xDDD605;
+            case "material_quartz",    "quartz"    -> 0xE3D4D1;
+            case "material_iron",      "iron"      -> 0xCECACA;
+            case "material_netherite", "netherite" -> 0x443A3B;
+            case "material_redstone",  "redstone"  -> 0x971607;
+            case "material_copper",    "copper"    -> 0xB4684D;
+            case "material_gold",      "mgold"     -> 0xDEB12D;
+            case "material_emerald",   "emerald"   -> 0x47A036;
+            case "material_diamond",   "diamond"   -> 0x2CBAA8;
+            case "material_lapis",     "lapis"     -> 0x21497B;
+            case "material_amethyst",  "amethyst"  -> 0x9A5CC6;
+            default -> 0xFF000000;
+        };
+    }
+
+    public static Integer parseColorCode(String str) {
+        return switch (str) {
+            case "0" -> 0x000000;
+            case "1" -> 0x0000AA;
+            case "2" -> 0x00AA00;
+            case "3" -> 0x00AAAA;
+            case "4" -> 0xAA0000;
+            case "5" -> 0xAA00AA;
+            case "6" -> 0xFFAA00;
+            case "7" -> 0xAAAAAA;
+            case "8" -> 0x555555;
+            case "9" -> 0x5555FF;
+            case "a" -> 0x55FF55;
+            case "b" -> 0x55FFFF;
+            case "c" -> 0xFF5555;
+            case "d" -> 0xFF55FF;
+            case "e" -> 0xFFFF55;
+            case "f" -> 0xFFFFFF;
+            //Bedrock:
+            case "g" -> 0xDDD605;
+            case "h" -> 0xE3D4D1;
+            case "i" -> 0xCECACA;
+            case "j" -> 0x443A3B;
+            case "zm" -> 0x971607;
+            case "zn" -> 0xB4684D;
+            case "p" -> 0xDEB12D;
+            case "q" -> 0x47A036;
+            case "s" -> 0x2CBAA8;
+            case "t" -> 0x21497B;
+            case "u" -> 0x9A5CC6;
             default -> null;
         };
     }
