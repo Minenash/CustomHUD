@@ -10,11 +10,9 @@ import net.minecraft.item.Items;
 public class RecordIconElement extends IconElement {
 
     private static final ItemStack NO_RECORD = new ItemStack(Items.BARRIER);
-    private final int width;
 
     public RecordIconElement(Flags flags) {
-        super(flags);
-        this.width = flags.iconWidth != -1 ? flags.iconWidth : (int)(11*scale);
+        super(flags, 11);
     }
 
     @Override
@@ -27,13 +25,8 @@ public class RecordIconElement extends IconElement {
         return MusicAndRecordTracker.isRecordPlaying && MusicAndRecordTracker.recordIcon.isEmpty();
     }
 
-    @Override
-    public int getTextWidth() {
-        return width;
-    }
-
     public void render(DrawContext context, int x, int y, float profileScale) {
-        renderItemStack(x+shiftX, y+shiftY, profileScale, MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordIcon : NO_RECORD);
+        renderItemStack(context, x, y, MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordIcon : NO_RECORD);
     }
 
 }

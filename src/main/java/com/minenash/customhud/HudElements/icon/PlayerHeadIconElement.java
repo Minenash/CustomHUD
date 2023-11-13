@@ -16,14 +16,11 @@ import static com.minenash.customhud.CustomHud.CLIENT;
 
 public class PlayerHeadIconElement extends IconElement {
 
-    private final int width;
-
     private List<PlayerListEntry> players;
     private int playerIndex = 0;
 
     public PlayerHeadIconElement(Flags flags) {
-        super(flags);
-        this.width = flags.iconWidth != -1 ? flags.iconWidth : (int)(10*scale);
+        super(flags, 10);
     }
 
     @Override
@@ -39,15 +36,10 @@ public class PlayerHeadIconElement extends IconElement {
         PlayerEntity playerEntity = CLIENT.world.getPlayerByUuid(playerEntry.getProfile().getId());
         boolean flip = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
         boolean hat = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
-        context.getMatrices().translate(x+((int)scale), y, 0);
+        context.getMatrices().translate(x+((int)scale) + shiftX, y + shiftY, 0);
         int size = (int)(8*scale);
-        rotate(context, size, size);
+        rotate(context.getMatrices(), size, size);
         PlayerSkinDrawer.draw(context, playerEntry.getSkinTextures().texture(), 0, 0, size, hat, flip);
-    }
-
-    @Override
-    public int getTextWidth() {
-        return width;
     }
 
     @Override

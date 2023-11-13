@@ -8,7 +8,7 @@ public class SpaceElement extends IconElement {
     private final int width;
 
     public SpaceElement(int width) {
-        super(new Flags());
+        super(new Flags(), 0);
         this.width = width;
     }
 

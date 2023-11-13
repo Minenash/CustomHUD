@@ -26,7 +26,6 @@ public class TextureIconElement extends IconElement {
     private final int regionHeight;
     private final int width;
     private final int height;
-    private final int xOffset;
     private final int yOffset;
     private final int textWidth;
 
@@ -34,7 +33,7 @@ public class TextureIconElement extends IconElement {
 
 
     public TextureIconElement(Identifier texture, int u, int v, int w, int h, Flags flags) {
-        super(flags);
+        super(flags, 0);
         this.u = u;
         this.v = v;
 
@@ -57,7 +56,6 @@ public class TextureIconElement extends IconElement {
 
         height = (int) (11 * flags.scale);
         width = (int) (height * ((float)textureWidth/textureHeight));
-        xOffset = referenceCorner ? 0 : (int) ((width*scale-width)/(scale*2));
         yOffset = referenceCorner ? 0 : (int) ((height*scale-height)/(scale*2));
         textWidth = flags.iconWidth == -1 ? width : flags.iconWidth;
 
@@ -86,8 +84,11 @@ public class TextureIconElement extends IconElement {
     public void render(DrawContext context, int x, int y, float profileScale) {
         if (width == 0)
             return;
-        context.getMatrices().multiply(rotation);
-        context.drawTexture(texture, x+shiftX+xOffset, y+shiftY-yOffset, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+        context.getMatrices().push();
+        context.getMatrices().translate(x+shiftX, y+shiftY-yOffset-2, 0);
+        rotate(context.getMatrices(), width, height);
+        context.drawTexture(texture, 0, 0, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+        context.getMatrices().pop();
     }
 
 

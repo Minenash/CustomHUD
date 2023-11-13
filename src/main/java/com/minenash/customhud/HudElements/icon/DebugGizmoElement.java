@@ -11,19 +11,18 @@ import net.minecraft.util.math.RotationAxis;
 
 public class DebugGizmoElement extends IconElement {
 
-    private final int width;
     private final float size;
+    private final Flags flags;
 
     public DebugGizmoElement(Flags flags) {
-        super(flags);
-        this.width = flags.iconWidth != -1 ? flags.iconWidth : (int)(10*scale);
-        this.size = width / 2F;
+        super(flags, 10);
+        this.size = (int)(10*scale) / 2F;
+        this.flags = flags;
     }
 
     //TODO: Mark as non-rotatable
     @Override
     public void render(DrawContext context, int x, int y, float profileScale) {
-        float scale = -1 * this.scale;
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
@@ -55,20 +54,17 @@ public class DebugGizmoElement extends IconElement {
         }
 
         matrixStack.translate(x + shiftX + x_offset, y + shiftY + y_offset + (size/2), 100);
+        if (!referenceCorner)
+            matrixStack.translate(0, -(10*scale-10)/2, 0);
+        matrixStack.scale(-1, -1, -1);
+
         matrixStack.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
         matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
 
-        matrixStack.scale(scale, scale, scale);
         RenderSystem.applyModelViewMatrix();
         RenderSystem.renderCrosshair((int) size);
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
     }
 
-
-
-    @Override
-    public int getTextWidth() {
-        return width;
-    }
 }

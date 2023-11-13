@@ -4,6 +4,7 @@ import com.minenash.customhud.data.Flags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,16 +18,14 @@ public class ItemSupplierIconElement extends IconElement {
 
     private final Supplier<ItemStack> supplier;
     private final boolean showCount, showDur, showCooldown;
-    private final int width;
     private final int numSize;
 
     private List<ItemStack> stacks = null;
     private int stackIndex = 0;
 
     public ItemSupplierIconElement(Supplier<ItemStack> supplier, Flags flags) {
-        super(flags);
+        super(flags, 11);
         this.supplier = supplier;
-        this.width = flags.iconWidth != -1 ? flags.iconWidth : MathHelper.ceil(11*scale);;
         this.showCount = flags.iconShowCount;
         this.showDur = flags.iconShowDur;
         this.showCooldown = flags.iconShowCooldown;
@@ -53,76 +52,39 @@ public class ItemSupplierIconElement extends IconElement {
         ItemStack stack = stacks == null ? supplier.get() : stacks.get(stackIndex++);
         if (stack == null || stack.isEmpty())
             return;
-        x += shiftX;
-        y += shiftY;
+        MatrixStack matrices = context.getMatrices();
 
+        matrices.push();
+        matrices.translate(x + shiftX, y + shiftY - 2, 0);
+        if (!referenceCorner)
+            matrices.translate(0, -(11*scale-11)/2, 0);
+        matrices.scale(11/16F * scale, 11/16F * scale, 1);
+        rotate(matrices, 16, 16);
 
-        renderItemStack(x, y, profileScale, stack);
+        context.drawItem(stack, 0, 0);
 
-
-//        x = y = 0;
-
-        if (showCount)
-            renderCount(context, stack.getCount(), x, y);
-        if (showDur)
-            renderDur(context, stack, x, y);
-        if (showCooldown)
-            renderCooldown(context, stack, x, y);
-    }
-
-    private void renderCount(DrawContext context, int count, int x, int y) {
-        if (count != 1) {
-            MatrixStack matrixStack = context.getMatrices();
-            matrixStack.push();
-            matrixStack.translate(x + (scale-1)/4,y + (scale-1)/4,200);
-//            matrixStack.multiply(rotation);
-            if (referenceCorner)
-                matrixStack.translate(0, (10*scale-10)/2, 0);
-            matrixStack.scale(10/16F * scale, 10/16F * scale, 1);
-            matrixStack.translate(0.6,0.6,0);
-
-            String string = String.valueOf(count);
+        if (showCount && stack.getCount() != 1) {
+            String string = String.valueOf(stack.getCount());
             string = numSize == 0 ? string : numSize == 1 ? Flags.subNums(string) : Flags.supNums(string);
-
-            int offset = numSize == 0 ? 0 : numSize == 1 ? 1 : 9;
-
-//            rotate(context, 10, 10);
-            matrixStack.translate(17 - client.textRenderer.getWidth(string), (int) (6 / scale + 0.5F) - offset, 0);
-
-            context.drawTextWithShadow(client.textRenderer, string, 0, 0, 0xFFFFFF);
-            matrixStack.pop();
+            matrices.translate(0.0F, 0.0F, 200.0F);
+            context.drawText(client.textRenderer, string, 19 - 2 - client.textRenderer.getWidth(string), numSize == 2 ? 0 : 9, 16777215, true);
         }
-    }
 
-    public void renderDur(DrawContext context, ItemStack stack, int x, int y) {
-        if (stack.isItemBarVisible()) {
+        if (showDur && stack.isItemBarVisible()) {
             int i = stack.getItemBarStep();
             int j = stack.getItemBarColor();
-            this.renderGuiQuad(context, x + scale, y + 0.5 + 6*(1+(scale-1)/2), 9, 2*11/16F, 0xFF000000);
-            this.renderGuiQuad(context, x + scale, y + 0.5 + 6*(1+(scale-1)/2), i-4, 11/16F, 0xFF000000 | j);
+            context.fill(RenderLayer.getGuiOverlay(), 2, 13, 2 + 13, 13 + 2, -16777216);
+            context.fill(RenderLayer.getGuiOverlay(), 2, 13, 2 + i, 13 + 1, j | -16777216);
         }
-    }
 
-    public void renderCooldown(DrawContext context, ItemStack stack, int x, int y) {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-
-        float f = player == null ? 0.0f : player.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getTickDelta());
-        if (f > 0.0f) {
-            context.getMatrices().push();
-            context.getMatrices().translate(x,y,0);
-            rotate(context, 11, 11);
-            this.renderGuiQuad(context, 0.5*scale, MathHelper.floor(10 * (1.0f - f))*scale - (9*scale-9)/2 - 1, 10, MathHelper.ceil(10 * f), 0x40FFFFFF);
-            context.getMatrices().pop();
+        float f = client.player.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getTickDelta());
+        if (showCooldown && f > 0.0F) {
+            int k = MathHelper.floor(16.0F * (1.0F - f));
+            int l = k + MathHelper.ceil(16.0F * f);
+            context.fill(RenderLayer.getGuiOverlay(), 0, k, 16, l, Integer.MAX_VALUE);
         }
-    }
 
-    private void renderGuiQuad(DrawContext context, double x, double y, double width, double height, int color) {
-        if (referenceCorner)
-            y += (10*scale-10)/2;
-        width *= scale;
-        height *= scale;
-
-        context.fill((int) x, (int) y, (int) (x+width), (int) (y+height), color);
+        matrices.pop();
     }
 
     @Override

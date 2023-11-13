@@ -7,6 +7,7 @@ import com.minenash.customhud.HudElements.icon.IconElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class ListElement implements HudElement, MultiElement {
@@ -21,7 +22,7 @@ public class ListElement implements HudElement, MultiElement {
     public ListElement(ListProvider provider, List<HudElement> format) {
         this.provider = provider;
         this.elements = format;
-        this.removeLastNewLine = elements.get(elements.size()-1) instanceof FunctionalElement.NewLine;
+        this.removeLastNewLine = elements.size() > 1 && elements.get(elements.size()-1) instanceof FunctionalElement.NewLine;
         this.elements.add(ADVANCE_LIST_ELEMENT);
     }
 

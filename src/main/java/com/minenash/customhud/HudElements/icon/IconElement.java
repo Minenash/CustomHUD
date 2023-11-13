@@ -17,71 +17,53 @@ import org.joml.Quaternionf;
 import java.util.List;
 
 public abstract class IconElement extends FunctionalElement {
-    private static final MinecraftClient client = MinecraftClient.getInstance();
 
     protected final float scale;
     protected final int shiftX;
     protected final int shiftY;
+    protected final int width;
     protected final Quaternionf rotation;
     protected final Quaternionf rotationInverse;
     protected final boolean referenceCorner;
 
-    protected IconElement(Flags flags) {
+    protected IconElement(Flags flags, double defaultWidth) {
         scale = (float) flags.scale;
         shiftX = flags.iconShiftX;
         shiftY = flags.iconShiftY;
+        width = (int) Math.ceil( flags.iconWidth != -1 ? flags.iconWidth : defaultWidth * scale);
         rotation = new Quaternionf().rotationZ(flags.rotation);
         rotationInverse = new Quaternionf().rotationZ(-flags.rotation);
         referenceCorner = flags.iconReferenceCorner;
     }
 
     public abstract void render(DrawContext context, int x, int y, float profileScale);
-    public abstract int getTextWidth();
+    public int getTextWidth() {
+        return width;
+    };
 
     @Override
     public String getString() {
         return "\uFFFE";
     }
 
-    protected void rotate(DrawContext context, float renderWidth, float renderHeight) {
-        context.getMatrices().translate(renderWidth/2, renderHeight/2, 0);
-        context.getMatrices().multiply(rotation);
-        context.getMatrices().translate(-renderWidth/2, -renderHeight/2, 0);
-
+    protected void rotate(MatrixStack matrices, float renderWidth, float renderHeight) {
+        matrices.translate(renderWidth/2, renderHeight/2, 0);
+        matrices.multiply(rotation);
+        matrices.translate(-renderWidth/2, -renderHeight/2, 0);
     }
 
-    public void renderItemStack(int x, int y, float profileScale, ItemStack stack) {
-        BakedModel model = client.getItemRenderer().getModel(stack, null, null, 0);
-        client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
-        RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        matrixStack.scale(profileScale, profileScale, 1);
-        matrixStack.translate(x+(5.5*scale), y+3.5, 100.0f); //+ client.getItemRenderer().zOffset
+    public void renderItemStack(DrawContext context, int x, int y, ItemStack stack) {
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.translate(x + shiftX, y + shiftY - 2, 0);
+        if (!referenceCorner)
+            matrices.translate(0, -(11*scale-11)/2, 0);
+        matrices.scale(11/16F * scale, 11/16F * scale, 1);
+        rotate(matrices, 16, 16);
 
-        if (referenceCorner)
-            matrixStack.translate(0, (10*scale-10)/2, 0);
+        context.drawItem(stack, 0, 0);
+        matrices.pop();
 
-        matrixStack.scale(10 * scale, -10 * scale, 1);
-        matrixStack.multiply(rotationInverse);
-
-        if (!model.isSideLit())
-            DiffuseLighting.disableGuiDepthLighting();
-
-        RenderSystem.applyModelViewMatrix();
-        VertexConsumerProvider.Immediate immediate = client.getBufferBuilders().getEntityVertexConsumers();
-        client.getItemRenderer().renderItem(stack, ModelTransformationMode.GUI, false, new MatrixStack(), immediate, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, model);
-        immediate.draw();
-        RenderSystem.enableDepthTest();
-
-        if (!model.isSideLit())
-            DiffuseLighting.enableGuiDepthLighting();
-
-        matrixStack.pop();
-        RenderSystem.applyModelViewMatrix();
     }
 
     public void setList(List<?> values) {}

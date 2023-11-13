@@ -9,12 +9,10 @@ import net.minecraft.util.math.RotationAxis;
 public class ItemIconElement extends IconElement {
 
     private final ItemStack stack;
-    private final int width;
 
     public ItemIconElement(ItemStack stack, Flags flags) {
-        super(flags);
+        super(flags, 11);
         this.stack = stack;
-        this.width = flags.iconWidth != -1 ? flags.iconWidth : (int)(11*scale);
     }
 
     @Override
@@ -27,12 +25,7 @@ public class ItemIconElement extends IconElement {
         return stack.isEmpty();
     }
 
-    @Override
-    public int getTextWidth() {
-        return width;
-    }
-
     public void render(DrawContext context, int x, int y, float profileScale) {
-        renderItemStack(x+shiftX, y+shiftY, profileScale, stack);
+        renderItemStack(context, x, y, stack);
     }
 }
