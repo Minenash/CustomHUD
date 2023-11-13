@@ -6,6 +6,7 @@ import com.minenash.customhud.HudElements.MultiElement;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.icon.IconElement;
 import com.minenash.customhud.complex.ListManager;
+import com.minenash.customhud.data.CHFormatting;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.data.Section;
@@ -15,7 +16,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -59,7 +59,7 @@ public class CustomHudRenderer {
             if (section == null || isChatOpen && section.hideOnChat)
                 continue;
 
-            int color = theme.fgColor;
+            CHFormatting formatting = theme.fgColor;
             int right = (int) (client.getWindow().getScaledWidth() * (1 / theme.scale)) - 3 + section.xOffset;
             boolean dynamicWidth = section.width == -1;
             boolean maxWidth = section.width == -2;
@@ -99,7 +99,7 @@ public class CustomHudRenderer {
                 HudElement e = elements.get(ei);
                 if (e instanceof FunctionalElement) {
                     String str = builder.toString();
-                    pieces.add( new RenderPiece(str, theme.font, xOffset, y, color, theme.textShadow) );
+                    pieces.add( new RenderPiece(formatting.getFormatting() + str, theme.font, xOffset, y, formatting.getColor(), theme.textShadow) );
                     xOffset += client.textRenderer.getWidth(str);
                     builder.setLength(0);
 
@@ -116,15 +116,15 @@ public class CustomHudRenderer {
 
                         y += 9 + theme.lineSpacing;
                         xOffset = 0;
-                        color = theme.fgColor;
+                        formatting = theme.fgColor;
                     } else if (e instanceof FunctionalElement.IgnoreNewLineIfSurroundedByNewLine) {
                         if ( (ei-1 < 0 || elements.get(ei-1) instanceof FunctionalElement.NewLine)
                         && (ei+1 >= elements.size() || elements.get(ei+1) instanceof FunctionalElement.NewLine) ) {
                             ei++;
                         }
 
-                    } else if (e instanceof FunctionalElement.ChangeColor cce && cce.getColor() != null) {
-                        color = cce.getColor();
+                    } else if (e instanceof FunctionalElement.ChangeFormatting cfe && cfe.getFormatting() != null) {
+                        formatting.apply(cfe.getFormatting());
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
                         if ((maxWidth || !dynamicWidth) && theme.bgColor != cte.theme.bgColor) {
                             int x1 = section.getStartX(right + 3, section.width) - 2;

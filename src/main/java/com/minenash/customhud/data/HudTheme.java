@@ -49,11 +49,11 @@ public class HudTheme {
     public boolean parse(boolean global, String line, int profileID, int lineNum) {
         line = line.toLowerCase();
         Matcher matcher = COLOR_FLAG_PATTERN.matcher(line);
-        if (matcher.matches())
+        if (matcher.matches() && matcher.group(1).length() <= 8)
             if (matcher.group(1).equals("fore"))
-                fgColor = parseHexNumber(matcher.group(3), false);
+                fgColor.apply(parseHexNumber(matcher.group(3)));
             else
-                bgColor = parseHexNumber(matcher.group(3), true);
+                bgColor = new CHFormatting().color(bgColor, 0xFFFFFFFF).apply(parseHexNumber(matcher.group(3))).getColor();
 
         else if (( matcher = COLOR_FLAG_PATTERN_STR.matcher(line) ).matches()) {
             Integer color = parseColorName(matcher.group(2).trim());
@@ -62,7 +62,7 @@ public class HudTheme {
                 return true; //Not Really, but I add the error here
             }
             if (matcher.group(1).equals("fore"))
-                fgColor = 0xFF000000 + color;
+                fgColor.apply(color, 0x00FFFFFF);
             else
                 bgColor = 0x44000000 + color;
         }
@@ -96,24 +96,37 @@ public class HudTheme {
         return true;
     }
 
-    public static int parseHexNumber(String str, boolean forBg) {
+    public static CHFormatting parseHexNumber(String str) {
         if (str.equals("none"))
-            return 0;
+            return new CHFormatting().color(0x00000000, 0xFF000000);
 
         str = switch (str.length()) {
-            case 3 -> (forBg? "44" : "ff") + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2);
+            case 1 -> "" + str.charAt(0) + str.charAt(0) + "000000";
+            case 2 -> "" + str.charAt(0) + str.charAt(1) + "000000";
+            case 3 -> "00" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2);
             case 4 -> "" + str.charAt(0) + str.charAt(0) + str.charAt(1) + str.charAt(1) + str.charAt(2) + str.charAt(2) + str.charAt(3) + str.charAt(3);
-            case 5 -> "" + str.charAt(0) + str.charAt(0) + str.substring(1);
-            case 6 -> (forBg? "44" : "ff") + str;
+            case 5 -> "" + str.charAt(0) + str.charAt(1) + str.charAt(2) + str.charAt(2) + str.charAt(3) + str.charAt(3) + str.charAt(4) + str.charAt(4);
+            case 6 -> "00" + str;
+            case 7 -> "" + str.charAt(0) + str.charAt(0) + str.substring(1);
             default -> str;
         };
 
-        long color = Long.parseLong(str,16);
-        return (int) (color >= 0x100000000L ? color - 0x100000000L : color);
+        long colorL = Long.parseLong(str,16);
+        int color = (int) (colorL >= 0x100000000L ? colorL - 0x100000000L : colorL);
+
+        int bitmask = switch (str.length()) {
+            case 1, 2 -> 0xFF000000;
+            case 3, 6 -> 0x00FFFFFF;
+            default-> 0xFFFFFFFF;
+        };
+
+        return new CHFormatting().color(color, bitmask);
+
+
     }
 
-    public static CHFormatting parseColorName(String str) {
-        int color = switch (str) {
+    public static Integer parseColorName(String str) {
+        return switch (str) {
             case "black"       -> 0x000000;
             case "dark_blue"   -> 0x0000AA;
             case "dark_green"  -> 0x00AA00;
@@ -142,8 +155,23 @@ public class HudTheme {
             case "material_diamond",   "diamond"   -> 0x2CBAA8;
             case "material_lapis",     "lapis"     -> 0x21497B;
             case "material_amethyst",  "amethyst"  -> 0x9A5CC6;
-            default -> 0xFF000000;
+            default -> null;
         };
+    }
+
+    public static CHFormatting parseFormattingName(String str) {
+        byte formatting = switch (str) {
+            case "bold"       -> CHFormatting.BOLD;
+            case "italic"     -> CHFormatting.ITALIC;
+            case "underline"  -> CHFormatting.UNDERLINE;
+            case "strikethrough", "strike" -> CHFormatting.STRIKE;
+            case "obfuscated" -> CHFormatting.OBFUSCATED;
+            case "reset"      -> CHFormatting.RESET;
+            default -> 0b11111;
+        };
+        if (formatting == 0b11111)
+            return null;
+        return new CHFormatting().format(formatting);
     }
 
     public static Integer parseColorCode(String str) {

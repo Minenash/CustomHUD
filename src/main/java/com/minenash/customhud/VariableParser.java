@@ -13,6 +13,7 @@ import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.complex.ListManager;
 import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
+import com.minenash.customhud.data.CHFormatting;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
@@ -175,10 +176,14 @@ public class VariableParser {
         if (part.startsWith("&{")) {
             Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
             if (m.matches())
-                return new FunctionalElement.ChangeColor(HudTheme.parseHexNumber(m.group(1), false));
+                return new FunctionalElement.ChangeFormatting(HudTheme.parseHexNumber(m.group(1)));
             HudElement element = parseElement2(part.substring(1), profile, debugLine, enabled, listProvider);
+            if (element instanceof FunctionalElement.ChangeFormatting)
+                return element;
+            if (element instanceof IntElement ie)
+                return new FunctionalElement.ChangeFormatting(ie.getNumber().intValue());
             if (element != null)
-                return new FunctionalElement.ChangeColorFromElement(element);
+                return new FunctionalElement.ChangeFormattingFromElement(element);
 
             Errors.addError(profile, debugLine, part, ErrorType.UNKNOWN_COLOR, part.substring(2, part.length()-1).trim());
             return null;
@@ -491,6 +496,10 @@ public class VariableParser {
         Integer color = HudTheme.parseColorName(name);
         if (color != null)
             return new IntElement(color, flags);
+
+        CHFormatting formatting = HudTheme.parseFormattingName(name);
+        if (formatting != null)
+            return new FunctionalElement.ChangeFormatting(formatting);
 
         return null;
     }

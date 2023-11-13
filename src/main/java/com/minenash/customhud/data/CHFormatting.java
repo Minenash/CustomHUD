@@ -34,11 +34,21 @@ public class CHFormatting {
         return this;
     }
 
-    public void apply(CHFormatting f) {
+    public CHFormatting apply(CHFormatting f) {
         this.color &= f.colorBitmask ^ INVERT;
         this.color |= f.color & f.colorBitmask;
+        this.colorBitmask |= f.colorBitmask;
         this.formatting &= f.formattingBitmask ^ INVERT;
         this.formatting |= f.formatting & f.formattingBitmask;
+        this.formattingBitmask |= f.formattingBitmask;
+        return this;
+    }
+
+    public CHFormatting apply(int color, int bitmask) {
+        this.color &= bitmask ^ INVERT;
+        this.color |= color & bitmask;
+        this.colorBitmask |= bitmask;
+        return this;
     }
 
     public int getColor() {

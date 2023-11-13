@@ -3,6 +3,7 @@ package com.minenash.customhud.HudElements.functional;
 import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.list.Attributers;
 import com.minenash.customhud.HudElements.list.ListProvider;
+import com.minenash.customhud.data.CHFormatting;
 import com.minenash.customhud.data.HudTheme;
 
 import java.util.List;
@@ -20,15 +21,22 @@ public class FunctionalElement implements HudElement {
         public ChangeTheme(HudTheme theme) { this.theme = theme; }
     }
 
-    public static class ChangeColor extends FunctionalElement {
-        public final int color;
-        public ChangeColor(int color) { this.color = color; }
-        public Integer getColor() {return color;}
+    public static class ChangeFormatting extends FunctionalElement {
+        public final CHFormatting formatting;
+        public ChangeFormatting(CHFormatting formatting) { this.formatting = formatting; }
+        public ChangeFormatting(int color) {
+            formatting = new CHFormatting().color(color, (color & 0xFF000000) != 0 ? 0xFFFFFFFF : 0x00FFFFFF);
+        }
+        public CHFormatting getFormatting() {return formatting;}
     }
-    public static class ChangeColorFromElement extends ChangeColor {
+    public static class ChangeFormattingFromElement extends ChangeFormatting {
         public final HudElement element;
-        public ChangeColorFromElement(HudElement element) {super(0); this.element = element; }
-        public Integer getColor() {return Float.isNaN(element.getNumber().floatValue()) ? null : element.getNumber().intValue();}
+        public ChangeFormattingFromElement(HudElement element) {super(null); this.element = element; }
+        public CHFormatting getFormatting() {
+            int color = element.getNumber().intValue();
+            int bitmask = (color & 0xFF000000) != 0 ? 0xFFFFFFFF : 0x00FFFFFF;
+            return new CHFormatting().color(color, bitmask);
+        }
     }
 
     public static class NewLine extends FunctionalElement {}
