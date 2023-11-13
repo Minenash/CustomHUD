@@ -39,7 +39,7 @@ public class IrisCompat {
         registerElement("iris_enabled", (_str) -> new BooleanSupplierElement(ENABLED));
         registerElement("iris_shaderpack", (_str) -> new StringSupplierElement(SHADERPACK));
         registerElement("iris_shaderpack_profile", (_str) -> new StringSupplierElement(SHADERPACK_PROFILE));
-        registerElement("iris_shaderpack_changes", (_str) -> new NumberSupplierElement(SHADERPACK_CHANGES, 1, 0));
+        registerElement("iris_shaderpack_changes", (_str) -> new NumberSupplierElement(SHADERPACK_CHANGES, new Flags()));
 
         registerComplexData(() -> {
             Optional<ShaderPack> pack = Iris.getCurrentPack();

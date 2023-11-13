@@ -230,5 +230,16 @@ public class AttributeHelpers {
         return null;
     }
 
+    public static int getBossBarColor(BossBar bar) {
+        return switch (bar.getColor()) {
+            case PINK -> 0xEC00B8;
+            case BLUE -> 0x00B7EC;
+            case RED -> 0xEC3500;
+            case GREEN -> 0x1DEC00;
+            case YELLOW -> 0xE9EC00;
+            case PURPLE -> 0x7B00EC;
+            case WHITE -> 0xECECEC;
+        };
+    }
 
 }

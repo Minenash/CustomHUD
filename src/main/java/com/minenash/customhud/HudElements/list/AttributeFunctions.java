@@ -21,6 +21,8 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.*;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
@@ -46,7 +48,7 @@ public class AttributeFunctions {
 
 
 
-    // STATUS EFFECTS TODO: ADD STATUS COLOR
+    // STATUS EFFECTS
     public static final Function<StatusEffectInstance,String> STATUS_NAME = (status) -> I18n.translate(status.getTranslationKey());
     public static final Function<StatusEffectInstance,String> STATUS_ID = (status) -> Registries.STATUS_EFFECT.getId(status.getEffectType()).toString();
     public static final NumEntry<StatusEffectInstance> STATUS_DURATION = Num.of(HMS, StatusEffectInstance::getDuration);
@@ -54,13 +56,14 @@ public class AttributeFunctions {
     public static final Function<StatusEffectInstance,Boolean> STATUS_AMBIENT = StatusEffectInstance::isAmbient;
     public static final Function<StatusEffectInstance,Boolean> STATUS_SHOW_PARTICLES = StatusEffectInstance::shouldShowParticles;
     public static final Function<StatusEffectInstance,Boolean> STATUS_SHOW_ICON = StatusEffectInstance::shouldShowIcon;
+    public static final Function<StatusEffectInstance,Number> STATUS_COLOR = (status) -> status.getEffectType().getColor();
     public static final Entry<StatusEffectInstance> STATUS_CATEGORY = new Entry<>(
             (status) -> WordUtils.capitalize(status.getEffectType().getCategory().name().toLowerCase()),
             (status) -> status.getEffectType().getCategory().ordinal(),
             (status) -> status.getEffectType().getCategory().ordinal() != 1);
 
 
-    // PLAYERS (From PlayerList) TODO: ADD TEAM COLOR AND IS_VERIFIED
+    // PLAYERS (From PlayerList)
     public static final Function<PlayerListEntry,String> PLAYER_ENTRY_NAME = (player) -> player.getProfile().getName();
     public static final Function<PlayerListEntry,String> PLAYER_ENTRY_UUID = (player) -> player.getProfile().getId().toString();
     public static final Function<PlayerListEntry,String> PLAYER_ENTRY_TEAM = (player) -> player.getScoreboardTeam().getName(); //TODO: CHANGE TEAM VAR
@@ -145,9 +148,15 @@ public class AttributeFunctions {
     public static final Function<ItemStack, Number> ITEM_DURABILITY = (stack) -> stack.getMaxDamage() - stack.getDamage();
     public static final Function<ItemStack, Number> ITEM_MAX_DURABILITY = (stack) -> stack.getMaxDamage();
     public static final Function<ItemStack, Number> ITEM_DURABILITY_PERCENT = (stack) -> 100 - stack.getDamage() / (float) stack.getMaxDamage() * 100;
+    public static final Function<ItemStack, Number> ITEM_DURABILITY_COLOR = (stack) ->  stack.getItem().getMaxDamage() > 0 ? stack.getItemBarColor() : null;
     public static final Function<ItemStack, Boolean> ITEM_UNBREAKABLE = (stack) -> stack.hasNbt() && stack.getNbt().getBoolean("Unbreakable");
     public static final Function<ItemStack, Number> ITEM_REPAIR_COST = (stack) -> stack.getRepairCost();
     public static final Function<ItemStack, Number> ITEM_HIDE_FLAGS_NUM = (stack) -> stack.getHideFlags();
+    public static final Entry<ItemStack> ITEM_RARITY = new Entry<>(
+            (stack) -> stack.getItem().getRarity(stack).name(),
+            (stack) -> stack.getItem().getRarity(stack).formatting.getColorValue(),
+            (stack) -> stack.getItem().getRarity(stack) != Rarity.COMMON
+    );
 
     // CAN X
     public static final Function<Block, String> BLOCK_ID = (block) -> Registries.BLOCK.getId(block).toString();
@@ -216,6 +225,11 @@ public class AttributeFunctions {
             (team) -> team.getCollisionRule().getDisplayName().getString(),
             (team) -> team.getCollisionRule().value,
             (team) -> team.getCollisionRule() != AbstractTeam.CollisionRule.NEVER);
+    public static final Entry<Team> TEAM_COLOR = new Entry<>(
+            (team) -> team.getColor().getName(),
+            (team) -> team.getColor().getColorValue(),
+            (team) -> team.getColor() != Formatting.RESET
+    );
 
 
     // SCOREBOARD OBJECTIVES
@@ -258,7 +272,16 @@ public class AttributeFunctions {
     public static final Function<BossBar,Boolean> BOSSBAR_DARKEN_SKY = (bar) -> bar.shouldDarkenSky();
     public static final Function<BossBar,Boolean> BOSSBAR_DRAGON_MUSIC = (bar) -> bar.hasDragonMusic();
     public static final Function<BossBar,Boolean> BOSSBAR_THICKENS_FOG = (bar) -> bar.shouldThickenFog();
-    public static final Function<BossBar,String> BOSSBAR_COLOR_NAME = (bar) -> WordUtils.capitalize(bar.getColor().getName().toLowerCase());
+    public static final Entry<BossBar> BOSSBAR_COLOR = new Entry<>(
+            (bar) -> WordUtils.capitalize(bar.getColor().getName().toLowerCase()),
+            (bar) -> AttributeHelpers.getBossBarColor(bar),
+            (bar) -> bar.getColor() != BossBar.Color.WHITE
+    );
+    public static final Entry<BossBar> BOSSBAR_TEXT_COLOR = new Entry<>(
+            (bar) -> WordUtils.capitalize(bar.getColor().getTextFormat().getName().toLowerCase()),
+            (bar) -> bar.getColor().getTextFormat().getColorValue(),
+            (bar) -> bar.getColor() != BossBar.Color.WHITE
+    );
     public static final Entry<BossBar> BOSSBAR_STYLE = new Entry<>(
             (bar) -> switch (bar.getStyle()) {
                 case PROGRESS -> "Progress";

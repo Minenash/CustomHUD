@@ -123,8 +123,8 @@ public class CustomHudRenderer {
                             ei++;
                         }
 
-                    } else if (e instanceof FunctionalElement.ChangeColor cce) {
-                        color = cce.color;
+                    } else if (e instanceof FunctionalElement.ChangeColor cce && cce.getColor() != null) {
+                        color = cce.getColor();
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
                         if ((maxWidth || !dynamicWidth) && theme.bgColor != cte.theme.bgColor) {
                             int x1 = section.getStartX(right + 3, section.width) - 2;

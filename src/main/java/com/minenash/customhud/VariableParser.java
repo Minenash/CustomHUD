@@ -24,7 +24,6 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
@@ -33,7 +32,6 @@ import net.minecraft.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -174,22 +172,23 @@ public class VariableParser {
         if (part == null || part.isEmpty())
             return null;
 
-        if (part.equals("\n"))
-            return new FunctionalElement.NewLine();
-
         if (part.startsWith("&{")) {
             Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
             if (m.matches())
                 return new FunctionalElement.ChangeColor(HudTheme.parseHexNumber(m.group(1), false));
-            else {
-                String colorStr = part.substring(2, part.length()-1).trim().toLowerCase();
-                Integer color = HudTheme.parseColorName(colorStr);
-                if (color != null)
-                    return new FunctionalElement.ChangeColor(color);
-                Errors.addError(profile, debugLine, part, ErrorType.UNKNOWN_COLOR, colorStr);
-                return null;
-            }
+            HudElement element = parseElement2(part.substring(1), profile, debugLine, enabled, listProvider);
+            if (element != null)
+                return new FunctionalElement.ChangeColorFromElement(element);
+
+            Errors.addError(profile, debugLine, part, ErrorType.UNKNOWN_COLOR, part.substring(2, part.length()-1).trim());
+            return null;
         }
+        return parseElement2(part, profile, debugLine, enabled,listProvider);
+
+    }
+    public static HudElement parseElement2(String part, int profile, int debugLine, ComplexData.Enabled enabled, ListProvider listProvider) {
+        if (part.equals("\n"))
+            return new FunctionalElement.NewLine();
 
         if (!part.startsWith("{") || part.length() < 2)
             return new StringElement(part);
@@ -329,7 +328,7 @@ public class VariableParser {
                 ScoreboardObjective obj = scoreboard().getNullableObjective(objective);
                 if (obj == null) return null;
                 return scoreboard().getPlayerScore(player, obj).getScore();
-            }, flags.scale, flags.precision);
+            }, flags);
         }
 
         if (part.startsWith("stat:")) {
@@ -479,15 +478,19 @@ public class VariableParser {
 
         supplier = getIntegerSupplier(name, enabled);
         if (supplier != null)
-            return new NumberSupplierElement(supplier, flags.scale, flags.precision);
+            return new NumberSupplierElement(supplier, flags);
 
         NumberSupplierElement.Entry entry = getDecimalSupplier(name, enabled);
         if (entry != null)
-            return new NumberSupplierElement(entry, flags.scale, flags.precision, flags.formatted);
+            return new NumberSupplierElement(entry, flags);
 
         SpecialSupplierElement.Entry entry2 = getSpecialSupplierElements(name, enabled);
         if (entry2 != null)
             return new SpecialSupplierElement(entry2);
+
+        Integer color = HudTheme.parseColorName(name);
+        if (color != null)
+            return new IntElement(color, flags);
 
         return null;
     }
@@ -608,10 +611,12 @@ public class VariableParser {
             case "target_block_y", "target_y", "tby" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Y; }
             case "target_block_z", "target_z", "tbz" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Z; }
             case "target_block_distance", "target_distance", "tbd" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_DISTANCE; }
+            case "target_block_color", "target_color", "tbc" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_COLOR; }
             case "target_fluid_x", "tfx" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_X; }
             case "target_fluid_y", "tfy" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_Y; }
             case "target_fluid_z", "tfz" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_Z; }
             case "target_fluid_distance", "tfd" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_DISTANCE; }
+            case "target_fluid_color", "tfc" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_COLOR; }
             case "in_chunk_x", "icx" -> IN_CHUNK_X;
             case "in_chunk_y", "icy" -> IN_CHUNK_Y;
             case "in_chunk_z", "icz" -> IN_CHUNK_Z;
@@ -874,8 +879,8 @@ public class VariableParser {
     private static HudElement getListAttributeSupplierElement(String name, ComplexData.Enabled enabled, Flags flags, ListProvider listProvider) {
         if (name.endsWith(",")) name = name.substring(0, name.length()-1);
         return switch (name) {
-            case "count", "c" -> new NumberSupplierElement(ListManager::getCount, flags.scale, flags.precision);
-            case "index", "i" -> new NumberSupplierElement(ListManager::getIndex, flags.scale, flags.precision);
+            case "count", "c" -> new NumberSupplierElement(ListManager::getCount, flags);
+            case "index", "i" -> new NumberSupplierElement(ListManager::getIndex, flags);
             case "raw" -> new StringSupplierElement(RAW);
             default -> Attributers.get(listProvider, ListManager.SUPPLIER, name, flags);
         };

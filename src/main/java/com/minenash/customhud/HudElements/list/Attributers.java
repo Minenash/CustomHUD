@@ -36,6 +36,7 @@ public class Attributers {
         case "ambient" -> new Bool(sup,STATUS_AMBIENT);
         case "show_particles", "particles" -> new Bool(sup,STATUS_SHOW_PARTICLES);
         case "show_icon" -> new Bool(sup,STATUS_SHOW_ICON);
+        case "color" -> new Num(sup, STATUS_COLOR, flags);
         case "category", "cat" -> new Special(sup,STATUS_CATEGORY);
         case "icon" -> new StatusEffectIconElement(flags, true); //LIST ONLY
         case "icon_no_bg" -> new StatusEffectIconElement(flags, false); //LIST ONLY
@@ -129,10 +130,12 @@ public class Attributers {
         case "dur","durability" -> new NumBool(sup, ITEM_DURABILITY, ITEM_HAS_DURABILITY, flags);
         case "max_dur","max_durability" -> new NumBool(sup, ITEM_MAX_DURABILITY, ITEM_HAS_MAX_DURABILITY, flags);
         case "dur_per","durability_percentage" -> new NumBool(sup, ITEM_DURABILITY_PERCENT, ITEM_HAS_MAX_DURABILITY, flags);
+        case "dur_color","durability_color" -> new NumBool(sup, ITEM_DURABILITY_COLOR, ITEM_HAS_MAX_DURABILITY, flags);
         case "unbreakable" -> new Bool(sup, ITEM_UNBREAKABLE);
         case "repair_cost" -> new Num(sup, ITEM_REPAIR_COST, flags);
         case "icon" -> new ItemSupplierIconElement(sup, flags);
         case "hide_flags" -> new Num(sup, ITEM_HIDE_FLAGS_NUM, flags);
+        case "rarity" -> new Special(sup, ITEM_RARITY);
 
         case "enchants" -> new CreateListElement(sup, ITEM_ENCHANTS, ENCHANTMENT);
         case "lore" -> new CreateListElement(sup, ITEM_LORE_LINES, ITEM_LORE_LINE);
@@ -174,6 +177,7 @@ public class Attributers {
         case "name_tag_visibility", "name_tag" -> new Special(sup, TEAM_NAME_TAG_VISIBILITY);
         case "death_msg_visibility", "death_msg" -> new Special(sup, TEAM_DEATH_MGS_VISIBILITY);
         case "collision" -> new Special(sup, TEAM_COLLISION);
+        case "color" -> new Special(sup, TEAM_COLOR);
         case "members" -> new CreateListElement(sup,ListSuppliers.TEAM_MEMBERS, TEAM_MEMBER);
         case "online_players", "players" -> new CreateListElement(sup, TEAM_PLAYERS, PLAYER);
         default -> null;
@@ -214,7 +218,8 @@ public class Attributers {
         case "dragon_music" -> new Bool(sup, BOSSBAR_DRAGON_MUSIC);
         case "thickens_fog" -> new Bool(sup, BOSSBAR_THICKENS_FOG);
         case "style" -> new Special(sup, BOSSBAR_STYLE);
-        case "color_name" -> new Str(sup, BOSSBAR_COLOR_NAME);
+        case "color" -> new Special(sup, BOSSBAR_COLOR);
+        case "text_color" -> new Special(sup, BOSSBAR_TEXT_COLOR);
         case "enabled", "visible" -> new Bool(sup, BOSSBAR_IS_VISIBLE); //SP Only
         case "players" -> new CreateListElement(sup, BOSSBAR_PLAYERS, PLAYER); //SP Only
         case "icon", "bar" -> new BossbarIcon(sup, flags);

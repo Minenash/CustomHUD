@@ -83,10 +83,12 @@ public class IntegerSuppliers {
     public static final Supplier<Number> TARGET_BLOCK_Y = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getY();
     public static final Supplier<Number> TARGET_BLOCK_Z = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getZ();
     public static final Supplier<Number> TARGET_BLOCK_DISTANCE = () -> ComplexData.targetBlockPos == null ? null : ComplexData.targetBlockPos.getManhattanDistance(client.player.getBlockPos());
+    public static final Supplier<Number> TARGET_BLOCK_COLOR = () -> ComplexData.targetBlock == null || ComplexData.targetBlock.isAir() ? null : ComplexData.targetBlock.getMapColor(client.world, ComplexData.targetBlockPos).color;
     public static final Supplier<Number> TARGET_FLUID_X = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getX();
     public static final Supplier<Number> TARGET_FLUID_Y = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getY();
     public static final Supplier<Number> TARGET_FLUID_Z = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getZ();
     public static final Supplier<Number> TARGET_FLUID_DISTANCE = () -> ComplexData.targetFluidPos == null ? null : ComplexData.targetFluidPos.getManhattanDistance(client.player.getBlockPos());
+    public static final Supplier<Number> TARGET_FLUID_COLOR = () -> ComplexData.targetFluid == null || ComplexData.targetFluid.isEmpty()? null : ComplexData.targetFluid.getBlockState().getMapColor(client.world, ComplexData.targetFluidPos).color;
 
     public static final Supplier<Number> IN_CHUNK_X = () -> blockPos().getX() & 15;
     public static final Supplier<Number> IN_CHUNK_Y = () -> blockPos().getY() & 15;

@@ -67,7 +67,7 @@ public class SettingsElement {
         setting = setting.toLowerCase();
 
         if (setting.equals("max_fps"))
-            return new Pair<>(new NumberSupplierElement(IntegerSuppliers.MAX_FPS, flags.scale, flags.precision), null);
+            return new Pair<>(new NumberSupplierElement(IntegerSuppliers.MAX_FPS, flags), null);
 
         if (setting.startsWith("lang")) {
             String code = client.getLanguageManager().getLanguage();
@@ -106,7 +106,7 @@ public class SettingsElement {
                 if (soundCategory.getName().equalsIgnoreCase(cat))
                     return new Pair<>(new NumberSupplierElement(NumberSupplierElement.of(
                             () -> ((GameOptionsAccessor)options).getSoundVolumeLevels().get(soundCategory).getValue() * 100,
-                            flags.precision != -1 ? flags.precision : 0), flags.scale, flags.precision, false), null);
+                            flags.precision != -1 ? flags.precision : 0), flags), null);
             return new Pair<>(null,new Pair<>(ErrorType.UNKNOWN_SOUND_CATEGORY, cat));
         }
 
@@ -116,7 +116,7 @@ public class SettingsElement {
 
         if (staticIntOptions.containsKey(setting)) {
             int value = staticIntOptions.get(setting);
-            return new Pair<>(new NumberSupplierElement(() -> value, flags.scale, 0),null);
+            return new Pair<>(new NumberSupplierElement(() -> value, flags),null);
         }
 
         return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_SETTING, setting));
@@ -127,8 +127,10 @@ public class SettingsElement {
         System.out.println("Option: " + option.toString() + " | " + option.getValue().getClass().getName());
         if (option.getValue() instanceof Boolean)
             return new BooleanSupplierElement(() -> (Boolean) option.getValue());
-        if (option.getValue() instanceof Number)
-            return new NumberSupplierElement(() -> (Number) option.getValue(), flags.scale, flags.precision != -1 ? flags.precision : option.getValue() instanceof Integer ? 0 : 1);
+        if (option.getValue() instanceof Number) {
+
+            return new NumberSupplierElement(NumberSupplierElement.of(() -> (Number) option.getValue(), option.getValue() instanceof Integer ? 0 : 1), flags);
+        }
         if (option.getValue() instanceof String) {
             HudElement element = new StringSupplierElement(() -> ((String)option.getValue()).isEmpty() ? "Default" : (String)option.getValue());
             return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;

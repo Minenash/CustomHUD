@@ -17,6 +17,7 @@ public class Flags {
 
     public int precision = -1;
     public double scale = 1;
+    public boolean hex = false;
 
     public boolean formatted = false;
 
@@ -54,6 +55,7 @@ public class Flags {
                 case "-sc", "-smallcaps" -> flags.smallCaps = true;
                 case "-sub", "-subnums" -> flags.numSize = 1;
                 case "-sup", "-supnums" -> flags.numSize = 2;
+                case "-hex" -> flags.hex = true;
                 case "-nd", "-nodashes" -> flags.noDelimiters = true;
                 // Stat
                 case "-f", "-formatted" -> flags.formatted = true;

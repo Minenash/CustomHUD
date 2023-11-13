@@ -23,6 +23,12 @@ public class FunctionalElement implements HudElement {
     public static class ChangeColor extends FunctionalElement {
         public final int color;
         public ChangeColor(int color) { this.color = color; }
+        public Integer getColor() {return color;}
+    }
+    public static class ChangeColorFromElement extends ChangeColor {
+        public final HudElement element;
+        public ChangeColorFromElement(HudElement element) {super(0); this.element = element; }
+        public Integer getColor() {return Float.isNaN(element.getNumber().floatValue()) ? null : element.getNumber().intValue();}
     }
 
     public static class NewLine extends FunctionalElement {}
