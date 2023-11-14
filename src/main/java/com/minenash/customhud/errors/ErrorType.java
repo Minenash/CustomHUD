@@ -39,9 +39,11 @@ public enum ErrorType {
     LIST_NOT_ENDED ("CHANGE ME", "CHANGE ME", "Missing =endfor="),
     CONDITIONAL_NOT_STARTED ("Conditionals", "conditionals", "No =if: §ocond§r= to "),
     CONDITIONAL_NOT_ENDED ("Conditionals", "conditionals", "Missing =endif="),
-    MALFORMED_CONDITIONAL ("Conditionals", "conditionals", "Malformed conditional: "),
     CONDITIONAL_UNEXPECTED_VALUE ("Conditionals", "conditionals", "Unexpected Value: §e"),
     CONDITIONAL_WRONG_NUMBER_OF_TOKENS ("Conditionals", "conditionals", "Expected 4 tokens, found §e"),
+    MALFORMED_CONDITIONAL ("Conditionals", "conditionals", "Malformed conditional: "),
+    MALFORMED_LIST ("CHANGE ME", "CHANGE ME", "Malformed list variable: "),
+    MALFORMED_BAR ("CHANGE ME", "CHANGE ME", "Malformed bar variable: "),
 
     NOT_A_WHOLE_NUMBER (null, null, "Not a whole number: ");
 

@@ -19,6 +19,8 @@ import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import net.minecraft.client.gui.hud.ClientBossBar;
+import net.minecraft.entity.boss.BossBar;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -30,11 +32,13 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.MathHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -321,6 +325,9 @@ public class VariableParser {
         else if (part.startsWith("bossbar:"))
             return attrElement(part, src -> src, (name) -> () -> AttributeHelpers.getBossBar(name),
                     BOSSBAR, null, ErrorType.UNKNOWN_OBJECTIVE_PROPERTY, profile, debugLine, enabled, original);
+
+        else if (part.startsWith("bar"))
+            return barElement(part, profile, debugLine, enabled, original, listProvider);
 
 
 
@@ -822,27 +829,27 @@ public class VariableParser {
     }
 
     private static SpecialSupplierElement.Entry getSpecialSupplierElements(String element, ComplexData.Enabled enabled) {
-        switch (element) {
-            case "hour24": { enabled.time = true; return TIME_HOUR_24; }
-            case "minute": { enabled.time = true; return TIME_MINUTES; }
-            case "second": { enabled.time = true; return TIME_SECONDS; }
-            case "target_block", "tb": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK;}
-            case "target_block_id", "tbi": {enabled.world = enabled.targetBlock = true; return TARGET_BLOCK_ID;}
-            case "target_fluid", "tf": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID;}
-            case "target_fluid_id", "tfi": {enabled.world = enabled.targetFluid = true; return TARGET_FLUID_ID;}
-            case "item": return ITEM_OLD;
-            case "item_name": return ITEM_NAME;
-            case "item_id": return ITEM_ID;
-            case "offhand_item", "oitem": return OFFHAND_ITEM;
-            case "offhand_item_name": return OFFHAND_ITEM_NAME;
-            case "offhand_item_id", "oitem_id": return OFFHAND_ITEM_ID;
-            case "clouds": return CLOUDS;
-            case "graphics_mode": return GRAPHICS_MODE;
-            case "facing_towards_pn_word": return FACING_TOWARDS_PN_WORD;
-            case "facing_towards_pn_sign": return FACING_TOWARDS_PN_SIGN;
-            case "gamemode": return GAMEMODE;
-            default: return null;
-        }
+        return switch (element) {
+            case "hour24" -> { enabled.time = true; yield TIME_HOUR_24; }
+            case "minute" -> { enabled.time = true; yield TIME_MINUTES; }
+            case "second" -> { enabled.time = true; yield TIME_SECONDS; }
+            case "target_block", "tb" -> {enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK;}
+            case "target_block_id", "tbi" -> {enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_ID;}
+            case "target_fluid", "tf" -> {enabled.world = enabled.targetFluid = true; yield TARGET_FLUID;}
+            case "target_fluid_id", "tfi" -> {enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_ID;}
+            case "item" -> ITEM_OLD;
+            case "item_name" -> ITEM_NAME;
+            case "item_id" -> ITEM_ID;
+            case "offhand_item", "oitem" -> OFFHAND_ITEM;
+            case "offhand_item_name" -> OFFHAND_ITEM_NAME;
+            case "offhand_item_id", "oitem_id" -> OFFHAND_ITEM_ID;
+            case "clouds" -> CLOUDS;
+            case "graphics_mode" -> GRAPHICS_MODE;
+            case "facing_towards_pn_word" -> FACING_TOWARDS_PN_WORD;
+            case "facing_towards_pn_sign" -> FACING_TOWARDS_PN_SIGN;
+            case "gamemode" -> GAMEMODE;
+            default -> null;
+        };
     }
 
     private static HudElement getListSupplierElements(String part, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
@@ -885,6 +892,46 @@ public class VariableParser {
         };
     }
 
+    public static HudElement barElement(String part, int profile, int debugLine, ComplexData.Enabled enabled, String original, ListProvider provider) {
+        if (part.indexOf(',') == -1) {
+            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_BAR, null);
+            return null;
+        }
+
+        List<String> parts = partitionConditional(part);
+        System.out.println("SUPPLIER");
+        for (String p : parts) {
+            System.out.println("`" + p + "`");
+        }
+        if (parts.size() < 3) {
+            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_BAR, null);
+            return null;
+        }
+
+        BossBar.Color color = BossBar.Color.WHITE;
+        BossBar.Style style = BossBar.Style.PROGRESS;
+
+        int collinIndex = parts.get(0).indexOf(':');
+        if (collinIndex != -1) {
+            var pair = BossbarIcon.getSettings(parts.get(0).substring(collinIndex+1));
+            color = pair.getLeft();
+            style = pair.getRight();
+        }
+
+
+        Operation op1 = ExpressionParser.parseExpression(parts.get(1).trim(), part, profile, debugLine, enabled, provider);
+        Operation op2 = ExpressionParser.parseExpression(parts.get(2).trim(), part, profile, debugLine, enabled, provider);
+        Flags flags = parts.size() != 4 ? new Flags() : Flags.parse(profile, debugLine, (" " + parts.get(3)).split(" ") );
+
+        BossBar bb = new BossbarIcon.BasicBar(color, style);
+        return new BossbarIcon(() -> {
+            bb.setPercent((float)MathHelper.clamp(op1.getValue()/op2.getValue(), 0, 1));
+            return bb;
+        }, flags);
+
+    }
+
+
     public static HudElement listElement(ListProvider provider, String part, int commaIndex, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
         if (commaIndex == -1)
             return new ListCountElement(provider);
@@ -899,7 +946,7 @@ public class VariableParser {
 
         String format = parts.get(1).trim();
         if (!format.startsWith("\"") || !format.endsWith("\"")) {
-            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_CONDITIONAL, null);
+            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LIST, null);
             return null;
         }
         format = format.substring(1, format.length()-1);
