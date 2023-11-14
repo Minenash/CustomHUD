@@ -1,7 +1,5 @@
 package com.minenash.customhud.data;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,13 +15,13 @@ public class CHFormatting {
     private static final int    INVERT = 0xFFFFFFFF;
 
     private int color = 0x00000000;
-    private int colorBitmask = 0x00000000;
+    private int colorMask = 0x00000000;
 
     private byte formatting = NONE;
 
     public CHFormatting color(int color, int bitmask) {
         this.color = color;
-        this.colorBitmask = bitmask;
+        this.colorMask = bitmask;
         this.formatting = RESET;
 
         return this;
@@ -36,13 +34,13 @@ public class CHFormatting {
     public CHFormatting apply(CHFormatting f, HudTheme theme) {
         if ((f.formatting & FULL_RESET) != 0) {
             this.color = theme.fgColor.color;
-            this.colorBitmask = theme.fgColor.colorBitmask;
+            this.colorMask = theme.fgColor.colorMask;
             this.formatting = NONE;
             return this;
         }
-        this.color &= f.colorBitmask ^ INVERT;
-        this.color |= f.color & f.colorBitmask;
-        this.colorBitmask |= f.colorBitmask;
+        this.color &= f.colorMask ^ INVERT;
+        this.color |= f.color & f.colorMask;
+        this.colorMask |= f.colorMask;
         if ( (f.formatting & RESET) != 0)
             this.formatting = NONE;
         else
@@ -51,11 +49,20 @@ public class CHFormatting {
 
     }
 
-    public CHFormatting apply(int color, int bitmask) {
-        this.color &= bitmask ^ INVERT;
-        this.color |= color & bitmask;
-        this.colorBitmask |= bitmask;
+    public CHFormatting apply(int color, int mask) {
+        this.color &= mask ^ INVERT;
+        this.color |= color & mask;
+        this.colorMask |= mask;
         return this;
+    }
+
+
+    public CHFormatting copy() {
+        CHFormatting f = new CHFormatting();
+        f.color = color;
+        f.colorMask = colorMask;
+        f.formatting = formatting;
+        return f;
     }
 
     public int getColor() {
@@ -63,7 +70,7 @@ public class CHFormatting {
     }
 
     public String getFormatting() {
-        return FORMAT_MAP.get(formatting);
+        return FORMAT_MAP.getOrDefault(formatting, "");
     }
 
     private static final Map<Byte,String> FORMAT_MAP = new HashMap<>(32);

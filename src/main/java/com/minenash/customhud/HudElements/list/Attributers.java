@@ -63,6 +63,7 @@ public class Attributers {
 
         case "age" -> new Num(sup, SUBTITLE_AGE, flags);
         case "time" -> new Num(sup, SUBTITLE_TIME, flags);
+        case "alpha" -> new Num(sup, SUBTITLE_ALPHA, flags);
         case "x" -> new Num(sup, SUBTITLE_X, flags);
         case "y" -> new Num(sup, SUBTITLE_Y, flags);
         case "z" -> new Num(sup, SUBTITLE_Z, flags);

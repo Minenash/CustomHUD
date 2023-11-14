@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements;
 
+import com.minenash.customhud.HudElements.supplier.NumberSupplierElement;
 import com.minenash.customhud.data.Flags;
 import net.minecraft.stat.StatFormatter;
 
@@ -50,14 +51,14 @@ public abstract class FuncElements<T> implements HudElement {
             function = func;
             precision = flags.precision == -1 ? 0 : flags.precision;
             scale = flags.scale;
-            formatter = null;
+            formatter = flags.hex ? NumberSupplierElement.HEX : null;
         }
         public Num(Supplier<T> supplier, NumEntry<T> entry, Flags flags) {
             super(supplier);
             function = entry.function;
             precision = flags.precision == -1 ? entry.precision : flags.precision;
             scale = flags.scale;
-            formatter = entry.formatter;
+            formatter = flags.hex ? NumberSupplierElement.HEX : entry.formatter;
         }
 
 

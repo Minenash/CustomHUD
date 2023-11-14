@@ -90,7 +90,7 @@ public class AttributeFunctions {
     public static final Function<SubtitleEntry,Number> SUBTITLE_ALPHA = (subtitle) -> {
         double d = CLIENT.options.getNotificationDisplayTime().getValue();
         int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - subtitle.getTime()) / (float)(3000.0 * d)));
-        return  (p << 24) + 0x00FFFFFF;
+        return  (p << 24);
     };
     public static final Function<SubtitleEntry,Number> SUBTITLE_DISTANCE = (subtitle) -> subtitle.getPosition().distanceTo(CLIENT.player.getEyePos());
     public static final Function<SubtitleEntry,Number> SUBTITLE_X = (subtitle) -> subtitle.getPosition().getX();

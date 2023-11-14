@@ -243,10 +243,10 @@ public class ComplexData {
             }
         }
 
-        if (profile.enabled.music) {
+        if (profile.enabled.music)
             MusicAndRecordTracker.tick();
-        }
 
+        SubtitleTracker.INSTANCE.setEnable(profile.enabled.subtitles);
         CustomHudRegistry.runComplexData();
 
     }
@@ -329,6 +329,7 @@ public class ComplexData {
         public boolean updateStats = false;
         public boolean clicksPerSeconds = false;
         public boolean music = false;
+        public boolean subtitles = false;
 
         public boolean gpuMetrics = false;
         public boolean frameMetrics = false;

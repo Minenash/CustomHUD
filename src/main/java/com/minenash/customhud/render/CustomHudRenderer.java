@@ -59,7 +59,7 @@ public class CustomHudRenderer {
             if (section == null || isChatOpen && section.hideOnChat)
                 continue;
 
-            CHFormatting formatting = theme.fgColor;
+            CHFormatting formatting = theme.fgColor.copy();
             int right = (int) (client.getWindow().getScaledWidth() * (1 / theme.scale)) - 3 + section.xOffset;
             boolean dynamicWidth = section.width == -1;
             boolean maxWidth = section.width == -2;
@@ -118,7 +118,7 @@ public class CustomHudRenderer {
 
                         y += 9 + theme.lineSpacing;
                         xOffset = 0;
-                        formatting = theme.fgColor;
+                        formatting = theme.fgColor.copy();
                     } else if (e instanceof FunctionalElement.IgnoreNewLineIfSurroundedByNewLine) {
                         if ( (ei-1 < 0 || elements.get(ei-1) instanceof FunctionalElement.NewLine)
                         && (ei+1 >= elements.size() || elements.get(ei+1) instanceof FunctionalElement.NewLine) ) {
@@ -142,8 +142,8 @@ public class CustomHudRenderer {
                         xOffset += ie.getTextWidth();
                     }
                     else if (e instanceof FunctionalElement.AdvanceList)    ListManager.advance();
-                    else if (e instanceof FunctionalElement.PushList push)  ListManager.push(push.values);
-                    else if (e instanceof FunctionalElement.PopList)        ListManager.pop();
+                    else if (e instanceof FunctionalElement.PushList push)  ListManager.push(push.values, formatting.copy());
+                    else if (e instanceof FunctionalElement.PopList)        formatting = ListManager.pop();
 
                 } else {
                     builder.append(e.getString());
@@ -204,7 +204,7 @@ public class CustomHudRenderer {
         }
         else {
             if (element instanceof FunctionalElement.AdvanceList) ListManager.advance();
-            else if (element instanceof FunctionalElement.PushList push) ListManager.push(push.values);
+            else if (element instanceof FunctionalElement.PushList push) ListManager.push(push.values, null);
             else if (element instanceof FunctionalElement.PopList) ListManager.pop();
             allElements.add(element);
             return element instanceof FunctionalElement.NewLine ? 1 : 0;

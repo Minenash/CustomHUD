@@ -1,5 +1,7 @@
 package com.minenash.customhud.complex;
 
+import com.minenash.customhud.data.CHFormatting;
+
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Supplier;
@@ -8,15 +10,18 @@ public class ListManager {
 
     private static final Stack<Integer> index = new Stack<>();
     private static final Stack<List<?>> values = new Stack<>();
+    private static final Stack<CHFormatting> color = new Stack<>();
 
-    public static void push(List<?> values) {
+    public static void push(List<?> values, CHFormatting formatting) {
         ListManager.index.push(0);
         ListManager.values.push(values);
+        ListManager.color.push(formatting);
     }
 
-    public static void pop() {
+    public static CHFormatting pop() {
         ListManager.index.pop();
         ListManager.values.pop();
+        return color.pop();
     }
 
     public static void advance() {

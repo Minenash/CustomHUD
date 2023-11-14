@@ -25,10 +25,10 @@ public class FunctionalElement implements HudElement {
         public final CHFormatting formatting;
         public ChangeFormatting(CHFormatting formatting) { this.formatting = formatting; }
         public ChangeFormatting(int color) {
-            formatting = new CHFormatting().color(color,
-                    ((color & 0xFF000000) != 0 ? 0xFF000000 : 0x00000000)
-                    | ((color & 0x00FFFFFF) != 0 ? 0x00FFFFFF : 0x00000000));
+            formatting = new CHFormatting().color(color, mask(color));
         }
+        protected int mask(int color) {return ((color & 0xFF000000) != 0 ? 0xFF000000 : 0x00000000)
+                | ((color & 0x00FFFFFF) != 0 ? 0x00FFFFFF : 0x00000000); }
         public CHFormatting getFormatting() {return formatting;}
     }
     public static class ChangeFormattingFromElement extends ChangeFormatting {
@@ -36,8 +36,7 @@ public class FunctionalElement implements HudElement {
         public ChangeFormattingFromElement(HudElement element) {super(null); this.element = element; }
         public CHFormatting getFormatting() {
             int color = element.getNumber().intValue();
-            int bitmask = (color & 0xFF000000) != 0 ? 0xFFFFFFFF : 0x00FFFFFF;
-            return new CHFormatting().color(color, bitmask);
+            return new CHFormatting().color(color, mask(color));
         }
     }
 
