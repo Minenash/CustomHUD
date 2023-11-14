@@ -99,10 +99,12 @@ public class CustomHudRenderer {
                 HudElement e = elements.get(ei);
                 if (e instanceof FunctionalElement) {
                     String str = builder.toString();
-                    pieces.add( new RenderPiece(formatting.getFormatting() + str, theme.font, xOffset, y, formatting.getColor(), theme.textShadow) );
-                    xOffset += client.textRenderer.getWidth(str);
-                    builder.setLength(0);
-
+                    if (!str.isEmpty()) {
+                        str = formatting.getFormatting() + str;
+                        pieces.add(new RenderPiece(str, theme.font, xOffset, y, formatting.getColor(), theme.textShadow));
+                        xOffset += client.textRenderer.getWidth(str);
+                        builder.setLength(0);
+                    }
                     if (e instanceof FunctionalElement.NewLine) {
                         int x1 = section.getStartX(right, xOffset);
                         for (int i = piecesOffset; i < pieces.size(); i++)
@@ -124,7 +126,7 @@ public class CustomHudRenderer {
                         }
 
                     } else if (e instanceof FunctionalElement.ChangeFormatting cfe && cfe.getFormatting() != null) {
-                        formatting.apply(cfe.getFormatting());
+                        formatting.apply(cfe.getFormatting(), theme);
                     } else if (e instanceof FunctionalElement.ChangeTheme cte) {
                         if ((maxWidth || !dynamicWidth) && theme.bgColor != cte.theme.bgColor) {
                             int x1 = section.getStartX(right + 3, section.width) - 2;

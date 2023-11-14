@@ -24,6 +24,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.apache.commons.lang3.text.WordUtils;
@@ -85,7 +86,12 @@ public class AttributeFunctions {
     // SUBTITLES TODO: ADD ALPHA COLOR
     public static final Function<SubtitleEntry,String> SUBTITLE_NAME = (subtitle) -> subtitle.getText().getString();
     public static final Function<SubtitleEntry,Number> SUBTITLE_AGE = (subtitle) -> (Util.getMeasuringTimeMs() - subtitle.getTime()) / 1000D;
-    public static final Function<SubtitleEntry,Number> SUBTITLE_TIME = (subtitle) -> 3 - (Util.getMeasuringTimeMs() - subtitle.getTime()) / 1000D;
+    public static final Function<SubtitleEntry,Number> SUBTITLE_TIME = (subtitle) -> (3*CLIENT.options.getNotificationDisplayTime().getValue()) - (Util.getMeasuringTimeMs() - subtitle.getTime()) / 1000D;
+    public static final Function<SubtitleEntry,Number> SUBTITLE_ALPHA = (subtitle) -> {
+        double d = CLIENT.options.getNotificationDisplayTime().getValue();
+        int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - subtitle.getTime()) / (float)(3000.0 * d)));
+        return  (p << 24) + 0x00FFFFFF;
+    };
     public static final Function<SubtitleEntry,Number> SUBTITLE_DISTANCE = (subtitle) -> subtitle.getPosition().distanceTo(CLIENT.player.getEyePos());
     public static final Function<SubtitleEntry,Number> SUBTITLE_X = (subtitle) -> subtitle.getPosition().getX();
     public static final Function<SubtitleEntry,Number> SUBTITLE_Y = (subtitle) -> subtitle.getPosition().getY();

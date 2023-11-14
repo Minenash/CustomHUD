@@ -94,6 +94,20 @@ public class VariableParser {
                         i++;
                     }
                 }
+                case '§' -> {
+                    if (nest == 0 && i+1 < chars.length && isColorCode(chars[i+1])) {
+                        parts.add(str.substring(startIndex, i));
+                        parts.add(str.substring(i,i+2));
+                        startIndex = i+2;
+                        i++;
+                    }
+                    else if (nest == 0 && i+2 < chars.length && chars[i+1] == 'z' && (chars[i+1] == 'n' || chars[i+1] == 'm')) {
+                        parts.add(str.substring(startIndex, i));
+                        parts.add(str.substring(i,i+3));
+                        startIndex = i+3;
+                        i+=2;
+                    }
+                }
                 case '&' -> {
                     if (i < chars.length-1 && chars[i+1] == '{') {
                         if (nest == 0 && i != startIndex) {
@@ -125,6 +139,10 @@ public class VariableParser {
             parts.add(str.substring(startIndex, chars.length));
 
         return parts;
+    }
+
+    private static boolean isColorCode(char c) {
+        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'u');
     }
 
     private static List<String> partitionConditional(String str) {
@@ -173,6 +191,15 @@ public class VariableParser {
         if (part == null || part.isEmpty())
             return null;
 
+        if (part.equals("\n"))
+            return new FunctionalElement.NewLine();
+
+        if (part.startsWith("§")) {
+            CHFormatting formatting = HudTheme.parseColorCode(part);
+            if (formatting != null)
+                return new FunctionalElement.ChangeFormatting(formatting);
+        }
+
         if (part.startsWith("&{")) {
             Matcher m = HEX_COLOR_VARIABLE_PATTERN.matcher(part);
             if (m.matches())
@@ -192,9 +219,6 @@ public class VariableParser {
 
     }
     public static HudElement parseElement2(String part, int profile, int debugLine, ComplexData.Enabled enabled, ListProvider listProvider) {
-        if (part.equals("\n"))
-            return new FunctionalElement.NewLine();
-
         if (!part.startsWith("{") || part.length() < 2)
             return new StringElement(part);
 

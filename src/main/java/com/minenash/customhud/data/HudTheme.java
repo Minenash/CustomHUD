@@ -51,9 +51,9 @@ public class HudTheme {
         Matcher matcher = COLOR_FLAG_PATTERN.matcher(line);
         if (matcher.matches() && matcher.group(1).length() <= 8)
             if (matcher.group(1).equals("fore"))
-                fgColor.apply(parseHexNumber(matcher.group(3)));
+                fgColor.apply(parseHexNumber(matcher.group(3)), this);
             else
-                bgColor = new CHFormatting().color(bgColor, 0xFFFFFFFF).apply(parseHexNumber(matcher.group(3))).getColor();
+                bgColor = new CHFormatting().color(bgColor, 0xFFFFFFFF).apply(parseHexNumber(matcher.group(3)), this).getColor();
 
         else if (( matcher = COLOR_FLAG_PATTERN_STR.matcher(line) ).matches()) {
             Integer color = parseColorName(matcher.group(2).trim());
@@ -166,7 +166,7 @@ public class HudTheme {
             case "underline"  -> CHFormatting.UNDERLINE;
             case "strikethrough", "strike" -> CHFormatting.STRIKE;
             case "obfuscated" -> CHFormatting.OBFUSCATED;
-            case "reset"      -> CHFormatting.RESET;
+            case "reset"      -> CHFormatting.FULL_RESET;
             default -> 0b11111;
         };
         if (formatting == 0b11111)
@@ -174,38 +174,51 @@ public class HudTheme {
         return new CHFormatting().format(formatting);
     }
 
-    public static Integer parseColorCode(String str) {
-        return switch (str) {
-            case "0" -> 0x000000;
-            case "1" -> 0x0000AA;
-            case "2" -> 0x00AA00;
-            case "3" -> 0x00AAAA;
-            case "4" -> 0xAA0000;
-            case "5" -> 0xAA00AA;
-            case "6" -> 0xFFAA00;
-            case "7" -> 0xAAAAAA;
-            case "8" -> 0x555555;
-            case "9" -> 0x5555FF;
-            case "a" -> 0x55FF55;
-            case "b" -> 0x55FFFF;
-            case "c" -> 0xFF5555;
-            case "d" -> 0xFF55FF;
-            case "e" -> 0xFFFF55;
-            case "f" -> 0xFFFFFF;
+    public static CHFormatting parseColorCode(String str) {
+        Integer color = switch (str) {
+            case "§0" -> 0x000000;
+            case "§1" -> 0x0000AA;
+            case "§2" -> 0x00AA00;
+            case "§3" -> 0x00AAAA;
+            case "§4" -> 0xAA0000;
+            case "§5" -> 0xAA00AA;
+            case "§6" -> 0xFFAA00;
+            case "§7" -> 0xAAAAAA;
+            case "§8" -> 0x555555;
+            case "§9" -> 0x5555FF;
+            case "§a" -> 0x55FF55;
+            case "§b" -> 0x55FFFF;
+            case "§c" -> 0xFF5555;
+            case "§d" -> 0xFF55FF;
+            case "§e" -> 0xFFFF55;
+            case "§f" -> 0xFFFFFF;
             //Bedrock:
-            case "g" -> 0xDDD605;
-            case "h" -> 0xE3D4D1;
-            case "i" -> 0xCECACA;
-            case "j" -> 0x443A3B;
-            case "zm" -> 0x971607;
-            case "zn" -> 0xB4684D;
-            case "p" -> 0xDEB12D;
-            case "q" -> 0x47A036;
-            case "s" -> 0x2CBAA8;
-            case "t" -> 0x21497B;
-            case "u" -> 0x9A5CC6;
+            case "§g" -> 0xDDD605;
+            case "§h" -> 0xE3D4D1;
+            case "§i" -> 0xCECACA;
+            case "§j" -> 0x443A3B;
+            case "§zm" -> 0x971607;
+            case "§zn" -> 0xB4684D;
+            case "§p" -> 0xDEB12D;
+            case "§q" -> 0x47A036;
+            case "§s" -> 0x2CBAA8;
+            case "§t" -> 0x21497B;
+            case "§u" -> 0x9A5CC6;
             default -> null;
         };
+        if (color != null)
+            return new CHFormatting().color(color, 0x00FFFFFF);
+
+        Byte formatting = switch (str) {
+            case "§k" -> CHFormatting.OBFUSCATED;
+            case "§l" -> CHFormatting.BOLD;
+            case "§m" -> CHFormatting.STRIKE;
+            case "§n" -> CHFormatting.UNDERLINE;
+            case "§o" -> CHFormatting.ITALIC;
+            case "§r" -> CHFormatting.RESET;
+            default -> null;
+        };
+        return formatting == null ? null : new CHFormatting().format(formatting);
     }
 
 

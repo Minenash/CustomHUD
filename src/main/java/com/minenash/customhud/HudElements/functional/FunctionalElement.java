@@ -25,7 +25,9 @@ public class FunctionalElement implements HudElement {
         public final CHFormatting formatting;
         public ChangeFormatting(CHFormatting formatting) { this.formatting = formatting; }
         public ChangeFormatting(int color) {
-            formatting = new CHFormatting().color(color, (color & 0xFF000000) != 0 ? 0xFFFFFFFF : 0x00FFFFFF);
+            formatting = new CHFormatting().color(color,
+                    ((color & 0xFF000000) != 0 ? 0xFF000000 : 0x00000000)
+                    | ((color & 0x00FFFFFF) != 0 ? 0x00FFFFFF : 0x00000000));
         }
         public CHFormatting getFormatting() {return formatting;}
     }

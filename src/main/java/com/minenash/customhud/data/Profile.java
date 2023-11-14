@@ -80,7 +80,7 @@ public class Profile {
         HudTheme localTheme = profile.baseTheme.copy();
 
         for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i).replaceAll("&([0-9a-fk-or])", "§$1");
+            String line = lines.get(i).replaceAll("&([0-9a-u]|zm|zn)", "§$1");
             String lineLC = line.toLowerCase();
             if (line.startsWith("//"))
                 continue;
