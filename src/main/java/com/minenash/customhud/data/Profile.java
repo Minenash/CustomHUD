@@ -20,6 +20,7 @@ public class Profile {
     public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(-?\\d+|fit|max))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
     private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(.*) ?==");
+    private static final Pattern DISABLE_PATTERN = Pattern.compile("== ?disable: ?(.*) ?==");
     private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
     private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
 
@@ -34,6 +35,7 @@ public class Profile {
     public HudTheme baseTheme = HudTheme.defaults();
     public float targetDistance = 20;
     public Crosshairs crosshair = Crosshairs.NORMAL;
+    public EnumSet<DisableElement> disabled = EnumSet.noneOf(DisableElement.class);
 
     private MultiLineStacker stacker = new MultiLineStacker();
 
@@ -81,7 +83,7 @@ public class Profile {
 
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i).replaceAll("&([0-9a-u]|zm|zn)", "§$1");
-            String lineLC = line.toLowerCase();
+            String lineLC = line.toLowerCase().trim();
             if (line.startsWith("//"))
                 continue;
             if (section == null) {
@@ -92,11 +94,18 @@ public class Profile {
                 }
                 matcher = CROSSHAIR_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
-                    profile.crosshair = Crosshairs.parse(matcher.group(1).trim());
+                    profile.crosshair = Crosshairs.parse(matcher.group(1));
                     if (profile.crosshair == null) {
                         profile.crosshair = Crosshairs.NORMAL;
-                        Errors.addError(profileID, i, line+1, ErrorType.UNKNOWN_CROSSHAIR, matcher.group(1));
+                        Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_CROSSHAIR, matcher.group(1));
                     }
+                    continue;
+                }
+
+                matcher = DISABLE_PATTERN.matcher(lineLC);
+                if (matcher.matches()) {
+                    if (!DisableElement.add(profile.disabled, matcher.group(1)))
+                        Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_HUD_ELEMENT, matcher.group(1));
                     continue;
                 }
 

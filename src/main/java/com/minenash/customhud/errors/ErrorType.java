@@ -13,6 +13,7 @@ public enum ErrorType {
     UNKNOWN_THEME_FLAG ("Theming", "references/theming", "Unknown Theme Option or Value"),
     UNKNOWN_COLOR ("Theming", "references/theming", "Unknown Color: §e"),
     UNKNOWN_CROSSHAIR ("Theming", "references/theming", "Unknown Crosshair: §e"),
+    UNKNOWN_HUD_ELEMENT ("CHANGE ME", "CHANGE ME", "Unknown Vanilla Hud Element: §e"),
     ILLEGAL_GLOBAL_THEME_FLAG("Theming", "references/theming", "This theme option is global-only"),
 
     INVALID_TIME_FORMAT ("Time Formatting", "references/real_time", "Invalid Time Format: "),

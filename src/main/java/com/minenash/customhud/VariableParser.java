@@ -908,26 +908,24 @@ public class VariableParser {
             return null;
         }
 
-        BossBar.Color color = BossBar.Color.WHITE;
-        BossBar.Style style = BossBar.Style.PROGRESS;
-
-        int collinIndex = parts.get(0).indexOf(':');
-        if (collinIndex != -1) {
-            var pair = BossbarIcon.getSettings(parts.get(0).substring(collinIndex+1));
-            color = pair.getLeft();
-            style = pair.getRight();
-        }
-
-
         Operation op1 = ExpressionParser.parseExpression(parts.get(1).trim(), part, profile, debugLine, enabled, provider);
         Operation op2 = ExpressionParser.parseExpression(parts.get(2).trim(), part, profile, debugLine, enabled, provider);
-        Flags flags = parts.size() != 4 ? new Flags() : Flags.parse(profile, debugLine, (" " + parts.get(3)).split(" ") );
+        Flags flags;
+        if (parts.size() < 4)
+            flags = new Flags();
+        else {
+            StringBuilder str = new StringBuilder();
+            for (int i = 3; i < parts.size(); i++)
+                str.append(parts.get(i)).append(",");
+            flags = Flags.parse(profile, debugLine, str.substring(0, str.length()-1).split(" "));
+        }
 
-        BossBar bb = new BossbarIcon.BasicBar(color, style);
-        return new BossbarIcon(() -> {
-            bb.setPercent((float)MathHelper.clamp(op1.getValue()/op2.getValue(), 0, 1));
-            return bb;
-        }, flags);
+        ProgressBarIcon.BarStyle style = null;
+        int collinIndex = parts.get(0).indexOf(':');
+        if (collinIndex != -1)
+            style = ProgressBarIcon.getStyle(parts.get(0).substring(collinIndex+1));
+
+        return new ProgressBarIcon(op1, op2, style, flags);
 
     }
 

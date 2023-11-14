@@ -3,6 +3,7 @@ package com.minenash.customhud;
 import com.google.gson.*;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.data.Crosshairs;
+import com.minenash.customhud.data.DisableElement;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.ErrorScreen;
 import com.minenash.customhud.errors.Errors;
@@ -145,6 +146,10 @@ public class CustomHud implements ModInitializer {
 
 	public static Crosshairs getCrosshair() {
 		return getActiveProfile() == null ? Crosshairs.NORMAL : getActiveProfile().crosshair;
+	}
+
+	public static boolean isDisabled(DisableElement element) {
+		return getActiveProfile() != null && getActiveProfile().disabled.contains(element);
 	}
 
 	public static Path getProfilePath(int i) {
