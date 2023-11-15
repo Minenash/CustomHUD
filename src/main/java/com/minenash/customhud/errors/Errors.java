@@ -30,6 +30,9 @@ public class Errors {
     public static void addError(int profile, String line, String source, ErrorType type, String context) {
         errors[profile-1].add(new Error(line, source, type, context));
     }
+    public static void addError(ErrorContext context, ErrorType type, String value) {
+        addError(context.profile(), Integer.toString(context.line()), context.src(), type, value);
+    }
 
 
 }
