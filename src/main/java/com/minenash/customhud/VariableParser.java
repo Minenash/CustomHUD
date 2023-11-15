@@ -397,11 +397,11 @@ public class VariableParser {
                 enabled.updateStats = true;
                 return new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), flags);
             }
-            else
-                Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_STATISTIC, stat);
+            Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_STATISTIC, stat);
+            return null;
         }
 
-        else if (part.startsWith("icon:")) {
+        if (part.startsWith("icon:")) {
             part = part.substring(part.indexOf(':')+1);
 
             Item item = Registries.ITEM.get(Identifier.tryParse(part));
@@ -414,9 +414,6 @@ public class VariableParser {
                 return null;
             }
 
-//            for (int i = 0; i <= matcher.groupCount(); i++)
-//                System.out.println(i + ": " + matcher.group(i));
-
             Identifier id = new Identifier(matcher.group(1) + ".png");
             int u = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
             int v = matcher.group(3) == null ? 0 : Integer.parseInt(matcher.group(3));
@@ -424,64 +421,61 @@ public class VariableParser {
             int h = matcher.group(5) == null ? -1 : Integer.parseInt(matcher.group(5));
 
             TextureIconElement element = new TextureIconElement(id, u, v, w, h, flags);
-            if (!element.isIconAvailable())
-                Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
-            return element;
-
+            if (element.isIconAvailable())
+                return element;
+            Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
+            return null;
         }
 
-        else if (part.startsWith("itemcount:")) {
+        if (part.startsWith("itemcount:")) {
             part = part.substring(part.indexOf(':')+1);
 
             try {
                 Item item = Registries.ITEM.get(new Identifier(part));
-                if (item == Items.AIR)
-                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
-                else
+                if (item != Items.AIR)
                     return new ItemCountElement(item);
+                Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
+                return null;
             }
             catch (InvalidIdentifierException e) {
                 Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
+                return null;
             }
         }
 
-        else if (part.startsWith("s:") || part.startsWith("setting:")) {
+        if (part.startsWith("s:") || part.startsWith("setting:")) {
             String setting = part.substring(part.indexOf(':') + 1).toLowerCase();
             Pair<HudElement,Pair<ErrorType,String>> element = SettingsElement.create(setting, flags);
 
-            if (element.getRight() != null) {
-                Errors.addError(profile, debugLine, original, element.getRight().getLeft(), element.getRight().getRight());
-                return null;
-            }
-            return flags.anyTextUsed() ? new FormattedElement(element.getLeft(), flags) : element.getLeft();
+            if (element.getRight() == null)
+                return flags.anyTextUsed() ? new FormattedElement(element.getLeft(), flags) : element.getLeft();
+            Errors.addError(profile, debugLine, original, element.getRight().getLeft(), element.getRight().getRight());
+            return null;
         }
 
-        else if (part.equals("gizmo"))
-            return new DebugGizmoElement(flags);
-
-        else if (part.equals("record_icon")) {
-            enabled.music = true;
-            return new RecordIconElement(flags);
+        switch (part) {
+            case "gizmo": return new DebugGizmoElement(flags);
+            case "record_icon": enabled.music = true; return new RecordIconElement(flags);
+            case "target_block_icon", "target_icon", "tbicon": enabled.targetBlock = true;
+                return new ItemSupplierIconElement(() -> new ItemStack(ComplexData.targetBlock.getBlock()), flags);
+            case "target_fluid_icon", "tficon": enabled.targetFluid = true;
+                return new ItemSupplierIconElement(() -> new ItemStack(ComplexData.targetFluid.getBlockState().getBlock()), flags);
         }
 
-        else {
-            HudElement element = getSupplierElement(part, enabled, flags);
-            if (element != null) {
-                return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;
-            }
-            else {
-                Matcher keyMatcher = registryKey.matcher(part);
-                if (keyMatcher.matches()) {
-                    element = CustomHudRegistry.get(keyMatcher.group(1), part);
-                    if (element != null)
-                        return element;
+        HudElement element = getSupplierElement(part, enabled, flags);
+        if (element != null)
+            return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;
 
-                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, part);
-                }
-                else
-                    Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, part);
-            }
+        Matcher keyMatcher = registryKey.matcher(part);
+        if (keyMatcher.matches()) {
+            element = CustomHudRegistry.get(keyMatcher.group(1), part);
+            if (element != null)
+                return element;
+
+            Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, part);
         }
+        else
+            Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_VARIABLE, part);
         return null;
     }
 
@@ -502,7 +496,6 @@ public class VariableParser {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static HudElement getSupplierElement(String name, ComplexData.Enabled enabled, Flags flags) {
-
         Supplier supplier = getStringSupplier(name, enabled);
         if (supplier != null)
             return new StringSupplierElement(supplier);
