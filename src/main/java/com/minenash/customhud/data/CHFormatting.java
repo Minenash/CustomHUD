@@ -70,7 +70,7 @@ public class CHFormatting {
     }
 
     public String getFormatting() {
-        return FORMAT_MAP.getOrDefault(formatting, "");
+        return FORMAT_MAP.getOrDefault((byte)(formatting & 0b00011111), "");
     }
 
     private static final Map<Byte,String> FORMAT_MAP = new HashMap<>(32);
