@@ -171,17 +171,14 @@ public class CustomHudRenderer {
         RenderSystem.disableBlend();
 
         for (RenderPiece piece : pieces) {
-            if (piece.element instanceof String value && !value.isEmpty()) {
+            if (piece.element instanceof IconElement ie )
+                try { ie.render(context, piece.x, piece.y); }
+                catch (Exception ignored){}
+            else if (piece.element instanceof String value && !value.isEmpty()) {
                 font = piece.font;
                 context.drawText(client.textRenderer, value, piece.x, piece.y, piece.color, piece.shadow);
             }
 
-        }
-
-        for (RenderPiece piece : pieces) {
-            if (piece.element instanceof IconElement ie )
-                try { ie.render(context, piece.x, piece.y, profile.baseTheme.scale); }
-                catch (Exception ignored){}
         }
 
         context.getMatrices().pop();

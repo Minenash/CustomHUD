@@ -25,7 +25,7 @@ public class RecordIconElement extends IconElement {
         return MusicAndRecordTracker.isRecordPlaying && MusicAndRecordTracker.recordIcon.isEmpty();
     }
 
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y) {
         renderItemStack(context, x, y, MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.recordIcon : NO_RECORD);
     }
 

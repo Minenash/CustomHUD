@@ -29,7 +29,7 @@ public class ProgressBarIcon extends IconElement {
     }
 
     @Override
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y) {
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(x + shiftX, y + shiftY + 1, 0);

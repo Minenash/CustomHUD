@@ -1,5 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
+import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -22,11 +23,12 @@ public class DebugGizmoElement extends IconElement {
 
     //TODO: Mark as non-rotatable
     @Override
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y) {
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
+        float profileScale = CustomHud.getActiveProfile().baseTheme.scale;
         matrixStack.scale(profileScale,profileScale,1);
 
         float yaw = MathHelper.wrapDegrees(camera.getYaw());

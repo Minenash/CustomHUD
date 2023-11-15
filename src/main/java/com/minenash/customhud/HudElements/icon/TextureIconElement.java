@@ -81,7 +81,7 @@ public class TextureIconElement extends IconElement {
     }
 
     @Override
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y) {
         if (width == 0)
             return;
         context.getMatrices().push();

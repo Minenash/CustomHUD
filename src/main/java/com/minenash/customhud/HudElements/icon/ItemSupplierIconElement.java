@@ -48,7 +48,7 @@ public class ItemSupplierIconElement extends IconElement {
     }
 
     //TODO FIX: Conditional in list?
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y) {
         ItemStack stack = stacks == null ? supplier.get() : stacks.get(stackIndex++);
         if (stack == null || stack.isEmpty())
             return;

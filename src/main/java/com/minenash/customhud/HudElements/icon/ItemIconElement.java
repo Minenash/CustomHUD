@@ -25,7 +25,8 @@ public class ItemIconElement extends IconElement {
         return stack.isEmpty();
     }
 
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    @Override
+    public void render(DrawContext context, int x, int y) {
         renderItemStack(context, x, y, stack);
     }
 }

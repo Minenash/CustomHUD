@@ -28,7 +28,7 @@ public class StatusEffectIconElement extends IconElement {
     }
 
     @Override
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y) {
         StatusEffectInstance effect = effects.get(effectIndex);
         effectIndex++;
 

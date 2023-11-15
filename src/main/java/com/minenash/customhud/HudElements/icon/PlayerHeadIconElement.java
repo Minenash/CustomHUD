@@ -24,7 +24,7 @@ public class PlayerHeadIconElement extends IconElement {
     }
 
     @Override
-    public void render(DrawContext context, int x, int y, float profileScale) {
+    public void render(DrawContext context, int x, int y) {
         PlayerListEntry playerEntry = players.get(playerIndex);
         playerIndex++;
         if (playerIndex >= players.size())

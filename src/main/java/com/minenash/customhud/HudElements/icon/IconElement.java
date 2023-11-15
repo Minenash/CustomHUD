@@ -36,7 +36,7 @@ public abstract class IconElement extends FunctionalElement {
         referenceCorner = flags.iconReferenceCorner;
     }
 
-    public abstract void render(DrawContext context, int x, int y, float profileScale);
+    public abstract void render(DrawContext context, int x, int y);
     public int getTextWidth() {
         return width;
     };
