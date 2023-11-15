@@ -1,13 +1,14 @@
 package com.minenash.customhud.HudElements.icon;
 
+import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
 import net.minecraft.client.gui.DrawContext;
 
 public class SpaceElement extends IconElement {
 
-    private final int width;
+    private final Operation width;
 
-    public SpaceElement(int width) {
+    public SpaceElement(Operation width) {
         super(new Flags(), 0);
         this.width = width;
     }
@@ -17,6 +18,6 @@ public class SpaceElement extends IconElement {
 
     @Override
     public int getTextWidth() {
-        return width;
+        return (int)width.getValue();
     }
 }

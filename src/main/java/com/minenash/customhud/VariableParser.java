@@ -19,8 +19,6 @@ import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
-import net.minecraft.client.gui.hud.ClientBossBar;
-import net.minecraft.entity.boss.BossBar;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -32,13 +30,11 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.MathHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -48,6 +44,7 @@ import static com.minenash.customhud.CustomHud.CLIENT;
 import static com.minenash.customhud.HudElements.list.AttributeHelpers.*;
 import static com.minenash.customhud.HudElements.list.Attributers.*;
 import static com.minenash.customhud.HudElements.supplier.BooleanSupplierElement.*;
+import static com.minenash.customhud.HudElements.supplier.EntitySuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.EntryNumberSuppliers.*;
 import static com.minenash.customhud.HudElements.supplier.IntegerSuppliers.*;
 import static com.minenash.customhud.HudElements.list.ListSuppliers.*;
@@ -60,6 +57,7 @@ public class VariableParser {
     private static final Pattern HEX_COLOR_VARIABLE_PATTERN = Pattern.compile("&\\{(?:0x|#)?([0-9a-fA-F]{3,8})}");
     private static final Pattern EXPRESSION_WITH_PRECISION = Pattern.compile("\\$(?:(\\d+) *,)?(.*)");
     private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("([\\w.-]*)(?::([\\w.-]*))?.*");
+    private static final Pattern SPACE_STR_PATTERN = Pattern.compile("\"(.*)\"");
 
     public static List<HudElement> addElements(String str, int profile, int debugLine, ComplexData.Enabled enabled, boolean line, ListProvider listProvider) {
 //        System.out.println("[Line " + debugLine+ "] '" + str + "'");
@@ -298,36 +296,48 @@ public class VariableParser {
             }
         }
 
-        else if (part.startsWith("item:"))
+        if (part.startsWith("item:"))
             return attrElement(part, SLOT_READER, (slot) -> () -> CLIENT.player.getStackReference(slot).get(),
                     ITEM, ErrorType.UNKNOWN_ITEM_ID, ErrorType.UNKNOWN_ITEM_PROPERTY, profile, debugLine, enabled, original);
 
-        else if (part.startsWith("attribute:"))
+        if (part.startsWith("attribute:"))
             return attrElement(part, ENTITY_ATTR_READER, (attr) -> () -> getEntityAttr(CLIENT.player, attr),
                     ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY, profile, debugLine, enabled, original);
 
-        else if (part.startsWith("target_entity_attribute:") || part.startsWith("target_entity_attr:") || part.startsWith("tea:"))
+        if (part.startsWith("target_entity_attribute:") || part.startsWith("target_entity_attr:") || part.startsWith("tea:"))
             return attrElement(part, ENTITY_ATTR_READER, (attr) -> () -> getEntityAttr(ComplexData.targetEntity, attr),
                     ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY, profile, debugLine, enabled, original);
 
-        else if (part.startsWith("hooked_entity_attribute:") || part.startsWith("hooked_entity_attr:") || part.startsWith("hea:"))
+        if (part.startsWith("hooked_entity_attribute:") || part.startsWith("hooked_entity_attr:") || part.startsWith("hea:"))
             return attrElement(part, ENTITY_ATTR_READER, (attr) -> () -> getEntityAttr(CLIENT.player.fishHook == null ? null : CLIENT.player.fishHook.getHookedEntity(), attr),
                     ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE, ErrorType.UNKNOWN_ATTRIBUTE_PROPERTY, profile, debugLine, enabled, original);
 
-        else if (part.startsWith("team:"))
+        if (part.startsWith("team:"))
             return attrElement(part, src -> src, (team) -> () -> CLIENT.world.getScoreboard().getTeam(team),
                     TEAM, null, ErrorType.UNKNOWN_TEAM_PROPERTY, profile, debugLine, enabled, original);
 
-        else if (part.startsWith("objective:"))
+        if (part.startsWith("objective:"))
             return attrElement(part, src -> src, (name) -> () -> CLIENT.world.getScoreboard().getNullableObjective(name),
                     SCOREBOARD_OBJECTIVE, null, ErrorType.UNKNOWN_OBJECTIVE_PROPERTY, profile, debugLine, enabled, original);
 
-        else if (part.startsWith("bossbar:"))
+        if (part.startsWith("bossbar:"))
             return attrElement(part, src -> src, (name) -> () -> AttributeHelpers.getBossBar(name),
                     BOSSBAR, null, ErrorType.UNKNOWN_OBJECTIVE_PROPERTY, profile, debugLine, enabled, original);
 
-        else if (part.startsWith("bar"))
+        if (part.startsWith("bar"))
             return barElement(part, profile, debugLine, enabled, original, listProvider);
+
+        if (part.startsWith("space:")) {
+            String widthStr = part.substring(6).trim();
+            Operation op;
+
+            Matcher matcher = SPACE_STR_PATTERN.matcher(widthStr);
+            if (matcher.matches())
+                op = new Operation.Length(addElements(matcher.group(1), profile, debugLine, enabled, false, listProvider));
+            else
+                op = ExpressionParser.parseExpression(widthStr.trim(), part, profile, debugLine, enabled, listProvider);
+            return new SpaceElement( op );
+        }
 
 
 
@@ -454,17 +464,6 @@ public class VariableParser {
             return new RecordIconElement(flags);
         }
 
-        else if (part.startsWith("space:")) {
-            String widthStr = part.substring(6);
-            try {
-                return new SpaceElement( Integer.parseInt(widthStr) );
-            }
-            catch (NumberFormatException e) {
-                Errors.addError(profile, debugLine, original, ErrorType.NOT_A_WHOLE_NUMBER, "\"" + widthStr + "\"");
-                return null;
-            }
-        }
-
         else {
             HudElement element = getSupplierElement(part, enabled, flags);
             if (element != null) {
@@ -564,6 +563,11 @@ public class VariableParser {
             case "hooked_entity_id", "hei" -> HOOKED_ENTITY_ID;
             case "hooked_entity_name", "hen" -> HOOKED_ENTITY_NAME;
             case "hooked_entity_uuid", "heu" -> HOOKED_ENTITY_UUID;
+            case "vehicle_entity", "vehicle", "ve" -> VEHICLE_ENTITY;
+            case "vehicle_entity_id", "vehicle_id", "vei" -> VEHICLE_ENTITY_ID;
+            case "vehicle_entity_name", "vehicle_name", "ven" -> VEHICLE_ENTITY_NAME;
+            case "vehicle_entity_uuid", "vehicle_uuid", "veu" -> VEHICLE_ENTITY_UUID;
+            case "vehicle_horse_armor", "horse_armor", "vha" -> VEHICLE_HORSE_ARMOR;
             case "world_name", "world" -> WORLD_NAME;
             case "server_name" -> SERVER_NAME;
             case "server_address", "address", "ip" -> SERVER_ADDRESS;
@@ -657,6 +661,7 @@ public class VariableParser {
             case "target_fluid_z", "tfz" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_Z; }
             case "target_fluid_distance", "tfd" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_DISTANCE; }
             case "target_fluid_color", "tfc" -> { enabled.world = enabled.targetFluid = true; yield TARGET_FLUID_COLOR; }
+            case "vehicle_entity_armor", "vehicle_armor", "vea" -> VEHICLE_ENTITY_ARMOR;
             case "in_chunk_x", "icx" -> IN_CHUNK_X;
             case "in_chunk_y", "icy" -> IN_CHUNK_Y;
             case "in_chunk_z", "icz" -> IN_CHUNK_Z;
@@ -756,6 +761,9 @@ public class VariableParser {
             case "hooked_entity_y", "hey" -> HOOKED_ENTITY_Y;
             case "hooked_entity_z", "hez" -> HOOKED_ENTITY_Z;
             case "hooked_entity_distance", "hed" -> HOOKED_ENTITY_DISTANCE;
+            case "vehicle_entity_health", "vehicle_health", "veh" -> VEHICLE_ENTITY_HEALTH;
+            case "vehicle_entity_max_health", "vehicle_max_health", "vemh" -> VEHICLE_ENTITY_MAX_HEALTH;
+            case "vehicle_horse_jump", "horse_jump", "vhj" -> VEHICLE_HORSE_JUMP;
             case "reach_distance", "reach" -> REACH_DISTANCE;
             case "fishing_hook_distance" -> FISHING_HOOK_DISTANCE;
             case "velocity_xz" -> VELOCITY_XZ;

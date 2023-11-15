@@ -48,21 +48,6 @@ public class StringSupplierElement implements HudElement {
     private static final String[] moon_phases = new String[]{"full moon", "waning gibbous", "last quarter", "waning crescent", "new moon", "waxing crescent", "first quarter", "waxing gibbous"};
     public static final Supplier<String> MOON_PHASE_WORD = () -> ComplexData.clientChunk.isEmpty() ? null : moon_phases[client.world.getMoonPhase()];
 
-    public static final Supplier<String> TARGET_ENTITY = () -> ComplexData.targetEntity == null ? null : I18n.translate(ComplexData.targetEntity.getType().getTranslationKey());
-    public static final Supplier<String> TARGET_ENTITY_ID = () -> ComplexData.targetEntity == null ? null : Registries.ENTITY_TYPE.getId(ComplexData.targetEntity.getType()).toString();
-    public static final Supplier<String> TARGET_ENTITY_NAME = () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getDisplayName().getString();
-    public static final Supplier<String> TARGET_ENTITY_UUID = () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getUuidAsString();
-
-    public static final Supplier<String> LAST_HIT_ENTITY = () -> ComplexData.lastHitEntity == null ? null : I18n.translate(ComplexData.lastHitEntity.getType().getTranslationKey());
-    public static final Supplier<String> LAST_HIT_ENTITY_ID = () -> ComplexData.lastHitEntity == null ? null : Registries.ENTITY_TYPE.getId(ComplexData.lastHitEntity.getType()).toString();
-    public static final Supplier<String> LAST_HIT_ENTITY_NAME = () -> ComplexData.lastHitEntity == null ? null : ComplexData.lastHitEntity.getDisplayName().getString();
-    public static final Supplier<String> LAST_HIT_ENTITY_UUID = () -> ComplexData.lastHitEntity == null ? null : ComplexData.lastHitEntity.getUuidAsString();
-
-    public static final Supplier<String> HOOKED_ENTITY = () -> hooked() == null ? null : I18n.translate(hooked().getType().getTranslationKey());
-    public static final Supplier<String> HOOKED_ENTITY_ID = () -> hooked() == null ? null : Registries.ENTITY_TYPE.getId(hooked().getType()).toString();
-    public static final Supplier<String> HOOKED_ENTITY_NAME = () -> hooked() == null ? null : hooked().getDisplayName().getString();
-    public static final Supplier<String> HOOKED_ENTITY_UUID = () -> hooked() == null ? null : hooked().getUuidAsString();
-
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
     public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();

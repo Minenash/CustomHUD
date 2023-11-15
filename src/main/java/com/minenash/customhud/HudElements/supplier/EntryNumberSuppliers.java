@@ -25,7 +25,6 @@ public class EntryNumberSuppliers {
     private static Entity cameraEntity() { return client.getCameraEntity(); }
     private static boolean inNether() { return client.world.getRegistryKey().getValue().equals(World.NETHER.getValue()); }
     private static double toMiB(long bytes) { return bytes / 1024D / 1024L; }
-    private static Entity hooked() { return client.player.fishHook == null ? null : client.player.fishHook.getHookedEntity(); }
 
     public static boolean isNoise() { return ComplexData.serverWorld.getChunkManager().getChunkGenerator() instanceof NoiseChunkGenerator; }
     public static NoiseRouter sampler() { return ComplexData.serverWorld.getChunkManager().getNoiseConfig().getNoiseRouter(); }
@@ -40,18 +39,8 @@ public class EntryNumberSuppliers {
     public static final Entry NETHER_X = of( () -> inNether() ? cameraEntity().getX() * 8 : cameraEntity().getX() / 8, 0);
     public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
 
-    public static final Entry TARGET_ENTITY_X = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getX(), 0);
-    public static final Entry TARGET_ENTITY_Y = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getY(), 0);
-    public static final Entry TARGET_ENTITY_Z = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getZ(), 0);
-    public static final Entry TARGET_ENTITY_DISTANCE = of( () -> ComplexData.targetEntity == null ? null : ComplexData.targetEntity.getPos().distanceTo(client.cameraEntity.getPos()), 1);
-    public static final Entry LAST_HIT_ENTITY_DISTANCE = of( () -> ComplexData.lastHitEntityDist, 1);
-
     public static final Entry REACH_DISTANCE = of ( () -> client.interactionManager.getReachDistance(), 1);
     public static final Entry FISHING_HOOK_DISTANCE = of ( () -> client.player.fishHook.distanceTo(client.player), 1);
-    public static final Entry HOOKED_ENTITY_X = of ( () -> hooked() == null ? null : hooked().getX(), 0);
-    public static final Entry HOOKED_ENTITY_Y = of ( () -> hooked() == null ? null : hooked().getY(), 0);
-    public static final Entry HOOKED_ENTITY_Z = of ( () -> hooked() == null ? null : hooked().getZ(), 0);
-    public static final Entry HOOKED_ENTITY_DISTANCE = of( () -> hooked() == null ? null : hooked().getPos().distanceTo(client.cameraEntity.getPos()), 1);
 
     public static final Entry VELOCITY_XZ = of( () -> ComplexData.velocityXZ, 1);
     public static final Entry VELOCITY_Y = of( () -> ComplexData.velocityY, 1);

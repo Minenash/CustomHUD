@@ -1,8 +1,14 @@
 package com.minenash.customhud.conditionals;
 
 import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.MultiElement;
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
+import com.minenash.customhud.HudElements.icon.IconElement;
+import com.minenash.customhud.complex.ListManager;
 
 import java.util.List;
+
+import static com.minenash.customhud.CustomHud.CLIENT;
 
 public interface Operation {
 
@@ -12,6 +18,43 @@ public interface Operation {
         return getValue() != 0;
     }
     void printTree(int indent);
+
+    record Length(List<HudElement> elements) implements Operation {
+        public double getValue() {
+            double length = 0;
+            for (HudElement element : elements)
+                length += getLength(element);
+            return length;
+        }
+
+        private double getLength(HudElement element) {
+            if (element instanceof IconElement ie)
+                return ie.getTextWidth();
+            if (element instanceof FunctionalElement) {
+                if (element instanceof FunctionalElement.PushList pl)
+                    ListManager.push(pl.values, null);
+                else if (element instanceof FunctionalElement.AdvanceList)
+                    ListManager.advance();
+                else if (element instanceof FunctionalElement.PopList)
+                    ListManager.pop();
+                return 0;
+            }
+            if (!(element instanceof MultiElement me))
+                return  CLIENT.textRenderer.getWidth(element.getString());
+
+            double length = 0;
+            for (HudElement e : me.expand())
+                length += getLength(e);
+            return length;
+        }
+
+        @Override
+        public void printTree(int indent) {
+            System.out.println(indent(indent) + "- Length: ");
+            for (HudElement elem : elements)
+                System.out.println(indent(indent+1) + elem.toString());
+        }
+    }
 
     record Or(List<Operation> elements) implements Operation {
         public double getValue() {
