@@ -66,10 +66,7 @@ public abstract class FuncElements<T> implements HudElement {
         @Override public boolean getBoolean() { return sanitize(supplier, function, Double.NaN).doubleValue() > 0; }
         @Override public String getString() {
             double num = getNumber().doubleValue() * scale;
-            if (Double.isNaN(num)) return "-";
-            if (formatter != null) return formatter.format((int)Math.round(num));
-            if (precision == 0)    return Integer.toString((int)Math.round(num));
-            return String.format("%."+precision+"f", num);
+            return NumberSupplierElement.formatString(num, formatter, precision);
         }
     }
 

@@ -455,6 +455,37 @@ public class VariableParser {
             return null;
         }
 
+        if (part.startsWith("timer")) {
+            String argsStr = part.substring(5);
+            if (!argsStr.startsWith("[") || !argsStr.endsWith("]")) {
+                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_TIMER, null);
+                return null;
+            }
+
+            List<String> parts = partitionConditional(argsStr.substring(1, argsStr.length()-1));
+            if (parts.isEmpty() || parts.size() > 2) {
+                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_TIMER, "Expected 1 or 2 args, found" + parts.size());
+                return null;
+            }
+
+            Integer end = null;
+            try {end = Integer.parseInt(parts.get(0));}
+            catch (Exception ignored) {}
+
+            Double interval = 1D;
+            if (parts.size() == 2) {
+                Matcher matcher = TIMER_ARG_PATTERN.matcher(parts.get(1));
+                interval = !matcher.matches() ? null : matcher.group(2) == null ?
+                        Double.parseDouble(matcher.group(1)) :
+                        Double.parseDouble(matcher.group(2))/Double.parseDouble(matcher.group(3));
+            }
+            if (end == null || interval == null || (int)(interval*1000) <= 0) {
+                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_TIMER, "Interval too small");
+                return null;
+            }
+            return new TimerElement(end, interval, flags);
+        }
+
         switch (part) {
             case "gizmo": return new DebugGizmoElement(flags);
             case "record_icon": enabled.music = true; return new RecordIconElement(flags);
@@ -481,6 +512,8 @@ public class VariableParser {
         return null;
     }
 
+
+    private static final Pattern TIMER_ARG_PATTERN = Pattern.compile("((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
     private static final Pattern registryKey = Pattern.compile("(\\w+).*");
 
     private static HudElement stat(String prefix, StatType<?> type, Registry<?> registry, String stat, Flags flags, ComplexData.Enabled enabled) {
@@ -884,28 +917,8 @@ public class VariableParser {
     public static ListProvider getListProvider(String variable, int profile, int debugLine, ComplexData.Enabled enabled, String original, ListProvider listProvider) {
         variable = variable.trim();
 
-        if (variable.startsWith("loop")) {
-            String argsStr = variable.substring(4);
-            if (!argsStr.startsWith("[") || !argsStr.endsWith("]")) {
-                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LIST, null);
-                return null;
-            }
-            Operation[] operations = getLoopArgs(argsStr.substring(1, argsStr.length()-1), original, profile, debugLine, enabled, listProvider);
-            if (operations == null) {
-                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LIST, null);
-                return null;
-            }
-            ListProvider provider = () -> {
-                List<Number> values = new ArrayList<>();
-                double end = operations[1].getValue();
-                double step = operations[2].getValue();
-                for (double i = operations[0].getValue(); i < end; i += step)
-                  values.add(i);
-                return values;
-            };
-            ATTRIBUTER_MAP.put(provider, LOOP_ITEM);
-            return provider;
-        }
+        if (variable.startsWith("loop"))
+            return getLoopProvider(variable, profile, debugLine, enabled, original, listProvider);
 
         return switch (variable) {
             case "effects" -> STATUS_EFFECTS;
@@ -933,29 +946,45 @@ public class VariableParser {
         };
     }
 
-    public static Operation[] getLoopArgs(String inside, String source, int profile, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) {
-        List<String> parts = partitionConditional(inside);
-        if (parts.isEmpty() || parts.size() > 3)
+    public static ListProvider getLoopProvider(String variable, int profile, int debugLine, ComplexData.Enabled enabled, String original, ListProvider listProvider) {
+        String argsStr = variable.substring(4);
+        if (!argsStr.startsWith("[") || !argsStr.endsWith("]")) {
+            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LOOP, null);
             return null;
-        Operation[] operations = new Operation[3];
+        }
+
+        List<String> parts = partitionConditional(argsStr.substring(1, argsStr.length()-1));
+        if (parts.isEmpty() || parts.size() > 3) {
+            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LOOP, null);
+            return null;
+        }
+        Operation startO, endO, stepO;
         if (parts.size() == 1) {
-            operations[0] = new Operation.Literal(0);
-            operations[1] = ExpressionParser.parseExpression(parts.get(0), source, profile, debugLine, enabled, listSupplier);
-            operations[2] = new Operation.Literal(1);
+            startO = new Operation.Literal(0);
+            endO = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProvider);
+            stepO = new Operation.Literal(1);
         }
         else if (parts.size() == 2) {
-            operations[0] = ExpressionParser.parseExpression(parts.get(0), source, profile, debugLine, enabled, listSupplier);
-            operations[1] = ExpressionParser.parseExpression(parts.get(1), source, profile, debugLine, enabled, listSupplier);
-            operations[2] = new Operation.Literal(1);
+            startO = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProvider);
+            endO = ExpressionParser.parseExpression(parts.get(1), original, profile, debugLine, enabled, listProvider);
+            stepO = new Operation.Literal(1);
         }
         else {
-            operations[0] = ExpressionParser.parseExpression(parts.get(0), source, profile, debugLine, enabled, listSupplier);
-            operations[1] = ExpressionParser.parseExpression(parts.get(1), source, profile, debugLine, enabled, listSupplier);
-            operations[2] = ExpressionParser.parseExpression(parts.get(2), source, profile, debugLine, enabled, listSupplier);
+            startO = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProvider);
+            endO = ExpressionParser.parseExpression(parts.get(1), original, profile, debugLine, enabled, listProvider);
+            stepO = ExpressionParser.parseExpression(parts.get(2), original, profile, debugLine, enabled, listProvider);
         }
-        return operations;
 
-
+        ListProvider provider = () -> {
+            List<Number> values = new ArrayList<>();
+            double end = endO.getValue();
+            double step = stepO.getValue();
+            for (double i = startO.getValue(); i < end; i += step)
+                values.add(i);
+            return values;
+        };
+        ATTRIBUTER_MAP.put(provider, LOOP_ITEM);
+        return provider;
     }
 
     public static HudElement barElement(String part, int profile, int debugLine, ComplexData.Enabled enabled, String original, ListProvider provider) {
