@@ -19,6 +19,9 @@ import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.CustomHudRegistry;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -452,6 +455,27 @@ public class VariableParser {
             if (element.getRight() == null)
                 return flags.anyTextUsed() ? new FormattedElement(element.getLeft(), flags) : element.getLeft();
             Errors.addError(profile, debugLine, original, element.getRight().getLeft(), element.getRight().getRight());
+            return null;
+        }
+
+        if (part.startsWith("is_pressed:")) {
+            String setting = part.substring(part.indexOf(':') + 1).toLowerCase();
+            String context = setting;
+
+            if (!setting.startsWith("key_")) {
+                if (!setting.startsWith("key."))
+                    setting = "key." + setting;
+                context = setting;
+                setting = "key_" + setting;
+            }
+
+            GameOptions options = MinecraftClient.getInstance().options;
+            String key = setting.substring(4);
+            for (KeyBinding binding : options.allKeys)
+                if (binding.getTranslationKey().equalsIgnoreCase(key))
+                    return new BooleanSupplierElement(binding::isPressed);
+
+            Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_KEYBIND, context);
             return null;
         }
 

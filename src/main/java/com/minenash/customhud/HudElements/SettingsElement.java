@@ -97,7 +97,7 @@ public class SettingsElement {
                             () -> ((KeyBindingAccessor) binding).getBoundKey().getCode(),
                             () -> !binding.isUnbound()
                     )), null);
-            return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_KEYBOARD_KEY, key));
+            return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_KEYBIND, key));
         }
 
         if (setting.startsWith("soundcategory_")) {

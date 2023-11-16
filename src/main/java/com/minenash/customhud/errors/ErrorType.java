@@ -33,7 +33,7 @@ public enum ErrorType {
     UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),
 
     UNKNOWN_SETTING ("Settings", "references/settings", "Unknown Setting: §e"),
-    UNKNOWN_KEYBOARD_KEY ("Settings", "references/settings", "Unknown Keyboard Key: §e"),
+    UNKNOWN_KEYBIND("Settings", "references/settings", "Unknown Keybind: §e"),
     UNKNOWN_SOUND_CATEGORY ("Settings", "references/settings", "Unknown Sound Category: §e"),
 
     LIST_NOT_STARTED ("CHANGE ME", "CHANGE ME", "No =for: §olist§r= to end"),
