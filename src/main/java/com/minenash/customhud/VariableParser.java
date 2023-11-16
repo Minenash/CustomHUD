@@ -171,6 +171,8 @@ public class VariableParser {
                     if (i < chars.length-1 && chars[i+1] == '}') continue;
                     nest--;
                 }
+                case '[' -> nest++;
+                case ']' -> nest--;
                 case ',' -> {
                     if (nest == 0 && qNest == 0) {
                         parts.add(str.substring(startIndex, i));
@@ -183,7 +185,7 @@ public class VariableParser {
                 }
             }
         }
-        if (startIndex < chars.length-1)
+        if (startIndex < chars.length)//-1
             parts.add(str.substring(startIndex, chars.length));
 
         return parts;
@@ -283,7 +285,7 @@ public class VariableParser {
         }
 
         if (listProvider == null || !(part.startsWith("scores") && part.contains(","))) { //Fixes naming conflict
-            HudElement he = getListSupplierElements(part, profile, debugLine, enabled, original);
+            HudElement he = getListSupplierElements(part, profile, debugLine, enabled, original, listProvider);
             if (he != null) return he;
         }
 
@@ -853,20 +855,58 @@ public class VariableParser {
         };
     }
 
-    private static HudElement getListSupplierElements(String part, int profile, int debugLine, ComplexData.Enabled enabled, String original) {
-        int commaIndex = part.indexOf(",");
-        String variable = part;
-        if (commaIndex != -1)
-            variable = variable.substring(0, commaIndex);
 
-        ListProvider provider = getListSupplier(variable, enabled);
+
+    private static HudElement getListSupplierElements(String part, int profile, int debugLine, ComplexData.Enabled enabled, String original, ListProvider listProvider) {
+        List<String> parts = partitionConditional(part);
+        if (parts.isEmpty()) {
+            Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_SLOT, "WHY U EMPTY");
+            return null;
+        }
+        ListProvider provider = getListProvider(parts.get(0), profile, debugLine, enabled, original, listProvider);
+
         if (provider == null)
             return null;
+        if (parts.size() == 1)
+            return new ListCountElement(provider);
 
-        return listElement(provider, part, commaIndex, profile, debugLine, enabled, original);
+        String format = parts.get(1).trim();
+        if (!format.startsWith("\"") || !format.endsWith("\"")) {
+            Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LIST, null);
+            return null;
+        }
+        format = format.substring(1, format.length()-1);
+        System.out.println("Format: " + format);
+
+        return new ListElement(provider, addElements(format, profile, debugLine, enabled, false, provider));
     }
 
-    public static ListProvider getListSupplier(String variable, ComplexData.Enabled enabled) {
+    public static ListProvider getListProvider(String variable, int profile, int debugLine, ComplexData.Enabled enabled, String original, ListProvider listProvider) {
+        variable = variable.trim();
+
+        if (variable.startsWith("loop")) {
+            String argsStr = variable.substring(4);
+            if (!argsStr.startsWith("[") || !argsStr.endsWith("]")) {
+                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LIST, null);
+                return null;
+            }
+            Operation[] operations = getLoopArgs(argsStr.substring(1, argsStr.length()-1), original, profile, debugLine, enabled, listProvider);
+            if (operations == null) {
+                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_LIST, null);
+                return null;
+            }
+            ListProvider provider = () -> {
+                List<Number> values = new ArrayList<>();
+                double end = operations[1].getValue();
+                double step = operations[2].getValue();
+                for (double i = operations[0].getValue(); i < end; i += step)
+                  values.add(i);
+                return values;
+            };
+            ATTRIBUTER_MAP.put(provider, LOOP_ITEM);
+            return provider;
+        }
+
         return switch (variable) {
             case "effects" -> STATUS_EFFECTS;
             case "pos_effects", "positive_effects" -> STATUS_EFFECTS_POSITIVE;
@@ -891,6 +931,31 @@ public class VariableParser {
 
             default -> null;
         };
+    }
+
+    public static Operation[] getLoopArgs(String inside, String source, int profile, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) {
+        List<String> parts = partitionConditional(inside);
+        if (parts.isEmpty() || parts.size() > 3)
+            return null;
+        Operation[] operations = new Operation[3];
+        if (parts.size() == 1) {
+            operations[0] = new Operation.Literal(0);
+            operations[1] = ExpressionParser.parseExpression(parts.get(0), source, profile, debugLine, enabled, listSupplier);
+            operations[2] = new Operation.Literal(1);
+        }
+        else if (parts.size() == 2) {
+            operations[0] = ExpressionParser.parseExpression(parts.get(0), source, profile, debugLine, enabled, listSupplier);
+            operations[1] = ExpressionParser.parseExpression(parts.get(1), source, profile, debugLine, enabled, listSupplier);
+            operations[2] = new Operation.Literal(1);
+        }
+        else {
+            operations[0] = ExpressionParser.parseExpression(parts.get(0), source, profile, debugLine, enabled, listSupplier);
+            operations[1] = ExpressionParser.parseExpression(parts.get(1), source, profile, debugLine, enabled, listSupplier);
+            operations[2] = ExpressionParser.parseExpression(parts.get(2), source, profile, debugLine, enabled, listSupplier);
+        }
+        return operations;
+
+
     }
 
     public static HudElement barElement(String part, int profile, int debugLine, ComplexData.Enabled enabled, String original, ListProvider provider) {

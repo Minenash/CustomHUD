@@ -45,6 +45,7 @@ public enum ErrorType {
     MALFORMED_CONDITIONAL ("Conditionals", "conditionals", "Malformed conditional: "),
     MALFORMED_LIST ("CHANGE ME", "CHANGE ME", "Malformed list variable: "),
     MALFORMED_BAR ("CHANGE ME", "CHANGE ME", "Malformed bar variable: "),
+    MALFORMED_LOOP ("CHANGE ME", "CHANGE ME", "Malformed loop: "),
 
     NOT_A_WHOLE_NUMBER (null, null, "Not a whole number: ");
 

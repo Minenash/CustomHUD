@@ -14,12 +14,12 @@ import com.minenash.customhud.errors.Errors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Supplier;
 
 public class MultiLineStacker {
 
     private final List<HudElement> base = new ArrayList<>();
     private final Stack<Object> stack = new Stack<>();
+    private final Stack<ListProvider> listProviders = new Stack<>();
 
     public void startIf(String cond, int profileID, int line, String source, ComplexData.Enabled enabled) {
         Operation op = ExpressionParser.parseExpression(cond, source, profileID, line+1, enabled, getProvider());
@@ -80,15 +80,18 @@ public class MultiLineStacker {
         }
     }
 
-    public void startFor(String list, ComplexData.Enabled enabled) {
-        stack.push( new ListElement.MultiLineBuilder(VariableParser.getListSupplier(list, enabled)) );
+    public void startFor(String list, int profileID, int line, ComplexData.Enabled enabled, String source) {
+        ListProvider provider = VariableParser.getListProvider(list, profileID, line, enabled, source, listProviders.isEmpty() ? null : listProviders.peek());
+        listProviders.push(provider);
+        stack.push( new ListElement.MultiLineBuilder(provider) );
     }
 
     public void endFor(int profileID, int line, String source) {
         if (stack.isEmpty()) {
             Errors.addError(profileID, line + 1, source, ErrorType.LIST_NOT_STARTED, "");
+            return;
         }
-        else if (stack.peek() instanceof ListElement.MultiLineBuilder leb) {
+        if (stack.peek() instanceof ListElement.MultiLineBuilder leb) {
             HudElement element = leb.build();
             stack.pop();
             addElement(element);
@@ -104,6 +107,7 @@ public class MultiLineStacker {
             stack.pop();
             addElement(element);
         }
+        listProviders.pop();
     }
 
     public void addElement(HudElement element) {

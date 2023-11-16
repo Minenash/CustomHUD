@@ -154,7 +154,8 @@ public class ExpressionParser {
         return c == '.' || (c >= '0' && c <= '9');
     }
     private static boolean isVar(char c) {
-        return c == '.' || c == ':' || c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+        return c == '.' || c == ':' || c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+                || c == '[' || c == ']' || c == ',';
     }
     private static void reduceList(List<Token> original, int start, int end) {
         original.set(start, new Token(TokenType.FULL_PREN, new ArrayList<>(original.subList(start+1, end))));

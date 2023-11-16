@@ -100,6 +100,7 @@ public class Attributers {
 
     public static final Attributer ITEM_LORE_LINE = (sup, name, f) -> name.equals("line") ? new Str(sup, DIRECT) : null;
     public static final Attributer ITEM_INFO_INFO = (sup, name, f) -> name.equals("info") ? new Str(sup, DIRECT) : null;
+    public static final Attributer LOOP_ITEM = (sup, name, flags) -> name.equals("value") ? new Num(sup, n -> n, flags) : null;
 
     public static final Attributer ITEM_ATTRIBUTE_MODIFIER = (sup, name, flags) -> switch (name) {
         case "slot" -> new Str(sup,ITEM_ATTR_SLOT);

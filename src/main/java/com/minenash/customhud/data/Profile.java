@@ -169,7 +169,7 @@ public class Profile {
                 profile.stacker.endIf(profileID, i, line);
 
             else if (( matcher = FOR_PATTERN.matcher(lineLC) ).matches())
-                profile.stacker.startFor(matcher.group(1), profile.enabled);
+                profile.stacker.startFor(matcher.group(1), profileID, i, profile.enabled, line);
 
             else if (line.equalsIgnoreCase("=endfor="))
                 profile.stacker.endFor(profileID, i, line);
