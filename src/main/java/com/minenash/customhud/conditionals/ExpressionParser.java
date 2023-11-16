@@ -65,7 +65,7 @@ public class ExpressionParser {
             else if (c == '/') tokens.add(new Token(TokenType.MATH, MathOperator.DIVIDE));
             else if (c == '%') tokens.add(new Token(TokenType.MATH, MathOperator.MOD));
             else if (c == '^') tokens.add(new Token(TokenType.MATH, MathOperator.EXPONENT));
-            else if (c == '-' && i+1 < chars.length && SUBTRACTABLE.contains( tokens.isEmpty() ? null : tokens.get(tokens.size()-1).type))
+            else if (c == '-' && i+1 < chars.length && (!tokens.isEmpty() && SUBTRACTABLE.contains(tokens.get(tokens.size() - 1).type)))
                 tokens.add(new Token(TokenType.MATH, MathOperator.SUBTRACT));
             else if (c == '!') {
                 if (i + 1 == chars.length || chars[i + 1] != '=')
