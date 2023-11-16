@@ -468,21 +468,9 @@ public class VariableParser {
                 return null;
             }
 
-            Integer end = null;
-            try {end = Integer.parseInt(parts.get(0));}
-            catch (Exception ignored) {}
-
-            Double interval = 1D;
-            if (parts.size() == 2) {
-                Matcher matcher = TIMER_ARG_PATTERN.matcher(parts.get(1));
-                interval = !matcher.matches() ? null : matcher.group(2) == null ?
-                        Double.parseDouble(matcher.group(1)) :
-                        Double.parseDouble(matcher.group(2))/Double.parseDouble(matcher.group(3));
-            }
-            if (end == null || interval == null || (int)(interval*1000) <= 0) {
-                Errors.addError(profile, debugLine, original, ErrorType.MALFORMED_TIMER, "Interval too small");
-                return null;
-            }
+            Operation end = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProvider);
+            Operation interval = parts.size() != 2 ? new Operation.Literal(1) :
+                ExpressionParser.parseExpression(parts.get(1), original, profile, debugLine, enabled, listProvider);
             return new TimerElement(end, interval, flags);
         }
 
