@@ -21,7 +21,9 @@
   "entrypoints": {
     "main": ["com.minenash.customhud.CustomHud"],
     "preLaunch": ["com.llamalad7.mixinextras.MixinExtrasBootstrap::init"],
-    "modmenu": ["com.minenash.customhud.ModMenuIntegration"]
+    "modmenu": [
+      "ModMenuIntegration"
+    ]
   },
   "mixins": [
     "customhud.mixins.json"
