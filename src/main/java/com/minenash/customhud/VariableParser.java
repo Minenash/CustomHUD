@@ -710,6 +710,22 @@ public class VariableParser {
             case "region_z", "rez" -> REGION_Z;
             case "region_relative_x", "rrx" -> REGION_RELATIVE_X;
             case "region_relative_z", "rrz" -> REGION_RELATIVE_Z;
+
+            case "ccw1", "client_chunks_w1", "client_chunks_cached" -> CHUNK_CLIENT_CACHED;
+            case "ccw2", "client_chunks_w2", "client_chunks_loaded" -> CHUNK_CLIENT_LOADED;
+            case "cce1", "client_chunks_e1", "client_entities_loaded" -> CHUNK_CLIENT_ENTITIES_LOADED;
+            case "cce2", "client_chunks_e2", "client_entities_cached_sections" -> CHUNK_CLIENT_ENTITIES_CACHED_SECTIONS;
+            case "cce3", "client_chunks_e3", "client_entities_ticking_chunks" -> CHUNK_CLIENT_ENTITIES_TICKING_CHUNKS;
+
+            case "scw1", "server_chunks_w1", "server_chunks_loaded" -> {enabled.serverWorld = true; yield CHUNK_SERVER_LOADED;}
+            case "sce1", "server_chunks_e1", "server_entities_registered" -> {enabled.serverWorld = true; yield CHUNK_SERVER_ENTITIES_REGISTERED;}
+            case "sce2", "server_chunks_e2", "server_entities_loaded" -> {enabled.serverWorld = true; yield CHUNK_SERVER_ENTITIES_LOADED;}
+            case "sce3", "server_chunks_e3", "server_entities_cached_sections" -> {enabled.serverWorld = true; yield CHUNK_SERVER_ENTITIES_CACHED_SECTIONS;}
+            case "sce4", "server_chunks_e4", "server_entities_managed" -> {enabled.serverWorld = true; yield CHUNK_SERVER_ENTITIES_MANAGED;}
+            case "sce5", "server_chunks_e5", "server_entities_tracked" -> {enabled.serverWorld = true; yield CHUNK_SERVER_ENTITIES_TRACKED;}
+            case "sce6", "server_chunks_e6", "server_entities_loading" -> {enabled.serverWorld = true; yield CHUNK_SERVER_ENTITIES_LOADING;}
+            case "sce7", "server_chunks_e7", "server_entities_unloading" -> {enabled.serverWorld = true; yield CHUNK_SERVER_ENTITIES_UNLOADING;}
+
             case "client_light", "light" -> { enabled.clientChunk = true; yield CLIENT_LIGHT; }
             case "client_light_sky", "light_sky" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_SKY; }
             case "client_light_sun", "light_sun" -> { enabled.clientChunk = true; yield CLIENT_LIGHT_SUN; }

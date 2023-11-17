@@ -101,6 +101,21 @@ public class IntegerSuppliers {
     public static final Supplier<Number> REGION_RELATIVE_X = () -> blockPos().getX() >> 4 & 0x1F;
     public static final Supplier<Number> REGION_RELATIVE_Z = () -> blockPos().getZ() >> 4 & 0x1F;
 
+    public static final Supplier<Number> CHUNK_CLIENT_CACHED = () -> client.world.getChunkManager().chunks.chunks.length();
+    public static final Supplier<Number> CHUNK_CLIENT_LOADED = () -> client.world.getChunkManager().getLoadedChunkCount();
+    public static final Supplier<Number> CHUNK_CLIENT_ENTITIES_LOADED = () -> client.world.entityManager.index.size();
+    public static final Supplier<Number> CHUNK_CLIENT_ENTITIES_CACHED_SECTIONS = () -> client.world.entityManager.cache.sectionCount();
+    public static final Supplier<Number> CHUNK_CLIENT_ENTITIES_TICKING_CHUNKS = () -> client.world.entityManager.tickingChunkSections.size();
+
+    public static final Supplier<Number> CHUNK_SERVER_LOADED = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.getChunkManager().getLoadedChunkCount();
+    public static final Supplier<Number> CHUNK_SERVER_ENTITIES_REGISTERED = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.entityManager.entityUuids.size();
+    public static final Supplier<Number> CHUNK_SERVER_ENTITIES_LOADED = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.entityManager.index.size();
+    public static final Supplier<Number> CHUNK_SERVER_ENTITIES_CACHED_SECTIONS = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.entityManager.cache.sectionCount();
+    public static final Supplier<Number> CHUNK_SERVER_ENTITIES_MANAGED = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.entityManager.managedStatuses.size();
+    public static final Supplier<Number> CHUNK_SERVER_ENTITIES_TRACKED = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.entityManager.trackingStatuses.size();
+    public static final Supplier<Number> CHUNK_SERVER_ENTITIES_LOADING = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.entityManager.loadingQueue.size();
+    public static final Supplier<Number> CHUNK_SERVER_ENTITIES_UNLOADING = () -> ComplexData.serverWorld == null ? null : ComplexData.serverWorld.entityManager.pendingUnloads.size();
+
 
     public static final Supplier<Number> CLIENT_LIGHT = () -> {
         if (ComplexData.clientChunk.isEmpty()) return null;

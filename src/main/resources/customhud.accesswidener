@@ -13,3 +13,18 @@ accessible  method  net/minecraft/item/ItemStack	getHideFlags ()I
 accessible	field	net/minecraft/client/gui/hud/BossBarHud	bossBars	Ljava/util/Map;
 accessible	field	net/minecraft/entity/boss/BossBarManager	commandBossBars	Ljava/util/Map;
 accessible	method	net/minecraft/client/gui/hud/BossBarHud	renderBossBar	(Lnet/minecraft/client/gui/DrawContext;IILnet/minecraft/entity/boss/BossBar;)V
+accessible	field	net/minecraft/client/world/ClientChunkManager	chunks	Lnet/minecraft/client/world/ClientChunkManager$ClientChunkMap;
+accessible	class	net/minecraft/client/world/ClientChunkManager$ClientChunkMap
+accessible	field	net/minecraft/client/world/ClientChunkManager$ClientChunkMap	chunks	Ljava/util/concurrent/atomic/AtomicReferenceArray;
+accessible	field	net/minecraft/client/world/ClientWorld	entityManager	Lnet/minecraft/client/world/ClientEntityManager;
+accessible	field	net/minecraft/client/world/ClientEntityManager	index	Lnet/minecraft/world/entity/EntityIndex;
+accessible	field	net/minecraft/client/world/ClientEntityManager	cache	Lnet/minecraft/world/entity/SectionedEntityCache;
+accessible	field	net/minecraft/client/world/ClientEntityManager	tickingChunkSections	Lit/unimi/dsi/fastutil/longs/LongSet;
+accessible	field	net/minecraft/server/world/ServerWorld	entityManager	Lnet/minecraft/server/world/ServerEntityManager;
+accessible	field	net/minecraft/server/world/ServerEntityManager	index	Lnet/minecraft/world/entity/EntityIndex;
+accessible	field	net/minecraft/server/world/ServerEntityManager	cache	Lnet/minecraft/world/entity/SectionedEntityCache;
+accessible	field	net/minecraft/server/world/ServerEntityManager	entityUuids	Ljava/util/Set;
+accessible	field	net/minecraft/server/world/ServerEntityManager	trackingStatuses	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
+accessible	field	net/minecraft/server/world/ServerEntityManager	managedStatuses	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
+accessible	field	net/minecraft/server/world/ServerEntityManager	loadingQueue	Ljava/util/Queue;
+accessible	field	net/minecraft/server/world/ServerEntityManager	pendingUnloads	Lit/unimi/dsi/fastutil/longs/LongSet;
