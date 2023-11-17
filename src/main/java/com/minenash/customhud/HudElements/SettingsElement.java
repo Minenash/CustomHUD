@@ -77,9 +77,7 @@ public class SettingsElement {
                 case "_code" -> new StringSupplierElement(() -> code);
                 default -> null;
             };
-            if (element == null)
-                return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_SETTING, setting));
-            return new Pair<>(flags.anyTextUsed() ? new FormattedElement(element, flags) : element, null);
+            return new Pair<>(element, new Pair<>(ErrorType.UNKNOWN_SETTING, setting));
         }
 
         if (setting.startsWith("key."))
@@ -127,14 +125,10 @@ public class SettingsElement {
         System.out.println("Option: " + option.toString() + " | " + option.getValue().getClass().getName());
         if (option.getValue() instanceof Boolean)
             return new BooleanSupplierElement(() -> (Boolean) option.getValue());
-        if (option.getValue() instanceof Number) {
-
+        if (option.getValue() instanceof Number)
             return new NumberSupplierElement(NumberSupplierElement.of(() -> (Number) option.getValue(), option.getValue() instanceof Integer ? 0 : 1), flags);
-        }
-        if (option.getValue() instanceof String) {
-            HudElement element = new StringSupplierElement(() -> ((String)option.getValue()).isEmpty() ? "Default" : (String)option.getValue());
-            return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;
-        }
+        if (option.getValue() instanceof String)
+            return new StringSupplierElement(() -> ((String)option.getValue()).isEmpty() ? "Default" : (String)option.getValue());
         if (option.getValue() instanceof TranslatableOption) {
             final int falseValue = getFalseValue((TranslatableOption) option.getValue());
             return new SpecialSupplierElement(SpecialSupplierElement.of(

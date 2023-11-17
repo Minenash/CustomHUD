@@ -267,10 +267,7 @@ public class Attributers {
             System.out.println("[FIX ME]: Attributer not in Map!");
             return null;
         }
-        HudElement element = attributer.get(value, name, flags);
-        if (element instanceof FuncElements<?> && flags.anyTextUsed())
-            return new FormattedElement(element, flags);
-        return element;
+        return attributer.get(value, name, flags);
     }
 
 }

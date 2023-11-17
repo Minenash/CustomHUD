@@ -346,7 +346,6 @@ public class VariableParser {
 
 
 
-
         String[] flagParts = part.split(" ");
         part = flagParts[0];
         Flags flags = part.endsWith(",") ? new Flags() : Flags.parse(profile, debugLine, flagParts);
@@ -358,7 +357,7 @@ public class VariableParser {
                 return listElement(cle.provider, p, p.indexOf(','), profile, debugLine, enabled, original);
             }
             if (element != null)
-                return element;
+                return Flags.wrap(element, flags);
         }
 
         if (part.startsWith("score:")) {
@@ -375,11 +374,11 @@ public class VariableParser {
             String player = p.substring(0, collinIndex);
             String objective = p.substring(collinIndex+1);
 
-            return new NumberSupplierElement(() -> {
+            return Flags.wrap(new NumberSupplierElement(() -> {
                 ScoreboardObjective obj = scoreboard().getNullableObjective(objective);
                 if (obj == null) return null;
                 return scoreboard().getPlayerScore(player, obj).getScore();
-            }, flags);
+            }, flags), flags);
         }
 
         if (part.startsWith("stat:")) {
@@ -395,12 +394,12 @@ public class VariableParser {
             if (element == null) element = stat("killed_by:", Stats.KILLED_BY, Registries.ENTITY_TYPE, stat, flags, enabled);
 
             if (element != null)
-                return element;
+                return Flags.wrap(element, flags);
 
             Identifier statId = Registries.CUSTOM_STAT.get(new Identifier(stat));
             if (Stats.CUSTOM.hasStat(statId)) {
                 enabled.updateStats = true;
-                return new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), flags);
+                return Flags.wrap(new CustomStatElement(Stats.CUSTOM.getOrCreateStat(statId), flags), flags);
             }
             Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_STATISTIC, stat);
             return null;
@@ -411,7 +410,7 @@ public class VariableParser {
 
             Item item = Registries.ITEM.get(Identifier.tryParse(part));
             if (item != Items.AIR)
-                return new ItemIconElement(new ItemStack(item), flags);
+                return Flags.wrap(new ItemIconElement(new ItemStack(item), flags), flags);
 
             Matcher matcher = TEXTURE_ICON_PATTERN.matcher(part);
             if (!matcher.matches()) {
@@ -427,7 +426,7 @@ public class VariableParser {
 
             TextureIconElement element = new TextureIconElement(id, u, v, w, h, flags);
             if (element.isIconAvailable())
-                return element;
+                return Flags.wrap(element, flags);
             Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
             return null;
         }
@@ -438,7 +437,7 @@ public class VariableParser {
             try {
                 Item item = Registries.ITEM.get(new Identifier(part));
                 if (item != Items.AIR)
-                    return new ItemCountElement(item);
+                    return Flags.wrap(new ItemCountElement(item), flags);
                 Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_ITEM_ID, part);
                 return null;
             }
@@ -452,8 +451,8 @@ public class VariableParser {
             String setting = part.substring(part.indexOf(':') + 1).toLowerCase();
             Pair<HudElement,Pair<ErrorType,String>> element = SettingsElement.create(setting, flags);
 
-            if (element.getRight() == null)
-                return flags.anyTextUsed() ? new FormattedElement(element.getLeft(), flags) : element.getLeft();
+            if (element.getLeft() != null)
+                return Flags.wrap(element.getLeft(), flags);
             Errors.addError(profile, debugLine, original, element.getRight().getLeft(), element.getRight().getRight());
             return null;
         }
@@ -473,7 +472,7 @@ public class VariableParser {
             String key = setting.substring(4);
             for (KeyBinding binding : options.allKeys)
                 if (binding.getTranslationKey().equalsIgnoreCase(key))
-                    return new BooleanSupplierElement(binding::isPressed);
+                    return Flags.wrap(new BooleanSupplierElement(binding::isPressed), flags);
 
             Errors.addError(profile, debugLine, original, ErrorType.UNKNOWN_KEYBIND, context);
             return null;
@@ -495,21 +494,21 @@ public class VariableParser {
             Operation end = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProvider);
             Operation interval = parts.size() != 2 ? new Operation.Literal(1) :
                 ExpressionParser.parseExpression(parts.get(1), original, profile, debugLine, enabled, listProvider);
-            return new TimerElement(end, interval, flags);
+            return Flags.wrap(new TimerElement(end, interval, flags), flags);
         }
 
         switch (part) {
-            case "gizmo": return new DebugGizmoElement(flags);
-            case "record_icon": enabled.music = true; return new RecordIconElement(flags);
+            case "gizmo": return Flags.wrap(new DebugGizmoElement(flags), flags);
+            case "record_icon": enabled.music = true; return Flags.wrap(new RecordIconElement(flags), flags);
             case "target_block_icon", "target_icon", "tbicon": enabled.targetBlock = true;
-                return new ItemSupplierIconElement(() -> new ItemStack(ComplexData.targetBlock.getBlock()), flags);
+                return Flags.wrap(new ItemSupplierIconElement(() -> new ItemStack(ComplexData.targetBlock.getBlock()), flags), flags);
             case "target_fluid_icon", "tficon": enabled.targetFluid = true;
-                return new ItemSupplierIconElement(() -> new ItemStack(ComplexData.targetFluid.getBlockState().getBlock()), flags);
+                return Flags.wrap(new ItemSupplierIconElement(() -> new ItemStack(ComplexData.targetFluid.getBlockState().getBlock()), flags), flags);
         }
 
         HudElement element = getSupplierElement(part, enabled, flags);
         if (element != null)
-            return flags.anyTextUsed() ? new FormattedElement(element, flags) : element;
+            return Flags.wrap(element, flags);
 
         Matcher keyMatcher = registryKey.matcher(part);
         if (keyMatcher.matches()) {
@@ -525,7 +524,6 @@ public class VariableParser {
     }
 
 
-    private static final Pattern TIMER_ARG_PATTERN = Pattern.compile("((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
     private static final Pattern registryKey = Pattern.compile("(\\w+).*");
 
     private static HudElement stat(String prefix, StatType<?> type, Registry<?> registry, String stat, Flags flags, ComplexData.Enabled enabled) {
@@ -1094,10 +1092,8 @@ public class VariableParser {
 
         if (element instanceof FunctionalElement.CreateListElement cle)
             return listElement(cle.provider, part, part.indexOf(','), profile, debugLine, enabled, original);
-        if (element instanceof FuncElements<?> && flags.anyTextUsed() )
-            return new FormattedElement(element, flags);
         if (element != null)
-            return element;
+            return Flags.wrap(element, flags);
         Errors.addError(profile, debugLine, original, unknownAttribute, method);
         return null;
     }

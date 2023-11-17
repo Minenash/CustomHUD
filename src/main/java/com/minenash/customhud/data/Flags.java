@@ -1,5 +1,9 @@
 package com.minenash.customhud.data;
 
+import com.minenash.customhud.HudElements.FormattedElement;
+import com.minenash.customhud.HudElements.FrequencyElement;
+import com.minenash.customhud.HudElements.HudElement;
+import com.minenash.customhud.HudElements.icon.IconElement;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 
@@ -18,6 +22,7 @@ public class Flags {
     public int precision = -1;
     public double scale = 1;
     public boolean hex = false;
+    public int frequency = -1;
 
     public boolean formatted = false;
 
@@ -36,6 +41,7 @@ public class Flags {
 
     private static final Pattern PRECISION_PATTERN = Pattern.compile("-(?:p|precision)(\\d+)");
     private static final Pattern SCALE_PATTERN = Pattern.compile("-(?:s|scale)((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
+    private static final Pattern FREQUENCY_PATTERN = Pattern.compile("-(?:v|freq|frequency)((\\d+)/(\\d+)|\\d+(\\.\\d+)?)");
     private static final Pattern WIDTH_PATTERN = Pattern.compile("-(?:w|width)(\\d+)");
     private static final Pattern SHIFT_PATTERN = Pattern.compile("-(?:sh|shift)(-?\\d+)(?:,(-?\\d+))?");
     private static final Pattern ROTATE_PATTERN = Pattern.compile("-(?:r|rotation)(-?\\d+)");
@@ -79,6 +85,15 @@ public class Flags {
                             flags.scale = Integer.parseInt(matcher.group(2)) / (double) Integer.parseInt(matcher.group(3));
                         else
                             flags.scale = Double.parseDouble(matcher.group(1));
+                        continue;
+                    }
+                    //Frequency / Update
+                    matcher = FREQUENCY_PATTERN.matcher(parts[i]);
+                    if (matcher.matches()) {
+                        if (parts[i].contains("/"))
+                            flags.frequency = (int)(1000 * Integer.parseInt(matcher.group(2)) / (double) Integer.parseInt(matcher.group(3)));
+                        else
+                            flags.frequency = (int)(1000 * Double.parseDouble(matcher.group(1)));
                         continue;
                     }
                     //Icons
@@ -177,6 +192,16 @@ public class Flags {
             }
         }
         return new String(chars);
+    }
+
+    public static HudElement wrap(HudElement element, Flags flags) {
+        if (element instanceof IconElement)
+            return element;
+        if (flags.anyTextUsed())
+            element = new FormattedElement(element, flags);
+        if (flags.frequency > 0)
+            element = new FrequencyElement(element, flags.frequency);
+        return element;
     }
 
 }
