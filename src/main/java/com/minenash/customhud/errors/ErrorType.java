@@ -50,9 +50,9 @@ public enum ErrorType {
 
     NOT_A_WHOLE_NUMBER (null, null, "Not a whole number: ");
 
-    final String message;
-    final MutableText linkText;
-    final String link;
+    public final String message;
+    public final MutableText linkText;
+    public final String link;
 
     ErrorType(String linkText, String link, String msg) {
         this.message = msg;

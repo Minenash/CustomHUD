@@ -1,6 +1,8 @@
-package com.minenash.customhud.errors;
+package com.minenash.customhud.gui;
 
 import com.minenash.customhud.CustomHud;
+import com.minenash.customhud.errors.ErrorType;
+import com.minenash.customhud.errors.Errors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -75,6 +77,8 @@ public class ErrorScreen extends Screen {
     }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+
         profiles[0].active = Errors.hasErrors(1);
         profiles[1].active = Errors.hasErrors(2);
         profiles[2].active = Errors.hasErrors(3);
@@ -82,8 +86,6 @@ public class ErrorScreen extends Screen {
         y_offset = 0;
         this.listWidget.render(context, mouseX, mouseY, delta);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
-
-        super.render(context, mouseX, mouseY, delta);
 
         int x = this.width / 2 + (profile == 1 ? -90 : profile == 2 ? 0 : 90);
         context.fill(x - 30, 47, x + 30, 48, 0xFFFFFFFF);

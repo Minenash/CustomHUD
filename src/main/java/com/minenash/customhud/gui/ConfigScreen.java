@@ -1,7 +1,6 @@
 package com.minenash.customhud.gui;
 
 import com.minenash.customhud.CustomHud;
-import com.minenash.customhud.errors.ErrorScreen;
 import com.minenash.customhud.errors.Errors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;

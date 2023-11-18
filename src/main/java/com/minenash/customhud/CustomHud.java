@@ -5,7 +5,7 @@ import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.data.Crosshairs;
 import com.minenash.customhud.data.DisableElement;
 import com.minenash.customhud.data.Profile;
-import com.minenash.customhud.errors.ErrorScreen;
+import com.minenash.customhud.gui.ErrorScreen;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.mod_compat.BuiltInModCompat;
 import com.minenash.customhud.render.CustomHudRenderer;

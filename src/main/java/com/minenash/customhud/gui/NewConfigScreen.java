@@ -1,5 +1,7 @@
 package com.minenash.customhud.gui;
 
+import com.minenash.customhud.gui.profiles_widget.ProfileLineEntry;
+import com.minenash.customhud.gui.profiles_widget.ProfileLinesWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -16,6 +18,7 @@ public class NewConfigScreen extends Screen {
     private ProfileLinesWidget profiles;
     public KeyBinding selectedKeybind;
     public ProfileLineEntry active;
+    public ProfileLineEntry editing;
 
     public NewConfigScreen(Screen parent) {
         super(Text.translatable("sml.config.screen.title"));
@@ -41,9 +44,9 @@ public class NewConfigScreen extends Screen {
         if (selectedKeybind != null) {
             selectedKeybind.setBoundKey(InputUtil.Type.MOUSE.createFromCode(button));
             selectedKeybind = null;
-            profiles.update();
             return true;
         }
+        profiles.update();
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
