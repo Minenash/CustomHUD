@@ -28,6 +28,7 @@ public class Profile {
     private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=");
     private static final Pattern FOR_PATTERN = Pattern.compile("=for ?: ?(.+)=");
 
+    public String name;
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
 
     public List<Section> sections = new ArrayList<>();
@@ -39,13 +40,13 @@ public class Profile {
 
     private MultiLineStacker stacker = new MultiLineStacker();
 
-    public static Profile parseProfile(Path path, int profileID) {
-        Profile profile = parseProfileInner(path, profileID);
+    public static Profile parseProfile(Path path, String profileName) {
+        Profile profile = parseProfileInner(path, profileName);
 
-        if (!Errors.getErrors(profileID).isEmpty()) {
+        if (!Errors.getErrors(profileName).isEmpty()) {
             System.out.println("\n");
-            System.out.println("Errors Found in profile " + profileID);
-            for (var e : Errors.getErrors(profileID))
+            System.out.println("Errors Found in profile '" + profileName + "'");
+            for (var e : Errors.getErrors(profileName))
                 System.out.println(e.line() + " | " + e.type() + " | " + e.source() + " | " + e.context());
             System.out.println();
         }
@@ -53,30 +54,32 @@ public class Profile {
         return profile;
     }
 
-    private static Profile parseProfileInner(Path path, int profileID) {
-        Errors.clearErrors(profileID);
+    private static Profile parseProfileInner(Path path, String profileName) {
+        Errors.clearErrors(profileName);
 
         List<String> lines;
 
         try {
             if(!Files.exists(path.getParent()))
                 Files.createDirectory(path.getParent());
-            if (!Files.exists(path)) {
-                Files.createFile(path);
-                if (profileID == 1) {
-                    try (OutputStream writer = Files.newOutputStream(path); InputStream input = Profile.class.getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
-                        input.transferTo(writer);
-                    }
-                }
-            }
+            //TODO: ReAdd This!
+//            if (!Files.exists(path)) {
+//                Files.createFile(path);
+//                if (profileID == 1) {
+//                    try (OutputStream writer = Files.newOutputStream(path); InputStream input = Profile.class.getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
+//                        input.transferTo(writer);
+//                    }
+//                }
+//            }
             lines = Files.readAllLines(path);
         } catch (IOException e) {
             e.printStackTrace();
-            Errors.addError(profileID, "N/A", path.relativize(FabricLoader.getInstance().getGameDir().getParent()).toString(), ErrorType.IO, e.getMessage());
+            Errors.addError(profileName, "N/A", path.relativize(FabricLoader.getInstance().getGameDir().getParent()).toString(), ErrorType.IO, e.getMessage());
             return null;
         }
 
         Profile profile = new Profile();
+        profile.name = profileName;
 
         Section section = null;
         HudTheme localTheme = profile.baseTheme.copy();
@@ -97,7 +100,7 @@ public class Profile {
                     profile.crosshair = Crosshairs.parse(matcher.group(1));
                     if (profile.crosshair == null) {
                         profile.crosshair = Crosshairs.NORMAL;
-                        Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_CROSSHAIR, matcher.group(1));
+                        Errors.addError(profileName, i+1, line, ErrorType.UNKNOWN_CROSSHAIR, matcher.group(1));
                     }
                     continue;
                 }
@@ -105,12 +108,12 @@ public class Profile {
                 matcher = DISABLE_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
                     if (!DisableElement.add(profile.disabled, matcher.group(1)))
-                        Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_HUD_ELEMENT, matcher.group(1));
+                        Errors.addError(profileName, i+1, line, ErrorType.UNKNOWN_HUD_ELEMENT, matcher.group(1));
                     continue;
                 }
 
                 matcher = GLOBAL_THEME_PATTERN.matcher(lineLC);
-                if (matcher.matches() && profile.baseTheme.parse(true, matcher.group(1), profileID, i+1))
+                if (matcher.matches() && profile.baseTheme.parse(true, matcher.group(1), profileName, i+1))
                     continue;
 
             }
@@ -119,7 +122,7 @@ public class Profile {
                 localTheme = profile.baseTheme.copy();
 
                 if (section != null)
-                    section.elements = profile.stacker.finish(0, profileID, i-1, false);
+                    section.elements = profile.stacker.finish(0, profileName, i-1, false);
                 profile.stacker = new MultiLineStacker();
 
                 section = switch (matcher.group(1)) {
@@ -157,40 +160,40 @@ public class Profile {
                 profile.sections.add(section = new Section.TopLeft());
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
-                profile.stacker.startIf(matcher.group(1), profileID, i, line, profile.enabled);
+                profile.stacker.startIf(matcher.group(1), profileName, i, line, profile.enabled);
 
             else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
-                profile.stacker.elseIf(matcher.group(1), profileID, i, line, profile.enabled);
+                profile.stacker.elseIf(matcher.group(1), profileName, i, line, profile.enabled);
 
             else if (line.equalsIgnoreCase("=else="))
-                profile.stacker.else1(profileID, i, line);
+                profile.stacker.else1(profileName, i, line);
 
             else if (line.equalsIgnoreCase("=endif="))
-                profile.stacker.endIf(profileID, i, line);
+                profile.stacker.endIf(profileName, i, line);
 
             else if (( matcher = FOR_PATTERN.matcher(lineLC) ).matches())
-                profile.stacker.startFor(matcher.group(1), profileID, i, profile.enabled, line);
+                profile.stacker.startFor(matcher.group(1), profileName, i, profile.enabled, line);
 
             else if (line.equalsIgnoreCase("=endfor="))
-                profile.stacker.endFor(profileID, i, line);
+                profile.stacker.endFor(profileName, i, line);
 
             else if (( matcher = LOCAL_THEME_PATTERN.matcher(lineLC) ).matches()) {
-                if (localTheme.parse(false, matcher.group(1), profileID, i+1))
+                if (localTheme.parse(false, matcher.group(1), profileName, i+1))
                     profile.stacker.addElement(new FunctionalElement.ChangeTheme(localTheme.copy()));
                 else
-                    Errors.addError(profileID, i+1, line, ErrorType.UNKNOWN_THEME_FLAG, "");
+                    Errors.addError(profileName, i+1, line, ErrorType.UNKNOWN_THEME_FLAG, "");
             }
 
             else if (GLOBAL_THEME_PATTERN.matcher(lineLC).matches() )
-                Errors.addError(profileID, i+1, line, ErrorType.ILLEGAL_GLOBAL_THEME_FLAG, "");
+                Errors.addError(profileName, i+1, line, ErrorType.ILLEGAL_GLOBAL_THEME_FLAG, "");
 
             else
-                profile.stacker.addElements(line, profileID, i + 1, profile.enabled);
+                profile.stacker.addElements(line, profileName, i + 1, profile.enabled);
 
         }
 
         if (section != null)
-            section.elements = profile.stacker.finish(0, profileID, lines.size(), true);
+            section.elements = profile.stacker.finish(0, profileName, lines.size(), true);
         profile.stacker = null;
 
         profile.sections.removeIf(s -> s.elements.isEmpty());

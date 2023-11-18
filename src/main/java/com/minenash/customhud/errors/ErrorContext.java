@@ -1,3 +1,3 @@
 package com.minenash.customhud.errors;
 
-public record ErrorContext(int profile, int line, String src) {}
+public record ErrorContext(String profileName, int line, String src) {}

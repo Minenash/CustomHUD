@@ -1,4 +1,3 @@
-import com.minenash.customhud.gui.ConfigScreen;
 import com.minenash.customhud.gui.NewConfigScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

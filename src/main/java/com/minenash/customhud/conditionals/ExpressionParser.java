@@ -25,11 +25,11 @@ public class ExpressionParser {
         }
     }
 
-    public static Operation parseExpression(String input, String source, int profileNum, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) {
+    public static Operation parseExpression(String input, String source, String profileName, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) {
         if (input.isBlank() || input.equals(",") || input.equals(", "))
             return new Operation.Literal(1);
         try {
-            List<Token> tokens = getTokens(input, profileNum, debugLine, enabled, listSupplier);
+            List<Token> tokens = getTokens(input, profileName, debugLine, enabled, listSupplier);
             Operation c = getConditional(tokens);
             System.out.println("Tree for Conditional on line " + debugLine + ":");
             c.printTree(0);
@@ -37,7 +37,7 @@ public class ExpressionParser {
             return c;
         }
         catch (ErrorException e) {
-            Errors.addError(profileNum, debugLine, source, e.type, e.context);
+            Errors.addError(profileName, debugLine, source, e.type, e.context);
             System.out.println("[Line: " + debugLine + "] Conditional Couldn't Be Parsed: " + e.getMessage());
             System.out.println("Input: \"" + input + "\"");
             return new Operation.Literal(1);
@@ -46,7 +46,7 @@ public class ExpressionParser {
 
     private static final List<TokenType> SUBTRACTABLE = List.of(TokenType.NUMBER, TokenType.BOOLEAN,
             TokenType.STRING, TokenType.VARIABLE, TokenType.END_PREN);
-    private static List<Token> getTokens(String original, int profileNum, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) throws ErrorException {
+    private static List<Token> getTokens(String original, String profileName, int debugLine, ComplexData.Enabled enabled, ListProvider listSupplier) throws ErrorException {
 
         List<Token> tokens = new ArrayList<>();
         char[] chars = original.toCharArray();
@@ -119,7 +119,7 @@ public class ExpressionParser {
                     i++;
                 }
                 builder.append('}');
-                tokens.add(new Token(TokenType.VARIABLE, VariableParser.parseElement(builder.toString(), profileNum, debugLine, enabled, listSupplier)));
+                tokens.add(new Token(TokenType.VARIABLE, VariableParser.parseElement(builder.toString(), profileName, debugLine, enabled, listSupplier)));
                 continue;
             }
             i++;

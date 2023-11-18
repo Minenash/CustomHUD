@@ -1,37 +1,32 @@
 package com.minenash.customhud.errors;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Errors {
     public record Error(String line, String source, ErrorType type, String context) {}
 
-    private static final List<Error>[] errors = new ArrayList[3];
-    static {
-        for (int i = 0; i < 3; i++)
-            errors[i] = new ArrayList<>();
+    private static final Map<String,List<Error>> errors = new HashMap<>();
+
+    public static List<Error> getErrors(String profileName) {
+        return errors.getOrDefault(profileName, Collections.emptyList());
     }
 
-    public static List<Error> getErrors(int profile) {
-        return errors[profile-1];
+    public static boolean hasErrors(String profileName) {
+        return !getErrors(profileName).isEmpty();
     }
 
-    public static boolean hasErrors(int profile) {
-        return !errors[profile-1].isEmpty();
+    public static void clearErrors(String profileName) {
+        getErrors(profileName).clear();
     }
 
-    public static void clearErrors(int profile) {
-        errors[profile-1].clear();
+    public static void addError(String profileName, int line, String source, ErrorType type, String context) {
+        addError(profileName, Integer.toString(line), source, type, context);
     }
-
-    public static void addError(int profile, int line, String source, ErrorType type, String context) {
-        addError(profile, Integer.toString(line), source, type, context);
-    }
-    public static void addError(int profile, String line, String source, ErrorType type, String context) {
-        errors[profile-1].add(new Error(line, source, type, context));
+    public static void addError(String profileName, String line, String source, ErrorType type, String context) {
+        getErrors(profileName).add(new Error(line, source, type, context));
     }
     public static void addError(ErrorContext context, ErrorType type, String value) {
-        addError(context.profile(), Integer.toString(context.line()), context.src(), type, value);
+        addError(context.profileName(), Integer.toString(context.line()), context.src(), type, value);
     }
 
 

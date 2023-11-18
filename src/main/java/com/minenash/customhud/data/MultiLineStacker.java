@@ -21,36 +21,36 @@ public class MultiLineStacker {
     private final Stack<Object> stack = new Stack<>();
     private final Stack<ListProvider> listProviders = new Stack<>();
 
-    public void startIf(String cond, int profileID, int line, String source, ComplexData.Enabled enabled) {
-        Operation op = ExpressionParser.parseExpression(cond, source, profileID, line+1, enabled, getProvider());
+    public void startIf(String cond, String profileName, int line, String source, ComplexData.Enabled enabled) {
+        Operation op = ExpressionParser.parseExpression(cond, source, profileName, line+1, enabled, getProvider());
         stack.push(new ConditionalElement.MultiLineBuilder(op));
     }
 
-    public void elseIf(String cond, int profileID, int line, String source, ComplexData.Enabled enabled) {
+    public void elseIf(String cond, String profileName, int line, String source, ComplexData.Enabled enabled) {
         if (stack.isEmpty())
-            Errors.addError(profileID, line+1, source, ErrorType.CONDITIONAL_NOT_STARTED, "else if");
+            Errors.addError(profileName, line+1, source, ErrorType.CONDITIONAL_NOT_STARTED, "else if");
         else if (stack.peek() instanceof ConditionalElement.MultiLineBuilder mlb)
-            mlb.setConditional(ExpressionParser.parseExpression(cond, source, profileID, line + 1, enabled, getProvider()));
+            mlb.setConditional(ExpressionParser.parseExpression(cond, source, profileName, line + 1, enabled, getProvider()));
         else {
             for (int i = stack.size()-1; i >= 0; i--) {
                 if (stack.get(i) instanceof ConditionalElement.MultiLineBuilder mlb) {
-                    mlb.addAll( finish(i+1, profileID, line, false) );
+                    mlb.addAll( finish(i+1, profileName, line, false) );
                     break;
                 }
             }
-            ( (ConditionalElement.MultiLineBuilder)stack.peek() ).setConditional(ExpressionParser.parseExpression(cond, source, profileID, line + 1, enabled, getProvider()));
+            ( (ConditionalElement.MultiLineBuilder)stack.peek() ).setConditional(ExpressionParser.parseExpression(cond, source, profileName, line + 1, enabled, getProvider()));
         }
     }
 
-    public void else1(int profileID, int line, String source) {
+    public void else1(String profileName, int line, String source) {
         if (stack.isEmpty())
-            Errors.addError(profileID, line+1, source, ErrorType.CONDITIONAL_NOT_STARTED, "=else=");
+            Errors.addError(profileName, line+1, source, ErrorType.CONDITIONAL_NOT_STARTED, "=else=");
         else if (stack.peek() instanceof ConditionalElement.MultiLineBuilder mlb)
             mlb.setConditional(new Operation.Literal(1));
         else {
             for (int i = stack.size()-1; i >= 0; i--) {
                 if (stack.get(i) instanceof ConditionalElement.MultiLineBuilder mlb) {
-                    mlb.addAll( finish(i+1, profileID, line, false) );
+                    mlb.addAll( finish(i+1, profileName, line, false) );
                     break;
                 }
             }
@@ -59,9 +59,9 @@ public class MultiLineStacker {
 
     }
 
-    public void endIf(int profileID, int line, String source) {
+    public void endIf(String profileName, int line, String source) {
         if (stack.isEmpty())
-            Errors.addError(profileID, line+1, source, ErrorType.CONDITIONAL_NOT_STARTED, "end");
+            Errors.addError(profileName, line+1, source, ErrorType.CONDITIONAL_NOT_STARTED, "end");
         else if (stack.peek() instanceof ConditionalElement.MultiLineBuilder mlb) {
             HudElement element = mlb.build();
             stack.pop();
@@ -70,7 +70,7 @@ public class MultiLineStacker {
         else {
             for (int i = stack.size()-1; i >= 0; i--) {
                 if (stack.get(i) instanceof ConditionalElement.MultiLineBuilder mlb) {
-                    mlb.addAll( finish(i+1, profileID, line, false) );
+                    mlb.addAll( finish(i+1, profileName, line, false) );
                     break;
                 }
             }
@@ -80,15 +80,15 @@ public class MultiLineStacker {
         }
     }
 
-    public void startFor(String list, int profileID, int line, ComplexData.Enabled enabled, String source) {
-        ListProvider provider = VariableParser.getListProvider(list, profileID, line, enabled, source, listProviders.isEmpty() ? null : listProviders.peek());
+    public void startFor(String list, String profileName, int line, ComplexData.Enabled enabled, String source) {
+        ListProvider provider = VariableParser.getListProvider(list, profileName, line, enabled, source, listProviders.isEmpty() ? null : listProviders.peek());
         listProviders.push(provider);
         stack.push( new ListElement.MultiLineBuilder(provider) );
     }
 
-    public void endFor(int profileID, int line, String source) {
+    public void endFor(String profileName, int line, String source) {
         if (stack.isEmpty()) {
-            Errors.addError(profileID, line + 1, source, ErrorType.LIST_NOT_STARTED, "");
+            Errors.addError(profileName, line + 1, source, ErrorType.LIST_NOT_STARTED, "");
             return;
         }
         if (stack.peek() instanceof ListElement.MultiLineBuilder leb) {
@@ -99,7 +99,7 @@ public class MultiLineStacker {
         else {
             for (int i = stack.size()-1; i >= 0; i--) {
                 if (stack.get(i) instanceof ListElement.MultiLineBuilder mlb) {
-                    mlb.addAll( finish(i+1, profileID, line, false) );
+                    mlb.addAll( finish(i+1, profileName, line, false) );
                     break;
                 }
             }
@@ -119,8 +119,8 @@ public class MultiLineStacker {
             leb.add(element);
     }
 
-    public void addElements(String source, int profileID, int line, ComplexData.Enabled enabled) {
-        List<HudElement> elements = VariableParser.addElements(source, profileID, line + 1, enabled, true, getProvider());
+    public void addElements(String source, String profileName, int line, ComplexData.Enabled enabled) {
+        List<HudElement> elements = VariableParser.addElements(source, profileName, line + 1, enabled, true, getProvider());
         if (stack.empty())
             base.addAll(elements);
         else if (stack.peek() instanceof ConditionalElement.MultiLineBuilder mlb)
@@ -129,17 +129,17 @@ public class MultiLineStacker {
             leb.addAll(elements);
     }
 
-    public List<HudElement> finish(int endSize, int profileID, int endLine, boolean endOfFile) {
+    public List<HudElement> finish(int endSize, String profileName, int endLine, boolean endOfFile) {
         while (stack.size() > endSize) {
             if (stack.peek() instanceof ConditionalElement.MultiLineBuilder mlb) {
                 stack.pop();
                 addElement(mlb.build());
-                Errors.addError(profileID, endLine+1, endOfFile ? "end of profile" : "end of section", ErrorType.CONDITIONAL_NOT_ENDED, "");
+                Errors.addError(profileName, endLine+1, endOfFile ? "end of profile" : "end of section", ErrorType.CONDITIONAL_NOT_ENDED, "");
             }
             else if (stack.peek() instanceof ListElement.MultiLineBuilder leb) {
                 stack.pop();
                 addElement(leb.build());
-                Errors.addError(profileID, endLine+1, endOfFile ? "end of profile" : "end of section", ErrorType.LIST_NOT_STARTED, "");
+                Errors.addError(profileName, endLine+1, endOfFile ? "end of profile" : "end of section", ErrorType.LIST_NOT_STARTED, "");
             }
 
         }

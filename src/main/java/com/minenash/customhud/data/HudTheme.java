@@ -46,7 +46,7 @@ public class HudTheme {
     private static final Pattern ROTATION_FLAG_PATTERN = Pattern.compile("rotate: ?(-?\\d+), ?(-?\\d+), ?(-?\\d+)");
     private static final Pattern TRANSLATE_FLAG_PATTERN = Pattern.compile("translate: ?(-?\\d+), ?(-?\\d+), ?(-?\\d+)");
 
-    public boolean parse(boolean global, String line, int profileID, int lineNum) {
+    public boolean parse(boolean global, String line, String profileName, int lineNum) {
         line = line.toLowerCase();
         Matcher matcher = COLOR_FLAG_PATTERN.matcher(line);
         if (matcher.matches() && matcher.group(1).length() <= 8)
@@ -58,7 +58,7 @@ public class HudTheme {
         else if (( matcher = COLOR_FLAG_PATTERN_STR.matcher(line) ).matches()) {
             Integer color = parseColorName(matcher.group(2).trim());
             if (color == null) {
-                Errors.addError(profileID, lineNum, line, ErrorType.UNKNOWN_THEME_FLAG, matcher.group(2));
+                Errors.addError(profileName, lineNum, line, ErrorType.UNKNOWN_THEME_FLAG, matcher.group(2));
                 return true; //Not Really, but I add the error here
             }
             if (matcher.group(1).equals("fore"))

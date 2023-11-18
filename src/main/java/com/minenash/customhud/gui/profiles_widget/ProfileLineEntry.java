@@ -53,8 +53,8 @@ public class ProfileLineEntry extends LineEntry {
             widget.screen.selectedKeybind = binding;
             widget.update();
         });
-        this.error = button("§c!", "§c5 Errors Found", 16, (b) -> CLIENT.setScreen(new ErrorScreen(widget.screen, 2)));
-        this.keys = button("Toggles", "3 Toggles in the profile",48, (b) -> CLIENT.setScreen(new ErrorScreen(widget.screen, 2)));
+        this.error = button("§c!", "§c5 Errors Found", 16, (b) -> CLIENT.setScreen(new ErrorScreen(widget.screen)));
+        this.keys = button("Toggles", "3 Toggles in the profile",48, (b) -> CLIENT.setScreen(new ErrorScreen(widget.screen)));
         this.delete = button("§cDelete", "&cThis Can't Be §nUndone!!!!", 48, (b) -> widget.deleteProfile(this));
 
         this.editName = new TextFieldWidget(CLIENT.textRenderer, 0, 0, 200, 16, Text.literal("Edit Name"));

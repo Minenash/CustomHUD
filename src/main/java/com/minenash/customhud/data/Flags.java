@@ -46,7 +46,7 @@ public class Flags {
     private static final Pattern SHIFT_PATTERN = Pattern.compile("-(?:sh|shift)(-?\\d+)(?:,(-?\\d+))?");
     private static final Pattern ROTATE_PATTERN = Pattern.compile("-(?:r|rotation)(-?\\d+)");
 
-    public static Flags parse(int profile, int line, String[] parts) {
+    public static Flags parse(String profileName, int line, String[] parts) {
         Flags flags = new Flags();
 
         if (parts.length <= 1)
@@ -115,7 +115,7 @@ public class Flags {
                         continue;
                     }
 
-                    Errors.addError(profile, line, parts[i], ErrorType.UNKNOWN_VARIABLE_FLAG, null);
+                    Errors.addError(profileName, line, parts[i], ErrorType.UNKNOWN_VARIABLE_FLAG, null);
                 }
             }
         }
