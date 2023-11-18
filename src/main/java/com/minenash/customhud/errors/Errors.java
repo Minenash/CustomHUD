@@ -8,7 +8,7 @@ public class Errors {
     private static final Map<String,List<Error>> errors = new HashMap<>();
 
     public static List<Error> getErrors(String profileName) {
-        return errors.getOrDefault(profileName, Collections.emptyList());
+        return errors.getOrDefault(profileName, new ArrayList<>());
     }
 
     public static boolean hasErrors(String profileName) {

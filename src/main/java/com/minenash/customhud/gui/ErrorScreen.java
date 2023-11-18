@@ -1,6 +1,7 @@
 package com.minenash.customhud.gui;
 
 import com.minenash.customhud.CustomHud;
+import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.api.EnvType;
@@ -33,7 +34,7 @@ public class ErrorScreen extends Screen {
     public int sourceSectionWidth = 120;
 
     public ErrorScreen(Screen parent) {
-        this(parent, CustomHud.activeProfileName);
+        this(parent, ProfileManager.getActive().name);
     }
 
     public ErrorScreen(Screen parent, String profileName) {
@@ -62,14 +63,14 @@ public class ErrorScreen extends Screen {
 //                .position(this.width / 2 - 40 - 90, 24).size(80, 20).build() );
 
         //TODO: REDO
-        profiles.add(this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 2"), button -> changeProfile(CustomHud.activeProfileName))
+        profiles.add(this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 2"), button -> changeProfile(ProfileManager.getActive().name))
                 .position(this.width / 2 - 40, 24).size(80, 20).build() ));
 
 //        profiles[2] = this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 3"), button -> changeProfile(3))
 //                .position(this.width / 2 - 40 + 90, 24).size(80, 20).build() );
 
         this.addDrawableChild( ButtonWidget.builder(Text.literal("Open Profile"),
-                button -> new Thread(() -> Util.getOperatingSystem().open(CustomHud.getProfilePath(CustomHud.activeProfileName).toFile())).start())
+                button -> new Thread(() -> Util.getOperatingSystem().open(ProfileManager.getPath(ProfileManager.getActive()).toFile())).start())
                 .position(this.width / 2 - 155, this.height - 26).size(150, 20).build() );
 
         this.addDrawableChild( ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(parent))

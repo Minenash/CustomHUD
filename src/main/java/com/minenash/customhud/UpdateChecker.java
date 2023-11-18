@@ -62,7 +62,7 @@ public class UpdateChecker {
                         .withClickEvent( new ClickEvent(ClickEvent.Action.OPEN_URL, info.get("link").getAsString()) )
                         .withHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Download on Modrinth")) )
                 )).append("\nWhat's New:\n §7" + info.get("msg").getAsString());
-        CustomHud.saveConfig();
+        ConfigManager.save();
 
     }
 
@@ -72,8 +72,6 @@ public class UpdateChecker {
                 return true;
         }
         return false;
-
-
     }
 
     public static JsonObject getUpdateData() {

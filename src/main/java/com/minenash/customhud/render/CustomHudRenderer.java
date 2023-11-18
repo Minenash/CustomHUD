@@ -5,6 +5,7 @@ import com.minenash.customhud.HudElements.HudElement;
 import com.minenash.customhud.HudElements.MultiElement;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.icon.IconElement;
+import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.complex.ListManager;
 import com.minenash.customhud.data.CHFormatting;
 import com.minenash.customhud.data.HudTheme;
@@ -30,7 +31,7 @@ public class CustomHudRenderer {
 
     public static void render(DrawContext context, float _tickDelta) {
 
-        Profile profile = CustomHud.getActiveProfile();
+        Profile profile = ProfileManager.getActive();
         if (profile == null || client.getDebugHud().shouldShowDebugHud())
             return;
 

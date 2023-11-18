@@ -1,6 +1,7 @@
 package com.minenash.customhud.HudElements.icon;
 
 import com.minenash.customhud.CustomHud;
+import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.data.Flags;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -28,7 +29,7 @@ public class DebugGizmoElement extends IconElement {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
-        float profileScale = CustomHud.getActiveProfile().baseTheme.scale;
+        float profileScale = ProfileManager.getActive().baseTheme.scale;
         matrixStack.scale(profileScale,profileScale,1);
 
         float yaw = MathHelper.wrapDegrees(camera.getYaw());

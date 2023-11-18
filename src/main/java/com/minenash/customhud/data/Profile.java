@@ -5,6 +5,9 @@ import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +20,9 @@ import java.util.regex.Pattern;
 
 public class Profile {
 
+    public String name;
+    public KeyBinding keyBinding;
+
     public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(-?\\d+|fit|max))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
     private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(.*) ?==");
@@ -28,7 +34,6 @@ public class Profile {
     private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=");
     private static final Pattern FOR_PATTERN = Pattern.compile("=for ?: ?(.+)=");
 
-    public String name;
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
 
     public List<Section> sections = new ArrayList<>();
@@ -51,6 +56,8 @@ public class Profile {
             System.out.println();
         }
 
+        if (profile != null)
+            profile.keyBinding = new KeyBinding("custom_hud." + profileName, GLFW.GLFW_KEY_UNKNOWN, "Toggles");
         return profile;
     }
 

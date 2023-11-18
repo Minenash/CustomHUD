@@ -1,6 +1,7 @@
 package com.minenash.customhud.mixin;
 
 import com.minenash.customhud.CustomHud;
+import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.errors.Errors;
 import net.minecraft.client.gui.screen.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +18,7 @@ public class TitleScreenMixin {
     @Inject(method = "init", at = @At("RETURN"))
     public void showToasts(CallbackInfo ci) {
         if (count == 1)
-            for (String profileName : CustomHud.profiles.keySet())
+            for (String profileName : ProfileManager.getProfileNames())
                 if (Errors.hasErrors(profileName))
                     CustomHud.showToast(profileName, true);
         count++;

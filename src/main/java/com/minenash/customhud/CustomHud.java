@@ -36,29 +36,17 @@ public class CustomHud implements ModInitializer {
 
 	//Debug: LD_PRELOAD=/home/jakob/Programs/renderdoc_1.25/lib/librenderdoc.so
 	public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
-
-	public static Map<String,Profile> profiles = new HashMap<>();
-	public static String activeProfileName = null;
-	public static boolean enabled = true;
+	public static final Logger LOGGER = LogManager.getLogger("CustomHud");
 
 	public static final Path CONFIG_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("custom-hud");
 	public static final Path PROFILE_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("custom-hud/profiles");
 	public static WatchService profileWatcher;
-	public static final Path CONFIG = CONFIG_FOLDER.resolve("config.json");
-	public static final Logger LOGGER = LogManager.getLogger("CustomHud");
-
-	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	private static final KeyBinding kb_enable = registerKeyBinding("enable", GLFW.GLFW_KEY_UNKNOWN);
-	private static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycle_profiles", GLFW.GLFW_KEY_GRAVE_ACCENT);
-	private static final KeyBinding kb_swapToProfile1 = registerKeyBinding("swap_to_profile1", GLFW.GLFW_KEY_UNKNOWN);
-	private static final KeyBinding kb_swapToProfile2 = registerKeyBinding("swap_to_profile2", GLFW.GLFW_KEY_UNKNOWN);
-	private static final KeyBinding kb_swapToProfile3 = registerKeyBinding("swap_to_profile3", GLFW.GLFW_KEY_UNKNOWN);
-
 	private static final KeyBinding kb_showErrors = registerKeyBinding("show_errors", GLFW.GLFW_KEY_B);
 
 	private static KeyBinding registerKeyBinding(String binding, int defaultKey) {
-		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.custom_hud"));
+		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, defaultKey, "category.custom_hud"));
 	}
 
 	@Override
@@ -78,14 +66,7 @@ public class CustomHud implements ModInitializer {
 	}
 
 	public static void delayedInitialize() {
-		try(Stream<Path> pathsStream = Files.list(PROFILE_FOLDER)) {
-			for (Path path : pathsStream.collect(Collectors.toSet()))
-				if (!Files.isDirectory(path))
-					profiles.put( path.getFileName().toString(), Profile.parseProfile(path, path.getFileName().toString()) );
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		readProfiles();
 		onProfileChangeOrUpdate();
 		try {
 			profileWatcher = FileSystems.getDefault().newWatchService();
@@ -93,7 +74,17 @@ public class CustomHud implements ModInitializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		loadConfig();
+		ConfigManager.load();
+	}
+
+	public static void readProfiles() {
+		try(Stream<Path> pathsStream = Files.list(PROFILE_FOLDER)) {
+			for (Path path : pathsStream.collect(Collectors.toSet()))
+				if (!Files.isDirectory(path))
+					ProfileManager.add( Profile.parseProfile(path, path.getFileName().toString()) );
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -104,12 +95,12 @@ public class CustomHud implements ModInitializer {
 		if (saveDelay > 0)
 			saveDelay--;
 		else if (saveDelay == 0) {
-			saveConfig();
+			ConfigManager.save();
 			saveDelay = -1;
 		}
 
 		updateProfiles();
-		Profile profile = CustomHud.getActiveProfile();
+		Profile profile = ProfileManager.getActive();
 		if (profile != null && client.cameraEntity != null) {
 			if (!Objects.equals(previousEnabled,profile.enabled)) {
 				ComplexData.reset();
@@ -123,95 +114,16 @@ public class CustomHud implements ModInitializer {
 //		if (kb_enable.wasPressed()) {
 //			enabled = !enabled;
 //		}
-//		else if (kb_cycleProfiles.wasPressed()) {
-//			activeProfile = activeProfile == 3 ? 1 : activeProfile + 1;
-//			if (!enabled) enabled = true;
-//		}
-//		else if (kb_swapToProfile1.wasPressed()) {
-//			activeProfile = 1;
-//			if (!enabled) enabled = true;
-//		}
-//		else if (kb_swapToProfile2.wasPressed()) {
-//			activeProfile = 2;
-//			if (!enabled) enabled = true;
-//		}
-//		else if (kb_swapToProfile3.wasPressed()) {
-//			activeProfile = 3;
-//			if (!enabled) enabled = true;
-//		}
-//		else if (kb_showErrors.wasPressed()) {
-//			client.setScreen(new ErrorScreen(client.currentScreen));
-//		}
 //		else
-//			return;
+			return;
 
-		onProfileChangeOrUpdate();
-		CustomHud.justSaved = true;
-		saveDelay = 100;
-	}
-
-	public static Profile getActiveProfile() {
-		return enabled ? profiles.get(activeProfileName) : null;
-	}
-
-	public static Crosshairs getCrosshair() {
-		return getActiveProfile() == null ? Crosshairs.NORMAL : getActiveProfile().crosshair;
+//		onProfileChangeOrUpdate();
+//		CustomHud.justSaved = true;
+//		saveDelay = 100;
 	}
 
 	public static boolean isDisabled(DisableElement element) {
-		return getActiveProfile() != null && getActiveProfile().disabled.contains(element);
-	}
-
-	public static Path getProfilePath(String name) {
-		return PROFILE_FOLDER.resolve(name);
-	}
-
-	public static void saveConfig() {
-		if(!Files.exists(CONFIG)) {
-			try {
-				Files.createFile(CONFIG);
-			} catch (IOException e) {
-				LOGGER.error("Couldn't create the config file");
-				return;
-			}
-		}
-		JsonObject config = new JsonObject();
-		config.addProperty("enabled", enabled);
-		config.addProperty("activeProfile", activeProfileName);
-		config.addProperty("latestKnownVersion", UpdateChecker.getLatestKnownVersionAsString());
-		try {
-			Files.write(CONFIG, gson.toJson(config).getBytes());
-		} catch (IOException e) {
-			LOGGER.error("Couldn't save the config file");
-		}
-	}
-	public static void loadConfig() {
-		if(!Files.exists(CONFIG)) {
-			LOGGER.info("Couldn't find the config File, creating one");
-			saveConfig();
-			return;
-		}
-		boolean fix = false;
-		try {
-			JsonObject json = gson.fromJson(Files.newBufferedReader(CONFIG), JsonObject.class);
-			enabled = json.get("enabled").getAsBoolean();
-			activeProfileName = json.get("activeProfile").getAsString();
-			//TODO: Change?
-//			if (activeProfile > 3 || activeProfile < 1) {
-//				activeProfile = 1;
-//				fix = true;
-//			}
-			JsonElement latestKnownVersion = json.get("latestKnownVersion");
-			if (latestKnownVersion != null)
-				UpdateChecker.latestKnownVersion =latestKnownVersion.getAsString().split("\\.");
-		} catch (JsonSyntaxException|NullPointerException e) {
-			LOGGER.warn("Malformed Json, Fixing");
-			fix = true;
-		} catch (IOException e) {
-			LOGGER.error("Couldn't read the config");
-		}
-		if (fix)
-			saveConfig();
+		return ProfileManager.getActive() != null && ProfileManager.getActive().disabled.contains(element);
 	}
 
 	private static void updateProfiles() {
@@ -227,31 +139,24 @@ public class CustomHud implements ModInitializer {
 			Path path = CustomHud.PROFILE_FOLDER.resolve((Path) event.context());
 			String profileName = path.getFileName().toString();
 			if (event.kind().name().equals("ENTRY_DELETE")) {
-				Profile p = profiles.get(profileName);
-				if (p != null) {
-					profiles.remove(profileName);
-					if (p == profiles.get(activeProfileName))
-						activeProfileName = profiles.isEmpty() ? null : profiles.keySet().stream().findFirst().get();
-				}
+				Profile p = ProfileManager.get(profileName);
+				if (p != null)
+					ProfileManager.remove(p);
 				return;
 			}
 			if (event.kind().name().equals("ENTRY_CREATE")) {
-				if (profiles.containsKey(profileName)) {
+				if (ProfileManager.exists(profileName)) {
 					System.out.println("CustomHud ENTRY CREATE: You Exist?");
 					return;
 				}
 			}
 			if (event.kind().name().equals("ENTRY_MODIFY")) {
-				if (!profiles.containsKey(profileName)) {
+				if (!ProfileManager.exists(profileName)) {
 					System.out.println("CustomHud ENTRY MODIFY: You Don't Exist?");
 					return;
 				}
 			}
-
-			Profile p = Profile.parseProfile(path, profileName);
-			profiles.put(profileName, p);
-			if (activeProfileName == null)
-				activeProfileName = p.name;
+			ProfileManager.add( Profile.parseProfile(path, profileName) );
 
 			LOGGER.info("Updated Profile " + profileName);
 			showToast(profileName, false);
@@ -266,7 +171,7 @@ public class CustomHud implements ModInitializer {
 
 	public static void onProfileChangeOrUpdate() {
 		FabricLoader.getInstance().getObjectShare().put("customhud:crosshair",
-				activeProfileName == null ? "normal" : profiles.get(activeProfileName).crosshair.getName());
+				ProfileManager.getActive() == null ? "normal" : ProfileManager.getActive().crosshair.getName());
 	}
 
 	public static void showToast(String profileName, boolean mainMenu) {
