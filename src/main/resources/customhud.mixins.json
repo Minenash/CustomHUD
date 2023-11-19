@@ -6,6 +6,7 @@
   "client": [
     "ClientPlayNetworkHandlerMixin",
     "InGameHudMixin",
+    "KeyBindingMixin",
     "MinecraftClientMixin",
     "PingMeasurerMixin",
     "TitleScreenMixin",

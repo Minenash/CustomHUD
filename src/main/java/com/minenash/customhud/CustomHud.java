@@ -1,8 +1,6 @@
 package com.minenash.customhud;
 
-import com.google.gson.*;
 import com.minenash.customhud.complex.ComplexData;
-import com.minenash.customhud.data.Crosshairs;
 import com.minenash.customhud.data.DisableElement;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.gui.ErrorScreen;
@@ -78,10 +76,13 @@ public class CustomHud implements ModInitializer {
 	}
 
 	public static void readProfiles() {
-		try(Stream<Path> pathsStream = Files.list(PROFILE_FOLDER)) {
-			for (Path path : pathsStream.collect(Collectors.toSet()))
-				if (!Files.isDirectory(path))
-					ProfileManager.add( Profile.parseProfile(path, path.getFileName().toString()) );
+		try(Stream<Path> pathsStream = Files.list(PROFILE_FOLDER).sorted(Comparator.comparing(p -> p.getFileName().toString()))) {
+			for (Path path : pathsStream.toList())
+				if (!Files.isDirectory(path)) {
+					String name = path.getFileName().toString();
+					if (name.endsWith(".txt"))
+						ProfileManager.add(Profile.parseProfile(path, name.substring(0, name.length()-4)));
+				}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -111,19 +112,25 @@ public class CustomHud implements ModInitializer {
 
 
 		//TODO: Redo KeyBinds!
-//		if (kb_enable.wasPressed()) {
-//			enabled = !enabled;
-//		}
-//		else
-			return;
+		if (kb_enable.wasPressed()) {
+			ProfileManager.enabled = !ProfileManager.enabled;
+		}
+		else {
+			for (Profile p : ProfileManager.getProfiles()) {
+				while (p.keyBinding.wasPressed()) {
+					ProfileManager.setActive(p);
+					ProfileManager.enabled = true;
+				}
+			}
+		}
 
-//		onProfileChangeOrUpdate();
-//		CustomHud.justSaved = true;
-//		saveDelay = 100;
+		onProfileChangeOrUpdate();
+		CustomHud.justSaved = true;
+		saveDelay = 100;
 	}
 
-	public static boolean isDisabled(DisableElement element) {
-		return ProfileManager.getActive() != null && ProfileManager.getActive().disabled.contains(element);
+	public static boolean isNotDisabled(DisableElement element) {
+		return ProfileManager.getActive() == null || !ProfileManager.getActive().disabled.contains(element);
 	}
 
 	private static void updateProfiles() {
@@ -133,35 +140,41 @@ public class CustomHud implements ModInitializer {
 		for (WatchEvent<?> event : key.pollEvents()) {
 			if (CustomHud.justSaved) {
 				CustomHud.justSaved = false;
-				break;
+				continue;
 			}
-
 			Path path = CustomHud.PROFILE_FOLDER.resolve((Path) event.context());
-			String profileName = path.getFileName().toString();
+			String fileName = path.getFileName().toString();
+			System.out.println("Filename: `" + fileName + "`");
+			if (!fileName.endsWith(".txt"))
+				continue;
+			fileName = fileName.substring(0, fileName.length()-4);
+			var profiles = ProfileManager.getProfiles().stream().collect(Collectors.toMap(p -> p.name, p -> p));
+			Profile profile = profiles.get(fileName);
+
 			if (event.kind().name().equals("ENTRY_DELETE")) {
-				Profile p = ProfileManager.get(profileName);
-				if (p != null)
-					ProfileManager.remove(p);
-				return;
+				if (profile != null)
+					ProfileManager.remove(profile, false);
+				continue;
 			}
 			if (event.kind().name().equals("ENTRY_CREATE")) {
-				if (ProfileManager.exists(profileName)) {
-					System.out.println("CustomHud ENTRY CREATE: You Exist?");
-					return;
-				}
+				if (profile != null)
+					continue;
+				else
+					ProfileManager.add( Profile.parseProfile(path, fileName) );
 			}
 			if (event.kind().name().equals("ENTRY_MODIFY")) {
-				if (!ProfileManager.exists(profileName)) {
+				if (profile == null) {
 					System.out.println("CustomHud ENTRY MODIFY: You Don't Exist?");
-					return;
+					continue;
 				}
+				else
+					ProfileManager.replace( Profile.parseProfile(path, fileName) );
 			}
-			ProfileManager.add( Profile.parseProfile(path, profileName) );
 
-			LOGGER.info("Updated Profile " + profileName);
-			showToast(profileName, false);
+			LOGGER.info("Updated Profile " + fileName);
+			showToast(fileName);
 			if (CLIENT.currentScreen instanceof ErrorScreen screen)
-				screen.changeProfile(profileName);
+				screen.changeProfile(profile);
 
 		}
 
@@ -174,7 +187,7 @@ public class CustomHud implements ModInitializer {
 				ProfileManager.getActive() == null ? "normal" : ProfileManager.getActive().crosshair.getName());
 	}
 
-	public static void showToast(String profileName, boolean mainMenu) {
+	public static void showToast(String profileName) {
 		CLIENT.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
 				Text.translatable("gui.custom_hud.profile_updated", profileName).formatted(Formatting.WHITE),
 				Errors.hasErrors(profileName) ?

@@ -1,12 +1,11 @@
 package com.minenash.customhud.gui;
 
-import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.ProfileManager;
+import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -20,63 +19,61 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.minenash.customhud.CustomHud.CLIENT;
 
 public class ErrorScreen extends Screen {
 
     private ErrorListWidget listWidget = null;
-    private final List<ButtonWidget> profiles = new ArrayList<>();
+//    private final List<ButtonWidget> profiles = new ArrayList<>();
     private final Screen parent;
-    private String profileName;
+    private Profile profile;
     public int y_offset = 0;
     private static final int lineColumnX = 15;
     public int sourceSectionWidth = 120;
 
     public ErrorScreen(Screen parent) {
-        this(parent, ProfileManager.getActive().name);
+        this(parent, ProfileManager.getActive());
     }
 
-    public ErrorScreen(Screen parent, String profileName) {
+    public ErrorScreen(Screen parent, Profile profile) {
         super(Text.literal("Profile Errors"));
         this.parent = parent;
-        this.profileName = profileName;
+        this.profile = profile;
     }
 
-    public void changeProfile(String profileName) {
-        this.profileName = profileName;
-//        if (listWidget != null)
-//            this.remove(listWidget);
-//        this.listWidget = new ErrorListWidget(this.client, profile);
-//        this.addSelectableChild( listWidget );
+    public void changeProfile(Profile profile) {
+        this.profile = profile;
         init();
     }
 
     protected void init() {
         children().clear();
-        this.listWidget = new ErrorListWidget(this.client, profileName);
+        this.listWidget = new ErrorListWidget(profile);
         this.addSelectableChild(listWidget);
-        profiles.clear();
-
 
 //        profiles[0] = this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 1"), button -> changeProfile(1))
 //                .position(this.width / 2 - 40 - 90, 24).size(80, 20).build() );
 
-        //TODO: REDO
-        profiles.add(this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 2"), button -> changeProfile(ProfileManager.getActive().name))
-                .position(this.width / 2 - 40, 24).size(80, 20).build() ));
+//        profiles.add(this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 2"), button -> changeProfile(ProfileManager.getActive().name))
+//                .position(this.width / 2 - 40, 24).size(80, 20).build() ));
 
 //        profiles[2] = this.addDrawableChild( ButtonWidget.builder(Text.literal("Profile 3"), button -> changeProfile(3))
 //                .position(this.width / 2 - 40 + 90, 24).size(80, 20).build() );
 
-        this.addDrawableChild( ButtonWidget.builder(Text.literal("Open Profile"),
-                button -> new Thread(() -> Util.getOperatingSystem().open(ProfileManager.getPath(ProfileManager.getActive()).toFile())).start())
+        this.addDrawableChild( ButtonWidget.builder(Text.literal("Open Profile"), button -> ProfileManager.open(profile))
                 .position(this.width / 2 - 155, this.height - 26).size(150, 20).build() );
 
-        this.addDrawableChild( ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(parent))
+        this.addDrawableChild( ButtonWidget.builder(ScreenTexts.DONE, button -> CLIENT.setScreen(parent))
                 .position(this.width / 2 - 155 + 160, this.height - 26).size(150, 20).build() );
 
         super.init();
+    }
+
+    @Override
+    public void close() {
+        CLIENT.setScreen(parent);
     }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -86,6 +83,7 @@ public class ErrorScreen extends Screen {
         y_offset = 0;
         this.listWidget.render(context, mouseX, mouseY, delta);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        context.drawCenteredTextWithShadow(this.textRenderer, profile.name, this.width / 2, 24, 16777215);
 
         int x = this.width / 2; // + (profile == 1 ? -90 : profile == 2 ? 0 : 90);
         context.fill(x - 30, 47, x + 30, 48, 0xFFFFFFFF);
@@ -93,14 +91,18 @@ public class ErrorScreen extends Screen {
 
     class ErrorListWidget extends EntryListWidget<ErrorListWidget.ErrorEntry> {
 
-        public ErrorListWidget(MinecraftClient client, String profileName) {
-            super(client, ErrorScreen.this.width, ErrorScreen.this.height, 52, ErrorScreen.this.height - 36 + 4, 18);
-
+        public ErrorListWidget(Profile profile) {
+            super(CLIENT, ErrorScreen.this.width, ErrorScreen.this.height, 52, ErrorScreen.this.height - 36 + 4, 18);
             this.addEntry( new ErrorEntryHeader() );
-            if (!Errors.hasErrors(profileName))
+
+            if (profile == null) {
+                this.addEntry( new ErrorEntry( new Errors.Error("0", "Error: Null Profile", ErrorType.NONE, "") ) );
+                return;
+            }
+            if (!Errors.hasErrors(profile.name))
                 this.addEntry( new ErrorEntry( new Errors.Error("0", "No Errors", ErrorType.NONE, "") ) );
 
-            for (var e : Errors.getErrors(profileName))
+            for (var e : Errors.getErrors(profile.name))
                 this.addEntry(new ErrorEntry(e));
 
             if (this.getSelectedOrNull() != null)

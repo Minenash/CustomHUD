@@ -68,8 +68,15 @@ public class ConfigManager {
             for (Path path : pathsStream.collect(Collectors.toSet()))
                 if (!Files.isDirectory(path)) {
                     String fileName = path.getFileName().toString();
-                    if (!fileName.equals("config.json"))
-                        Files.move(path, CustomHud.PROFILE_FOLDER.resolve(fileName));
+                    if (fileName.endsWith(".txt")) {
+                        String outName = switch (fileName) {
+                            case "profile1.txt" -> "Profile 1.txt";
+                            case "profile2.txt" -> "Profile 2.txt";
+                            case "profile3.txt" -> "Profile 3.txt";
+                            default -> fileName;
+                        };
+                        Files.move(path, CustomHud.PROFILE_FOLDER.resolve(outName));
+                    }
                 }
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,27 +90,32 @@ public class ConfigManager {
         JsonElement lastVersion = json.get("latestKnownVersion");
         if (lastVersion != null)
             UpdateChecker.latestKnownVersion = lastVersion.getAsString().split("\\.");
+
+        var profiles = ProfileManager.getProfiles().stream().collect(Collectors.toMap(p -> p.name, p -> p));
+
         //TODO
         ProfileManager.enabled = json.get("enabled").getAsBoolean();
         String activeProfileName = json.get("activeProfile").getAsString();
         if (activeProfileName == null)
             ProfileManager.setActive(null);
-        else if (ProfileManager.exists(activeProfileName))
-            ProfileManager.setActive(ProfileManager.get(activeProfileName));
-        else
-            ProfileManager.fallback();
+        else {
+            Profile profile = profiles.get(activeProfileName);
+            if (profile != null)
+                ProfileManager.setActive(profile);
+        }
 
         JsonArray array = json.get("profiles").getAsJsonArray();
-        List<String> order = new ArrayList<>();
+        List<Profile> order = new ArrayList<>();
         for (JsonElement element : array) {
             JsonObject obj = element.getAsJsonObject();
             String name = obj.get("name").getAsString();
 
-            Profile p = ProfileManager.get(name);
+            Profile p = profiles.get(name);
             if (p != null) {
                 String keyTranslation = obj.get("key").getAsString();
                 p.keyBinding.setBoundKey(InputUtil.fromTranslationKey(keyTranslation));
-                order.add(name);
+                p.cycle = obj.get("cycle").getAsBoolean();
+                order.add(p);
             }
         }
         ProfileManager.reorder(order);
@@ -130,6 +142,7 @@ public class ConfigManager {
             JsonObject obj = new JsonObject();
             obj.addProperty("name", profile.name);
             obj.addProperty("key", profile.keyBinding.getBoundKeyTranslationKey());
+            obj.addProperty("cycle", profile.cycle);
             profiles.add(obj);
         }
         config.add("profiles", profiles);

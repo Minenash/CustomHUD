@@ -1,20 +1,22 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.data.Profile;
+import net.minecraft.util.Util;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProfileManager {
 
-    private static Map<String, Profile> nameToProfile = new HashMap<>();
-    private static List<String> indexedNames = new ArrayList<>();
+    private static List<Profile> profiles = new ArrayList<>();
+    private static Profile active = null;
     public static boolean enabled = true;
 
-    private static Profile active = null;
 
     public static Profile getActive() {
         return enabled ? active : null;
@@ -24,61 +26,95 @@ public class ProfileManager {
         return ProfileManager.active = active;
     }
 
-    public static Profile get(String name) {
-        return nameToProfile.get(name);
-    }
-
-    public static String getName(int index) {
-        return indexedNames.get(index);
-    }
-
     public static void add(Profile profile) {
-        nameToProfile.put(profile.name, profile);
-        indexedNames.add(profile.name);
+        profiles.add(profile);
     }
 
-    public static void remove(Profile profile) {
+    public static void remove(Profile profile, boolean deleteFile) {
         if (active == profile)
             active = null;
-        nameToProfile.remove(profile.name);
-        indexedNames.remove(profile.name);
+        profiles.remove(profile);
+
+        if (deleteFile) {
+            try {
+                Files.delete(CustomHud.PROFILE_FOLDER.resolve(profile.name + ".txt"));
+            }
+            catch (Exception e) {
+                System.out.println("Couldn't delete profile, IO Error");
+            }
+        }
     }
 
-    public static boolean exists(String profileName) {
-        return nameToProfile.containsKey(profileName);
+    public static void replace(Profile profile) {
+        for (int i = 0; i < profiles.size(); i++) {
+            Profile p = profiles.get(i);
+            if (p.name.equals(profile.name)) {
+                profile.cycle = p.cycle;
+                profile.keyBinding = p.keyBinding;
+                profiles.set(i, profile);
+                ConfigManager.save();
+            }
+            if (p == active)
+                active = profile;
+        }
     }
 
     public static void fallback() {
-        if (active == null)
-            active = nameToProfile.get(indexedNames.get(0));
+        if (active == null && !profiles.isEmpty())
+            active = profiles.get(0);
     }
 
-    public static Path getPath(Profile profile) {
-        return CustomHud.PROFILE_FOLDER.resolve(profile.name);
-    }
-
-    public static Path getPath(String profileName) {
-        return CustomHud.PROFILE_FOLDER.resolve(profileName);
+    public static void open(Profile profile) {
+        if (profile != null)
+            new Thread(() -> Util.getOperatingSystem().open(CustomHud.PROFILE_FOLDER.resolve(profile.name).toFile())).start();
     }
 
     public static List<Profile> getProfiles() {
-        List<Profile> profiles = new ArrayList<>(indexedNames.size());
-        for (String profileName : indexedNames) {
-            profiles.add(nameToProfile.get(profileName));
-        }
         return profiles;
     }
 
-    public static List<String> getProfileNames() {
-        return indexedNames;
+    public static void reorder(List<Profile> order) {
+        for (Profile p : profiles)
+            if (!order.contains(p))
+                order.add(p);
+        profiles = order;
+
     }
 
-    public static void reorder(List<String> order) {
-        for (String name : indexedNames)
-            if (!order.contains(name))
-                order.add(name);
-        indexedNames = order;
+    public static void rename(Profile profile, String name) {
+        Path oldPath = CustomHud.PROFILE_FOLDER.resolve(profile.name + ".txt");
+        profile.name = name;
+        try {
+            Path newPath = CustomHud.PROFILE_FOLDER.resolve(name + ".txt");
+            Files.move(oldPath,newPath);
+            ConfigManager.save();
+        } catch (IOException e) {
+            System.out.println("Can't rename profile, IO Exception");
+            //TODO: GUI Errors
+        }
+    }
 
+    public static Profile createBlank() {
+        var profiles = ProfileManager.getProfiles().stream().map(p -> p.name).toList();
+        String name;
+        int index = 1;
+        while (true) {
+            name = "New Profile " + index;
+            if (!profiles.contains(name))
+                break;
+            index++;
+        }
+        try {
+            Files.createFile(CustomHud.PROFILE_FOLDER.resolve(name + ".txt"));
+        }
+        catch (Exception e) {
+            System.out.println("Can't create profile file, IO Error");
+            return null;
+        }
+
+        Profile p = Profile.create(name);
+        ProfileManager.add(p);
+        return p;
     }
 
 }

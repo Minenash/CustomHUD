@@ -1,25 +1,31 @@
 package com.minenash.customhud.gui.profiles_widget;
 
+import com.minenash.customhud.ProfileManager;
+import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.gui.NewConfigScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.stream.Collectors;
 
 public class ProfileLinesWidget extends ElementListWidget<LineEntry> {
 
+
+
     public final NewConfigScreen screen;
-    public int index = 4;
-    public boolean deleteMode = false;
 
     public ProfileLinesWidget(NewConfigScreen screen, int startY, int endY) {
         super(MinecraftClient.getInstance(), screen.width, endY - startY, startY, endY, 20);
 
         this.screen = screen;
 
-        this.addEntry(new ProfileLineEntry("Profile 1", new KeyBinding("test1", GLFW.GLFW_KEY_UNKNOWN, "Test"), this, true, false));
-        this.addEntry(new ProfileLineEntry("Profile 2", new KeyBinding("test2", GLFW.GLFW_KEY_UNKNOWN, "Test"), this, false, true));
-        this.addEntry(new ProfileLineEntry("Profile 3", new KeyBinding("test3", GLFW.GLFW_KEY_UNKNOWN, "Test"), this, false, false));
+        for (Profile p : ProfileManager.getProfiles()) {
+            this.addEntry(new ProfileLineEntry(p, this));
+        }
         this.addEntry(new LineEntry.NewProfile(this));
     }
 
@@ -29,10 +35,19 @@ public class ProfileLinesWidget extends ElementListWidget<LineEntry> {
     }
 
     public void newProfile() {
-        children().add(children().size()-1, new ProfileLineEntry("Profile " + index, new KeyBinding("test" + index++, GLFW.GLFW_KEY_UNKNOWN, "Test"), this, false, false));
+        Profile p = ProfileManager.createBlank();
+        if (p != null)
+            children().add(children().size()-1, new ProfileLineEntry(p, this));
     }
 
-    public void deleteProfile(LineEntry entry) {
+    public void move(LineEntry entry, int direction) {
+        int index = MathHelper.clamp(children().indexOf(entry) + direction, 0, children().size()-1);
+        children().remove(entry);
+        children().add(index, entry);
+    }
+
+    public void deleteProfile(ProfileLineEntry entry) {
+        ProfileManager.remove(entry.profile, true);
         children().remove(entry);
     }
 

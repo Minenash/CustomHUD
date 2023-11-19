@@ -28,3 +28,4 @@ accessible	field	net/minecraft/server/world/ServerEntityManager	trackingStatuses
 accessible	field	net/minecraft/server/world/ServerEntityManager	managedStatuses	Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;
 accessible	field	net/minecraft/server/world/ServerEntityManager	loadingQueue	Ljava/util/Queue;
 accessible	field	net/minecraft/server/world/ServerEntityManager	pendingUnloads	Lit/unimi/dsi/fastutil/longs/LongSet;
+accessible  field   net/minecraft/client/option/KeyBinding  timesPressed    I

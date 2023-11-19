@@ -1,5 +1,6 @@
 package com.minenash.customhud.gui;
 
+import com.minenash.customhud.ConfigManager;
 import com.minenash.customhud.gui.profiles_widget.ProfileLineEntry;
 import com.minenash.customhud.gui.profiles_widget.ProfileLinesWidget;
 import net.minecraft.client.MinecraftClient;
@@ -10,6 +11,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
+import static com.minenash.customhud.CustomHud.CLIENT;
+
 public class NewConfigScreen extends Screen {
 
     private final Screen parent;
@@ -17,8 +20,10 @@ public class NewConfigScreen extends Screen {
 
     private ProfileLinesWidget profiles;
     public KeyBinding selectedKeybind;
-    public ProfileLineEntry active;
     public ProfileLineEntry editing;
+
+    public enum Mode {NORMAL, REORDER, DELETE}
+    public Mode mode = Mode.NORMAL;
 
     public NewConfigScreen(Screen parent) {
         super(Text.translatable("sml.config.screen.title"));
@@ -63,7 +68,8 @@ public class NewConfigScreen extends Screen {
 
     @Override
     public void close() {
-        client.setScreen(parent);
-        super.close();
+        CLIENT.setScreen(parent);
+        profiles.update();
+        ConfigManager.save();
     }
 }

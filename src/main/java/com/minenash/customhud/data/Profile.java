@@ -22,6 +22,7 @@ public class Profile {
 
     public String name;
     public KeyBinding keyBinding;
+    public boolean cycle = true;
 
     public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([-+]?\\d+))? ?(?:, ?([-+]?\\d+))? ?(?:, ?(true|false))? ?(?:, ?(-?\\d+|fit|max))? ?==");
     private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
@@ -42,8 +43,16 @@ public class Profile {
     public float targetDistance = 20;
     public Crosshairs crosshair = Crosshairs.NORMAL;
     public EnumSet<DisableElement> disabled = EnumSet.noneOf(DisableElement.class);
+    private String displayName = null;
 
     private MultiLineStacker stacker = new MultiLineStacker();
+
+    public static Profile create(String name) {
+        Profile p = new Profile();
+        p.name = name;
+        p.keyBinding = new KeyBinding("custom_hud." + name, GLFW.GLFW_KEY_UNKNOWN, "Toggles");
+        return p;
+    }
 
     public static Profile parseProfile(Path path, String profileName) {
         Profile profile = parseProfileInner(path, profileName);
@@ -70,14 +79,14 @@ public class Profile {
             if(!Files.exists(path.getParent()))
                 Files.createDirectory(path.getParent());
             //TODO: ReAdd This!
-//            if (!Files.exists(path)) {
-//                Files.createFile(path);
+            if (!Files.exists(path)) {
+                Files.createFile(path);
 //                if (profileID == 1) {
 //                    try (OutputStream writer = Files.newOutputStream(path); InputStream input = Profile.class.getClassLoader().getResourceAsStream("assets/custom_hud/example_profile.txt")) {
 //                        input.transferTo(writer);
 //                    }
 //                }
-//            }
+            }
             lines = Files.readAllLines(path);
         } catch (IOException e) {
             e.printStackTrace();
@@ -206,6 +215,10 @@ public class Profile {
         profile.sections.removeIf(s -> s.elements.isEmpty());
 
         return profile;
+    }
+
+    public String getDisplayName() {
+        return displayName != null ? displayName : name;
     }
 
 }

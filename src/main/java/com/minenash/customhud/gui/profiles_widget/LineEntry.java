@@ -1,5 +1,6 @@
 package com.minenash.customhud.gui.profiles_widget;
 
+import com.minenash.customhud.gui.NewConfigScreen.Mode;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -30,38 +31,41 @@ public abstract class LineEntry extends ElementListWidget.Entry<LineEntry> {
     public static class NewProfile extends LineEntry {
 
         private final ProfileLinesWidget parent;
-        private final ButtonWidget newProfileButton;
-        private final ButtonWidget deleteProfileButton;
-        private final ButtonWidget deleteDoneButton;
+        private final ButtonWidget newProfile;
+        private final ButtonWidget reorderProfiles;
+        private final ButtonWidget deleteProfiles;
+        private final ButtonWidget deleteDone;
 
         public NewProfile(ProfileLinesWidget parent) {
             this.parent = parent;
-            this.newProfileButton = button("§a+§f New", 48, b -> parent.newProfile());
-            this.deleteProfileButton = button("§c-§f Delete", 64, b -> parent.deleteMode = true);
-            this.deleteDoneButton = button("§a✔§f Done", 56, b -> parent.deleteMode = false);
+            this.newProfile = button("§a+§f New", 48, b -> parent.newProfile());
+            this.reorderProfiles = button("§6⇵§f Reorder", 72, b -> parent.screen.mode = Mode.REORDER);
+            this.deleteProfiles = button("§c-§f Delete", 64, b -> parent.screen.mode = Mode.DELETE);
+            this.deleteDone = button("§a✔§f Done", 56, b -> parent.screen.mode = Mode.NORMAL);
         }
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
-            if (parent.deleteMode)
-                posAndRender(context, mX, mY, delta, x, y, eWidth, deleteDoneButton, 2);
+            if (parent.screen.mode != Mode.NORMAL)
+                posAndRender(context, mX, mY, delta, x, y, eWidth, deleteDone, 2);
             else {
-                posAndRender(context, mX, mY, delta, x, y, eWidth, newProfileButton, 2);
-                posAndRender(context, mX, mY, delta, x, y, eWidth, deleteProfileButton, 2 + 50);
+                posAndRender(context, mX, mY, delta, x, y, eWidth, newProfile, 2);
+                posAndRender(context, mX, mY, delta, x, y, eWidth, reorderProfiles, 2 + 50);
+                posAndRender(context, mX, mY, delta, x, y, eWidth, deleteProfiles, 2 + 50 + 74);
             }
         }
 
         @Override
         public List<? extends Selectable> selectableChildren() {
-            if (parent.deleteMode)
-                return List.of(deleteDoneButton);
-            return List.of(newProfileButton, deleteProfileButton);
+            if (parent.screen.mode != Mode.NORMAL)
+                return List.of(deleteDone);
+            return List.of(newProfile, reorderProfiles, deleteProfiles);
         }
         @Override
         public List<? extends Element> children() {
-            if (parent.deleteMode)
-                return List.of(deleteDoneButton);
-            return List.of(newProfileButton, deleteProfileButton);
+            if (parent.screen.mode != Mode.NORMAL)
+                return List.of(deleteDone);
+            return List.of(newProfile, reorderProfiles, deleteProfiles);
         }
     }
 
