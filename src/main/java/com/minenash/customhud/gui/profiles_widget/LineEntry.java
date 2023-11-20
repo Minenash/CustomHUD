@@ -41,7 +41,11 @@ public abstract class LineEntry extends ElementListWidget.Entry<LineEntry> {
             this.newProfile = button("§a+§f New", 48, b -> parent.newProfile());
             this.reorderProfiles = button("§6⇵§f Reorder", 72, b -> parent.screen.mode = Mode.REORDER);
             this.deleteProfiles = button("§c-§f Delete", 64, b -> parent.screen.mode = Mode.DELETE);
-            this.deleteDone = button("§a✔§f Done", 56, b -> parent.screen.mode = Mode.NORMAL);
+            this.deleteDone = button("§a✔§f Done", 56, b -> {
+                if (parent.screen.mode == Mode.REORDER)
+                    parent.doneMoving();
+                parent.screen.mode = Mode.NORMAL;
+            });
         }
 
         @Override

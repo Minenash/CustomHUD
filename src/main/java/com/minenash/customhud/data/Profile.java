@@ -6,12 +6,9 @@ import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -43,6 +40,8 @@ public class Profile {
     public float targetDistance = 20;
     public Crosshairs crosshair = Crosshairs.NORMAL;
     public EnumSet<DisableElement> disabled = EnumSet.noneOf(DisableElement.class);
+    public Map<String,Toggle> toggles = new LinkedHashMap<>();
+
     private String displayName = null;
 
     private MultiLineStacker stacker = new MultiLineStacker();
@@ -138,7 +137,7 @@ public class Profile {
                 localTheme = profile.baseTheme.copy();
 
                 if (section != null)
-                    section.elements = profile.stacker.finish(0, profileName, i-1, false);
+                    section.elements = profile.stacker.finish(0, profile, i-1, false);
                 profile.stacker = new MultiLineStacker();
 
                 section = switch (matcher.group(1)) {
@@ -176,22 +175,22 @@ public class Profile {
                 profile.sections.add(section = new Section.TopLeft());
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
-                profile.stacker.startIf(matcher.group(1), profileName, i, line, profile.enabled);
+                profile.stacker.startIf(matcher.group(1), profile, i, line, profile.enabled);
 
             else if (( matcher = ELSEIF_PATTERN.matcher(lineLC) ).matches())
-                profile.stacker.elseIf(matcher.group(1), profileName, i, line, profile.enabled);
+                profile.stacker.elseIf(matcher.group(1), profile, i, line, profile.enabled);
 
             else if (line.equalsIgnoreCase("=else="))
-                profile.stacker.else1(profileName, i, line);
+                profile.stacker.else1(profile, i, line);
 
             else if (line.equalsIgnoreCase("=endif="))
-                profile.stacker.endIf(profileName, i, line);
+                profile.stacker.endIf(profile, i, line);
 
             else if (( matcher = FOR_PATTERN.matcher(lineLC) ).matches())
-                profile.stacker.startFor(matcher.group(1), profileName, i, profile.enabled, line);
+                profile.stacker.startFor(matcher.group(1), profile, i, profile.enabled, line);
 
             else if (line.equalsIgnoreCase("=endfor="))
-                profile.stacker.endFor(profileName, i, line);
+                profile.stacker.endFor(profile, i, line);
 
             else if (( matcher = LOCAL_THEME_PATTERN.matcher(lineLC) ).matches()) {
                 if (localTheme.parse(false, matcher.group(1), profileName, i+1))
@@ -204,12 +203,12 @@ public class Profile {
                 Errors.addError(profileName, i+1, line, ErrorType.ILLEGAL_GLOBAL_THEME_FLAG, "");
 
             else
-                profile.stacker.addElements(line, profileName, i + 1, profile.enabled);
+                profile.stacker.addElements(line, profile, i + 1, profile.enabled);
 
         }
 
         if (section != null)
-            section.elements = profile.stacker.finish(0, profileName, lines.size(), true);
+            section.elements = profile.stacker.finish(0, profile, lines.size(), true);
         profile.stacker = null;
 
         profile.sections.removeIf(s -> s.elements.isEmpty());

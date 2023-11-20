@@ -10,6 +10,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProfileLinesWidget extends ElementListWidget<LineEntry> {
@@ -40,10 +42,19 @@ public class ProfileLinesWidget extends ElementListWidget<LineEntry> {
             children().add(children().size()-1, new ProfileLineEntry(p, this));
     }
 
-    public void move(LineEntry entry, int direction) {
+    public void move(ProfileLineEntry entry, int direction) {
         int index = MathHelper.clamp(children().indexOf(entry) + direction, 0, children().size()-1);
         children().remove(entry);
         children().add(index, entry);
+    }
+
+    public void doneMoving() {
+        List<Profile> profiles = new ArrayList<>(children().size()-1);
+        for (LineEntry e : children()) {
+            if (e instanceof ProfileLineEntry ple)
+                profiles.add(ple.profile);
+        }
+        ProfileManager.reorder(profiles, true);
     }
 
     public void deleteProfile(ProfileLineEntry entry) {

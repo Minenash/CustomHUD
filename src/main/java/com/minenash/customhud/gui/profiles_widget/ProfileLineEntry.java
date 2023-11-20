@@ -3,8 +3,9 @@ package com.minenash.customhud.gui.profiles_widget;
 import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.Errors;
-import com.minenash.customhud.gui.ErrorScreen;
+import com.minenash.customhud.gui.ErrorsScreen;
 import com.minenash.customhud.gui.NewConfigScreen.Mode;
+import com.minenash.customhud.gui.TogglesScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -23,18 +24,16 @@ import static com.minenash.customhud.CustomHud.CLIENT;
 
 public class ProfileLineEntry extends LineEntry {
 
-    private final ButtonWidget selected, cycled, keybind, edit, error, keys;
+    private final ButtonWidget selected, cycled, keybind, edit, error, toggles;
     private final ButtonWidget delete, up, down;
     private final TextFieldWidget editName;
     private final ProfileLinesWidget widget;
 
     public final Profile profile;
-    private final boolean hasToggles;
     private String displayName;
 
     public ProfileLineEntry(Profile profile, ProfileLinesWidget widget) {
         this.profile = profile;
-        this.hasToggles = false;
         this.widget = widget;
         this.displayName = profile.getDisplayName();
 
@@ -47,12 +46,13 @@ public class ProfileLineEntry extends LineEntry {
             profile.cycle = !profile.cycle;
             b.setMessage(Text.literal(profile.cycle ? "☑" : "☐"));
         });
-        this.keybind = button(I18n.translate(profile.keyBinding.getBoundKeyTranslationKey()), "Keybind to switch to this profile", 80, (b) -> {
+
+        this.keybind = button(profile.keyBinding.getBoundKeyLocalizedText().getString(), "Keybind to switch to this profile", 80, (b) -> {
             widget.screen.selectedKeybind = profile.keyBinding;
             widget.update();
         });
-        this.error = button("§c!", "§c5 Errors Found", 16, (b) -> CLIENT.setScreen(new ErrorScreen(widget.screen, profile)));
-        this.keys = button("Toggles", "3 Toggles in the profile",48, (b) -> CLIENT.setScreen(new ErrorScreen(widget.screen)));
+        this.error = button("§c!", "§c5 Errors Found", 16, (b) -> CLIENT.setScreen(new ErrorsScreen(widget.screen, profile)));
+        this.toggles = button("Toggles", "3 Toggles in the profile",48, (b) -> CLIENT.setScreen(new TogglesScreen(widget.screen, profile)));
         this.delete = button("§cDelete", "§cThis Can't Be §nUndone!!!!", 48, (b) -> widget.deleteProfile(this));
         this.up = button("§a↑", 16, b -> widget.move(this, -1));
         this.down = button("§c↓", 16, b -> widget.move(this, 1));
@@ -90,7 +90,7 @@ public class ProfileLineEntry extends LineEntry {
     public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
         editName.setX(x + 16 + 20);
         editName.setY(y);
-        editName.setWidth(eWidth - 16 - 20 - 16 - 42 - 82 - 18 - (hasToggles ? 50 : 0) - 3);
+        editName.setWidth(eWidth - 16 - 20 - 16 - 42 - 82 - 18 - (profile.toggles.isEmpty() ? 0 : 50) - 3);
 
         if (editName.isSelected() || editName.isMouseOver(mX, mY))
             editName.render(context, mX, mY, delta);
@@ -125,8 +125,8 @@ public class ProfileLineEntry extends LineEntry {
         posAndRender(context, mX, mY, delta, x, y, eWidth, edit, -16-42);
         posAndRender(context, mX, mY, delta, x, y, eWidth, keybind, -16-42-82);
         posAndRender(context, mX, mY, delta, x, y, eWidth, cycled, -16-42-82-18);
-        if (hasToggles)
-            posAndRender(context, mX, mY, delta, x, y, eWidth, keys, -16-42-82-18-50);
+        if (!profile.toggles.isEmpty())
+            posAndRender(context, mX, mY, delta, x, y, eWidth, toggles, -16-42-82-18-50);
 
     }
 
@@ -134,7 +134,7 @@ public class ProfileLineEntry extends LineEntry {
         String name = displayName;
         int width = CLIENT.textRenderer.getWidth(name);
         int maxWidth = x + eWidth + switch (widget.screen.mode) {
-            case NORMAL ->  -16-42-82-18-(hasToggles ? 50 : 0);
+            case NORMAL ->  -16-42-82-18-(profile.toggles.isEmpty() ? 0 : 50);
             case REORDER -> -16-18-18;
             case DELETE -> -16-42;
         } - 2 - (x + 16 + 20 + 4);
@@ -163,8 +163,8 @@ public class ProfileLineEntry extends LineEntry {
             widgets.add(down);
         }
         else {
-            if (hasToggles)
-                widgets.add(keys);
+            if (!profile.toggles.isEmpty())
+                widgets.add(toggles);
             widgets.add(cycled);
             widgets.add(keybind);
             widgets.add(edit);

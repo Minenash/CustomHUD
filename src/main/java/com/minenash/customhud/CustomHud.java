@@ -3,8 +3,10 @@ package com.minenash.customhud;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.data.DisableElement;
 import com.minenash.customhud.data.Profile;
-import com.minenash.customhud.gui.ErrorScreen;
+import com.minenash.customhud.data.Toggle;
+import com.minenash.customhud.gui.ErrorsScreen;
 import com.minenash.customhud.errors.Errors;
+import com.minenash.customhud.gui.TogglesScreen;
 import com.minenash.customhud.mod_compat.BuiltInModCompat;
 import com.minenash.customhud.render.CustomHudRenderer;
 import net.fabricmc.api.ModInitializer;
@@ -66,13 +68,16 @@ public class CustomHud implements ModInitializer {
 	public static void delayedInitialize() {
 		readProfiles();
 		onProfileChangeOrUpdate();
+
+		ConfigManager.load();
+		ConfigManager.save();
+
 		try {
 			profileWatcher = FileSystems.getDefault().newWatchService();
 			PROFILE_FOLDER.register(profileWatcher, StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ConfigManager.load();
 	}
 
 	public static void readProfiles() {
@@ -121,6 +126,10 @@ public class CustomHud implements ModInitializer {
 					ProfileManager.setActive(p);
 					ProfileManager.enabled = true;
 				}
+				for (Toggle t : p.toggles.values()) {
+					while (t.keyBinding.wasPressed())
+						t.toggle();
+				}
 			}
 		}
 
@@ -167,15 +176,18 @@ public class CustomHud implements ModInitializer {
 					System.out.println("CustomHud ENTRY MODIFY: You Don't Exist?");
 					continue;
 				}
-				else
-					ProfileManager.replace( Profile.parseProfile(path, fileName) );
+				else {
+					profile = Profile.parseProfile(path, fileName);
+					ProfileManager.replace(profile);
+					if (CLIENT.currentScreen instanceof ErrorsScreen screen)
+						screen.changeProfile(profile);
+					if (CLIENT.currentScreen instanceof TogglesScreen screen)
+						screen.changeProfile(profile);
+				}
 			}
 
 			LOGGER.info("Updated Profile " + fileName);
 			showToast(fileName);
-			if (CLIENT.currentScreen instanceof ErrorScreen screen)
-				screen.changeProfile(profile);
-
 		}
 
 		onProfileChangeOrUpdate();

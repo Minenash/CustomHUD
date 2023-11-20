@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.data.Toggle;
 import net.minecraft.util.Util;
 
 import java.io.IOException;
@@ -8,8 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ProfileManager {
 
@@ -51,6 +50,15 @@ public class ProfileManager {
             if (p.name.equals(profile.name)) {
                 profile.cycle = p.cycle;
                 profile.keyBinding = p.keyBinding;
+
+                for (var entry : p.toggles.entrySet()) {
+                    Toggle t = entry.getValue();
+                    if (!t.direct && !t.keyBinding.isUnbound() && !profile.toggles.containsKey(entry.getKey())) {
+                        entry.getValue().inProfile = false;
+                        profile.toggles.put(entry.getKey(), t);
+                    }
+                }
+
                 profiles.set(i, profile);
                 ConfigManager.save();
             }
@@ -73,12 +81,13 @@ public class ProfileManager {
         return profiles;
     }
 
-    public static void reorder(List<Profile> order) {
+    public static void reorder(List<Profile> order, boolean save) {
         for (Profile p : profiles)
             if (!order.contains(p))
                 order.add(p);
         profiles = order;
-
+        if (save)
+            ConfigManager.save();
     }
 
     public static void rename(Profile profile, String name) {

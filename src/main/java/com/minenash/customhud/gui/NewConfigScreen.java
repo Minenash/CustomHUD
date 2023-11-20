@@ -40,7 +40,7 @@ public class NewConfigScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        context.drawCenteredTextWithShadow(font, Text.translatable("config.custom_hud.title"), this.width / 2, 13, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(font, Text.translatable("config.custom_hud.title"), this.width / 2, 11, 0xFFFFFF);
         profiles.render(context, mouseX, mouseY, delta);
     }
 
@@ -49,9 +49,9 @@ public class NewConfigScreen extends Screen {
         if (selectedKeybind != null) {
             selectedKeybind.setBoundKey(InputUtil.Type.MOUSE.createFromCode(button));
             selectedKeybind = null;
+            profiles.update();
             return true;
         }
-        profiles.update();
         return super.mouseClicked(mouseX, mouseY, button);
     }
 

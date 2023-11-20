@@ -47,6 +47,8 @@ public enum ErrorType {
     MALFORMED_BAR ("CHANGE ME", "CHANGE ME", "Malformed bar variable: "),
     MALFORMED_LOOP ("CHANGE ME", "CHANGE ME", "Malformed loop: "),
     MALFORMED_TIMER ("CHANGE ME", "CHANGE ME", "Malformed timer: "),
+    EMPTY_TOGGLE ("CHANGE ME", "CHANGE ME", "No toggle name"),
+    UNKNOWN_KEY("CHANGE ME", "CHANGE ME", "Invalid key name: "),
 
     NOT_A_WHOLE_NUMBER (null, null, "Not a whole number: ");
 

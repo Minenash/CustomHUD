@@ -23,7 +23,7 @@ import java.util.List;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
 
-public class ErrorScreen extends Screen {
+public class ErrorsScreen extends Screen {
 
     private ErrorListWidget listWidget = null;
 //    private final List<ButtonWidget> profiles = new ArrayList<>();
@@ -33,11 +33,11 @@ public class ErrorScreen extends Screen {
     private static final int lineColumnX = 15;
     public int sourceSectionWidth = 120;
 
-    public ErrorScreen(Screen parent) {
+    public ErrorsScreen(Screen parent) {
         this(parent, ProfileManager.getActive());
     }
 
-    public ErrorScreen(Screen parent, Profile profile) {
+    public ErrorsScreen(Screen parent, Profile profile) {
         super(Text.literal("Profile Errors"));
         this.parent = parent;
         this.profile = profile;
@@ -92,7 +92,7 @@ public class ErrorScreen extends Screen {
     class ErrorListWidget extends EntryListWidget<ErrorListWidget.ErrorEntry> {
 
         public ErrorListWidget(Profile profile) {
-            super(CLIENT, ErrorScreen.this.width, ErrorScreen.this.height, 52, ErrorScreen.this.height - 36 + 4, 18);
+            super(CLIENT, ErrorsScreen.this.width, ErrorsScreen.this.height, 52, ErrorsScreen.this.height - 36 + 4, 18);
             this.addEntry( new ErrorEntryHeader() );
 
             if (profile == null) {
@@ -138,7 +138,7 @@ public class ErrorScreen extends Screen {
 
         @Override
         public boolean isFocused() {
-            return ErrorScreen.this.getFocused() == this;
+            return ErrorsScreen.this.getFocused() == this;
         }
 
         @Override

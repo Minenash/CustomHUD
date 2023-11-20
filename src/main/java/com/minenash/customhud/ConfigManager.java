@@ -2,7 +2,10 @@ package com.minenash.customhud;
 
 import com.google.gson.*;
 import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.data.Toggle;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -93,7 +96,6 @@ public class ConfigManager {
 
         var profiles = ProfileManager.getProfiles().stream().collect(Collectors.toMap(p -> p.name, p -> p));
 
-        //TODO
         ProfileManager.enabled = json.get("enabled").getAsBoolean();
         String activeProfileName = json.get("activeProfile").getAsString();
         if (activeProfileName == null)
@@ -104,9 +106,28 @@ public class ConfigManager {
                 ProfileManager.setActive(profile);
         }
 
-        JsonArray array = json.get("profiles").getAsJsonArray();
+        JsonArray toggleBinds = json.get("toggleBinds").getAsJsonArray();
+        for (JsonElement element : toggleBinds) {
+            JsonObject obj = element.getAsJsonObject();
+            String profileName = obj.get("profile").getAsString();
+            Profile p = profiles.get(profileName);
+            if (p != null) {
+                String name = obj.get("name").getAsString();
+                String keyTranslation = obj.get("key").getAsString();
+
+                if (p.toggles.containsKey(name))
+                    p.toggles.get(name).keyBinding.setBoundKey(InputUtil.fromTranslationKey(keyTranslation));
+                else {
+                    KeyBinding key = new KeyBinding("customhud_toggle_" + name, GLFW.GLFW_KEY_UNKNOWN, "customhud");
+                    key.setBoundKey(InputUtil.fromTranslationKey(keyTranslation));
+                    p.toggles.put(name, new Toggle(name, false, -1, key, false));
+                }
+            }
+        }
+
+        JsonArray jsonProfiles = json.get("profiles").getAsJsonArray();
         List<Profile> order = new ArrayList<>();
-        for (JsonElement element : array) {
+        for (JsonElement element : jsonProfiles) {
             JsonObject obj = element.getAsJsonObject();
             String name = obj.get("name").getAsString();
 
@@ -118,7 +139,7 @@ public class ConfigManager {
                 order.add(p);
             }
         }
-        ProfileManager.reorder(order);
+        ProfileManager.reorder(order, false);
     }
 
     public static void save() {
@@ -133,11 +154,10 @@ public class ConfigManager {
         JsonObject config = new JsonObject();
         config.addProperty("configVersion", 2);
         config.addProperty("enabled", ProfileManager.enabled);
-        config.addProperty("activeProfile", ProfileManager.getActive() == null ? null : ProfileManager.getActive().name);
+        config.addProperty("activeProfile", ProfileManager.getActive() == null ? "" : ProfileManager.getActive().name);
         config.addProperty("latestKnownVersion", UpdateChecker.getLatestKnownVersionAsString());
 
         JsonArray profiles = new JsonArray();
-
         for (Profile profile : ProfileManager.getProfiles()) {
             JsonObject obj = new JsonObject();
             obj.addProperty("name", profile.name);
@@ -146,6 +166,21 @@ public class ConfigManager {
             profiles.add(obj);
         }
         config.add("profiles", profiles);
+
+        JsonArray toggleBinds = new JsonArray();
+        for (Profile profile : ProfileManager.getProfiles()) {
+            for (Toggle toggle : profile.toggles.values()) {
+                if (toggle.direct || toggle.keyBinding.isUnbound())
+                    continue;
+                JsonObject obj = new JsonObject();
+                obj.addProperty("profile", profile.name);
+                obj.addProperty("name", toggle.name);
+                obj.addProperty("key", toggle.keyBinding.getBoundKeyTranslationKey());
+                obj.addProperty("value", toggle.value);
+                toggleBinds.add(obj);
+            }
+        }
+        config.add("toggleBinds", toggleBinds);
 
 
         try {
