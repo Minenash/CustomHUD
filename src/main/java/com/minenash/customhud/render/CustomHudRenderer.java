@@ -35,22 +35,16 @@ public class CustomHudRenderer {
         if (profile == null || client.getDebugHud().shouldShowDebugHud())
             return;
 
+        if (profile.baseTheme.getTargetGuiScale() != client.getWindow().getScaleFactor())
+            client.onResolutionChanged();
+
         boolean isChatOpen = client.currentScreen instanceof ChatScreen;
 
         List<RenderPiece> pieces = new ArrayList<>();
 
         context.getMatrices().push();
 
-        //TODO: remove prob
-        HudTheme themeO = profile.baseTheme;
-        context.getMatrices().translate(themeO.translation.getX(), themeO.translation.getY(), themeO.translation.getZ());
-        context.getMatrices().multiply(new Quaternionf()
-                .rotateX(themeO.rotation.getX() * 0.017453292F)
-                .rotateY(themeO.rotation.getY() * 0.017453292F)
-                .rotateZ(themeO.rotation.getZ() * 0.017453292F)
-        );
-
-        context.getMatrices().scale(profile.baseTheme.scale, profile.baseTheme.scale, 1);
+        context.getMatrices().scale(profile.baseTheme.getScale(), profile.baseTheme.getScale(), 1);
         BufferBuilder bgBuilder = Tessellator.getInstance().getBuffer();
         bgBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
@@ -61,7 +55,7 @@ public class CustomHudRenderer {
                 continue;
 
             CHFormatting formatting = theme.fgColor.copy();
-            int right = (int) (client.getWindow().getScaledWidth() * (1 / theme.scale)) - 3 + section.xOffset;
+            int right = (int) (client.getWindow().getScaledWidth() * (1 / theme.getScale())) - 3 + section.xOffset;
             boolean dynamicWidth = section.width == -1;
             boolean maxWidth = section.width == -2;
             int piecesOffset = pieces.size();

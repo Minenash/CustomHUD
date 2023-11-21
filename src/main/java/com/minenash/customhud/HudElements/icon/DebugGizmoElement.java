@@ -29,7 +29,7 @@ public class DebugGizmoElement extends IconElement {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.multiplyPositionMatrix(context.getMatrices().peek().getPositionMatrix());
-        float profileScale = ProfileManager.getActive().baseTheme.scale;
+        float profileScale = ProfileManager.getActive().baseTheme.getScale();
         matrixStack.scale(profileScale,profileScale,1);
 
         float yaw = MathHelper.wrapDegrees(camera.getYaw());

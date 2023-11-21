@@ -53,7 +53,7 @@ public abstract class Section {
             return 5 + xOffset;
         }
         public int getStartY(HudTheme theme, int lines) {
-            return (int) (client.getWindow().getScaledHeight() * (1 / theme.scale))/2 - (lines * (9 + theme.lineSpacing))/2 + yOffset;
+            return (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale()))/2 - (lines * (9 + theme.lineSpacing))/2 + yOffset;
         }
     }
 
@@ -62,7 +62,7 @@ public abstract class Section {
             return right/2 - lineWidth/2;
         }
         public int getStartY(HudTheme theme, int lines) {
-            return (int) (client.getWindow().getScaledHeight() * (1 / theme.scale))/2 - (lines * (9 + theme.lineSpacing))/2 + yOffset;
+            return (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale()))/2 - (lines * (9 + theme.lineSpacing))/2 + yOffset;
         }
     }
 
@@ -71,7 +71,7 @@ public abstract class Section {
             return right - lineWidth;
         }
         public int getStartY(HudTheme theme, int lines) {
-            return (int) (client.getWindow().getScaledHeight() * (1 / theme.scale))/2 - (lines * (9 + theme.lineSpacing))/2 + yOffset;
+            return (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale()))/2 - (lines * (9 + theme.lineSpacing))/2 + yOffset;
         }
     }
 
@@ -82,7 +82,7 @@ public abstract class Section {
             return 5 + xOffset;
         }
         public int getStartY(HudTheme theme, int lines) {
-            return (int) (client.getWindow().getScaledHeight() * (1 / theme.scale)) - 6 - lines * (9 + theme.lineSpacing) + yOffset;
+            return (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale())) - 6 - lines * (9 + theme.lineSpacing) + yOffset;
         }
     }
 
@@ -91,7 +91,7 @@ public abstract class Section {
             return right/2 - lineWidth/2;
         }
         public int getStartY(HudTheme theme, int lines) {
-            return (int) (client.getWindow().getScaledHeight() * (1 / theme.scale)) - 6 - lines * (9 + theme.lineSpacing) + yOffset;
+            return (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale())) - 6 - lines * (9 + theme.lineSpacing) + yOffset;
         }
     }
 
@@ -100,7 +100,7 @@ public abstract class Section {
             return right - lineWidth;
         }
         public int getStartY(HudTheme theme, int lines) {
-            return (int) (client.getWindow().getScaledHeight() * (1 / theme.scale)) - 6 - lines * (9 + theme.lineSpacing) + yOffset;
+            return (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale())) - 6 - lines * (9 + theme.lineSpacing) + yOffset;
         }
     }
 

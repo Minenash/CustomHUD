@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "client": [
     "ClientPlayNetworkHandlerMixin",
+    "GameRendererMixin",
     "InGameHudMixin",
     "KeyBindingMixin",
     "MinecraftClientMixin",

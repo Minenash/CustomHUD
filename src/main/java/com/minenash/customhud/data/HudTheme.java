@@ -3,21 +3,25 @@ package com.minenash.customhud.data;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3i;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.minenash.customhud.CustomHud.CLIENT;
+
 public class HudTheme {
+    public enum ScaleMethod {DIRECT, GUI, RELATIVE_GUI}
+
     public int bgColor = 0x44000000;
     public CHFormatting fgColor = new CHFormatting().color(0xffffffff,0xffffffff);
     public int lineSpacing = 2;
-    public float scale = 1;
     public Identifier font = null;
     public boolean textShadow = true;
 
-    public Vec3i rotation = new Vec3i(0,0,0);
-    public Vec3i translation = new Vec3i(0,0,0);
+    private float scale = 1;
+    private ScaleMethod scaleMethod = ScaleMethod.DIRECT;
+    public Integer hudScale = null;
+    public boolean hudScaleRelative = false;
 
     private HudTheme(){}
 
@@ -39,6 +43,8 @@ public class HudTheme {
 
     private static final Pattern SPACING_FLAG_PATTERN = Pattern.compile("linespacing: ?([-+]?\\d+)");
     private static final Pattern SCALE_FLAG_PATTERN = Pattern.compile("scale: ?(\\d+.?\\d*|.?\\d+)");
+    private static final Pattern NICESCALE_FLAG_PATTERN = Pattern.compile("nicescale: ?(\\+)? ?(-?\\d+)");
+    private static final Pattern HUDSCALE_FLAG_PATTERN = Pattern.compile("hudscale: ?(\\+)? ?(-?\\d+)");
     private static final Pattern COLOR_FLAG_PATTERN = Pattern.compile("(back|fore)groundcolou?r: ?(0x|#)?([0-9a-fA-F]+|none)");
     private static final Pattern COLOR_FLAG_PATTERN_STR = Pattern.compile("(back|fore)groundcolou?r: ?(.*)");
     private static final Pattern FONT_FLAG_PATTERN = Pattern.compile("font: ?(\\w*:?\\w+)");
@@ -70,19 +76,23 @@ public class HudTheme {
         else if (( matcher = SPACING_FLAG_PATTERN.matcher(line) ).matches())
             lineSpacing = Integer.parseInt(matcher.group(1));
 
-        else if (global && (  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches())
+        else if (global && (  matcher = SCALE_FLAG_PATTERN.matcher(line) ).matches()) {
             scale = Float.parseFloat(matcher.group(1));
+            scaleMethod = ScaleMethod.DIRECT;
+        }
 
-        else if (global && (  matcher = ROTATION_FLAG_PATTERN.matcher(line) ).matches())
-            rotation = new Vec3i(
-                    Integer.parseInt(matcher.group(1)),
-                    Integer.parseInt(matcher.group(2)),
-                    Integer.parseInt(matcher.group(3)));
-        else if (global && (  matcher = TRANSLATE_FLAG_PATTERN.matcher(line) ).matches())
-            translation = new Vec3i(
-                    Integer.parseInt(matcher.group(1)),
-                    Integer.parseInt(matcher.group(2)),
-                    Integer.parseInt(matcher.group(3)));
+        else if (global && (  matcher = NICESCALE_FLAG_PATTERN.matcher(line) ).matches()) {
+            scale = Integer.parseInt(matcher.group(2));
+            if (matcher.group(1) != null || scale < 0)
+                scaleMethod = ScaleMethod.RELATIVE_GUI;
+            else
+                scaleMethod = ScaleMethod.GUI;
+        }
+
+        else if (global && (  matcher = HUDSCALE_FLAG_PATTERN.matcher(line) ).matches()) {
+            hudScale = Integer.parseInt(matcher.group(2));
+            hudScaleRelative = matcher.group(1) != null || scale < 0;
+        }
 
         else if (( matcher = FONT_FLAG_PATTERN.matcher(line) ).matches())
             font = new Identifier(matcher.group(1));
@@ -94,6 +104,20 @@ public class HudTheme {
             return false;
 
         return true;
+    }
+
+    public float getScale() {
+        if (scaleMethod == ScaleMethod.DIRECT)
+            return scale;
+        float gui = (float) CLIENT.getWindow().getScaleFactor();
+        float target = scaleMethod == ScaleMethod.GUI ? scale : gui + scale;
+        return target / gui;
+    }
+    public double getTargetGuiScale() {
+        if (hudScale == null)
+            return CLIENT.getWindow().getScaleFactor();
+        int gS = hudScaleRelative ? CLIENT.options.getGuiScale().getValue() + hudScale : hudScale;
+        return CLIENT.forcesUnicodeFont() && gS % 2 != 0 ? gS+1 : gS;
     }
 
     public static CHFormatting parseHexNumber(String str) {
