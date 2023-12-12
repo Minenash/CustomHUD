@@ -26,7 +26,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -62,7 +61,6 @@ public class ComplexData {
     private static ChunkPos pos = null;
     private static CompletableFuture<WorldChunk> chunkFuture;
     private static int velocityWaitCounter = 0;
-    private static int cpsWaitCounter = 0;
 
     public static final CentralProcessor cpu = new SystemInfo().getHardware().getProcessor();
     private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
@@ -219,7 +217,6 @@ public class ComplexData {
             clicksSoFar[1] = 0;
             clicksPerSeconds[0] = clicks[0].stream().reduce(0, Integer::sum);
             clicksPerSeconds[1] = clicks[1].stream().reduce(0, Integer::sum);
-            cpsWaitCounter++;
         }
 
         if (profile.enabled.frameMetrics) processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240, frameTimeMetrics);

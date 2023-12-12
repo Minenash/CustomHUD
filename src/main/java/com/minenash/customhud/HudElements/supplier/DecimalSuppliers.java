@@ -78,7 +78,7 @@ public class DecimalSuppliers {
     public static final Entry FPS_MAX = of( () -> 1000 / ComplexData.frameTimeMetrics[1], 0);
     public static final Entry FPS_AVG = of( () -> 1000 / ComplexData.frameTimeMetrics[0], 1);
 
-    public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getTickTime(), 0);
+    public static final Entry TICK_MS = of( () -> client.getServer() == null ? null : client.getServer().getAverageTickTime(), 0);
     public static final Entry TICK_MS_MIN = of( () -> ComplexData.tickTimeMetrics[1], 0);
     public static final Entry TICK_MS_MAX = of( () -> ComplexData.tickTimeMetrics[2], 0);
     public static final Entry TICK_MS_AVG = of( () -> ComplexData.tickTimeMetrics[0], 1);
@@ -127,7 +127,7 @@ public class DecimalSuppliers {
     public static final Entry TPS = of( () -> {
         IntegratedServer server = client.getServer();
         if (server == null) return null;
-        float ms_tics = client.getServer().getTickTime();
+        float ms_tics = server.getAverageTickTime();
         return ms_tics < 50 ? 20 : 1000/ms_tics;
     }, 0);
 

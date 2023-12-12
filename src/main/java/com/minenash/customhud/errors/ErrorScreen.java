@@ -92,7 +92,7 @@ public class ErrorScreen extends Screen {
     class ErrorListWidget extends EntryListWidget<ErrorListWidget.ErrorEntry> {
 
         public ErrorListWidget(MinecraftClient client, int profile) {
-            super(client, ErrorScreen.this.width, ErrorScreen.this.height, 52, ErrorScreen.this.height - 36 + 4, 18);
+            super(client, ErrorScreen.this.width, ErrorScreen.this.height, 52, 18);
 
             this.addEntry( new ErrorEntryHeader() );
             if (!Errors.hasErrors(profile))
@@ -114,23 +114,23 @@ public class ErrorScreen extends Screen {
             return width - 8;
         }
 
-        @Override
-        protected ErrorEntry getEntryAtPosition(double x, double y) {
-            int m = MathHelper.floor(y - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
-            int n = m / this.itemHeight;
-
-            ErrorEntry entry = getSelectedOrNull();
-            if (entry != null ) {
-                int index = children().indexOf( entry );
-                if (n >= index && n <= index + entry.expandedMsg.size())
-                    n = index;
-                else if (n == index + entry.expandedMsg.size() + 1)
-                    n = 0;
-                else if (n > index)
-                    n -= entry.expandedMsg.size() + 1;
-            }
-            return x < this.getScrollbarPositionX() && n >= 0 && m >= 0 && n < this.getEntryCount() ? this.children().get(n) : null;
-        }
+//        @Override
+//        protected ErrorEntry getEntryAtPosition(double x, double y) {
+//            int m = MathHelper.floor(y - (double)this.y) - this.headerHeight + (int)this.getScrollAmount() - 4;
+//            int n = m / this.itemHeight;
+//
+//            ErrorEntry entry = getSelectedOrNull();
+//            if (entry != null ) {
+//                int index = children().indexOf( entry );
+//                if (n >= index && n <= index + entry.expandedMsg.size())
+//                    n = index;
+//                else if (n == index + entry.expandedMsg.size() + 1)
+//                    n = 0;
+//                else if (n > index)
+//                    n -= entry.expandedMsg.size() + 1;
+//            }
+//            return x < this.getScrollbarPositionX() && n >= 0 && m >= 0 && n < this.getEntryCount() ? this.children().get(n) : null;
+//        }
 
         @Override
         public boolean isFocused() {
@@ -138,7 +138,7 @@ public class ErrorScreen extends Screen {
         }
 
         @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {}
+        public void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
         public class ErrorEntryHeader extends ErrorEntry {
 

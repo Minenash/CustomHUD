@@ -4,7 +4,6 @@
   "package": "com.minenash.customhud.mixin",
   "compatibilityLevel": "JAVA_16",
   "client": [
-    "ChunkBuilderAccess",
     "ClientPlayNetworkHandlerMixin",
     "DebugHudAccessor",
     "GameOptionsAccessor",

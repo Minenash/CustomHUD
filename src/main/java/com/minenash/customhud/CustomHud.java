@@ -246,7 +246,7 @@ public class CustomHud implements ModInitializer {
 	}
 
 	public static void showToast(int profile, boolean mainMenu) {
-		client.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT,
+		client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION,
 				Text.translatable("gui.custom_hud.profile_updated", profile).formatted(Formatting.WHITE),
 				Errors.hasErrors(profile) ?
 						Text.literal("§cFound " + Errors.getErrors(profile).size() + " errors")
