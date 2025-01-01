@@ -28,9 +28,9 @@ public abstract class InGameHudMixin {
     @Shadow @Final private MinecraftClient client;
     @Unique boolean renderAttackIndicator = false;
 
-    @Inject(method = "renderCrosshair", at = @At(value = "HEAD"))
+    @Inject(method = "renderCrosshair", at = @At(value = "TAIL"))
     private void renderAttackIndicatorForDebugScreen2(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        if (getCrosshair() == Crosshairs.DEBUG && MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
+        if (!renderAttackIndicator && getCrosshair() == Crosshairs.DEBUG && MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
             renderAttackIndicator = true;
             renderCrosshair(context, tickCounter);
             renderAttackIndicator = false;
@@ -42,13 +42,22 @@ public abstract class InGameHudMixin {
         return client.getDebugHud().shouldShowDebugHud() || ( !renderAttackIndicator && getCrosshair() == Crosshairs.DEBUG);
     }
 
-    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"))
-    private boolean skipNormalCrosshairRendering(DrawContext instance, Identifier texture, int x, int y, int width, int height) {
+    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V", ordinal = 0))
+    private boolean skipNormalCrosshairRendering0(DrawContext instance, Identifier texture, int x, int y, int width, int height) {
         return !renderAttackIndicator && getCrosshair() != Crosshairs.NONE;
     }
+    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V", ordinal = 1))
+    private boolean skipNormalCrosshairRendering1(DrawContext instance, Identifier texture, int x, int y, int width, int height) {
+        return renderAttackIndicator || getCrosshair() != Crosshairs.NONE;
+    }
+    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V", ordinal = 2))
+    private boolean skipNormalCrosshairRendering2(DrawContext instance, Identifier texture, int x, int y, int width, int height) {
+        return renderAttackIndicator || getCrosshair() != Crosshairs.NONE;
+    }
+
     @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIIIIIII)V"))
-    private boolean skipNormalCrosshairRendering2(DrawContext instance, Identifier texture, int i, int j, int k, int l, int x, int y, int width, int height) {
-        return !renderAttackIndicator && getCrosshair() != Crosshairs.NONE;
+    private boolean skipNormalCrosshairRendering3(DrawContext instance, Identifier texture, int i, int j, int k, int l, int x, int y, int width, int height) {
+        return renderAttackIndicator || getCrosshair() != Crosshairs.NONE;
     }
 
     @Unique
