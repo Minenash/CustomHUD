@@ -55,7 +55,7 @@ public class StringSupplierElement implements HudElement {
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
-    public static final Supplier<String> CPU_NAME = () -> ComplexData.cpu == null ? null : ((CentralProcessor)ComplexData.cpu).getProcessorIdentifier().getName();
+    public static final Supplier<String> CPU_NAME = () -> ComplexData.cpu == null ? null : ((CentralProcessor)ComplexData.cpu).getProcessorIdentifier().getName().trim();
     public static final Supplier<String> GPU_NAME = GlDebugInfo::getRenderer;
     public static final Supplier<String> GPU_VENDOR = GlDebugInfo::getVendor;
     public static final Supplier<String> GL_VERSION = () -> GlDebugInfo.getVersion().substring(0, GlDebugInfo.getVersion().indexOf(' '));

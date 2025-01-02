@@ -90,15 +90,4 @@ public abstract class MinecraftClientMixin {
                 (!options.hudHidden && !inGameHud.getDebugHud().shouldShowDebugHud() && world != null
                         && p != null && (p.enabled.profilerTimings || p.leftChart == DebugCharts.PROFILER || p.rightChart == DebugCharts.PROFILER) );
     }
-
-    @WrapOperation(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;tickProfilerResult:Lnet/minecraft/util/profiler/ProfileResult;"))
-    private ProfileResult shouldRenderTheActualProfiler(MinecraftClient instance, Operation<ProfileResult> original) {
-        Profile p = ProfileManager.getActive();
-        if (getDebugHud().shouldShowDebugHud() ||
-                (!options.hudHidden && !inGameHud.getDebugHud().shouldShowDebugHud() && world != null
-                && p != null && (p.leftChart == DebugCharts.PROFILER || p.rightChart == DebugCharts.PROFILER)) ) {
-            return original.call(instance);
-        }
-        return null;
-    }
 }

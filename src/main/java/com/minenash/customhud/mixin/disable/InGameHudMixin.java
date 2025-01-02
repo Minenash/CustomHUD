@@ -54,10 +54,10 @@ public abstract class InGameHudMixin {
             original.call(instance, context, player, top, right);
     }
 
-    @WrapOperation(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"))
-    public void customhud$disableAir(DrawContext instance, Identifier texture, int x, int y, int width, int height, Operation<Void> original) {
+    @WrapOperation(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderAirBubbles(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;III)V"))
+    public void customhud$disableAir(InGameHud instance, DrawContext context, PlayerEntity player, int heartCount, int top, int left, Operation<Void> original) {
         if (CustomHud.isNotDisabled(AIR))
-            original.call(instance, texture, x, y, width, height);
+            original.call(instance, context, player, heartCount, top, left);
     }
 
     @Inject(method = "renderMountHealth", at = @At(value = "HEAD"), cancellable = true)

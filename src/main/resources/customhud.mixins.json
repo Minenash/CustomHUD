@@ -25,7 +25,6 @@
     "accessors.GameOptionsAccessor",
     "accessors.KeyBindingAccessor",
     "accessors.PlayerListHudAccess",
-    "accessors.WorldRendererAccess",
     "disable.InGameHudMixin",
     "fonts.TextHandlerMixin",
     "fonts.TextRendererMixin",

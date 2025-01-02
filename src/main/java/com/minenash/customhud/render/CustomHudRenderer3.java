@@ -13,6 +13,7 @@ import com.minenash.customhud.complex.ListManager;
 import com.minenash.customhud.data.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -229,7 +230,7 @@ public class CustomHudRenderer3 {
         Profilers.get().push("rendering");
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-//        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         BuiltBuffer bb = bgBuffer.endNullable();
         if (bb != null)
             BufferRenderer.drawWithGlobalProgram(bb);

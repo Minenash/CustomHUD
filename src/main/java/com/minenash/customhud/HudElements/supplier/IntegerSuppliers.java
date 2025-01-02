@@ -3,7 +3,6 @@ package com.minenash.customhud.HudElements.supplier;
 import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.errors.Errors;
-import com.minenash.customhud.mixin.accessors.WorldRendererAccess;
 import com.mojang.blaze3d.platform.GLX;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
