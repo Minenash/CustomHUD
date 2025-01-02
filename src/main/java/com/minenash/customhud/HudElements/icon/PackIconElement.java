@@ -7,6 +7,7 @@ import com.minenash.customhud.HudElements.list.ListProvider;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -43,7 +44,7 @@ public class PackIconElement extends IconElement {
         int width = (int) (11*scale);
         rotate(matrices, width, width);
 
-        context.drawTexture(getPackIconTexture(pack), 0, 0, 0, 0, width, width, width, width);
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, getPackIconTexture(pack), 0, 0, 0, 0, width, width, width, width);
         matrices.pop();
     }
 

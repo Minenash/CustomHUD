@@ -20,6 +20,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
@@ -209,14 +210,9 @@ public class ListSuppliers {
         if (id == null)
             return null;
         return () -> {
-            var opt = registry.getEntryList( TagKey.of(registry.getKey(), id) );
-            if (opt.isEmpty())
-                return Collections.EMPTY_LIST;
-
-            var entryList = opt.get();
-            List<T> values = new ArrayList<>(entryList.size());
-            for (var e : entryList)
-                values.add( e.value() );
+            List<T> values = new ArrayList<>();
+            for (RegistryEntry<T> entry : registry.iterateEntries(TagKey.of(registry.getKey(), id)))
+                values.add(entry.value());
             return values;
     }; }
 

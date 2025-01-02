@@ -40,7 +40,7 @@ public class SupPlayerHeadIconElement extends IconElement {
         context.getMatrices().translate(piece.x+((int)scale) + shiftX, y + shiftY, 0);
         int size = (int)(8*scale);
         rotate(context.getMatrices(), size, size);
-        PlayerSkinDrawer.draw(context, playerEntry.getSkinTextures().texture(), 0, 0, size, hat, flip);
+        PlayerSkinDrawer.draw(context, playerEntry.getSkinTextures().texture(), 0, 0, size, hat, flip, -1);
         context.getMatrices().pop();
     }
 

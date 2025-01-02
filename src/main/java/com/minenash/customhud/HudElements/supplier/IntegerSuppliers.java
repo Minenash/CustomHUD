@@ -82,7 +82,7 @@ public class IntegerSuppliers {
     public static final Supplier<Number> QUEUED_TASKS = () -> chunkBuilder().getToBatchCount();
     public static final Supplier<Number> UPLOAD_QUEUE = () -> chunkBuilder().getChunksToUpload();
     public static final Supplier<Number> BUFFER_COUNT = () -> chunkBuilder().getFreeBufferCount();
-    public static final Supplier<Number> ENTITIES_RENDERED = () -> ((WorldRendererAccess)worldRender()).getRegularEntityCount();
+    public static final Supplier<Number> ENTITIES_RENDERED = () -> worldRender().renderedEntitiesCount;
     public static final Supplier<Number> ENTITIES_LOADED = () -> client.world.getRegularEntityCount();
 
     public static final Supplier<Number> FORCED_LOADED_CHUNKS = () -> ComplexData.world instanceof ServerWorld ? ((ServerWorld)ComplexData.world).getForcedChunks().size() : null;
@@ -167,7 +167,7 @@ public class IntegerSuppliers {
     public static final Supplier<Number> SERVER_HEIGHT_MAP_MOTION_BLOCKING_NO_LEAVES = () -> chunk(ComplexData.serverChunk, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
 
     public static final Supplier<Number> WORLD_MIN_Y = () -> ComplexData.world.getBottomY();
-    public static final Supplier<Number> WORLD_MAX_Y = () -> ComplexData.world.getTopY();
+    public static final Supplier<Number> WORLD_MAX_Y = () -> ComplexData.world.getTopYInclusive();
     public static final Supplier<Number> WORLD_HEIGHT = () -> ComplexData.world.getHeight();
     public static final Supplier<Number> WORLD_COORD_SCALE = () -> ComplexData.world.getDimension().coordinateScale();;
 

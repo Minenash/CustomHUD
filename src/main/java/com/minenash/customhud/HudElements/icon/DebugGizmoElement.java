@@ -57,10 +57,8 @@ public class DebugGizmoElement extends IconElement {
         matrix4fStack.rotateX(-camera.getPitch() * (float) (Math.PI / 180.0));
         matrix4fStack.rotateY(camera.getYaw() * (float) (Math.PI / 180.0));
         matrix4fStack.scale(scale, scale, scale);
-        RenderSystem.applyModelViewMatrix();
         RenderSystem.renderCrosshair((int) size);
         matrix4fStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
     }
 
 }

@@ -60,9 +60,10 @@ accessible field net/minecraft/client/gui/hud/DebugHud pingChart Lnet/minecraft/
 accessible field net/minecraft/client/gui/hud/DebugHud packetSizeChart Lnet/minecraft/client/gui/hud/debug/PacketSizeChart;
 accessible field net/minecraft/client/render/item/BuiltinModelItemRenderer skullModels Ljava/util/Map;
 accessible field net/minecraft/client/render/item/ItemRenderer builtinModelItemRenderer Lnet/minecraft/client/render/item/BuiltinModelItemRenderer;
-accessible field net/minecraft/client/MinecraftClient tickProfilerResult Lnet/minecraft/util/profiler/ProfileResult;
+accessible field net/minecraft/client/gui/hud/debug/PieChart profileResult Lnet/minecraft/util/profiler/ProfileResult;
 accessible class net/minecraft/client/gui/hud/SubtitlesHud$SubtitleEntry
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SubtitleEntry sounds Ljava/util/List;
 accessible class net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry time J
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry location Lnet/minecraft/util/math/Vec3d;
+accessible field net/minecraft/client/render/WorldRenderer renderedEntitiesCount I

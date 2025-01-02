@@ -4,6 +4,7 @@ import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.BossBar.Color;
@@ -138,9 +139,9 @@ public class ProgressBarIcon extends IconElement {
         public TextureStyle(Identifier fg, Identifier bg) {this.fg = fg; this.bg = bg;}
         public void render(DrawContext context, float progress, boolean background) {
             if (background)
-                context.drawGuiTexture(bg, 0, 0, 182, 5);
+                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, bg, 0, 0, 182, 5);
             if (progress > 0)
-                context.drawGuiTexture(fg, 182, 5, 0, 0, 0, 0, (int)(progress*182), 5);
+                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, fg, 182, 5, 0, 0, 0, 0, (int)(progress*182), 5);
 
         }
     }
@@ -151,9 +152,9 @@ public class ProgressBarIcon extends IconElement {
         public VillagerTextureStyle(Identifier fg) {this.fg = fg;}
         public void render(DrawContext context, float progress, boolean background) {
             if (background)
-                context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, 0, 0, 102, 5);
+                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, EXPERIENCE_BAR_BACKGROUND_TEXTURE, 0, 0, 102, 5);
             if (progress > 0)
-                context.drawGuiTexture(fg, 102, 5, 0, 0, 0, 0, (int)(progress*102), 5);
+                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, fg, 102, 5, 0, 0, 0, 0, (int)(progress*102), 5);
         }
 
     }

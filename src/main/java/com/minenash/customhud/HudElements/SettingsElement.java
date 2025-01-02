@@ -10,6 +10,7 @@ import com.minenash.customhud.mixin.accessors.KeyBindingAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.*;
 import net.minecraft.network.message.ChatVisibility;
+import net.minecraft.particle.ParticlesMode;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Pair;

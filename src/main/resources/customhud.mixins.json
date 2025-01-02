@@ -11,6 +11,7 @@
     "KeyBindingMixin",
     "KeyboardMixin",
     "MinecraftClientMixin",
+    "PieChartMixin",
     "PingMeasurerMixin",
     "PlayerEntityMixin",
     "ResourcePackProfileMetadataMixin",
@@ -30,7 +31,7 @@
     "fonts.TextRendererMixin",
     "music.MinecraftClientAccess",
     "music.MusicTrackerAccess",
-    "music.WorldRendererMixin"
+    "music.WorldEventHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

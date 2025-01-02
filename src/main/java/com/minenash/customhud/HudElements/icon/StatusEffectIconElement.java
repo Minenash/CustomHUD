@@ -6,9 +6,11 @@ import com.minenash.customhud.render.RenderPiece;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.UUID;
@@ -53,10 +55,8 @@ public class StatusEffectIconElement extends IconElement {
 
         RenderSystem.enableBlend();
         if (background)
-            context.drawGuiTexture(effect.isAmbient() ? EFFECT_BACKGROUND_AMBIENT_TEXTURE : EFFECT_BACKGROUND_TEXTURE, 0, 0, renderWidth, renderWidth);
-        context.setShaderColor(1.0f, 1.0f, 1.0f, f);
-        context.drawSprite(effectOffset, effectOffset, 0, (int)(9*scale), (int)(9*scale), sprite);
-        context.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            context.drawGuiTexture(RenderLayer::getGuiTextured, effect.isAmbient() ? EFFECT_BACKGROUND_AMBIENT_TEXTURE : EFFECT_BACKGROUND_TEXTURE, 0, 0, renderWidth, renderWidth);
+        context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, effectOffset, effectOffset, (int)(9*scale), (int)(9*scale), ColorHelper.getWhite(f));
         RenderSystem.disableBlend();
         context.getMatrices().pop();
 

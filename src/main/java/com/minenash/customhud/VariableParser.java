@@ -812,7 +812,7 @@ public class VariableParser {
         if (!stat.startsWith(prefix))
             return null;
 
-        Optional<?> entry = registry.getOrEmpty( Identifier.of(stat.substring(prefix.length())) );
+        Optional<?> entry = registry.getOptionalValue( Identifier.of(stat.substring(prefix.length())) );
         if (entry.isPresent()) {
             enabled.updateStats = true;
             return new TypedStatElement(type, entry.get(), flags);

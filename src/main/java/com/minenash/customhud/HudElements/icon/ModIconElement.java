@@ -6,6 +6,7 @@ import com.minenash.customhud.render.RenderPiece;
 import com.terraformersmc.modmenu.util.mod.Mod;
 import com.terraformersmc.modmenu.util.mod.fabric.FabricIconHandler;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -56,8 +57,7 @@ public class ModIconElement extends IconElement {
         int w = (int) (11 * scale);
         rotate(matrices, w, w);
 
-
-        context.drawTexture(id, 0, 0, 0, 0, w, w, w, w);
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, id, 0, 0, 0, 0, w, w, w, w);
         matrices.pop();
     }
 

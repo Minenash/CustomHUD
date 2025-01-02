@@ -91,12 +91,6 @@ public abstract class MinecraftClientMixin {
                         && p != null && (p.enabled.profilerTimings || p.leftChart == DebugCharts.PROFILER || p.rightChart == DebugCharts.PROFILER) );
     }
 
-    @WrapOperation(method = "drawProfilerResults", at = @At(value = "INVOKE", ordinal = 1, target = "Lnet/minecraft/client/util/Window;getFramebufferWidth()I"))
-    public int moveProfilerToLeft(Window instance, Operation<Integer> original) {
-        Profile p = ProfileManager.getActive();
-        return p != null && p.leftChart == DebugCharts.PROFILER ? 360 : original.call(instance);
-    }
-
     @WrapOperation(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;tickProfilerResult:Lnet/minecraft/util/profiler/ProfileResult;"))
     private ProfileResult shouldRenderTheActualProfiler(MinecraftClient instance, Operation<ProfileResult> original) {
         Profile p = ProfileManager.getActive();

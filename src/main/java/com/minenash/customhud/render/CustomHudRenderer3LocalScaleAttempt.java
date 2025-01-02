@@ -48,8 +48,8 @@
 //        List<RenderPiece> pieces = new ArrayList<>();
 //        List<RenderPiece> wipPieces = new ArrayList<>();
 //
-//        client.getProfiler().push("custom_hud");
-//        client.getProfiler().push("processing");
+//        Profilers.get().push("custom_hud");
+//        Profilers.get().push("processing");
 //
 //        BufferBuilder bgBuffer = Tessellator.getInstance().getBuffer();
 //        bgBuffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -216,8 +216,8 @@
 //
 //        }
 //
-//        client.getProfiler().pop();
-//        client.getProfiler().push("background_rendering");
+//        Profilers.get().pop();
+//        Profilers.get().push("background_rendering");
 //        context.getMatrices().push();
 //        RenderSystem.enableBlend();
 //        RenderSystem.defaultBlendFunc();
@@ -225,8 +225,8 @@
 //        BufferRenderer.drawWithGlobalProgram(bgBuffer.end());
 //        RenderSystem.disableBlend();
 //        context.getMatrices().pop();
-//        client.getProfiler().pop();
-//        client.getProfiler().push("foreground_rendering");
+//        Profilers.get().pop();
+//        Profilers.get().push("foreground_rendering");
 //        context.getMatrices().push();
 //
 //        context.getMatrices().scale(baseScale, baseScale, 1);
@@ -273,9 +273,9 @@
 //        }
 //
 //
-//        client.getProfiler().pop();
+//        Profilers.get().pop();
 //        context.getMatrices().pop();
-//        client.getProfiler().pop();
+//        Profilers.get().pop();
 //
 //    }
 //

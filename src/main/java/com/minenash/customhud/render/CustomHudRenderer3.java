@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profilers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +49,8 @@ public class CustomHudRenderer3 {
         List<RenderPiece> pieces = new ArrayList<>();
         List<RenderPiece> wipPieces = new ArrayList<>();
 
-        client.getProfiler().push("custom_hud");
-        client.getProfiler().push("processing");
+        Profilers.get().push("custom_hud");
+        Profilers.get().push("processing");
         context.getMatrices().push();
 
         context.getMatrices().scale(profile.baseTheme.getScale(), profile.baseTheme.getScale(), 1);
@@ -224,11 +225,11 @@ public class CustomHudRenderer3 {
 
         }
 
-        client.getProfiler().pop();
-        client.getProfiler().push("rendering");
+        Profilers.get().pop();
+        Profilers.get().push("rendering");
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+//        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         BuiltBuffer bb = bgBuffer.endNullable();
         if (bb != null)
             BufferRenderer.drawWithGlobalProgram(bb);
@@ -270,10 +271,10 @@ public class CustomHudRenderer3 {
         }
 
 
-        client.getProfiler().pop();
+        Profilers.get().pop();
         context.getMatrices().pop();
         font = null;
-        client.getProfiler().pop();
+        Profilers.get().pop();
 
     }
 

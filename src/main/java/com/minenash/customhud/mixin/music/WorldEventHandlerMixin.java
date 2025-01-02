@@ -2,10 +2,9 @@ package com.minenash.customhud.mixin.music;
 
 import com.minenash.customhud.complex.MusicAndRecordTracker;
 import net.minecraft.block.jukebox.JukeboxSong;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.world.WorldEventHandler;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
 
-@Mixin(WorldRenderer.class)
-public class WorldRendererMixin {
+@Mixin(WorldEventHandler.class)
+public class WorldEventHandlerMixin {
 
     @Shadow @Final private Map<BlockPos, SoundInstance> playingSongs;
 

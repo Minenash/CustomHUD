@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(WorldRenderer.class)
 public interface WorldRendererAccess {
 
-    @Accessor int getRegularEntityCount();
+//    @Accessor int getRegularEntityCount();
 
 }

@@ -49,11 +49,11 @@ public class EntryNumberSuppliers {
     public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
 
     public static final Entry ENTITY_REACH_DISTANCE = of ( () -> {
-        EntityAttributeInstance instance = client.player.getAttributeInstance(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE);
+        EntityAttributeInstance instance = client.player.getAttributeInstance(EntityAttributes.ENTITY_INTERACTION_RANGE);
         return instance == null ? 0 : instance.getValue();
     }, 1);
     public static final Entry BLOCK_REACH_DISTANCE = of ( () -> {
-        EntityAttributeInstance instance = client.player.getAttributeInstance(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
+        EntityAttributeInstance instance = client.player.getAttributeInstance(EntityAttributes.BLOCK_INTERACTION_RANGE);
         return instance == null ? 0 : instance.getValue();
     }, 1);
     public static final Entry FISHING_HOOK_DISTANCE = of ( () -> client.player.fishHook.distanceTo(client.player), 1);

@@ -104,7 +104,7 @@ public class RichItemSupplierIconElement extends IconElement {
         }
 
         if (showCooldown) {
-            float f = client.player.getItemCooldownManager().getCooldownProgress(stack.getItem(), client.getRenderTickCounter().getTickDelta(true));
+            float f = client.player.getItemCooldownManager().getCooldownProgress(stack, client.getRenderTickCounter().getTickDelta(true));
             if (f > 0.0F) {
                 int k = MathHelper.floor(16.0F * (1.0F - f));
                 int l = k + MathHelper.ceil(16.0F * f);
