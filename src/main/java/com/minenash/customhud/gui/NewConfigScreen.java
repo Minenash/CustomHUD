@@ -193,7 +193,7 @@ public class NewConfigScreen extends Screen {
     }
 
     @Override
-    public void filesDragged(List<Path> paths) {
+    public void onFilesDropped(List<Path> paths) {
         CustomHud.logInDebugMode("Path's: " + paths);
 
         for (Path path : paths) {

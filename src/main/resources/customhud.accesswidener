@@ -58,8 +58,8 @@ accessible field net/minecraft/client/gui/hud/DebugHud renderingChart Lnet/minec
 accessible field net/minecraft/client/gui/hud/DebugHud tickChart Lnet/minecraft/client/gui/hud/debug/TickChart;
 accessible field net/minecraft/client/gui/hud/DebugHud pingChart Lnet/minecraft/client/gui/hud/debug/PingChart;
 accessible field net/minecraft/client/gui/hud/DebugHud packetSizeChart Lnet/minecraft/client/gui/hud/debug/PacketSizeChart;
-accessible field net/minecraft/client/render/item/BuiltinModelItemRenderer skullModels Ljava/util/Map;
-accessible field net/minecraft/client/render/item/ItemRenderer builtinModelItemRenderer Lnet/minecraft/client/render/item/BuiltinModelItemRenderer;
+#accessible field net/minecraft/client/render/item/BuiltinModelItemRenderer skullModels Ljava/util/Map;
+#accessible field net/minecraft/client/render/item/ItemRenderer builtinModelItemRenderer Lnet/minecraft/client/render/item/BuiltinModelItemRenderer;
 accessible field net/minecraft/client/gui/hud/debug/PieChart profileResult Lnet/minecraft/util/profiler/ProfileResult;
 accessible class net/minecraft/client/gui/hud/SubtitlesHud$SubtitleEntry
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SubtitleEntry sounds Ljava/util/List;

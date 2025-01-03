@@ -138,7 +138,7 @@ public class ErrorsScreen extends Screen {
 
         @Override
         protected ErrorEntry getEntryAtPosition(double x, double y) {
-            int m = MathHelper.floor(y - (double)this.getY()) - this.headerHeight + (int)this.getScrollAmount() - 4;
+            int m = MathHelper.floor(y - (double)this.getY()) - this.headerHeight + (int)this.getScrollY() - 4;
             int n = m / this.itemHeight;
 
             ErrorEntry entry = getSelectedOrNull();
@@ -225,7 +225,7 @@ public class ErrorsScreen extends Screen {
                 }
 
                 y += 6;
-                int ceX = getMaxScroll() > 0 ? width-16 : width-12;
+                int ceX = getMaxScrollY()  > 0 ? width-16 : width-12;
 
                 context.drawCenteredTextWithShadow(textRenderer, error.line(), lineColumnX, y + y_offset, 0xFFFFFFFF);
                 if (refX > 0)

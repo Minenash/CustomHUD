@@ -2,6 +2,7 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.interfaces.HudElement;
+import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.CloudRenderMode;
@@ -17,7 +18,6 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.util.function.Supplier;
 
 import static com.minenash.customhud.ProfileManager.getActive;
-import static net.fabricmc.fabric.api.renderer.v1.RendererAccess.INSTANCE;
 
 public class SpecialSupplierElement implements HudElement {
 
@@ -31,9 +31,9 @@ public class SpecialSupplierElement implements HudElement {
                                                () -> client.world.getDifficulty().getId(),
                                                () -> client.world.getDifficulty().getId() != 0);
 
-    public static final Entry MAX_FPS = of( () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FRAMERATE ? null : client.options.getMaxFps().getValue().toString(),
+    public static final Entry MAX_FPS = of( () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FPS_LIMIT ? null : client.options.getMaxFps().getValue().toString(),
                                             () ->  client.options.getMaxFps().getValue(),
-                                            () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FRAMERATE);
+                                            () -> client.options.getMaxFps().getValue() == GameOptions.MAX_FPS_LIMIT);
 
     public static final Entry PROFILE_KEYBIND = of( () -> getActive() == null ? "" : getActive().keyBinding.getBoundKeyLocalizedText().getString(),
                                                     () -> getActive() == null ? 0 : getActive().keyBinding.boundKey.getCode(),
@@ -96,9 +96,11 @@ public class SpecialSupplierElement implements HudElement {
             () -> isFacingEastOrSouth() ? 1 : 0,
             SpecialSupplierElement::isFacingEastOrSouth);
 
-    public static final Entry ACTIVE_RENDERER = of( () -> INSTANCE.hasRenderer() ? INSTANCE.getRenderer().getClass().getSimpleName() : "none (vanilla)",
-                                                    () -> INSTANCE.hasRenderer() ? INSTANCE.getRenderer().getClass().getSimpleName().length() : 7,
-                                                    () -> INSTANCE.hasRenderer());
+    public static final Entry ACTIVE_RENDERER = of( () -> {var r = renderer(); return r != null ? r.getClass().getSimpleName() : "none (vanilla)";},
+                                                    () -> {var r = renderer(); return r != null ? r.getClass().getSimpleName().length() : 7;},
+                                                    () -> renderer() != null);
+
+    public static Renderer renderer() { try {return Renderer.get();} catch (Exception e) { return null;}}
 
     public static final Entry CAMERA_PERSPECTIVE = of (
             () -> switch (client.options.getPerspective()) {
