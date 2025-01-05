@@ -196,6 +196,19 @@ public class AttributeFunctions {
     public static final Function<ItemStack, Number> ITEM_INV_COUNT = (stack) -> CLIENT.player.getInventory().count(stack.getItem());
     public static final Function<ItemStack, Boolean> ITEM_IS_STACKABLE = (stack) -> stack.getMaxCount() > 1;
     public static final Function<ItemStack, Boolean> ITEM_HAS_MORE_OUT_OF_STACK = (stack) -> CLIENT.player.getInventory().count(stack.getItem()) > stack.getCount();
+
+    public static final Function<ItemStack, Number> ITEM_COOLDOWN_PER = (stack) -> 100 * CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickDelta(true));
+    public static final Function<ItemStack, Number> ITEM_COOLDOWN_DUR = (stack) -> {
+        var c = stack.get(DataComponentTypes.USE_COOLDOWN);
+        return c == null ? 0 : c.seconds();
+    };
+    public static final Function<ItemStack, Boolean> ITEM_HAS_COOLDOWN = (stack) -> stack.get(DataComponentTypes.USE_COOLDOWN) != null;
+    public static final Function<ItemStack, Boolean> ITEM_IN_COOLDOWN = (stack) -> CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickDelta(true)) > 0;
+//    public static final Function<ItemStack, Number> ITEM_COOLDOWN_PASSED = (stack) -> {
+//        var c = stack.get(DataComponentTypes.USE_COOLDOWN);
+//        return c == null ? 0 : c.seconds();
+//    };
+
     public static final Function<ItemStack, Boolean> ITEM_HAS_DURABILITY = (stack) -> stack.getMaxDamage() - CLIENT.player.getMainHandStack().getDamage() > 0;
     public static final Function<ItemStack, Boolean> ITEM_HAS_MAX_DURABILITY = (stack) -> stack.getMaxDamage() > 0;
     public static final Function<ItemStack, Number> ITEM_DURABILITY = (stack) -> stack.getMaxDamage() - stack.getDamage();

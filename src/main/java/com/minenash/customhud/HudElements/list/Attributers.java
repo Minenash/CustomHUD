@@ -208,6 +208,12 @@ public class Attributers {
             case "count" -> new NumBool(sup, ITEM_COUNT, ITEM_IS_NOT_EMPTY, flags);
             case "max_count" -> new NumBool(sup, ITEM_MAX_COUNT, ITEM_IS_STACKABLE, flags);
             case "inv_count" -> new NumBool(sup, ITEM_INV_COUNT, ITEM_HAS_MORE_OUT_OF_STACK, flags);
+
+
+
+            case "cooldown_per", "cooldown_percentage" -> new Num(sup, ITEM_COOLDOWN_PER, flags);
+            case "cooldown_dur", "cooldown_duration" -> new Num(sup, ITEM_COOLDOWN_DUR, flags);
+
             case "dur","durability" -> new NumBool(sup, ITEM_DURABILITY, ITEM_HAS_DURABILITY, flags);
             case "max_dur","max_durability" -> new NumBool(sup, ITEM_MAX_DURABILITY, ITEM_HAS_MAX_DURABILITY, flags);
             case "dur_per","durability_percentage" -> new NumBool(sup, ITEM_DURABILITY_PERCENT, ITEM_HAS_MAX_DURABILITY, flags);
