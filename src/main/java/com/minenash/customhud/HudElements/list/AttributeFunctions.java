@@ -24,6 +24,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -196,6 +197,21 @@ public class AttributeFunctions {
     public static final Function<ItemStack, Number> ITEM_INV_COUNT = (stack) -> CLIENT.player.getInventory().count(stack.getItem());
     public static final Function<ItemStack, Boolean> ITEM_IS_STACKABLE = (stack) -> stack.getMaxCount() > 1;
     public static final Function<ItemStack, Boolean> ITEM_HAS_MORE_OUT_OF_STACK = (stack) -> CLIENT.player.getInventory().count(stack.getItem()) > stack.getCount();
+
+    public static final Function<ItemStack, Number> ITEM_COOLDOWN = (stack) -> {
+        ItemCooldownManager.Entry entry = CLIENT.player.getItemCooldownManager().entries.get(stack.getItem());
+        return entry == null ? Double.NaN : entry.endTick - CLIENT.player.getItemCooldownManager().tick;
+    };
+    public static final Function<ItemStack, Number> ITEM_MAX_COOLDOWN = (stack) -> {
+        ItemCooldownManager.Entry entry = CLIENT.player.getItemCooldownManager().entries.get(stack.getItem());
+        return entry == null ? Double.NaN : entry.endTick - entry.startTick;
+    };
+    public static final Function<ItemStack, Number> ITEM_COOLDOWN_PER = (stack) -> {
+        float cd = 100 * CLIENT.player.getItemCooldownManager().getCooldownProgress(stack.getItem(), CLIENT.getRenderTickCounter().getTickDelta(true));
+        return cd == 0 ? Float.NaN : cd;
+    };
+    public static final Function<ItemStack, Boolean> ITEM_COOLING_DOWN = (stack) -> CLIENT.player.getItemCooldownManager().isCoolingDown(stack.getItem());
+
     public static final Function<ItemStack, Boolean> ITEM_HAS_DURABILITY = (stack) -> stack.getMaxDamage() - CLIENT.player.getMainHandStack().getDamage() > 0;
     public static final Function<ItemStack, Boolean> ITEM_HAS_MAX_DURABILITY = (stack) -> stack.getMaxDamage() > 0;
     public static final Function<ItemStack, Number> ITEM_DURABILITY = (stack) -> stack.getMaxDamage() - stack.getDamage();
