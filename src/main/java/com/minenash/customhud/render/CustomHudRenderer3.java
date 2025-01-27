@@ -191,16 +191,16 @@ public class CustomHudRenderer3 {
 
             int width = section.width > 0 ? section.width : bgBuilder.maxWidth;
 
-            int sectionXOffset = section.xOffset + switch (section.sAlign) {
+            int sectionXOffset = (int) (section.xOffset.getValue() + switch (section.sAlign) {
                 case LEFT -> 3;
                 case RIGHT ->  (int) (client.getWindow().getScaledWidth() * (1 / theme.getScale()))   - width - 1;
                 case CENTER -> (int) (client.getWindow().getScaledWidth() * (1 / theme.getScale()))/2 - width/2;
-            };
-            int sectionYOffset = section.yOffset + (
+            });
+            int sectionYOffset = (int) (section.yOffset.getValue() + (
                 section instanceof Section.Top ? 1 :
                 section instanceof Section.Bottom ? (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale())) - totalHeight - 8:
                                                     (int) (client.getWindow().getScaledHeight() * (1 / theme.getScale()))/2 - totalHeight/2 - 1
-            );
+            ));
 
             if (section.textAlign == Section.Align.RIGHT) {
                 if (section.width < 0)
@@ -237,7 +237,7 @@ public class CustomHudRenderer3 {
         for (RenderPiece piece : pieces) {
             font = piece.font;
             if (piece.element instanceof IconElement ie )
-                try { ie.render(context, piece); }
+                try { RenderSystem.enableBlend(); ie.render(context, piece); }
                 catch (Exception e){
                     CustomHud.LOGGER.catching(e);
                 }
