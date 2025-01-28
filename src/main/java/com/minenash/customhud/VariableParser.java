@@ -968,6 +968,10 @@ public class VariableParser {
             case "gliding", "flying_with_style" -> FALLING_WITH_STYLE;
             case "on_ground" -> ON_GROUND;
             case "sprint_held" -> SPRINT_HELD;
+
+            case "is_frozen" -> IS_FROZEN;
+            case "is_freezing" -> IS_FREEZING;
+
             case "hud_hidden" -> HUD_HIDDEN;
             case "screen_open" -> SCREEN_OPEN;
             case "chat_open" -> CHAT_OPEN;
@@ -1253,6 +1257,8 @@ public class VariableParser {
             case "xp_per", "xp_percentage" -> XP_POINTS_PER;
             case "air_per", "air_percentage" -> AIR_LEVEL_PERCENTAGE;
             case "health_per", "health_percentage", "hp_per" -> HEALTH_PERCENTAGE;
+            case "frozen_per", "frozen_percentage" -> FROZEN_PERCENTAGE;
+            case "frozen_ticks" -> FROZEN_TICKS;
 
             case "nr_temp","noise_temperature" -> {enabled.serverWorld = true; yield NOISE_ROUTER_TEMPERATURE;}
             case "nr_veg","noise_vegetation" -> {enabled.serverWorld = true; yield NOISE_ROUTER_VEGETATION;}
