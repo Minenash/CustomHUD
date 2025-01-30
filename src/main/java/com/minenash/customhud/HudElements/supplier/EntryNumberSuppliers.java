@@ -117,6 +117,7 @@ public class EntryNumberSuppliers {
 
     public static final Entry FROZEN_PERCENTAGE = of( () -> 100F * client.player.getFreezingScale(), 0);
     public static final Entry FROZEN_TICKS = of( () -> 100F * client.player.getFrozenTicks(), 0, StatFormatters.TICKS_HMS);
+    public static final Entry ATTACK_COOLDOWN = of( () -> 100F * client.player.getAttackCooldownProgress(0), 0);
 
 
     public static final Entry NOISE_ROUTER_TEMPERATURE = of( () -> isNoise() ? sample(sampler().temperature()) : Double.NaN, 3);
