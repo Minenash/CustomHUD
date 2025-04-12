@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.9-SNAPSHOT'
+	id 'fabric-loom' version '1.10-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -12,9 +12,9 @@ group = project.maven_group
 
 repositories {
 	maven {
-		url "https://maven.terraformersmc.com/releases/"
+		url = "https://maven.terraformersmc.com/releases/"
 	}
-	maven { url 'https://jitpack.io' }
+	maven { url = 'https://jitpack.io' }
 	maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
