@@ -84,8 +84,8 @@ public class SpecialSupplierElement implements HudElement {
                                            () -> client.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? 0 : (client.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? 1 : 2),
                                            () -> client.options.getCloudRenderMode().getValue() != CloudRenderMode.OFF);
 
-    public static final Entry GAMEMODE = of ( () -> client.interactionManager.getCurrentGameMode().getName(),
-                                              () -> client.interactionManager.getCurrentGameMode().getId(),
+    public static final Entry GAMEMODE = of ( () -> client.interactionManager.getCurrentGameMode().getId(),
+                                              () -> client.interactionManager.getCurrentGameMode().getIndex(),
                                               () -> true);
 
     public static final Entry FACING_TOWARDS_PN_WORD = of( () -> isFacingEastOrSouth() ? "positive" : "negative",

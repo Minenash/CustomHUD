@@ -316,7 +316,7 @@ public class ComplexData {
         if (profile.enabled.slots) {
             Profilers.get().push("slots");
             slots_used = slots_empty = 0;
-            DefaultedList<ItemStack> inv = client.player.getInventory().main;
+            DefaultedList<ItemStack> inv = client.player.getInventory().getMainStacks();
             for (ItemStack itemStack : inv) {
                 if (itemStack == ItemStack.EMPTY)
                     slots_empty++;

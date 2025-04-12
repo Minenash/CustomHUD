@@ -4,7 +4,7 @@ import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.interfaces.HudElement;
 import com.minenash.customhud.complex.MusicAndRecordTracker;
-import com.mojang.blaze3d.platform.GlDebugInfo;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -49,25 +49,25 @@ public class StringSupplierElement implements HudElement {
 
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
-    public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getName();
-    public static final Supplier<String> FACING_SHORT = () -> cameraEntity().getHorizontalFacing().getName().substring(0, 1).toUpperCase();
+    public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getId();
+    public static final Supplier<String> FACING_SHORT = () -> cameraEntity().getHorizontalFacing().getId().substring(0, 1).toUpperCase();
     public static final Supplier<String> FACING_TOWARDS_XZ = () ->
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
     public static final Supplier<String> CPU_NAME = () -> ComplexData.cpu == null ? null : ((CentralProcessor)ComplexData.cpu).getProcessorIdentifier().getName().trim();
-    public static final Supplier<String> GPU_NAME = GlDebugInfo::getRenderer;
-    public static final Supplier<String> GPU_VENDOR = GlDebugInfo::getVendor;
-    public static final Supplier<String> GL_VERSION = () -> GlDebugInfo.getVersion().substring(0, GlDebugInfo.getVersion().indexOf(' '));
-    public static final Supplier<String> GPU_DRIVER = () -> GlDebugInfo.getVersion().substring(GlDebugInfo.getVersion().indexOf(' ') + 1);
+    public static final Supplier<String> GPU_NAME = () -> RenderSystem.getDevice().getRenderer();
+    public static final Supplier<String> GPU_VENDOR = () -> RenderSystem.getDevice().getVendor();
+    public static final Supplier<String> GL_VERSION = () -> RenderSystem.getDevice().getVersion().substring(0, RenderSystem.getDevice().getVersion().indexOf(' '));
+    public static final Supplier<String> GPU_DRIVER = () -> RenderSystem.getDevice().getVersion().substring(RenderSystem.getDevice().getVersion().indexOf(' ') + 1);
 
     public static final Supplier<String> MUSIC_NAME = () -> MusicAndRecordTracker.isMusicPlaying ? MusicAndRecordTracker.musicName : null;
 
     public static final Supplier<String> BIOME_BUILDER_PEAKS = () -> isNoise() ? VanillaBiomeParameters.getPeaksValleysDescription(DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges()))) : null;
     public static final Supplier<String> BIOME_BUILDER_CONTINENTS = () -> isNoise() ? par.getContinentalnessDescription(sample(sampler().continents())) : null;
 
-    public static final Supplier<String> VILLAGER_BIOME = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? WordUtils.capitalize(ve.getVillagerData().getType().toString()) : null;
-    public static final Supplier<String> VILLAGER_LEVEL_WORD = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? I18n.translate("merchant.level." + ve.getVillagerData().getLevel()) : null;
+    public static final Supplier<String> VILLAGER_BIOME = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? WordUtils.capitalize(ve.getVillagerData().type().toString()) : null;
+    public static final Supplier<String> VILLAGER_LEVEL_WORD = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? I18n.translate("merchant.level." + ve.getVillagerData().level()) : null;
 
 
     private final Supplier<String> supplier;

@@ -1,21 +1,17 @@
 package com.minenash.customhud.HudElements;
 
-import com.google.common.collect.ImmutableList;
 import com.minenash.customhud.HudElements.interfaces.HudElement;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.data.NumberFlags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-
-import java.util.List;
 
 public class ItemTagCountElement implements HudElement {
 
@@ -42,15 +38,35 @@ public class ItemTagCountElement implements HudElement {
 
         int count = 0;
         PlayerInventory inv = player.getInventory();
-        for (var item : inv.main)
+        for (var item : inv.getMainStacks())
             if (item.isIn(tagKey))
                 count += item.getCount();
-        for (var item : inv.armor)
-            if (item.isIn(tagKey))
-                count += item.getCount();
-        for (var item : inv.offHand)
-            if (item.isIn(tagKey))
-                count += item.getCount();
+
+        ItemStack headStack = inv.getStack(EquipmentSlot.HEAD.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
+        if (headStack.isIn(tagKey)) {
+            count += headStack.getCount();
+        }
+
+        ItemStack chestStack = inv.getStack(EquipmentSlot.CHEST.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
+        if (chestStack.isIn(tagKey)) {
+            count += chestStack.getCount();
+        }
+
+        ItemStack legsStack = inv.getStack(EquipmentSlot.LEGS.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
+        if (legsStack.isIn(tagKey)) {
+            count += legsStack.getCount();
+        }
+
+        ItemStack feetStack = inv.getStack(EquipmentSlot.FEET.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
+        if (feetStack.isIn(tagKey)) {
+            count += feetStack.getCount();
+        }
+
+        ItemStack offhandStack = inv.getStack(PlayerInventory.OFF_HAND_SLOT);
+        if (offhandStack.isIn(tagKey)) {
+            count += offhandStack.getCount();
+        }
+
         return count;
     }
 

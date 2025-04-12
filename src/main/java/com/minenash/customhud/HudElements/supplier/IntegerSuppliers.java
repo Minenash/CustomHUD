@@ -225,8 +225,8 @@ public class IntegerSuppliers {
     public static final Supplier<Number> BIOME_BUILDER_TEMPERATURE = () -> isNoise() ? biome(sampler().temperature(), par.getTemperatureParameters()) : Double.NaN;
     public static final Supplier<Number> BIOME_BUILDER_VEGETATION = () -> isNoise() ? biome(sampler().vegetation(), par.getHumidityParameters()) : Double.NaN;
 
-    public static final Supplier<Number> HOTBAR_SLOT = () -> client.player.getInventory().selectedSlot + 1;
-    public static final Supplier<Number> HOTBAR_INDEX = () -> client.player.getInventory().selectedSlot;
+    public static final Supplier<Number> HOTBAR_SLOT = () -> client.player.getInventory().getSelectedSlot() + 1;
+    public static final Supplier<Number> HOTBAR_INDEX = () -> client.player.getInventory().getSelectedSlot();
     @Deprecated public static final Supplier<Number> ITEM_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage() - client.player.getMainHandStack().getDamage();
     @Deprecated public static final Supplier<Number> ITEM_MAX_DURABILITY = () -> client.player.getMainHandStack().getMaxDamage();
     @Deprecated public static final Supplier<Number> OFFHAND_ITEM_DURABILITY = () -> client.player.getOffHandStack().getMaxDamage() - client.player.getOffHandStack().getDamage();
@@ -260,11 +260,11 @@ public class IntegerSuppliers {
     public static final Supplier<Number> RESOURCE_PACK_VERSION = () -> SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES);
     public static final Supplier<Number> DATA_PACK_VERSION = () -> SharedConstants.getGameVersion().getResourceVersion(ResourceType.SERVER_DATA);
 
-    public static final Supplier<Number> MAINHAND_SLOT = () -> CLIENT.player.getInventory().selectedSlot;
+    public static final Supplier<Number> MAINHAND_SLOT = () -> CLIENT.player.getInventory().getSelectedSlot();
 
-    public static final Supplier<Number> VILLAGER_LEVEL = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? ve.getVillagerData().getLevel() : null;
-    public static final Supplier<Number> VILLAGER_XP = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? ComplexData.villagerXP - VillagerData.getLowerLevelExperience(ve.getVillagerData().getLevel()) : null;
-    public static final Supplier<Number> VILLAGER_XP_NEEDED = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? VillagerData.getUpperLevelExperience(ve.getVillagerData().getLevel()) : null;
+    public static final Supplier<Number> VILLAGER_LEVEL = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? ve.getVillagerData().level() : null;
+    public static final Supplier<Number> VILLAGER_XP = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? ComplexData.villagerXP - VillagerData.getLowerLevelExperience(ve.getVillagerData().level()) : null;
+    public static final Supplier<Number> VILLAGER_XP_NEEDED = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? VillagerData.getUpperLevelExperience(ve.getVillagerData().level()) : null;
 
 
 }

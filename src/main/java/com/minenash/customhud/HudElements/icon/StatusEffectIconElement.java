@@ -53,11 +53,9 @@ public class StatusEffectIconElement extends IconElement {
         context.getMatrices().translate(piece.x + shiftX, y + shiftY, 0);
         rotate(context.getMatrices(), renderWidth, renderWidth);
 
-        RenderSystem.enableBlend();
         if (background)
             context.drawGuiTexture(RenderLayer::getGuiTextured, effect.isAmbient() ? EFFECT_BACKGROUND_AMBIENT_TEXTURE : EFFECT_BACKGROUND_TEXTURE, 0, 0, renderWidth, renderWidth);
         context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, effectOffset, effectOffset, (int)(9*scale), (int)(9*scale), ColorHelper.getWhite(f));
-        RenderSystem.disableBlend();
         context.getMatrices().pop();
 
     }

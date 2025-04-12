@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -59,8 +60,8 @@ public class UpdateChecker {
         updateMessage = Text.literal("§eCustomHUD v" + versionRaw + " is available! ")
                 .append(Text.literal("[Modrinth]").setStyle(Style.EMPTY
                         .withFormatting(Formatting.GREEN, Formatting.UNDERLINE)
-                        .withClickEvent( new ClickEvent(ClickEvent.Action.OPEN_URL, info.get("link").getAsString()) )
-                        .withHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Download on Modrinth")) )
+                        .withClickEvent(new ClickEvent.OpenUrl(URI.create(info.get("link").getAsString())))
+                        .withHoverEvent(new HoverEvent.ShowText(Text.literal("Download on Modrinth")))
                 )).append("\nWhat's New:\n §7" + info.get("msg").getAsString());
         ConfigManager.save();
 
