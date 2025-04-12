@@ -11,9 +11,7 @@ import com.minenash.customhud.HudElements.text.TextElement;
 import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.complex.ListManager;
 import com.minenash.customhud.data.*;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -56,7 +54,6 @@ public class CustomHudRenderer3 {
 
         context.getMatrices().scale(profile.baseTheme.getScale(), profile.baseTheme.getScale(), 1);
         context.getMatrices().translate(0,0,560);
-        BufferBuilder bgBuffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         for (Section section : profile.sections) {
             if (section == null || isChatOpen && section.hideOnChat)
@@ -221,20 +218,13 @@ public class CustomHudRenderer3 {
                     pieces.add( piece.adjust(sectionXOffset, sectionYOffset) );
             }
 
-            bgBuilder.finalizeBg(context, bgBuffer, sectionXOffset, sectionYOffset);
+            bgBuilder.finalizeBg(context, sectionXOffset, sectionYOffset);
             wipPieces.clear();
 
         }
 
         Profilers.get().pop();
         Profilers.get().push("rendering");
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        BuiltBuffer bb = bgBuffer.endNullable();
-        if (bb != null)
-            BufferRenderer.drawWithGlobalProgram(bb);
-//        RenderSystem.disableBlend();
 
         for (RenderPiece piece : pieces) {
             font = piece.font;
