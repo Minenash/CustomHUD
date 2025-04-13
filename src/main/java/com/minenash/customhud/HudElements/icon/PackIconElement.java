@@ -65,7 +65,7 @@ public class PackIconElement extends IconElement {
 
             try (InputStream inputStream = inputSupplier.get()) {
                 NativeImage nativeImage = NativeImage.read(inputStream);
-                textureManager.registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
+                textureManager.registerTexture(identifier, new NativeImageBackedTexture(identifier::toString, nativeImage));
                 return identifier;
             }
         } catch (Exception var14) {

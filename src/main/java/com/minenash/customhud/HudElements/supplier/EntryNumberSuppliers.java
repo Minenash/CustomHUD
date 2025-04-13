@@ -104,7 +104,7 @@ public class EntryNumberSuppliers {
     public static final Entry PACKET_SIZE_AVG = of( () -> ComplexData.packetSizeMetrics[0], 1);
     public static final Entry PACKET_SIZE_SAMPLES = of( () -> ComplexData.packetSizeMetrics[3], 0);
 
-    public static final Entry SLOTS_PERCENTAGE = of( () -> 100F * ComplexData.slots_used / client.player.getInventory().main.size(), 0);
+    public static final Entry SLOTS_PERCENTAGE = of( () -> 100F * ComplexData.slots_used / client.player.getInventory().getMainStacks().size(), 0);
 
     public static final Entry RECORD_LENGTH = of( () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.getClosestRecord().length / 20F : Double.NaN, 0, StatFormatters.SEC_HMS);
     public static final Entry RECORD_ELAPSED = of( () -> MusicAndRecordTracker.isRecordPlaying ? MusicAndRecordTracker.getClosestRecord().elapsed / 20F : Double.NaN, 0, StatFormatters.SEC_HMS);

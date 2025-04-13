@@ -87,8 +87,8 @@ public class AttributeFunctions {
     public static final Function<PlayerListEntry,Boolean> PLAYER_ENTRY_ADVENTURE = (player) -> player.getGameMode() == GameMode.ADVENTURE;
     public static final Function<PlayerListEntry,Boolean> PLAYER_ENTRY_SPECTATOR = (player) -> player.getGameMode() == GameMode.SPECTATOR;
     public static final Entry<PlayerListEntry> PLAYER_ENTRY_GAMEMODE = new Entry<> (
-            (player) -> player.getGameMode().getName(),
             (player) -> player.getGameMode().getId(),
+            (player) -> player.getGameMode().getIndex(),
             (player) -> true);
     public static final Function<PlayerListEntry,Number> PLAYER_ENTRY_LIST_SCORE = (player) -> {
         Scoreboard scoreboard = CLIENT.world.getScoreboard();
@@ -158,8 +158,8 @@ public class AttributeFunctions {
             tag.id().getPath() : tag.id().toString();
 
     // RECIEVED POWER
-    public static final Function<AttributeHelpers.ReceivedPower,String> REC_DIRECTION = (rec) -> rec.direction().getName();
-    public static final Function<AttributeHelpers.ReceivedPower,String> REC_OPOSITE_DIRECTION = (rec) -> rec.direction().getOpposite().getName();
+    public static final Function<AttributeHelpers.ReceivedPower,String> REC_DIRECTION = (rec) -> rec.direction().getId();
+    public static final Function<AttributeHelpers.ReceivedPower,String> REC_OPOSITE_DIRECTION = (rec) -> rec.direction().getOpposite().getId();
     public static final Function<AttributeHelpers.ReceivedPower,Number> REC_POWER = (rec) -> rec.power();
     public static final Function<AttributeHelpers.ReceivedPower,Number> REC_STRONG_POWER = (rec) -> rec.strongPower();
 
@@ -197,13 +197,13 @@ public class AttributeFunctions {
     public static final Function<ItemStack, Boolean> ITEM_IS_STACKABLE = (stack) -> stack.getMaxCount() > 1;
     public static final Function<ItemStack, Boolean> ITEM_HAS_MORE_OUT_OF_STACK = (stack) -> CLIENT.player.getInventory().count(stack.getItem()) > stack.getCount();
 
-    public static final Function<ItemStack, Number> ITEM_COOLDOWN_PER = (stack) -> 100 * CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickDelta(true));
+    public static final Function<ItemStack, Number> ITEM_COOLDOWN_PER = (stack) -> 100 * CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickProgress(true));
     public static final Function<ItemStack, Number> ITEM_COOLDOWN_DUR = (stack) -> {
         var c = stack.get(DataComponentTypes.USE_COOLDOWN);
         return c == null ? 0 : c.seconds();
     };
     public static final Function<ItemStack, Boolean> ITEM_HAS_COOLDOWN = (stack) -> stack.get(DataComponentTypes.USE_COOLDOWN) != null;
-    public static final Function<ItemStack, Boolean> ITEM_IN_COOLDOWN = (stack) -> CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickDelta(true)) > 0;
+    public static final Function<ItemStack, Boolean> ITEM_IN_COOLDOWN = (stack) -> CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickProgress(true)) > 0;
 //    public static final Function<ItemStack, Number> ITEM_COOLDOWN_PASSED = (stack) -> {
 //        var c = stack.get(DataComponentTypes.USE_COOLDOWN);
 //        return c == null ? 0 : c.seconds();
@@ -297,15 +297,15 @@ public class AttributeFunctions {
     public static final Function<Team,Boolean> TEAM_FRIENDLY_INVIS = Team::shouldShowFriendlyInvisibles;
     public static final Entry<Team> TEAM_NAME_TAG_VISIBILITY = new Entry<>(
             (team) -> team.getNameTagVisibilityRule().getDisplayName().getString(),
-            (team) -> team.getNameTagVisibilityRule().value,
+            (team) -> team.getNameTagVisibilityRule().index,
             (team) -> team$visibleToPlayer(team, team.getNameTagVisibilityRule()));
     public static final Entry<Team> TEAM_DEATH_MGS_VISIBILITY = new Entry<>(
             (team) -> team.getNameTagVisibilityRule().getDisplayName().getString(),
-            (team) -> team.getNameTagVisibilityRule().value,
+            (team) -> team.getNameTagVisibilityRule().index,
             (team) -> team$visibleToPlayer(team, team.getDeathMessageVisibilityRule()));
     public static final Entry<Team> TEAM_COLLISION = new Entry<>(
             (team) -> team.getCollisionRule().getDisplayName().getString(),
-            (team) -> team.getCollisionRule().value,
+            (team) -> team.getCollisionRule().index,
             (team) -> team.getCollisionRule() != AbstractTeam.CollisionRule.NEVER);
     public static final Entry<Team> TEAM_COLOR = new Entry<>(
             (team) -> team.getColor().getName(),
@@ -450,7 +450,7 @@ public class AttributeFunctions {
 
         List<ItemStack> items = new ArrayList<>(37);
         items.add(CLIENT.player.getInventory().player.getOffHandStack());
-        for (ItemStack stack : CLIENT.player.getInventory().main)
+        for (ItemStack stack : CLIENT.player.getInventory().getMainStacks())
             items.addAll(getItemItems(stack, true));
 
         for (ItemStack stack : items) {
