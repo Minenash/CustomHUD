@@ -1,7 +1,6 @@
 package com.minenash.customhud.mixin;
 
 import com.minenash.customhud.complex.ComplexData;
-import com.minenash.customhud.complex.ServerBossBarManager;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
