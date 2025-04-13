@@ -3,6 +3,7 @@ package com.minenash.customhud.HudElements;
 import com.minenash.customhud.HudElements.interfaces.HudElement;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.data.NumberFlags;
+import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EquipmentSlot;
@@ -37,35 +38,9 @@ public class ItemTagCountElement implements HudElement {
             return 0;
 
         int count = 0;
-        PlayerInventory inv = player.getInventory();
-        for (var item : inv.getMainStacks())
-            if (item.isIn(tagKey))
-                count += item.getCount();
-
-        ItemStack headStack = inv.getStack(EquipmentSlot.HEAD.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
-        if (headStack.isIn(tagKey)) {
-            count += headStack.getCount();
-        }
-
-        ItemStack chestStack = inv.getStack(EquipmentSlot.CHEST.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
-        if (chestStack.isIn(tagKey)) {
-            count += chestStack.getCount();
-        }
-
-        ItemStack legsStack = inv.getStack(EquipmentSlot.LEGS.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
-        if (legsStack.isIn(tagKey)) {
-            count += legsStack.getCount();
-        }
-
-        ItemStack feetStack = inv.getStack(EquipmentSlot.FEET.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE));
-        if (feetStack.isIn(tagKey)) {
-            count += feetStack.getCount();
-        }
-
-        ItemStack offhandStack = inv.getStack(PlayerInventory.OFF_HAND_SLOT);
-        if (offhandStack.isIn(tagKey)) {
-            count += offhandStack.getCount();
-        }
+        for (ItemStack stack : player.getInventory())
+            if (stack.isIn(tagKey))
+                count += stack.getCount();
 
         return count;
     }
