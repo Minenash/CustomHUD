@@ -40,10 +40,16 @@ import java.util.function.Predicate;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
 import static com.minenash.customhud.HudElements.list.AttributeHelpers.*;
+import static net.minecraft.entity.player.PlayerInventory.OFF_HAND_SLOT;
 
 @SuppressWarnings("DataFlowIssue")
 public class ListSuppliers {
-
+    
+    private static final int HEAD_SLOT = EquipmentSlot.HEAD.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE);
+    private static final int CHEST_SLOT = EquipmentSlot.CHEST.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE);
+    private static final int LEGS_SLOT = EquipmentSlot.LEGS.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE);
+    private static final int FEET_SLOT = EquipmentSlot.FEET.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE);
+    
     public static final Direction[] DIRS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN};
     public static final Comparator<PlayerListEntry> ENTRY_ORDERING =
             Comparator.comparingInt((PlayerListEntry entry) -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
@@ -59,18 +65,18 @@ public class ListSuppliers {
 //    public static final Comparator<StatusEffectInstance> ALL_EFFECT_ORDERING = Comparator.comparingLong(e -> (3000000000L * e.getEffectType().getCategory().ordinal()) + (e.getDuration() == -1 ? Integer.MAX_VALUE : e.getDuration()));
 
     public static final ListProvider
-            STATUS_EFFECTS = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().sorted(EFFECT_ORDERING).toArray()),
-            STATUS_EFFECTS_POSITIVE = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().filter(e -> e.getEffectType().value().getCategory() == StatusEffectCategory.BENEFICIAL).sorted(EFFECT_ORDERING).toArray()),
-            STATUS_EFFECTS_NEGATIVE = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().filter(e -> e.getEffectType().value().getCategory() == StatusEffectCategory.HARMFUL).sorted(EFFECT_ORDERING).toArray()),
-            STATUS_EFFECTS_NEUTRAL = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().filter(e -> e.getEffectType().value().getCategory() == StatusEffectCategory.NEUTRAL).sorted(EFFECT_ORDERING).toArray()),
+    STATUS_EFFECTS = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().sorted(EFFECT_ORDERING).toArray()),
+    STATUS_EFFECTS_POSITIVE = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().filter(e -> e.getEffectType().value().getCategory() == StatusEffectCategory.BENEFICIAL).sorted(EFFECT_ORDERING).toArray()),
+    STATUS_EFFECTS_NEGATIVE = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().filter(e -> e.getEffectType().value().getCategory() == StatusEffectCategory.HARMFUL).sorted(EFFECT_ORDERING).toArray()),
+    STATUS_EFFECTS_NEUTRAL = () -> Arrays.asList(CLIENT.player.getStatusEffects().stream().filter(e -> e.getEffectType().value().getCategory() == StatusEffectCategory.NEUTRAL).sorted(EFFECT_ORDERING).toArray()),
 
     ONLINE_PLAYERS = () -> Arrays.asList(CLIENT.getNetworkHandler().getPlayerList().stream().sorted(ENTRY_ORDERING).toArray()),
-            SUBTITLES = () -> SubtitleTracker.INSTANCE.entries,
+    SUBTITLES = () -> SubtitleTracker.INSTANCE.entries,
 
     TARGET_BLOCK_STATES = () -> ComplexData.targetBlock == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetBlock.getEntries().entrySet().toArray()),
-            TARGET_BLOCK_TAGS = () -> ComplexData.targetBlock == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetBlock.streamTags().toArray()),
-            TARGET_FLUID_STATES = () -> ComplexData.targetFluid == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetFluid.getEntries().entrySet().toArray()),
-            TARGET_FLUID_TAGS = () -> ComplexData.targetFluid == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetFluid.streamTags().toArray()),
+    TARGET_BLOCK_TAGS = () -> ComplexData.targetBlock == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetBlock.streamTags().toArray()),
+    TARGET_FLUID_STATES = () -> ComplexData.targetFluid == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetFluid.getEntries().entrySet().toArray()),
+    TARGET_FLUID_TAGS = () -> ComplexData.targetFluid == null ? Collections.EMPTY_LIST : Arrays.asList(ComplexData.targetFluid.streamTags().toArray()),
 
     TARGET_BLOCK_POWERS = () -> {
         if (ComplexData.targetBlockPos == null) return Collections.EMPTY_LIST;
@@ -83,67 +89,67 @@ public class ListSuppliers {
     },
 
     PLAYER_ATTRIBUTES = () -> getEntityAttributes(CLIENT.player),
-            TARGET_ENTITY_ATTRIBUTES = () -> ComplexData.targetEntity == null ? Collections.EMPTY_LIST : getEntityAttributes(ComplexData.targetEntity),
-            HOOKED_ENTITY_ATTRIBUTES = () -> hooked() == null ? Collections.EMPTY_LIST : getEntityAttributes(hooked()),
-            TEAMS = () -> Arrays.asList(CLIENT.world.getScoreboard().getTeams().toArray()),
-            TARGET_VILLAGER_OFFERS = () -> ComplexData.villagerOffers,
+    TARGET_ENTITY_ATTRIBUTES = () -> ComplexData.targetEntity == null ? Collections.EMPTY_LIST : getEntityAttributes(ComplexData.targetEntity),
+    HOOKED_ENTITY_ATTRIBUTES = () -> hooked() == null ? Collections.EMPTY_LIST : getEntityAttributes(hooked()),
+    TEAMS = () -> Arrays.asList(CLIENT.world.getScoreboard().getTeams().toArray()),
+    TARGET_VILLAGER_OFFERS = () -> ComplexData.villagerOffers,
 
     ITEMS = () -> AttributeHelpers.compactItems(CLIENT.player.getInventory().getMainStacks()),
-            INV_ITEMS = () -> CLIENT.player.getInventory().getMainStacks().subList(9, CLIENT.player.getInventory().getMainStacks().size()),
-            ARMOR_ITEMS = () -> {
-                PlayerInventory inv = CLIENT.player.getInventory();
-                return List.of(
-                        inv.getStack(EquipmentSlot.HEAD.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)),
-                        inv.getStack(EquipmentSlot.CHEST.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)),
-                        inv.getStack(EquipmentSlot.LEGS.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)),
-                        inv.getStack(EquipmentSlot.FEET.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE))
-                );
-            },
-            HOTBAR_ITEMS = () -> CLIENT.player.getInventory().getMainStacks().subList(0, 9),
-            ALL_ITEMS = () -> {
-                PlayerInventory inv = CLIENT.player.getInventory();
-                List<ItemStack> items = new ArrayList<>(inv.getMainStacks());
-                items.add(inv.getStack(EquipmentSlot.HEAD.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getStack(EquipmentSlot.CHEST.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getStack(EquipmentSlot.LEGS.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getStack(EquipmentSlot.FEET.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getStack(PlayerInventory.OFF_HAND_SLOT));
-                return items;
-            },
-            EQUIPPED_ITEMS = () -> {
-                PlayerInventory inv = CLIENT.player.getInventory();
-                List<ItemStack> items = new ArrayList<>(5);
-                items.add(inv.getStack(EquipmentSlot.HEAD.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getStack(EquipmentSlot.CHEST.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getStack(EquipmentSlot.LEGS.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getStack(EquipmentSlot.FEET.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE)));
-                items.add(inv.getSelectedStack());
-                items.add(inv.getStack(PlayerInventory.OFF_HAND_SLOT));
-                return items;
-            },
-            ITEMS_UNPACKED = () -> {
-                List<ItemStack> items = new ArrayList<>(36);
-                for (ItemStack stack : CLIENT.player.getInventory().getMainStacks()) {
-                    List<ItemStack> innerItems = getItemItems(stack, true);
-                    if (innerItems.isEmpty())
-                        items.add(stack);
-                    else
-                        items.addAll(innerItems);
-                }
-                return AttributeHelpers.compactItems(items);
-            },
+    INV_ITEMS = () -> CLIENT.player.getInventory().getMainStacks().subList(9, CLIENT.player.getInventory().getMainStacks().size()),
+    ARMOR_ITEMS = () -> {
+        PlayerInventory inv = CLIENT.player.getInventory();
+        return List.of(
+                inv.getStack(HEAD_SLOT),
+                inv.getStack(CHEST_SLOT),
+                inv.getStack(LEGS_SLOT),
+                inv.getStack(FEET_SLOT)
+        );
+    },
+    HOTBAR_ITEMS = () -> CLIENT.player.getInventory().getMainStacks().subList(0, 9),
+    ALL_ITEMS = () -> {
+        PlayerInventory inv = CLIENT.player.getInventory();
+        List<ItemStack> items = new ArrayList<>(inv.getMainStacks());
+        items.add(inv.getStack(HEAD_SLOT));
+        items.add(inv.getStack(CHEST_SLOT));
+        items.add(inv.getStack(LEGS_SLOT));
+        items.add(inv.getStack(FEET_SLOT));
+        items.add(inv.getStack(OFF_HAND_SLOT));
+        return items;
+    },
+    EQUIPPED_ITEMS = () -> {
+        PlayerInventory inv = CLIENT.player.getInventory();
+        List<ItemStack> items = new ArrayList<>(5);
+        items.add(inv.getStack(HEAD_SLOT));
+        items.add(inv.getStack(CHEST_SLOT));
+        items.add(inv.getStack(LEGS_SLOT));
+        items.add(inv.getStack(FEET_SLOT));
+        items.add(inv.getSelectedStack());
+        items.add(inv.getStack(OFF_HAND_SLOT));
+        return items;
+    },
+    ITEMS_UNPACKED = () -> {
+        List<ItemStack> items = new ArrayList<>(36);
+        for (ItemStack stack : CLIENT.player.getInventory().getMainStacks()) {
+            List<ItemStack> innerItems = getItemItems(stack, true);
+            if (innerItems.isEmpty())
+                items.add(stack);
+            else
+                items.addAll(innerItems);
+        }
+        return AttributeHelpers.compactItems(items);
+    },
 
     SCOREBOARD_OBJECTIVES = () -> Arrays.asList(scoreboard().getObjectives().toArray()),
             PLAYER_SCOREBOARD_SCORES = () -> Arrays.asList(scoreboard().getScores(CLIENT.getGameProfile().getName()).scores.entrySet().toArray()),
 
     BOSSBARS = () -> bossbars(false),
-            ALL_BOSSBARS = () -> bossbars(true),
+    ALL_BOSSBARS = () -> bossbars(true),
 
     RECORDS = () -> MusicAndRecordTracker.records,
 
     MODS = () -> Arrays.asList(ModMenu.ROOT_MODS.values().stream().filter((Predicate<? super Mod>) MOD_PREDICATE).sorted((Comparator<? super Mod>) MOD_ORDERING).toArray()),
-            ALL_ROOT_MODS = () -> Arrays.asList(ModMenu.ROOT_MODS.values().stream().filter((Predicate<? super Mod>) ALL_ROOT_MODS_PREDICATE).sorted((Comparator<? super Mod>) MOD_ORDERING).toArray()),
-            ALL_MODS = () -> Arrays.asList(ModMenu.MODS.values().stream().sorted((Comparator<? super Mod>) MOD_ORDERING).toArray()),
+    ALL_ROOT_MODS = () -> Arrays.asList(ModMenu.ROOT_MODS.values().stream().filter((Predicate<? super Mod>) ALL_ROOT_MODS_PREDICATE).sorted((Comparator<? super Mod>) MOD_ORDERING).toArray()),
+    ALL_MODS = () -> Arrays.asList(ModMenu.MODS.values().stream().sorted((Comparator<? super Mod>) MOD_ORDERING).toArray()),
 
     RESOURCE_PACKS = () -> {
         List<ResourcePackProfile> packs = new ArrayList<>(CLIENT.getResourcePackManager().getEnabledProfiles());
@@ -151,21 +157,21 @@ public class ListSuppliers {
         Collections.reverse(packs);
         return packs;
     },
-            DISABLED_RESOURCE_PACKS = () -> {
-                List<ResourcePackProfile> profiles = Lists.newArrayList(CLIENT.getResourcePackManager().getProfiles());
-                profiles.removeAll(CLIENT.getResourcePackManager().getEnabledProfiles());
-                Collections.reverse(profiles);
-                return profiles;
-            },
-            DATA_PACKS = () -> CLIENT.getServer() == null ? Collections.EMPTY_LIST : Arrays.asList(CLIENT.getServer().getDataPackManager().getEnabledProfiles().toArray()),
-            DISABLED_DATA_PACKS = () -> {
-                if (CLIENT.getServer() == null) return Collections.EMPTY_LIST;
+    DISABLED_RESOURCE_PACKS = () -> {
+        List<ResourcePackProfile> profiles = Lists.newArrayList(CLIENT.getResourcePackManager().getProfiles());
+        profiles.removeAll(CLIENT.getResourcePackManager().getEnabledProfiles());
+        Collections.reverse(profiles);
+        return profiles;
+    },
+    DATA_PACKS = () -> CLIENT.getServer() == null ? Collections.EMPTY_LIST : Arrays.asList(CLIENT.getServer().getDataPackManager().getEnabledProfiles().toArray()),
+    DISABLED_DATA_PACKS = () -> {
+        if (CLIENT.getServer() == null) return Collections.EMPTY_LIST;
 
-                ResourcePackManager manager = CLIENT.getServer().getDataPackManager();
-                List<ResourcePackProfile> profiles = Lists.newArrayList(manager.getProfiles());
-                profiles.removeAll(manager.getEnabledProfiles());
-                return profiles;
-            },
+        ResourcePackManager manager = CLIENT.getServer().getDataPackManager();
+        List<ResourcePackProfile> profiles = Lists.newArrayList(manager.getProfiles());
+        profiles.removeAll(manager.getEnabledProfiles());
+        return profiles;
+    },
 
     CHAT_MESSAGES = () -> CLIENT.inGameHud.getChatHud().messages,
 
