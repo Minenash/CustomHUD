@@ -79,7 +79,7 @@ public class SimpleTextureIconElement extends IconElement {
         context.getMatrices().push();
         context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-yOffset-2, 0);
         rotate(context.getMatrices(), width, height);
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, 0, 0, width, height, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, 0, 0, 0, 0, width, height, textureWidth, textureHeight, textureWidth, textureHeight);
         context.getMatrices().pop();
     }
 
