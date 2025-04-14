@@ -7,6 +7,8 @@ import com.minenash.customhud.HudElements.RomanNumeralElement;
 import com.minenash.customhud.HudElements.icon.IconElement;
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
+import com.minenash.customhud.v5.NumberDefaultOptions;
+import net.minecraft.stat.StatFormatter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,8 +44,17 @@ public class Flags {
     public boolean iconShowDur = false;
     public boolean iconShowCooldown = false;
 
+    public StatFormatter formatter = null;
+
     public boolean anyTextUsed() {
         return textCase != null || smallCaps || numSize != 0 || noDelimiters;
+    }
+
+    public Flags applyNumDefaults(NumberDefaultOptions numDefaults) {
+        if (precision == -1)
+            precision = numDefaults.precision();
+        formatter = numDefaults.formatter();
+        return this;
     }
 
     private static final Pattern PRECISION_PATTERN = Pattern.compile("-(?:p|precision)(\\d+)");

@@ -1012,9 +1012,9 @@ public class VariableParser {
             case "entities_rendered" -> ENTITIES_RENDERED;
             case "entities_loaded" -> ENTITIES_LOADED;
             case "force_loaded_chunks", "fc" -> { enabled.world = true; yield FORCED_LOADED_CHUNKS; }
-            case "block_x", "bx" -> BLOCK_X;
-            case "block_y", "by" -> BLOCK_Y;
-            case "block_z", "bz" -> BLOCK_Z;
+//            case "block_x", "bx" -> BLOCK_X;
+//            case "block_y", "by" -> BLOCK_Y;
+//            case "block_z", "bz" -> BLOCK_Z;
             case "target_block_x", "target_x", "tbx" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_X; }
             case "target_block_y", "target_y", "tby" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Y; }
             case "target_block_z", "target_z", "tbz" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_Z; }
@@ -1047,16 +1047,16 @@ public class VariableParser {
             case "target_block_strong_power_up", "target_strong_power_up", "tbspu" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_STRONG_POWERED_UP; }
             case "target_block_strong_power_down", "target_strong_power_down", "tbspd" -> { enabled.world = enabled.targetBlock = true; yield TARGET_BLOCK_STRONG_POWERED_DOWN; }
 
-            case "in_chunk_x", "icx" -> IN_CHUNK_X;
-            case "in_chunk_y", "icy" -> IN_CHUNK_Y;
-            case "in_chunk_z", "icz" -> IN_CHUNK_Z;
-            case "chunk_x", "cx" -> CHUNK_X;
-            case "chunk_y", "cy" -> CHUNK_Y;
-            case "chunk_z", "cz" -> CHUNK_Z;
-            case "region_x", "rex" -> REGION_X;
-            case "region_z", "rez" -> REGION_Z;
-            case "region_relative_x", "rrx" -> REGION_RELATIVE_X;
-            case "region_relative_z", "rrz" -> REGION_RELATIVE_Z;
+//            case "in_chunk_x", "icx" -> IN_CHUNK_X;
+//            case "in_chunk_y", "icy" -> IN_CHUNK_Y;
+//            case "in_chunk_z", "icz" -> IN_CHUNK_Z;
+//            case "chunk_x", "cx" -> CHUNK_X;
+//            case "chunk_y", "cy" -> CHUNK_Y;
+//            case "chunk_z", "cz" -> CHUNK_Z;
+//            case "region_x", "rex" -> REGION_X;
+//            case "region_z", "rez" -> REGION_Z;
+//            case "region_relative_x", "rrx" -> REGION_RELATIVE_X;
+//            case "region_relative_z", "rrz" -> REGION_RELATIVE_Z;
 
             case "ccw1", "client_chunks_w1", "client_chunks_cached" -> CHUNK_CLIENT_CACHED;
             case "ccw2", "client_chunks_w2", "client_chunks_loaded" -> CHUNK_CLIENT_LOADED;
@@ -1176,11 +1176,11 @@ public class VariableParser {
         if (element.startsWith("velocity_"))
             enabled.velocity = true;
         return switch (element) {
-            case "x" -> X;
-            case "y" -> Y;
-            case "z" -> Z;
-            case "nether_x", "nx" -> NETHER_X;
-            case "nether_z", "nz" -> NETHER_Z;
+//            case "x" -> X;
+//            case "y" -> Y;
+//            case "z" -> Z;
+//            case "nether_x", "nx" -> NETHER_X;
+//            case "nether_z", "nz" -> NETHER_Z;
             case "target_entity_x", "tex" -> {enabled.targetEntity = true; yield TARGET_ENTITY_X;}
             case "target_entity_y", "tey" -> {enabled.targetEntity = true; yield TARGET_ENTITY_Y;}
             case "target_entity_z", "tez" -> {enabled.targetEntity = true; yield TARGET_ENTITY_Z;}
@@ -1205,8 +1205,8 @@ public class VariableParser {
             case "velocity_xz_kmh" -> VELOCITY_XZ_KMH;
             case "velocity_y_kmh" -> VELOCITY_Y_KMH;
             case "velocity_xyz_kmh" -> VELOCITY_XYZ_KMH;
-            case "yaw" -> YAW;
-            case "pitch" -> PITCH;
+//            case "yaw" -> YAW;
+//            case "pitch" -> PITCH;
             case "day" -> DAY;
             case "mood" -> MOOD;
             case "tps" -> TPS;
@@ -1264,8 +1264,8 @@ public class VariableParser {
             case "nr_init","noise_init_density" -> {enabled.serverWorld = true; yield NOISE_ROUTER_INIT_DENSITY;}
             case "nr_final","noise_final_density" -> {enabled.serverWorld = true; yield NOISE_ROUTER_FINAL_DENSITY;}
 
-            case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
-            case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
+//            case "item_durability_percent", "item_dur_per" -> ITEM_DURABILITY_PERCENT;
+//            case "offhand_item_durability_percent", "oitem_dur_per" -> OFFHAND_ITEM_DURABILITY_PERCENT;
             case "local_difficulty" -> { enabled.localDifficulty = enabled.world = true; yield LOCAL_DIFFICULTY; }
             case "clamped_local_difficulty" -> { enabled.localDifficulty = enabled.world = true; yield CLAMPED_LOCAL_DIFFICULTY; }
 

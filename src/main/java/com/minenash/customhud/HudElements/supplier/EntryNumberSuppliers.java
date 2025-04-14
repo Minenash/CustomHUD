@@ -42,11 +42,11 @@ public class EntryNumberSuppliers {
     public static final Entry ACTIONBAR_REMAINING = of( () -> client.inGameHud.overlayRemaining, 0, StatFormatters.MIL_HMS);
     public static final Entry TITLE_REMAINING = of( () -> client.inGameHud.titleRemainTicks, 0, StatFormatters.MIL_HMS);
 
-    public static final Entry X = of( () -> cameraEntity().getX(), 3);
-    public static final Entry Y = of( () -> cameraEntity().getY(), 3);
-    public static final Entry Z = of( () -> cameraEntity().getZ(), 3);
-    public static final Entry NETHER_X = of( () -> inNether() ? cameraEntity().getX() * 8 : cameraEntity().getX() / 8, 0);
-    public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
+//    public static final Entry X = of( () -> cameraEntity().getX(), 3);
+//    public static final Entry Y = of( () -> cameraEntity().getY(), 3);
+//    public static final Entry Z = of( () -> cameraEntity().getZ(), 3);
+//    public static final Entry NETHER_X = of( () -> inNether() ? cameraEntity().getX() * 8 : cameraEntity().getX() / 8, 0);
+//    public static final Entry NETHER_Z = of( () -> inNether() ? cameraEntity().getZ() * 8 : cameraEntity().getZ() / 8, 0);
 
     public static final Entry ENTITY_REACH_DISTANCE = of ( () -> {
         EntityAttributeInstance instance = client.player.getAttributeInstance(EntityAttributes.ENTITY_INTERACTION_RANGE);
@@ -65,8 +65,8 @@ public class EntryNumberSuppliers {
     public static final Entry VELOCITY_Y_KMH = of( () -> ComplexData.velocityY * 3.6, 1);
     public static final Entry VELOCITY_XYZ_KMH = of( () -> ComplexData.velocityXYZ * 3.6, 1);
 
-    public static final Entry YAW = of( () -> MathHelper.wrapDegrees(cameraEntity().getYaw()), 1);
-    public static final Entry PITCH = of( () -> MathHelper.wrapDegrees(cameraEntity().getPitch()), 1);
+//    public static final Entry YAW = of( () -> MathHelper.wrapDegrees(cameraEntity().getYaw()), 1);
+//    public static final Entry PITCH = of( () -> MathHelper.wrapDegrees(cameraEntity().getPitch()), 1);
 
     public static final Entry LOCAL_DIFFICULTY = of( () -> ComplexData.localDifficulty.getLocalDifficulty(), 2);
     public static final Entry CLAMPED_LOCAL_DIFFICULTY = of( () -> ComplexData.localDifficulty.getClampedLocalDifficulty(), 2);
@@ -125,8 +125,8 @@ public class EntryNumberSuppliers {
     public static final Entry NOISE_ROUTER_INIT_DENSITY = of( () -> isNoise() ? sample(sampler().initialDensityWithoutJaggedness()) : Double.NaN, 3);
     public static final Entry NOISE_ROUTER_FINAL_DENSITY = of( () -> isNoise() ? sample(sampler().finalDensity()) : Double.NaN, 3);
 
-    @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
-    @Deprecated public static final Entry OFFHAND_ITEM_DURABILITY_PERCENT = of( () -> client.player.getOffHandStack().getDamage() / (float) client.player.getOffHandStack().getMaxDamage() * 100, 0);
+//    @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);
+//    @Deprecated public static final Entry OFFHAND_ITEM_DURABILITY_PERCENT = of( () -> client.player.getOffHandStack().getDamage() / (float) client.player.getOffHandStack().getMaxDamage() * 100, 0);
 
     public static final Entry DAY = of( () -> client.world.getTimeOfDay() / 24000L, 0);
 

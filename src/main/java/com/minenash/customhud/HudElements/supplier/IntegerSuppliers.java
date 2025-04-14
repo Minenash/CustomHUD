@@ -86,9 +86,9 @@ public class IntegerSuppliers {
 
     public static final Supplier<Number> FORCED_LOADED_CHUNKS = () -> ComplexData.world instanceof ServerWorld ? ((ServerWorld)ComplexData.world).getForcedChunks().size() : null;
 
-    public static final Supplier<Number> BLOCK_X = () -> blockPos().getX();
-    public static final Supplier<Number> BLOCK_Y = () -> blockPos().getY();
-    public static final Supplier<Number> BLOCK_Z = () -> blockPos().getZ();
+//    public static final Supplier<Number> BLOCK_X = () -> blockPos().getX();
+//    public static final Supplier<Number> BLOCK_Y = () -> blockPos().getY();
+//    public static final Supplier<Number> BLOCK_Z = () -> blockPos().getZ();
     public static final Supplier<Number> TARGET_BLOCK_X = () -> targetBlockPos == null ? null : targetBlockPos.getX();
     public static final Supplier<Number> TARGET_BLOCK_Y = () -> targetBlockPos == null ? null : targetBlockPos.getY();
     public static final Supplier<Number> TARGET_BLOCK_Z = () -> targetBlockPos == null ? null : targetBlockPos.getZ();
@@ -117,16 +117,16 @@ public class IntegerSuppliers {
     public static final Supplier<Number> TARGET_BLOCK_STRONG_POWERED_UP = () -> targetBlockPos == null ? null :    client.world.getStrongRedstonePower(targetBlockPos.offset(Direction.UP), Direction.UP);
     public static final Supplier<Number> TARGET_BLOCK_STRONG_POWERED_DOWN = () -> targetBlockPos == null ? null :  client.world.getStrongRedstonePower(targetBlockPos.offset(Direction.DOWN), Direction.DOWN);
 
-    public static final Supplier<Number> IN_CHUNK_X = () -> blockPos().getX() & 15;
-    public static final Supplier<Number> IN_CHUNK_Y = () -> blockPos().getY() & 15;
-    public static final Supplier<Number> IN_CHUNK_Z = () -> blockPos().getZ() & 15;
-    public static final Supplier<Number> CHUNK_X = () -> blockPos().getX() >> 4;
-    public static final Supplier<Number> CHUNK_Y = () -> blockPos().getY() >> 4;
-    public static final Supplier<Number> CHUNK_Z = () -> blockPos().getZ() >> 4;
-    public static final Supplier<Number> REGION_X = () -> blockPos().getX() >> 9;
-    public static final Supplier<Number> REGION_Z = () -> blockPos().getZ() >> 9;
-    public static final Supplier<Number> REGION_RELATIVE_X = () -> blockPos().getX() >> 4 & 0x1F;
-    public static final Supplier<Number> REGION_RELATIVE_Z = () -> blockPos().getZ() >> 4 & 0x1F;
+//    public static final Supplier<Number> IN_CHUNK_X = () -> blockPos().getX() & 15;
+//    public static final Supplier<Number> IN_CHUNK_Y = () -> blockPos().getY() & 15;
+//    public static final Supplier<Number> IN_CHUNK_Z = () -> blockPos().getZ() & 15;
+//    public static final Supplier<Number> CHUNK_X = () -> blockPos().getX() >> 4;
+//    public static final Supplier<Number> CHUNK_Y = () -> blockPos().getY() >> 4;
+//    public static final Supplier<Number> CHUNK_Z = () -> blockPos().getZ() >> 4;
+//    public static final Supplier<Number> REGION_X = () -> blockPos().getX() >> 9;
+//    public static final Supplier<Number> REGION_Z = () -> blockPos().getZ() >> 9;
+//    public static final Supplier<Number> REGION_RELATIVE_X = () -> blockPos().getX() >> 4 & 0x1F;
+//    public static final Supplier<Number> REGION_RELATIVE_Z = () -> blockPos().getZ() >> 4 & 0x1F;
 
     public static final Supplier<Number> CHUNK_CLIENT_CACHED = () -> client.world.getChunkManager().chunks.chunks.length();
     public static final Supplier<Number> CHUNK_CLIENT_LOADED = () -> client.world.getChunkManager().getLoadedChunkCount();
