@@ -1257,6 +1257,7 @@ public class VariableParser {
             case "health_per", "health_percentage", "hp_per" -> HEALTH_PERCENTAGE;
             case "frozen_per", "frozen_percentage" -> FROZEN_PERCENTAGE;
             case "frozen_ticks" -> FROZEN_TICKS;
+            case "attack_cooldown" -> ATTACK_COOLDOWN;
 
             case "nr_temp","noise_temperature" -> {enabled.serverWorld = true; yield NOISE_ROUTER_TEMPERATURE;}
             case "nr_veg","noise_vegetation" -> {enabled.serverWorld = true; yield NOISE_ROUTER_VEGETATION;}
