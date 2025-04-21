@@ -1,7 +1,6 @@
 package com.minenash.customhud.HudElements.icon;
 
 import com.minenash.customhud.CustomHud;
-import com.minenash.customhud.HudElements.interfaces.ExecuteElement;
 import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
@@ -15,6 +14,7 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class NewTextureIconElement extends IconElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -30,16 +30,18 @@ public class NewTextureIconElement extends IconElement {
     private final Operation width;
     private final Operation height;
     private final int textWidth;
+    private final Function<Identifier,RenderLayer> renderLayer;
 
     private final boolean iconAvailable;
 
 
-    public NewTextureIconElement(Identifier texture, Operation u, Operation v, Operation w, Operation h, Operation width, Operation height, Flags flags) {
+    public NewTextureIconElement(Identifier texture, Operation u, Operation v, Operation w, Operation h, Operation width, Operation height, boolean crosshair, Flags flags) {
         super(flags, 0);
         this.u = u != null ? u : new Operation.Literal(0);
         this.v = v != null ? v : new Operation.Literal(0);
         this.width = width;
         this.height = height;
+        this.renderLayer = crosshair? RenderLayer::getCrosshair : RenderLayer::getGuiTexturedOverlay;
 
         NativeImage img = null;
         try {
@@ -94,7 +96,7 @@ public class NewTextureIconElement extends IconElement {
         context.getMatrices().push();
         context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-2 - (referenceCorner? 0 : (calcHeight*scale-calcHeight)/(scale*2)), 0);
         rotate(context.getMatrices(), calcWidth, calcHeight);
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, 0, 0,  calcU, calcV, calcWidth, calcHeight, (int) calcRegionWidth, (int) calcRegionHeight, textureWidth, textureHeight);
+        context.drawTexture(renderLayer, texture, 0, 0,  calcU, calcV, calcWidth, calcHeight, (int) calcRegionWidth, (int) calcRegionHeight, textureWidth, textureHeight);
         context.getMatrices().pop();
     }
 

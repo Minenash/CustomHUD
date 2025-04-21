@@ -436,15 +436,18 @@ public class VariableParser {
             }
         }
 
-        if (part.startsWith("icon:")) {
+        boolean crosshair = part.startsWith("crosshair:");
+        if (crosshair || part.startsWith("icon:")) {
             part = part.substring(part.indexOf(':')+1);
             String[] flagParts = part.split(" ");
             String main = flagParts[0];
 
-            Item item = Registries.ITEM.get(Identifier.tryParse(main));
-            if (item != Items.AIR) {
-                Flags flags = Flags.parse(profile.name, debugLine, flagParts);
-                return Flags.wrap(new ItemIconElement(new ItemStack(item), flags), flags);
+            if (!crosshair) {
+                Item item = Registries.ITEM.get(Identifier.tryParse(main));
+                if (item != Items.AIR) {
+                    Flags flags = Flags.parse(profile.name, debugLine, flagParts);
+                    return Flags.wrap(new ItemIconElement(new ItemStack(item), flags), flags);
+                }
             }
 
             if (!part.contains(",")) {
@@ -455,7 +458,7 @@ public class VariableParser {
                     return null;
                 }
                 Flags flags = Flags.parse(profile.name, debugLine, flagParts);
-                SimpleTextureIconElement element = new SimpleTextureIconElement(id, flags);
+                SimpleTextureIconElement element = new SimpleTextureIconElement(id, crosshair, flags);
                 if (element.isIconAvailable())
                     return Flags.wrap(element, flags);
                 Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
@@ -485,7 +488,7 @@ public class VariableParser {
 
             Flags flags = Flags.parse(profile.name, debugLine, mainParts);
             if (matcher.group(2) != null && !matcher.group(2).isEmpty() && u == null && v == null && w == null && h == null && width == null && height == null) {
-                SimpleTextureIconElement element = new SimpleTextureIconElement(id, flags);
+                SimpleTextureIconElement element = new SimpleTextureIconElement(id, crosshair, flags);
                 if (element.isIconAvailable())
                     return Flags.wrap(element, flags);
                 Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
@@ -493,7 +496,7 @@ public class VariableParser {
             }
 
 
-            NewTextureIconElement element = new NewTextureIconElement(id, u, v, w, h, width, height, flags);
+            NewTextureIconElement element = new NewTextureIconElement(id, u, v, w, h, width, height, crosshair, flags);
             if (element.isIconAvailable())
                 return element;
             Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());

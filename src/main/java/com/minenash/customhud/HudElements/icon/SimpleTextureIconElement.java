@@ -12,6 +12,7 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class SimpleTextureIconElement extends IconElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -24,12 +25,14 @@ public class SimpleTextureIconElement extends IconElement {
     private final int height;
     private final int yOffset;
     private final int textWidth;
+    private final Function<Identifier,RenderLayer> renderLayer;
 
     private final boolean iconAvailable;
 
 
-    public SimpleTextureIconElement(Identifier texture, Flags flags) {
+    public SimpleTextureIconElement(Identifier texture, boolean crosshair, Flags flags) {
         super(flags, 0);
+        this.renderLayer = crosshair ? RenderLayer::getCrosshair : RenderLayer::getGuiTexturedOverlay;
 
         NativeImage img = null;
         try {
@@ -79,7 +82,7 @@ public class SimpleTextureIconElement extends IconElement {
         context.getMatrices().push();
         context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-yOffset-2, 0);
         rotate(context.getMatrices(), width, height);
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, 0, 0, 0, 0, width, height, textureWidth, textureHeight, textureWidth, textureHeight);
+        context.drawTexture(renderLayer, texture, 0, 0, 0, 0, width, height, textureWidth, textureHeight, textureWidth, textureHeight);
         context.getMatrices().pop();
     }
 
