@@ -67,3 +67,6 @@ accessible class net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry time J
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry location Lnet/minecraft/util/math/Vec3d;
 accessible field net/minecraft/client/render/WorldRenderer renderedEntitiesCount I
+accessible field net/minecraft/entity/player/ItemCooldownManager entries Ljava/util/Map;
+accessible field net/minecraft/entity/player/ItemCooldownManager tick I
+accessible class net/minecraft/entity/player/ItemCooldownManager$Entry

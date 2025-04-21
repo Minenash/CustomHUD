@@ -211,8 +211,10 @@ public class Attributers {
 
 
 
-            case "cooldown_per", "cooldown_percentage" -> new Num(sup, ITEM_COOLDOWN_PER, flags);
-            case "cooldown_dur", "cooldown_duration" -> new Num(sup, ITEM_COOLDOWN_DUR, flags);
+            case "cooldown" -> new NumBool(sup, ITEM_COOLDOWN, ITEM_HAS_COOLDOWN, flags);
+            case "max_cooldown" -> new NumBool(sup, ITEM_MAX_COOLDOWN, ITEM_HAS_COOLDOWN, flags);
+            case "cooldown_per", "cooldown_percentage" -> new NumBool(sup, ITEM_COOLDOWN_PER, ITEM_HAS_COOLDOWN, flags);
+            case "cooling_down" -> new Bool(sup, ITEM_COOLING_DOWN);
 
             case "dur","durability" -> new NumBool(sup, ITEM_DURABILITY, ITEM_HAS_DURABILITY, flags);
             case "max_dur","max_durability" -> new NumBool(sup, ITEM_MAX_DURABILITY, ITEM_HAS_MAX_DURABILITY, flags);
