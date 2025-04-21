@@ -23,7 +23,7 @@ public class MultiLineStacker {
 
     private final List<HudElement> base = new ArrayList<>();
     private final Stack<Object> stack = new Stack<>();
-    private final ListProviderSet listProviders = new ListProviderSet();
+    public final ListProviderSet listProviders = new ListProviderSet();
 
     public void startIf(String cond, Profile profile, int line, String source, ComplexData.Enabled enabled) {
         Operation op = ExpressionParser.parseExpression(cond, source, profile, line, enabled, listProviders, true);
