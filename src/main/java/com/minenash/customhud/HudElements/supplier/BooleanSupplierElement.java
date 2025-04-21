@@ -60,6 +60,9 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> ON_GROUND = () -> client.player.isOnGround();
     public static final Supplier<Boolean> SPRINT_HELD = () -> client.options.sprintKey.isPressed();
 
+    public static final Supplier<Boolean> IS_FROZEN = () -> client.player.isFrozen();
+    public static final Supplier<Boolean> IS_FREEZING = () -> client.player.getFrozenTicks() > 0;
+
     // ADD: onFire et al
 
     public static final Supplier<Boolean> HUD_HIDDEN = () -> client.options.hudHidden;
