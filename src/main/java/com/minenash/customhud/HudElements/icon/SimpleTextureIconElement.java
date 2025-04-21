@@ -3,6 +3,8 @@ package com.minenash.customhud.HudElements.icon;
 import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
@@ -23,12 +25,13 @@ public class SimpleTextureIconElement extends IconElement {
     private final int height;
     private final int yOffset;
     private final int textWidth;
+    private final boolean crosshair;
 
     private final boolean iconAvailable;
 
-
-    public SimpleTextureIconElement(Identifier texture, Flags flags) {
+    public SimpleTextureIconElement(Identifier texture, boolean crosshair, Flags flags) {
         super(flags, 0);
+        this.crosshair = crosshair;
 
         NativeImage img = null;
         try {
@@ -75,11 +78,18 @@ public class SimpleTextureIconElement extends IconElement {
     public void render(DrawContext context, RenderPiece piece) {
         if (width == 0)
             return;
+
+        if (crosshair) RenderSystem.blendFuncSeparate(
+            GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
+        );
+
         context.getMatrices().push();
         context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-yOffset-2, 0);
         rotate(context.getMatrices(), width, height);
         context.drawTexture(texture, 0, 0, width, height, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
         context.getMatrices().pop();
+
+        RenderSystem.defaultBlendFunc();
     }
 
 

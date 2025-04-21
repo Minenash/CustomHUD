@@ -6,6 +6,8 @@ import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
@@ -29,12 +31,14 @@ public class NewTextureIconElement extends IconElement {
     private final Operation width;
     private final Operation height;
     private final int textWidth;
+    private final boolean crosshair;
 
     private final boolean iconAvailable;
 
 
-    public NewTextureIconElement(Identifier texture, Operation u, Operation v, Operation w, Operation h, Operation width, Operation height, Flags flags) {
+    public NewTextureIconElement(Identifier texture, Operation u, Operation v, Operation w, Operation h, Operation width, Operation height, boolean crosshair, Flags flags) {
         super(flags, 0);
+        this.crosshair = crosshair;
         this.u = u != null ? u : new Operation.Literal(0);
         this.v = v != null ? v : new Operation.Literal(0);
         this.width = width;
@@ -91,10 +95,17 @@ public class NewTextureIconElement extends IconElement {
         if (calcWidth == 0 || calcHeight == 0)
             return;
         context.getMatrices().push();
+
+        if (crosshair) RenderSystem.blendFuncSeparate(
+            GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
+        );
+
         context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-2 - (referenceCorner? 0 : (calcHeight*scale-calcHeight)/(scale*2)), 0);
         rotate(context.getMatrices(), calcWidth, calcHeight);
         context.drawTexture(texture, 0, 0, calcWidth, calcHeight, calcU, calcV, (int) calcRegionWidth, (int) calcRegionHeight, textureWidth, textureHeight);
         context.getMatrices().pop();
+
+        RenderSystem.defaultBlendFunc();
     }
 
     int calcU = 0;
