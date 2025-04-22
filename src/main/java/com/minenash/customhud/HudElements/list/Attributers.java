@@ -207,9 +207,9 @@ public class Attributers {
             case "max_count" -> new NumBool(sup, ITEM_MAX_COUNT, ITEM_IS_STACKABLE, flags);
             case "inv_count" -> new NumBool(sup, ITEM_INV_COUNT, ITEM_HAS_MORE_OUT_OF_STACK, flags);
 
-            case "cooldown" -> new NumBool(sup, ITEM_COOLDOWN, ITEM_HAS_COOLDOWN, flags);
-            case "max_cooldown" -> new NumBool(sup, ITEM_MAX_COOLDOWN, ITEM_HAS_COOLDOWN, flags);
-            case "cooldown_per", "cooldown_percentage" -> new NumBool(sup, ITEM_COOLDOWN_PER, ITEM_HAS_COOLDOWN, flags);
+            case "cooldown" -> new NumBool(sup, ITEM_COOLDOWN, ITEM_COOLING_DOWN, flags);
+            case "max_cooldown" -> new NumBool(sup, ITEM_MAX_COOLDOWN, ITEM_COOLING_DOWN, flags);
+            case "cooldown_per", "cooldown_percentage" -> new NumBool(sup, ITEM_COOLDOWN_PER, ITEM_COOLING_DOWN, flags);
             case "cooling_down" -> new Bool(sup, ITEM_COOLING_DOWN);
 
             case "dur","durability" -> new NumBool(sup, ITEM_DURABILITY, ITEM_HAS_DURABILITY, flags);

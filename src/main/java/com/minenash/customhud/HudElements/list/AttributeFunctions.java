@@ -211,7 +211,6 @@ public class AttributeFunctions {
         return cd == 0 ? Float.NaN : cd;
     };
     public static final Function<ItemStack, Boolean> ITEM_COOLING_DOWN = (stack) -> CLIENT.player.getItemCooldownManager().isCoolingDown(stack.getItem());
-    public static final Function<ItemStack, Boolean> ITEM_HAS_COOLDOWN = (stack) -> stack.get(DataComponentTypes.USE_COOLDOWN) != null;
 
     public static final Function<ItemStack, Boolean> ITEM_HAS_DURABILITY = (stack) -> stack.getMaxDamage() - CLIENT.player.getMainHandStack().getDamage() > 0;
     public static final Function<ItemStack, Boolean> ITEM_HAS_MAX_DURABILITY = (stack) -> stack.getMaxDamage() > 0;
