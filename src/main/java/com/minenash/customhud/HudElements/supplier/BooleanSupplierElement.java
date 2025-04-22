@@ -62,6 +62,7 @@ public class BooleanSupplierElement implements HudElement {
 
     public static final Supplier<Boolean> IS_FROZEN = () -> client.player.isFrozen();
     public static final Supplier<Boolean> IS_FREEZING = () -> client.player.getFrozenTicks() > 0;
+    public static final Supplier<Boolean> IS_ON_FIRE = () -> client.player.isOnFire();
 
     // ADD: onFire et al
 

@@ -199,16 +199,19 @@ public class AttributeFunctions {
     public static final Function<ItemStack, Boolean> ITEM_HAS_MORE_OUT_OF_STACK = (stack) -> CLIENT.player.getInventory().count(stack.getItem()) > stack.getCount();
 
     public static final Function<ItemStack, Number> ITEM_COOLDOWN = (stack) -> {
-        ItemCooldownManager.Entry entry = CLIENT.player.getItemCooldownManager().entries.get(stack.getItem());
-        return entry == null ? Double.NaN : entry.endTick() - CLIENT.player.getItemCooldownManager().tick;
+        ItemCooldownManager manger = CLIENT.player.getItemCooldownManager();
+        ItemCooldownManager.Entry entry = manger.entries.get(manger.getGroup(stack));
+        return entry == null ? stack.get(DataComponentTypes.USE_COOLDOWN) != null ? 0 : Double.NaN
+                                                   : entry.endTick() - CLIENT.player.getItemCooldownManager().tick;
     };
     public static final Function<ItemStack, Number> ITEM_MAX_COOLDOWN = (stack) -> {
-        ItemCooldownManager.Entry entry = CLIENT.player.getItemCooldownManager().entries.get(stack.getItem());
-        return entry == null ? Double.NaN : entry.endTick() - entry.startTick();
+        var c = stack.get(DataComponentTypes.USE_COOLDOWN);
+        return c == null ? null : c.getCooldownTicks();
     };
     public static final Function<ItemStack, Number> ITEM_COOLDOWN_PER = (stack) -> {
-        float cd = 100 * CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickProgress(true));
-        return cd == 0 ? Float.NaN : cd;
+        if (stack.get(DataComponentTypes.USE_COOLDOWN) == null)
+            return Double.NaN;
+        return 100 * CLIENT.player.getItemCooldownManager().getCooldownProgress(stack, CLIENT.getRenderTickCounter().getTickProgress(true));
     };
     public static final Function<ItemStack, Boolean> ITEM_COOLING_DOWN = (stack) -> CLIENT.player.getItemCooldownManager().isCoolingDown(stack);
     public static final Function<ItemStack, Boolean> ITEM_HAS_COOLDOWN = (stack) -> stack.get(DataComponentTypes.USE_COOLDOWN) != null;

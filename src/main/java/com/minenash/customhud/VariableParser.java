@@ -973,6 +973,7 @@ public class VariableParser {
             case "sprint_held" -> SPRINT_HELD;
             case "is_frozen" -> IS_FROZEN;
             case "is_freezing" -> IS_FREEZING;
+            case "on_fire" -> IS_ON_FIRE;
             case "hud_hidden" -> HUD_HIDDEN;
             case "screen_open" -> SCREEN_OPEN;
             case "chat_open" -> CHAT_OPEN;
