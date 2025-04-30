@@ -384,7 +384,7 @@ public class VariableParser {
                 String valueName = part.substring(4).trim();
                 return new SetValueElement(valueName, new Operation.Literal(0), null);
             }
-            String name = part.substring(4,commaIndex).toLowerCase();
+            String name = part.substring(4,commaIndex).trim().toLowerCase();
             String valueStr = part.substring(commaIndex+1).trim();
 
             Matcher matcher = SPACE_STR_PATTERN.matcher(valueStr);
