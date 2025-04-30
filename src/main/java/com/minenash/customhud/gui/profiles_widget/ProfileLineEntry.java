@@ -140,7 +140,7 @@ public class ProfileLineEntry extends LineEntry {
         posAndRender(context, mX, mY, delta, x, y, eWidth, edit, -16-42);
         posAndRender(context, mX, mY, delta, x, y, eWidth, keybind, -16-42-82);
         posAndRender(context, mX, mY, delta, x, y, eWidth, cycled, -16-42-82-18);
-        customize.active = !profile.toggles.isEmpty();
+        customize.active = !profile.toggles.isEmpty() && !profile.options.isEmpty();
         if (customize.active)
             posAndRender(context, mX, mY, delta, x, y, eWidth, customize, -16-42-82-18-34);
 
