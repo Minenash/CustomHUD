@@ -2,6 +2,7 @@ package com.minenash.customhud;
 
 import com.google.gson.*;
 import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.data.ProfileOption;
 import com.minenash.customhud.data.Toggle;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -203,6 +204,21 @@ public class ConfigManager {
                 }
             }
         }
+
+        if (json.has("options")) {
+            JsonArray options = json.get("options").getAsJsonArray();
+            for (JsonElement element : options) {
+                JsonObject obj = element.getAsJsonObject();
+                String profileName = obj.get("profile").getAsString();
+                Profile p = profiles.get(profileName);
+                if (p != null) {
+                    String id = obj.get("id").getAsString();
+                    ProfileOption option = p.options.get(id);
+                    if (option != null)
+                        option.applyPref(obj);
+                }
+            }
+        }
     }
 
     public static void save() {
@@ -246,6 +262,15 @@ public class ConfigManager {
             }
         }
         config.add("toggleBinds", toggleBinds);
+
+        JsonArray options = new JsonArray();
+        for (Profile profile : ProfileManager.getProfiles())
+            for (ProfileOption option : profile.options.values())
+                options.add(option.serializePref(profile.name));
+
+        config.add("options", options);
+
+
 
 
         try {

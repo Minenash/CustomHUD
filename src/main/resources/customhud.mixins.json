@@ -16,6 +16,7 @@
     "ResourcePackProfileMetadataMixin",
     "ResourcePackProfileMixin",
     "SubtitleEntryMixin",
+    "TabButtonWidgetMixin",
     "TitleScreenMixin",
     "WorldTimeUpdateS2CPacketMixin",
     "accessors.AttributeContainerAccessor",

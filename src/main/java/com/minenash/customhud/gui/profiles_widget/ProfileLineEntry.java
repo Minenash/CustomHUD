@@ -3,14 +3,13 @@ package com.minenash.customhud.gui.profiles_widget;
 import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.Errors;
+import com.minenash.customhud.gui.customize.CustomizeScreen;
 import com.minenash.customhud.gui.ErrorsScreen;
 import com.minenash.customhud.gui.NewConfigScreen.Mode;
-import com.minenash.customhud.gui.TogglesScreen;
 //import com.minenash.customhud.gui.editor.EditorWindow;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -25,7 +24,7 @@ import static com.minenash.customhud.CustomHud.CLIENT;
 
 public class ProfileLineEntry extends LineEntry {
 
-    public final ButtonWidget selected, cycled, toggles;
+    public final ButtonWidget selected, cycled, customize;
     private final ButtonWidget keybind, edit, error;
     private final ButtonWidget delete, up, down;
     public final TextFieldWidget editName;
@@ -60,8 +59,15 @@ public class ProfileLineEntry extends LineEntry {
         });
         int errors = Errors.getErrors(profile.name).size();
         int toggles = profile.toggles.size();
+        int options = profile.options.size();
+
+        String customizeTooltip = options == 0 ? "" : options + (options == 1 ? " Option" : " Options");
+        if (toggles > 0 && options > 0)
+            customizeTooltip += "\n";
+        customizeTooltip += toggles == 0 ? "" : toggles + (toggles == 1 ? " Toggle" : " Toggles");
+
         this.error = button("§c!", "§c" + (errors == 1 ? "1 Error Found" : errors + " Errors Found") , 16, (b) -> CLIENT.setScreen(new ErrorsScreen(widget.screen, profile)));
-        this.toggles = button("Toggles", toggles == 1 ? "1 Toggle in the profile" : toggles + " Toggles in the profile",48, (b) -> CLIENT.setScreen(new TogglesScreen(widget.screen, profile)));
+        this.customize = button("\uD83D\uDD8C", customizeTooltip, 32, (b) -> CLIENT.setScreen(new CustomizeScreen(widget.screen, profile, null)));
         this.delete = button("§cDelete", "§cThis Can't Be §nUndone!!!!", 48, (b) -> widget.deleteProfile(this));
         this.up = button("§a↑", 16, b -> widget.move(this, -1));
         this.down = button("§c↓", 16, b -> widget.move(this, 1));
@@ -99,7 +105,7 @@ public class ProfileLineEntry extends LineEntry {
     public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
         editName.setX(x + 16 + 20);
         editName.setY(y);
-        editName.setWidth(eWidth - 16 - 20 - 16 - 42 - 82 - 18 - (profile.toggles.isEmpty() ? 0 : 50) - 3);
+        editName.setWidth(eWidth - 16 - 20 - 16 - 42 - 82 - 18 - (profile.toggles.isEmpty() ? 0 : 34) - 3);
 
         if (editName.isSelected() || editName.isMouseOver(mX, mY))
             editName.render(context, mX, mY, delta);
@@ -134,9 +140,9 @@ public class ProfileLineEntry extends LineEntry {
         posAndRender(context, mX, mY, delta, x, y, eWidth, edit, -16-42);
         posAndRender(context, mX, mY, delta, x, y, eWidth, keybind, -16-42-82);
         posAndRender(context, mX, mY, delta, x, y, eWidth, cycled, -16-42-82-18);
-        toggles.active = !profile.toggles.isEmpty();
-        if (toggles.active)
-            posAndRender(context, mX, mY, delta, x, y, eWidth, toggles, -16-42-82-18-50);
+        customize.active = !profile.toggles.isEmpty();
+        if (customize.active)
+            posAndRender(context, mX, mY, delta, x, y, eWidth, customize, -16-42-82-18-34);
 
     }
 
@@ -174,7 +180,7 @@ public class ProfileLineEntry extends LineEntry {
         }
         else {
 //            if (!profile.toggles.isEmpty())
-                widgets.add(toggles);
+                widgets.add(customize);
             widgets.add(cycled);
             widgets.add(keybind);
             widgets.add(edit);

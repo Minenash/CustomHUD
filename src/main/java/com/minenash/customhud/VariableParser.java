@@ -28,7 +28,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -45,10 +44,12 @@ import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Pair;
 import org.lwjgl.glfw.GLFW;
 
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -328,9 +329,11 @@ public class VariableParser {
         if (part.startsWith("$")) {
             try {
                 Matcher matcher = EXPRESSION_WITH_PRECISION.matcher(part);
-                matcher.matches();
-                int precision = matcher.group(1) == null ? -1 : Integer.parseInt(matcher.group(1));
-                return new ExpressionElement( ExpressionParser.parseExpression(matcher.group(2), original, profile, debugLine, enabled, listProviders, false), precision );
+                if (matcher.matches())
+                    return new ExpressionElement(
+                        ExpressionParser.parseExpression(matcher.group(2), original, profile, debugLine, enabled, listProviders, false),
+                        matcher.group(1) == null ? -1 : Integer.parseInt(matcher.group(1)));
+                else return null;
             }
             catch (Exception e) {
                 CustomHud.LOGGER.catching(e);
@@ -551,6 +554,76 @@ public class VariableParser {
             return new MacroElement( part.substring(part.indexOf(":")+1), flags );
         }
 
+        if (part.startsWith("option:")) {
+            part = part.substring(part.indexOf(":")+1);
+            int sci = part.indexOf(':');
+
+            String id = sci >= 0 ? part.substring(0, sci) : part;
+            String method = sci >= 0 ? part.substring(sci+1) : "";
+            ProfileOption option = profile.options.get(id.toLowerCase());
+
+            if (option == null) {
+                Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_OPTION, id);
+                return null;
+            }
+
+            if (option.value instanceof Color) {
+                if (method.isEmpty()) {
+                    return Flags.wrap(new SpecialSupplierElement(of(
+                        () -> Integer.toHexString( option.<Color>get().getRGB() ).toUpperCase(),
+                        () -> option.<Color>get().getRGB(),
+                        () -> option.<Color>get().getRGB() != -1
+                    )), flags);
+                }
+                Supplier<Number> sup = switch (method) {
+                    case "r", "red" -> () -> option.<Color>get().getRed();
+                    case "b", "blue" -> () -> option.<Color>get().getBlue();
+                    case "g", "green" -> () -> option.<Color>get().getGreen();
+                    case "a", "alpha" -> () -> option.<Color>get().getAlpha();
+                    default -> null;
+                };
+                if (sup == null) {
+                    Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_COLOR_OPTION_METHOD, method);
+                    return null;
+                }
+                return Flags.wrap(new NumberSupplierElement(sup, flags), flags);
+            }
+
+            if (option.value instanceof KeyBinding) {
+                if (method.isEmpty()) {
+                    return Flags.wrap(new SpecialSupplierElement(of(
+                        () -> option.<KeyBinding>get().getBoundKeyLocalizedText().getString(),
+                        () -> option.<KeyBinding>get().boundKey.getCode(),
+                        () -> option.<KeyBinding>get().isPressed()
+                    )), flags);
+                }
+                if (method.equals("on_press"))
+                    return Flags.wrap(new BooleanSupplierElement( () -> option.<KeyBinding>get().timesPressed > 0), flags);
+
+                Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_COLOR_OPTION_METHOD, method);
+                return null;
+            }
+
+            if (!method.isEmpty())
+                Errors.addError(profile.name, debugLine, original, ErrorType.OPTION_NO_METHOD, id);
+            if (option.value instanceof Boolean)
+                return Flags.wrap(new BooleanSupplierElement(option::get), flags);
+            if (option.value instanceof ProfileOption.OnOff)
+                return Flags.wrap(new SpecialSupplierElement(of(
+                    () -> option.value == ProfileOption.OnOff.ON ? "on" : "off",
+                    () -> option.value == ProfileOption.OnOff.ON ? 1 : 0,
+                    () -> option.value == ProfileOption.OnOff.ON
+                )), flags);
+            if (option.value instanceof Integer || option.value instanceof Double)
+                return Flags.wrap(new NumberSupplierElement(option::get, flags), flags);
+            if (option.value instanceof String)
+                return Flags.wrap(new StringSupplierElement(option::get), flags);
+
+            Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_OPTION_TYPE, method);
+            return null;
+
+        }
+
         if (part.startsWith("score:")) {
             part = part.substring(6);
             int collinIndex = part.indexOf(':');
@@ -570,7 +643,7 @@ public class VariableParser {
             return Flags.wrap(new NumberSupplierElement(() -> {
                 ScoreboardObjective obj = scoreboard().getNullableObjective(p);
                 if (obj == null) return null;
-                var score = scoreboard().getScore(ScoreHolder.fromProfile(CLIENT.player.getGameProfile()), obj);
+                var score = scoreboard().getScore(ScoreHolder.fromProfile(CLIENT.getGameProfile()), obj);
                 return score == null ? 0 : score.getScore();
             }, flags), flags);
         }

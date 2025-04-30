@@ -16,6 +16,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -187,6 +188,11 @@ public class CustomHudRenderer3 {
 
                 }
 
+            }
+
+            for (ProfileOption o : profile.options.values()) {
+                if (o.value instanceof KeyBinding kb && kb.timesPressed > 0)
+                    kb.timesPressed = 0;
             }
 
             int width = section.width > 0 ? section.width : bgBuilder.maxWidth;

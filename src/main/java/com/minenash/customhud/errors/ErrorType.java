@@ -57,6 +57,11 @@ public enum ErrorType {
     UNKNOWN_PROFILER_TIMING_PROPERTY("WIP", "references/v4_wip", "Unknown Profiler Time Property: §e"),
     UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),
 
+    UNKNOWN_OPTION ("WIP", "references/v4_wip", "Option was not made: §e"),
+    OPTION_NO_METHOD ("WIP", "references/v4_wip", "This option's type doesn't have methods: §e"),
+    UNKNOWN_COLOR_OPTION_METHOD ("WIP", "references/v4_wip", "Unknown method for Color Option: §e"),
+    UNKNOWN_OPTION_TYPE ("WIP", "references/v4_wip", "Unknown option type: §e"),
+
     UNKNOWN_SETTING ("Settings", "references/settings", "Unknown Setting: §e"),
     UNKNOWN_KEYBIND("Settings", "references/settings", "Unknown Keybind: §e"),
     UNKNOWN_SOUND_CATEGORY ("Settings", "references/settings", "Unknown Sound Category: §e"),

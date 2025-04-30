@@ -13,7 +13,6 @@ import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
@@ -171,7 +170,7 @@ public class NewConfigScreen extends Screen {
             case GLFW.GLFW_KEY_UP -> {
                 int max = profiles.children().size()-1;
                 for (int i = 0; i < max; i++)
-                    if (profiles.children().get(i) instanceof ProfileLineEntry e && e.toggles.isFocused())
+                    if (profiles.children().get(i) instanceof ProfileLineEntry e && e.customize.isFocused())
                         if (i > 0)
                             return move(LEFT, UP);
                         else break;
@@ -180,7 +179,7 @@ public class NewConfigScreen extends Screen {
             }
             case GLFW.GLFW_KEY_DOWN -> {
                 for (int i = 0; i < profiles.children().size()-1; i++)
-                    if (profiles.children().get(i) instanceof ProfileLineEntry e && e.toggles.isFocused())
+                    if (profiles.children().get(i) instanceof ProfileLineEntry e && e.customize.isFocused())
                         return move(LEFT, DOWN);
             }
         }

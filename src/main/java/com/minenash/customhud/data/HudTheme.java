@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
+import static com.minenash.customhud.data.Profile.PROFILE_OPTION_COLOR_PATTERN;
 
 public class HudTheme {
     public enum ScaleMethod {DIRECT, GUI, RELATIVE_GUI}
@@ -342,6 +343,19 @@ public class HudTheme {
             default -> null;
         };
         return formatting == null ? null : new CHFormatting().format(formatting);
+    }
+
+    public static int parseColor(String str, int fallback) {
+        if (str == null) return fallback;
+
+        Integer color = parseColorName(str);
+        if (color != null) return color;
+
+        Matcher m = PROFILE_OPTION_COLOR_PATTERN.matcher(str);
+        if (m.matches())
+            color = HudTheme.parseHexNumber(m.group(1)).getColor();
+
+        return color == null ? fallback : color;
     }
 
 

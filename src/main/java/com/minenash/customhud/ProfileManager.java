@@ -1,6 +1,7 @@
 package com.minenash.customhud;
 
 import com.minenash.customhud.data.Profile;
+import com.minenash.customhud.data.ProfileOption;
 import com.minenash.customhud.data.Toggle;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.toast.SystemToast;
@@ -71,6 +72,15 @@ public class ProfileManager {
                         tt.value = oldT.getValue();
                         tt.key = oldT.key;
                         tt.modifier = oldT.modifier;
+                    }
+                }
+
+                for (var entry : p.options.entrySet()) {
+                    ProfileOption o = entry.getValue();
+                    if (profile.options.containsKey(entry.getKey())) {
+                        ProfileOption oo = profile.options.get(entry.getKey());
+                        if (oo.type.equals(o.type))
+                            oo.value = o.value;
                     }
                 }
 

@@ -8,7 +8,7 @@ import com.minenash.customhud.data.Toggle;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.gui.ErrorsScreen;
 import com.minenash.customhud.gui.NewConfigScreen;
-import com.minenash.customhud.gui.TogglesScreen;
+import com.minenash.customhud.gui.customize.CustomizeScreen;
 import com.minenash.customhud.render.CustomHudRenderer3;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -215,7 +215,7 @@ public class CustomHud implements ModInitializer {
 					ProfileManager.replace(profile);
 					if (CLIENT.currentScreen instanceof ErrorsScreen screen)
 						screen.changeProfile(profile);
-					if (CLIENT.currentScreen instanceof TogglesScreen screen)
+					if (CLIENT.currentScreen instanceof CustomizeScreen screen)
 						screen.changeProfile(profile);
 					if (CLIENT.currentScreen instanceof NewConfigScreen screen)
 						screen.init();

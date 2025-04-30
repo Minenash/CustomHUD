@@ -1,6 +1,7 @@
 package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.complex.ComplexData;
+import com.minenash.customhud.data.ProfileOption;
 import com.minenash.customhud.mixin.accessors.AttributeContainerAccessor;
 import com.minenash.customhud.mixin.accessors.BlockPredicatesCheckerAccessor;
 import com.minenash.customhud.mixin.accessors.DefaultAttributeContainerAccessor;

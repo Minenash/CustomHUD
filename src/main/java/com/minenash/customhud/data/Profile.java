@@ -9,8 +9,10 @@ import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.util.Pair;
 import org.lwjgl.glfw.GLFW;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +20,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,18 +31,22 @@ public class Profile {
     public KeyBinding keyBinding;
     public boolean cycle = true;
 
-    public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== ?section: ?(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) ?(?:, ?([^,]*)?)? ?(?:, ?([^,]*)?)? ?(?:, ?(true|false)?)? ?(?:, ?(-?\\d+|fit|max)?)? ?(?:, ?(left|right|center)?)? ?==");
-    private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== ?targetrange: ?(\\d+|max) ?==");
-    private static final Pattern WHEN_HUD_HIDDEN = Pattern.compile("== ?whenhudhidden?: ?(show|showifscreen|hide) ?==");
-    private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== ?crosshair: ?(.*) ?==");
-    private static final Pattern DEBUG_CHART_PATTERN = Pattern.compile("== ?(left|right)chart: ?(.*) ?==");
-    private static final Pattern DISABLE_PATTERN = Pattern.compile("== ?disable: ?(.*) ?==");
-    private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== ?(.+) ?==");
-    private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= ?(.+) ?=");
+    public static final Pattern SECTION_DECORATION_PATTERN = Pattern.compile("== *section: *(topleft|topcenter|topright|centerleft|centercenter|centerright|bottomleft|bottomcenter|bottomright) *(?:, *([^,]*)?)? *(?:, *([^,]*)?)? *(?:, *(true|false)?)? *(?:, *(-?\\d+|fit|max)?)? *(?:, *(left|right|center)?)? *==");
+    private static final Pattern TARGET_RANGE_FLAG_PATTERN = Pattern.compile("== *targetrange: *(\\d+|max) *==");
+    private static final Pattern WHEN_HUD_HIDDEN = Pattern.compile("== *whenhudhidden?: *(show|showifscreen|hide) *==");
+    private static final Pattern CROSSHAIR_PATTERN = Pattern.compile("== *crosshair: *(.*) *==");
+    private static final Pattern DEBUG_CHART_PATTERN = Pattern.compile("== *(left|right)chart: *(.*) *==");
+    private static final Pattern DISABLE_PATTERN = Pattern.compile("== *disable: *(.*) *==");
+    private static final Pattern GLOBAL_THEME_PATTERN = Pattern.compile("== *(.+) *==");
+    private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= *(.+) *=");
 
-    private static final Pattern IF_PATTERN = Pattern.compile("=if ?: ?(.+)=");
-    private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif ?: ?(.+)=");
-    private static final Pattern FOR_PATTERN = Pattern.compile("=for ?: ?(.+)=");
+    private static final Pattern PROFILE_OPTION_CATEGORY_PATTERN = Pattern.compile("== *OptionCategory: *(.*?) *==", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PROFILE_OPTION_PATTERN = Pattern.compile("== *option: *([a-zA-Z0-9_]+)(?: *, *(bool|int|decimal|color|string|keybind|onoff) *(?: *,(\"[^\"\\n\\r]+\"|[^,\\n\\r]+)(?: *, *(\"[^\"\\n\\r]+\"|[^,\\n\\r]+) *(?: *, *(\"[^\"\\n\\r]+\"|[^,\\n\\r]+))?)?)?)? *==");
+    public static final Pattern PROFILE_OPTION_COLOR_PATTERN = Pattern.compile("(?:0x|#)?([0-9a-f]{1,8})");
+
+    private static final Pattern IF_PATTERN = Pattern.compile("=if *: *(.+)=");
+    private static final Pattern ELSEIF_PATTERN = Pattern.compile("=elseif *: *(.+)=");
+    private static final Pattern FOR_PATTERN = Pattern.compile("=for *: *(.+)=");
 
     public ComplexData.Enabled enabled = new ComplexData.Enabled();
 
@@ -57,6 +64,8 @@ public class Profile {
     public Map<String, Double> numValues = new LinkedHashMap<>();
     public Map<String, String> strValues = new LinkedHashMap<>();
     public Map<String, Macro> macros = new LinkedHashMap<>();
+    public Map<String,ProfileOption> options = new LinkedHashMap<>();
+    public List<Pair<Integer,String>> optionHeaders = new ArrayList<>(0);
 
     private MultiLineStacker stacker = new MultiLineStacker();
 
@@ -123,6 +132,9 @@ public class Profile {
             if (line.startsWith("//"))
                 continue;
             if (section == null) {
+                if (lineLC.isEmpty())
+                    continue;
+
                 Matcher matcher = TARGET_RANGE_FLAG_PATTERN.matcher(lineLC);
                 if (matcher.matches()) {
                     profile.targetDistance = matcher.group(1).equals("max") ? 725 : Integer.parseInt(matcher.group(1));
@@ -163,6 +175,32 @@ public class Profile {
                 if (matcher.matches()) {
                     if (!DisableElement.add(profile.disabled, matcher.group(1)))
                         Errors.addError(profileName, i, line, ErrorType.UNKNOWN_HUD_ELEMENT, matcher.group(1));
+                    continue;
+                }
+
+                matcher = PROFILE_OPTION_CATEGORY_PATTERN.matcher(line.trim());
+                if (matcher.matches()) {
+                    String categoryName = matcher.group(1);
+                    if (categoryName.isEmpty())
+                        categoryName = "Unnamed Category";
+                    profile.optionHeaders.add(new Pair<>(profile.options.size() + profile.optionHeaders.size(),categoryName));
+                    continue;
+                }
+
+                matcher = PROFILE_OPTION_PATTERN.matcher(line.trim());
+                if (matcher.matches()) {
+                    String id = matcher.group(1).toLowerCase();
+                    String type = blank(matcher,2) ? "int" : matcher.group(2).toLowerCase();
+                    String value = blank(matcher,3) ? null : matcher.group(3).trim();
+                    String name = blank(matcher,4) ? matcher.group(1) : matcher.group(4).trim();
+                    String tooltip = blank(matcher,5) ? null : matcher.group(5).trim();
+
+                    if (name.startsWith("\"") && name.endsWith("\""))
+                        name = name.substring(1, name.length() - 1);
+                    if (tooltip != null && tooltip.startsWith("\"") && tooltip.endsWith("\""))
+                        tooltip = tooltip.substring(1, tooltip.length() - 1);
+
+                    profile.options.put(id, ProfileOption.fromProfile(id, name, tooltip, type, value));
                     continue;
                 }
 
@@ -283,6 +321,10 @@ public class Profile {
 //        }
 
         return profile;
+    }
+
+    public static boolean blank(Matcher matcher, int group) {
+        return matcher.group(group) == null || matcher.group(group).isBlank();
     }
 
 }
