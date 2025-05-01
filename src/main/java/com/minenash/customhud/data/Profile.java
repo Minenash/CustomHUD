@@ -41,7 +41,7 @@ public class Profile {
     private static final Pattern LOCAL_THEME_PATTERN = Pattern.compile("= *(.+) *=");
 
     private static final Pattern PROFILE_OPTION_CATEGORY_PATTERN = Pattern.compile("== *OptionCategory: *(.*?) *==", Pattern.CASE_INSENSITIVE);
-    private static final Pattern PROFILE_OPTION_PATTERN = Pattern.compile("== *option: *([a-zA-Z0-9_]+)(?: *, *(bool|int|decimal|color|string|keybind|onoff) *(?: *,(\"[^\"\\n\\r]+\"|[^,\\n\\r]+)(?: *, *(\"[^\"\\n\\r]+\"|[^,\\n\\r]+) *(?: *, *(\"[^\"\\n\\r]+\"|[^,\\n\\r]+))?)?)?)? *==");
+    private static final Pattern PROFILE_OPTION_PATTERN = Pattern.compile("== *option: *([a-zA-Z0-9_]+)(?: *, *(bool|int|decimal|color|string|keybind|onoff) *(?: *,(\"[^\"\\n\\r]+\"|[^,\\n\\r]+)(?: *, *(\"[^\"\\n\\r]+\"|[^,\\n\\r]+) *(?: *, *(\"[^\"\\n\\r]+\"|[^,\\n\\r]+))?)?)?)? *==", Pattern.CASE_INSENSITIVE);
     public static final Pattern PROFILE_OPTION_COLOR_PATTERN = Pattern.compile("(?:0x|#)?([0-9a-f]{1,8})");
 
     private static final Pattern IF_PATTERN = Pattern.compile("=if *: *(.+)=");
@@ -259,8 +259,13 @@ public class Profile {
 
                 continue;
             }
-            if (section == null)
+            if (section == null) {
+                if (lineLC.startsWith("==") && lineLC.endsWith("==")) {
+                    Errors.addError(profileName, i, line, ErrorType.UNKNOWN_THEME_FLAG, "");
+                    continue;
+                }
                 profile.sections.add(section = new Section.Top(Section.Align.LEFT));
+            }
 
             if (( matcher = IF_PATTERN.matcher(lineLC) ).matches())
                 profile.stacker.startIf(matcher.group(1), profile, i, line, profile.enabled);

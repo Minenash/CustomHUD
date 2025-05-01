@@ -18,7 +18,6 @@ public abstract class IconElement extends FunctionalElement {
     protected final int shiftY;
     protected final int width;
     protected final Quaternionf rotation;
-    protected final Quaternionf rotationInverse;
     protected final boolean referenceCorner;
     protected UUID providerID = null;
 
@@ -28,7 +27,6 @@ public abstract class IconElement extends FunctionalElement {
         shiftY = flags.iconShiftY;
         width = (int) Math.ceil( flags.iconWidth != -1 ? flags.iconWidth : defaultWidth * scale);
         rotation = new Quaternionf().rotationZ(flags.rotation);
-        rotationInverse = new Quaternionf().rotationZ(-flags.rotation);
         referenceCorner = flags.iconReferenceCorner;
     }
 

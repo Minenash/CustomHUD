@@ -15,6 +15,7 @@ import com.minenash.customhud.HudElements.text.ActionbarMsgElement;
 import com.minenash.customhud.HudElements.text.TextSupplierElement;
 import com.minenash.customhud.HudElements.text.TitleMsgElement;
 import com.minenash.customhud.complex.ComplexData;
+import com.minenash.customhud.complex.VelocityTracker;
 import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.conditionals.SudoElements;
@@ -504,6 +505,66 @@ public class VariableParser {
                 return element;
             Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
             return null;
+        }
+
+        if (part.startsWith("velocity")) {
+            part = part.substring(8);
+
+            boolean trackX = false, trackY = false, trackZ = false;
+            int offset = 0;
+            getAxes:
+            if (part.isEmpty() || part.charAt(0) != '_')
+                trackX = trackY = trackZ = true;
+            else {
+                if (part.length() >= 2)
+                    switch (part.charAt(1)) {
+                        case 'x': trackX = true; offset = 2; break;
+                        case 'y': trackY = true; offset = 2; break;
+                        case 'z': trackZ = true; offset = 2; break;
+                        default: break getAxes;
+                    }
+                if (part.length() >= 3)
+                    switch (part.charAt(2)) {
+                        case 'x': trackX = true; offset = 3; break;
+                        case 'y': trackY = true; offset = 3; break;
+                        case 'z': trackZ = true; offset = 3; break;
+                        default: break getAxes;
+                    }
+                if (part.length() >= 4)
+                    switch (part.charAt(3)) {
+                        case 'x': trackX = true; offset = 4; break;
+                        case 'y': trackY = true; offset = 4; break;
+                        case 'z': trackZ = true; offset = 4; break;
+                    }
+            }
+            part = part.substring(offset);
+
+            boolean kph = false;
+            if (part.startsWith("_kph")) {
+                kph = true;
+                part = part.substring(4);
+            }
+
+            Operation smoothing = new Operation.Literal(0);
+
+            int closeBracket = part.lastIndexOf(']');
+            if (!part.isEmpty() && part.charAt(0) == '[' && closeBracket != -1) {
+                List<String> parts = partitionConditional(part.substring(1, closeBracket));
+                if (parts.size() != 1) {
+                    Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_TIMER, "Expected 1 arg, found" + parts.size());
+                    return null;
+                }
+                smoothing = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProviders, false);
+            }
+
+            String[] flagParts = (closeBracket == - 1 ? part : part.substring(closeBracket)).split(" ");
+            Flags flags = Flags.parse(profile.name, debugLine, flagParts);
+
+            VelocityTracker tracker = new VelocityTracker(smoothing, trackX, trackY, trackZ);
+            enabled.velocityTrackers.add(tracker);
+            return Flags.wrap(new NumberSupplierElement(NumberSupplierElement.of(
+                kph ? () -> tracker.velocity * 3.6: () -> tracker.velocity
+                , 1 ), flags), flags);
         }
 
         el = listOnlyElement(part, profile, debugLine, enabled, original, listProviders, (p) -> {
@@ -1254,8 +1315,8 @@ public class VariableParser {
     }
 
     private static NumberSupplierElement.Entry getDecimalSupplier(String element, ComplexData.Enabled enabled) {
-        if (element.startsWith("velocity_"))
-            enabled.velocity = true;
+//        if (element.startsWith("velocity_"))
+//            enabled.velocity = true;
         return switch (element) {
             case "x" -> X;
             case "y" -> Y;
@@ -1280,12 +1341,12 @@ public class VariableParser {
             case "entity_reach_distance", "reach_distance", "entity_reach", "reach" -> ENTITY_REACH_DISTANCE;
             case "block_reach_distance", "block_reach" -> BLOCK_REACH_DISTANCE;
             case "fishing_hook_distance" -> FISHING_HOOK_DISTANCE;
-            case "velocity_xz" -> VELOCITY_XZ;
-            case "velocity_y" -> VELOCITY_Y;
-            case "velocity_xyz" -> VELOCITY_XYZ;
-            case "velocity_xz_kmh" -> VELOCITY_XZ_KMH;
-            case "velocity_y_kmh" -> VELOCITY_Y_KMH;
-            case "velocity_xyz_kmh" -> VELOCITY_XYZ_KMH;
+//            case "velocity_xz" -> VELOCITY_XZ;
+//            case "velocity_y" -> VELOCITY_Y;
+//            case "velocity_xyz" -> VELOCITY_XYZ;
+//            case "velocity_xz_kmh" -> VELOCITY_XZ_KMH;
+//            case "velocity_y_kmh" -> VELOCITY_Y_KMH;
+//            case "velocity_xyz_kmh" -> VELOCITY_XYZ_KMH;
             case "yaw" -> YAW;
             case "pitch" -> PITCH;
             case "day" -> DAY;

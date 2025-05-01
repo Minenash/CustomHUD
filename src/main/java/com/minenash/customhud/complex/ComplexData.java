@@ -216,25 +216,11 @@ public class ComplexData {
             CLIENT.getProfiler().pop();
         }
 
-        velocity:
-        if (profile.enabled.velocity) {
-            CLIENT.getProfiler().push("velocity");
-            if (velocityWaitCounter > 0) {
-                velocityWaitCounter--;
-                CLIENT.getProfiler().pop();
-                break velocity;
-            }
-            velocityWaitCounter = 4;
-            ClientPlayerEntity p = client.player;
-            final double changeXZ = Math.sqrt(Math.pow(Math.abs(p.getX() - x1), 2) + Math.pow(Math.abs(p.getZ() - z1), 2));
-            final double changeY = Math.abs(p.getY() - y1);
-            final double changeXYZ = Math.sqrt(changeXZ*changeXZ + changeY*changeY);
-            x1 = p.getX();
-            y1 = p.getY();
-            z1 = p.getZ();
-            velocityXZ = changeXZ * 4;
-            velocityY = changeY * 4;
-            velocityXYZ = changeXYZ * 4;
+        if (!profile.enabled.velocityTrackers.isEmpty()) {
+            CLIENT.getProfiler().push("velocities");
+            for (var v : profile.enabled.velocityTrackers)
+                v.tick();
+            VelocityTracker.recordCords();
             CLIENT.getProfiler().pop();
         }
 
@@ -447,6 +433,8 @@ public class ComplexData {
         public static final Enabled DISABLED = new Enabled();
         public final Map<String,Boolean> custom = new HashMap<>();
 
+        public final List<VelocityTracker> velocityTrackers = new ArrayList<>();
+
         public boolean clientChunk = false;
         public boolean serverChunk = false;
         public boolean serverWorld = false;
@@ -457,7 +445,6 @@ public class ComplexData {
         public boolean targetFluid = false;
         public boolean targetEntity = false;
         public boolean time = false;
-        public boolean velocity = false;
         public boolean cpu = false;
         public boolean cpuUsage = false;
         public boolean updateStats = false;
@@ -483,6 +470,7 @@ public class ComplexData {
                 catch (Exception ignored) {}
             }
             this.custom.putAll(enabled.custom);
+            this.velocityTrackers.addAll(enabled.velocityTrackers);
         }
 
         public boolean get(String name) {

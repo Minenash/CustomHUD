@@ -103,9 +103,10 @@ public class ProfileLineEntry extends LineEntry {
 
     @Override
     public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
+        customize.active = !profile.toggles.isEmpty() || !profile.options.isEmpty();
         editName.setX(x + 16 + 20);
         editName.setY(y);
-        editName.setWidth(eWidth - 16 - 20 - 16 - 42 - 82 - 18 - (profile.toggles.isEmpty() ? 0 : 34) - 3);
+        editName.setWidth(eWidth - 16 - 20 - 16 - 42 - 82 - 18 - (customize.active ? 34 : 0) - 3);
 
         if (editName.isSelected() || editName.isMouseOver(mX, mY))
             editName.render(context, mX, mY, delta);
@@ -140,7 +141,6 @@ public class ProfileLineEntry extends LineEntry {
         posAndRender(context, mX, mY, delta, x, y, eWidth, edit, -16-42);
         posAndRender(context, mX, mY, delta, x, y, eWidth, keybind, -16-42-82);
         posAndRender(context, mX, mY, delta, x, y, eWidth, cycled, -16-42-82-18);
-        customize.active = !profile.toggles.isEmpty() && !profile.options.isEmpty();
         if (customize.active)
             posAndRender(context, mX, mY, delta, x, y, eWidth, customize, -16-42-82-18-34);
 

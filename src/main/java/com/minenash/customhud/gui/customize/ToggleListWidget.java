@@ -169,7 +169,8 @@ public class ToggleListWidget extends ElementListWidget<ToggleListWidget.TEntry>
         public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
             Text lines = getLines();
             int linesLength = client.textRenderer.getWidth(lines);
-            if (hovered)
+            boolean isHovered = mY >= y && mY <= y+eHeight && mX >= x-(linesLength/2)-3 && mX <= x+eWidth+16;
+            if (isHovered)
                 context.fill(x-(linesLength/2)-3, y-1, x+eWidth+16, y+eHeight+3, 0x11ECECEC);
 
             context.drawTextWithShadow(client.textRenderer, toggle.getDisplayName(), x+0+24, y+4, 0xFFFFFFFF);
@@ -182,7 +183,7 @@ public class ToggleListWidget extends ElementListWidget<ToggleListWidget.TEntry>
             else
                 context.drawCenteredTextWithShadow(client.textRenderer, lines, x+0, y+4, 0xFFFFFFFF);
 
-            if (toggle.lines.size() > 2 && hovered && mX > x-15 && mX < x+15)
+            if (toggle.lines.size() > 2 && isHovered && mX <= x+(linesLength/2)+3)
                 parent.setTooltip(Text.literal(StringUtils.join(toggle.lines, ", ")));
 
 
