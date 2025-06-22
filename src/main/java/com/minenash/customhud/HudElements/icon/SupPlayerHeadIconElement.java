@@ -30,18 +30,18 @@ public class SupPlayerHeadIconElement extends IconElement {
         if (playerEntry == null)
             return;
 
-        context.getMatrices().push();
+        context.getMatrices().pushMatrix();
         if (!referenceCorner)
             y -= (10*scale-10)/2;
 
         PlayerEntity playerEntity = CLIENT.world.getPlayerByUuid(playerEntry.getProfile().getId());
         boolean flip = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
         boolean hat = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
-        context.getMatrices().translate(piece.x+((int)scale) + shiftX, y + shiftY, 0);
+        context.getMatrices().translate(piece.x+((int)scale) + shiftX, y + shiftY);
         int size = (int)(8*scale);
         rotate(context.getMatrices(), size, size);
         PlayerSkinDrawer.draw(context, playerEntry.getSkinTextures().texture(), 0, 0, size, hat, flip, -1);
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
     }
 
 }

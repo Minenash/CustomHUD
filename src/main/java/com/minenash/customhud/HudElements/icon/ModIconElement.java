@@ -1,15 +1,14 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.HudElements.list.ListProvider;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
 import com.terraformersmc.modmenu.util.mod.Mod;
 import com.terraformersmc.modmenu.util.mod.fabric.FabricIconHandler;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import org.joml.Matrix3x2fStack;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,17 +47,17 @@ public class ModIconElement extends IconElement {
             }
         }
 
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2, 0);
+        Matrix3x2fStack matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2);
         if (!referenceCorner)
-            matrices.translate(0, -(11*scale-11)/2F, 0);
+            matrices.translate(0, -(11*scale-11)/2F);
 //        matrices.scale(scale, scale, 0);
         int w = (int) (11 * scale);
         rotate(matrices, w, w);
 
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, id, 0, 0, 0, 0, w, w, w, w);
-        matrices.pop();
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, id, 0, 0, 0, 0, w, w, w, w);
+        matrices.popMatrix();
     }
 
 }

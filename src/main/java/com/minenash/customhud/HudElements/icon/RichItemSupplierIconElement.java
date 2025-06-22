@@ -4,13 +4,13 @@ import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.CustomHudRenderer3;
 import com.minenash.customhud.render.RenderPiece;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Matrix3x2fStack;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -75,14 +75,14 @@ public class RichItemSupplierIconElement extends IconElement {
         ItemStack stack = getStack(piece);
         if (stack == null || stack.isEmpty())
             return;
-        MatrixStack matrices = context.getMatrices();
+        Matrix3x2fStack matrices = context.getMatrices();
 
-        matrices.push();
-        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2, 0);
+        matrices.pushMatrix();
+        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2);
         int size = piece.shiftTextUpOrFitItemIcon ? 11 : 16;
         if (!referenceCorner)
-            matrices.translate(0, -(size*scale-11)/2, 0);
-        matrices.scale(size/16F * scale, size/16F * scale, 1);
+            matrices.translate(0, -(size*scale-11)/2);
+        matrices.scale(size/16F * scale, size/16F * scale);
         rotate(matrices, 16, 16);
 
         context.drawItem(stack, 0, 0);
@@ -92,15 +92,14 @@ public class RichItemSupplierIconElement extends IconElement {
         if (showCount && count != 1) {
             String string = String.valueOf(count);
             string = numSize == 0 ? string : numSize == 1 ? Flags.subNums(string) : Flags.supNums(string);
-            matrices.translate(0.0F, 0.0F, 200.0F);
             context.drawText(client.textRenderer, string, 19 - 2 - client.textRenderer.getWidth(string), numSize == 2 ? 0 : 9, 16777215, true);
         }
 
         if (showDur && stack.isItemBarVisible()) {
             int i = stack.getItemBarStep();
             int j = stack.getItemBarColor();
-            context.fill(RenderLayer.getGuiOverlay(), 2, 13, 2 + 13, 13 + 2, -16777216);
-            context.fill(RenderLayer.getGuiOverlay(), 2, 13, 2 + i, 13 + 1, j | -16777216);
+            context.fill(RenderPipelines.GUI, 2, 13, 2 + 13, 13 + 2, -16777216);
+            context.fill(RenderPipelines.GUI, 2, 13, 2 + i, 13 + 1, j | -16777216);
         }
 
         if (showCooldown) {
@@ -108,11 +107,11 @@ public class RichItemSupplierIconElement extends IconElement {
             if (f > 0.0F) {
                 int k = MathHelper.floor(16.0F * (1.0F - f));
                 int l = k + MathHelper.ceil(16.0F * f);
-                context.fill(RenderLayer.getGuiOverlay(), 0, k, 16, l, Integer.MAX_VALUE);
+                context.fill(RenderPipelines.GUI, 0, k, 16, l, Integer.MAX_VALUE);
             }
         }
 
-        matrices.pop();
+        matrices.popMatrix();
     }
 
 }

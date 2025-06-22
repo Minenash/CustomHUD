@@ -50,10 +50,9 @@ public class CustomHudRenderer3 {
 
         Profilers.get().push("custom_hud");
         Profilers.get().push("processing");
-        context.getMatrices().push();
+        context.getMatrices().pushMatrix();
 
-        context.getMatrices().scale(profile.baseTheme.getScale(), profile.baseTheme.getScale(), 1);
-        context.getMatrices().translate(0,0,560);
+        context.getMatrices().scale(profile.baseTheme.getScale(), profile.baseTheme.getScale());
 
         for (Section section : profile.sections) {
             if (section == null || isChatOpen && section.hideOnChat)
@@ -263,7 +262,7 @@ public class CustomHudRenderer3 {
 
 
         Profilers.get().pop();
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
         font = null;
         Profilers.get().pop();
 

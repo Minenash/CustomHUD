@@ -5,16 +5,9 @@ import com.minenash.customhud.render.RenderPiece;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import org.joml.Matrix3x2fStack;
 
 public class ItemCountIconElement extends IconElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -52,23 +45,23 @@ public class ItemCountIconElement extends IconElement {
     public void render(DrawContext context, RenderPiece piece) {
         ItemStack stack = new ItemStack(item, (int) getNumber());
 
-        MatrixStack matrices = context.getMatrices();
+        Matrix3x2fStack matrices = context.getMatrices();
 
-        matrices.push();
-        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2, 0);
+        matrices.pushMatrix();
+        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2);
         if (!referenceCorner)
-            matrices.translate(0, -(11*scale-11)/2, 0);
-        matrices.scale(11/16F * scale, 11/16F * scale, 1);
+            matrices.translate(0, -(11*scale-11)/2);
+        matrices.scale(11/16F * scale, 11/16F * scale);
         rotate(matrices, 16, 16);
 
         context.drawItem(stack, 0, 0);
 
         String string = String.valueOf(stack.getCount());
         string = numSize == 0 ? string : numSize == 1 ? Flags.subNums(string) : Flags.supNums(string);
-        matrices.translate(0.0F, 0.0F, 200.0F);
+        matrices.translate(0.0F, 0.0F);
         context.drawText(client.textRenderer, string, 19 - 2 - client.textRenderer.getWidth(string), numSize == 2 ? 0 : 9, 16777215, true);
 
-        matrices.pop();
+        matrices.popMatrix();
     }
 
 }

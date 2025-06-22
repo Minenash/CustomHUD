@@ -4,10 +4,10 @@ import java.util.EnumSet;
 
 public enum DisableElement {
     STATUS_BARS, HOTBAR, ITEM_TOOLTIP, XP, HEALTH, HUNGER, ARMOR, AIR, SCOREBOARD, BOSSBARS, SUBTITLES, STATUS_EFFECTS, CHAT,
-    HORSE_JUMP, HORSE_HEALTH, HORSE_ARMOR, HORSE, TITLES, ACTIONBAR;
+    HORSE_JUMP, HORSE_HEALTH, HORSE_ARMOR, HORSE, TITLES, ACTIONBAR, LOCATOR;
 
     private static final EnumSet<DisableElement> STATUS = EnumSet.of(HEALTH, HUNGER, ARMOR, AIR, HORSE_HEALTH);
-    private static final EnumSet<DisableElement> LOWER = EnumSet.of(HEALTH, HUNGER, ARMOR, AIR, XP, HOTBAR, ITEM_TOOLTIP, HORSE_HEALTH, HORSE_JUMP);
+    private static final EnumSet<DisableElement> LOWER = EnumSet.of(HEALTH, HUNGER, ARMOR, AIR, XP, HOTBAR, ITEM_TOOLTIP, HORSE_HEALTH, HORSE_JUMP, LOCATOR);
     private static final EnumSet<DisableElement> HORSE_SET = EnumSet.of(HORSE_HEALTH, HORSE_JUMP);
 
     public static boolean add(EnumSet<DisableElement> elements, String name) {
@@ -37,6 +37,8 @@ public enum DisableElement {
 
                     case "titles" -> TITLES;
                     case "actionbar" -> ACTIONBAR;
+
+                    case "locator" -> LOCATOR;
 
                     default -> null;
                 };

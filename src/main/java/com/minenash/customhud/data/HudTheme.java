@@ -211,7 +211,7 @@ public class HudTheme {
         float target = scaleMethod == ScaleMethod.GUI ? scale : gui + scale;
         return target / gui;
     }
-    public double getTargetGuiScale() {
+    public int getTargetGuiScale() {
         if (hudScale == null)
             return CLIENT.getWindow().getScaleFactor();
         int gS = hudScaleRelative ? CLIENT.options.getGuiScale().getValue() + hudScale : hudScale;

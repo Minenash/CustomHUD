@@ -3,20 +3,19 @@ package com.minenash.customhud.HudElements.icon;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import com.minenash.customhud.CustomHud;
-import com.minenash.customhud.HudElements.list.ListProvider;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import org.joml.Matrix3x2fStack;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -35,17 +34,17 @@ public class PackIconElement extends IconElement {
     @Override
     public void render(DrawContext context, RenderPiece piece) {
         ResourcePackProfile pack = (ResourcePackProfile) piece.value;
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2, 0);
+        Matrix3x2fStack matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(piece.x + shiftX, piece.y + shiftY - 2);
         if (!referenceCorner)
-            matrices.translate(0, -(11*scale-11)/2F, 0);
+            matrices.translate(0, -(11*scale-11)/2F);
 //        matrices.scale(scale, scale, 0);
         int width = (int) (11*scale);
         rotate(matrices, width, width);
 
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, getPackIconTexture(pack), 0, 0, 0, 0, width, width, width, width);
-        matrices.pop();
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, getPackIconTexture(pack), 0, 0, 0, 0, width, width, width, width);
+        matrices.popMatrix();
     }
 
     private Identifier getPackIconTexture(ResourcePackProfile resourcePackProfile) {

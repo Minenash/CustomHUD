@@ -2,7 +2,7 @@ package com.minenash.customhud.HudElements.list;
 
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.mixin.accessors.AttributeContainerAccessor;
-import com.minenash.customhud.mixin.accessors.BlockPredicatesCheckerAccessor;
+import com.minenash.customhud.mixin.accessors.BlockPredicatesComponentAccessor;
 import com.minenash.customhud.mixin.accessors.DefaultAttributeContainerAccessor;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -13,6 +13,7 @@ import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.BlockPredicatesComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +21,6 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.item.BlockPredicatesChecker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourcePackProfile;
@@ -100,7 +100,7 @@ public class AttributeHelpers {
         entity = getFullEntity(entity);
         if (!(entity instanceof LivingEntity le) ) return Collections.EMPTY_LIST;
         AttributeContainerAccessor container = (AttributeContainerAccessor) le.getAttributes();
-        Map<EntityAttribute, EntityAttributeInstance> instances = new HashMap<>(((DefaultAttributeContainerAccessor)container.getFallback()).getInstances());
+        Map<EntityAttribute, EntityAttributeInstance> instances = new HashMap<>(((DefaultAttributeContainerAccessor)container.getDefaultAttributes()).getInstances());
         instances.putAll(container.getCustom());
         return Arrays.asList( (entity.getWorld().isClient ?
                 instances.values().stream().filter(a -> a.getAttribute().value().isTracked()) : instances.values().stream())
@@ -123,11 +123,11 @@ public class AttributeHelpers {
         return component != null ? component.lines() : new ArrayList<>();
     }
 
-    public static List<Block> getCanX(ItemStack stack, ComponentType<BlockPredicatesChecker> type) {
-        BlockPredicatesChecker component = stack.get(type);
+    public static List<Block> getCanX(ItemStack stack, ComponentType<BlockPredicatesComponent> type) {
+        BlockPredicatesComponent component = stack.get(type);
         Set<Block> blocks = new HashSet<>();
         if (component != null) {
-            for (var e : ((BlockPredicatesCheckerAccessor) component).getPredicates()) {
+            for (var e : ((BlockPredicatesComponentAccessor) component).getPredicates()) {
                 if (e.blocks().isPresent())
                     for (var ee : e.blocks().get())
                         blocks.add(ee.value());

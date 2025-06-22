@@ -25,7 +25,10 @@
     "accessors.GameOptionsAccessor",
     "accessors.KeyBindingAccessor",
     "accessors.PlayerListHudAccess",
+    "disable.ExperienceBarMixin",
     "disable.InGameHudMixin",
+    "disable.JumpBarMixin",
+    "disable.LocatorBarMixin",
     "fonts.TextHandlerMixin",
     "fonts.TextRendererMixin",
     "music.MinecraftClientAccess",
@@ -36,6 +39,6 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "accessors.BlockPredicatesCheckerAccessor"
+    "accessors.BlockPredicatesComponentAccessor"
   ]
 }
