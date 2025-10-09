@@ -94,7 +94,7 @@ public class NewTextureIconElement extends IconElement {
         context.getMatrices().push();
         context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-2 - (referenceCorner? 0 : (calcHeight*scale-calcHeight)/(scale*2)), 0);
         rotate(context.getMatrices(), calcWidth, calcHeight);
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, 0, 0, calcWidth, calcHeight, calcU, calcV, (int) calcRegionWidth, (int) calcRegionHeight, textureWidth, textureHeight);
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, texture, 0, 0, calcU, calcV, calcWidth, calcHeight, (int) calcRegionWidth, (int) calcRegionHeight, textureWidth, textureHeight);
         context.getMatrices().pop();
     }
 
