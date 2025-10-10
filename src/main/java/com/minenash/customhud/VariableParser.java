@@ -946,8 +946,10 @@ public class VariableParser {
             case "username" -> USERNAME;
             case "uuid" -> UUID;
             case "dimension" -> DIMENSION;
-            case "facing" -> FACING;
-            case "facing_short" -> FACING_SHORT;
+            case "facing", "facing4" -> FACING4;
+            case "facing_short", "facing4_short" -> FACING4_SHORT;
+            case "facing8" -> FACING8;
+            case "facing8_short" -> FACING8_SHORT;
             case "facing_towards_xz" -> FACING_TOWARDS_XZ;
             case "biome" -> BIOME;
             case "moon_phase_word" -> { enabled.clientChunk = true; yield MOON_PHASE_WORD; }
