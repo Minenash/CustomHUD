@@ -15,6 +15,7 @@ import com.minenash.customhud.HudElements.text.ActionbarMsgElement;
 import com.minenash.customhud.HudElements.text.TextSupplierElement;
 import com.minenash.customhud.HudElements.text.TitleMsgElement;
 import com.minenash.customhud.complex.ComplexData;
+import com.minenash.customhud.complex.VelocityTracker;
 import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.conditionals.SudoElements;
@@ -28,7 +29,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -79,6 +79,7 @@ public class VariableParser {
     private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("([\\w.-]*)(?::?([\\w.: /|-]*))?.*");
     private static final Pattern SPACE_STR_PATTERN = Pattern.compile("\"(.*)\"");
     private static final Pattern IS_LIST_PATTERN = Pattern.compile("([\\w\\s:-]+),\\s*\".*");
+    private static final Pattern VELOCITY_PATTERN = Pattern.compile("(_[xyz]{1,3})?(_kph|_mph)?");
 
     public static List<HudElement> addElements(String str, Profile profile, int debugLine, ComplexData.Enabled enabled, boolean line, ListProviderSet listProviders) {
 //        System.out.println("[Line " + debugLine+ "] '" + id + "'");
@@ -501,6 +502,42 @@ public class VariableParser {
                 return element;
             Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_ICON, id.toString());
             return null;
+        }
+
+
+        if (part.startsWith("velocity")) {
+            part = part.substring(8);
+
+            int openBrace = part.indexOf('[');
+            int closeBrace = part.lastIndexOf(']');
+            int flagStart = closeBrace != -1 ? closeBrace+1 : part.indexOf(' ');
+            int mainEnd = openBrace != -1 ? openBrace : flagStart != -1 ? flagStart : part.length();
+
+            String main = part.substring(0, mainEnd);
+            Matcher matcher = VELOCITY_PATTERN.matcher(main);
+            if (!matcher.matches()) {
+                Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_TIMER, "Invalid");
+                return null;
+            }
+            String tracks = matcher.group(1) == null ? "" : matcher.group(1);
+            double conversion = matcher.group(2) == null ? 1 : matcher.group(2).equals("_kph") ? 3.6 : /*_mph*/ VelocityTracker.BPS_TO_MPH;
+
+            Operation smoothing = new Operation.Literal(0);
+            if (closeBrace != -1 && closeBrace > openBrace) {
+                List<String> parts = partitionConditional(part.substring(openBrace+1, closeBrace));
+                if (parts.size() != 1) {
+                    Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_TIMER, "Expected 1 arg, found" + parts.size());
+                    return null;
+                }
+                smoothing = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProviders, false);
+            }
+
+            Flags flags = Flags.parse(profile.name, debugLine, flagStart == -1 || flagStart >= part.length() ? new String[0] : part.substring(flagStart).split(" "));
+
+            VelocityTracker tracker = new VelocityTracker(smoothing, tracks.contains("x"), tracks.contains("y"), tracks.contains("z"));
+            enabled.velocityTrackers.add(tracker);
+
+            return Flags.wrap(new NumberSupplierElement(NumberSupplierElement.of(() -> tracker.velocity * conversion, 1 ), flags), flags);
         }
 
         el = listOnlyElement(part, profile, debugLine, enabled, original, listProviders, (p) -> {
@@ -1179,8 +1216,6 @@ public class VariableParser {
     }
 
     private static NumberSupplierElement.Entry getDecimalSupplier(String element, ComplexData.Enabled enabled) {
-        if (element.startsWith("velocity_"))
-            enabled.velocity = true;
         return switch (element) {
             case "x" -> X;
             case "y" -> Y;
@@ -1205,12 +1240,6 @@ public class VariableParser {
             case "entity_reach_distance", "reach_distance", "entity_reach", "reach" -> ENTITY_REACH_DISTANCE;
             case "block_reach_distance", "block_reach" -> BLOCK_REACH_DISTANCE;
             case "fishing_hook_distance" -> FISHING_HOOK_DISTANCE;
-            case "velocity_xz" -> VELOCITY_XZ;
-            case "velocity_y" -> VELOCITY_Y;
-            case "velocity_xyz" -> VELOCITY_XYZ;
-            case "velocity_xz_kmh" -> VELOCITY_XZ_KMH;
-            case "velocity_y_kmh" -> VELOCITY_Y_KMH;
-            case "velocity_xyz_kmh" -> VELOCITY_XYZ_KMH;
             case "yaw" -> YAW;
             case "pitch" -> PITCH;
             case "day" -> DAY;

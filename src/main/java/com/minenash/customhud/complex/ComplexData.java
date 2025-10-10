@@ -73,8 +73,6 @@ public class ComplexData {
     //Chunk Data.
     private static ChunkPos pos = null;
     private static CompletableFuture<WorldChunk> chunkFuture;
-    private static int velocityWaitCounter = 0;
-    private static int cpsWaitCounter = 0;
 
     public static Object cpu;
     private static long[] prevTicks = new long[CentralProcessor.TickType.values().length];
@@ -219,25 +217,11 @@ public class ComplexData {
             Profilers.get().pop();
         }
 
-        velocity:
-        if (profile.enabled.velocity) {
-            Profilers.get().push("velocity");
-            if (velocityWaitCounter > 0) {
-                velocityWaitCounter--;
-                Profilers.get().pop();
-                break velocity;
-            }
-            velocityWaitCounter = 4;
-            ClientPlayerEntity p = client.player;
-            final double changeXZ = Math.sqrt(Math.pow(Math.abs(p.getX() - x1), 2) + Math.pow(Math.abs(p.getZ() - z1), 2));
-            final double changeY = Math.abs(p.getY() - y1);
-            final double changeXYZ = Math.sqrt(changeXZ*changeXZ + changeY*changeY);
-            x1 = p.getX();
-            y1 = p.getY();
-            z1 = p.getZ();
-            velocityXZ = changeXZ * 4;
-            velocityY = changeY * 4;
-            velocityXYZ = changeXYZ * 4;
+        if (!profile.enabled.velocityTrackers.isEmpty()) {
+            Profilers.get().push("velocities");
+            for (var v : profile.enabled.velocityTrackers)
+                v.tick();
+            VelocityTracker.recordCords();
             Profilers.get().pop();
         }
 
@@ -283,7 +267,6 @@ public class ComplexData {
             clicksSoFar[1] = 0;
             clicksPerSeconds[0] = clicks[0].stream().reduce(0, Integer::sum);
             clicksPerSeconds[1] = clicks[1].stream().reduce(0, Integer::sum);
-            cpsWaitCounter++;
             Profilers.get().pop();
         }
 
@@ -451,6 +434,8 @@ public class ComplexData {
         public static final Enabled DISABLED = new Enabled();
         public final Map<String,Boolean> custom = new HashMap<>();
 
+        public final List<VelocityTracker> velocityTrackers = new ArrayList<>();
+
         public boolean clientChunk = false;
         public boolean serverChunk = false;
         public boolean serverWorld = false;
@@ -487,6 +472,9 @@ public class ComplexData {
                 catch (Exception ignored) {}
             }
             this.custom.putAll(enabled.custom);
+
+
+            this.velocityTrackers.addAll(enabled.velocityTrackers);
         }
 
         public boolean get(String name) {
