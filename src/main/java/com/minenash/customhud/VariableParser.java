@@ -1033,6 +1033,9 @@ public class VariableParser {
             case "is_tick_frozen", "tick_frozen" -> IS_TICK_FROZEN;
             case "is_tick_stepping", "tick_stepping" -> IS_TICK_STEPPING;
 
+            case "on_load" -> ON_LOAD;
+            case "on_join" -> ON_JOIN;
+
             case "reaL_am" -> REAL_AM;
             case "reaL_pm" -> REAL_PM;
 
@@ -1485,7 +1488,9 @@ public class VariableParser {
             case "records" -> {enabled.music = true; yield RECORDS;}
             case "chat_messages" -> CHAT_MESSAGES;
 
-            default -> null;
+            case "on_chat_msg", "on_chat_message" -> ON_CHAT_MESSAGE.register(profile);
+
+             default -> null;
         };
 
         if (provider == null)

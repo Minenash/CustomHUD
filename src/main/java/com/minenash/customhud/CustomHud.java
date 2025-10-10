@@ -70,7 +70,12 @@ public class CustomHud implements ModInitializer {
 			if (UpdateChecker.updateMessage != null)
 				client.getMessageHandler().onGameMessage(UpdateChecker.updateMessage, false);
 			EstimatedTick.reset();
+
+			var profile = ProfileManager.getActive();
+			if (profile != null)
+				profile.boolEvents.add("join");
 		});
+
 
 	}
 

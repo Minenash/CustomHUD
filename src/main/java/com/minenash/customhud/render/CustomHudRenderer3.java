@@ -264,7 +264,12 @@ public class CustomHudRenderer3 {
 
         Profilers.get().pop();
         context.getMatrices().pop();
+
         font = null;
+        for (var e : profile.listEvents.values())
+            e.reset();
+        profile.boolEvents.clear();
+
         Profilers.get().pop();
 
     }

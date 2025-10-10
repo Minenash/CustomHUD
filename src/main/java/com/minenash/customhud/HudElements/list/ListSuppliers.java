@@ -1,11 +1,13 @@
 package com.minenash.customhud.HudElements.list;
 
 import com.google.common.collect.Lists;
+import com.minenash.customhud.HudElements.list.ListProvider.EventListProvider;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.complex.MusicAndRecordTracker;
 import com.minenash.customhud.complex.SubtitleTracker;
 import com.terraformersmc.modmenu.ModMenu;
 import com.terraformersmc.modmenu.util.mod.Mod;
+import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
 import net.minecraft.client.network.PlayerListEntry;
@@ -273,6 +275,11 @@ public class ListSuppliers {
     private static Entity hooked() {
         return CLIENT.player.fishHook == null ? null : CLIENT.player.fishHook.getHookedEntity();
     }
+
+
+    // EVENTS
+
+    public static EventListProvider<ChatHudLine> ON_CHAT_MESSAGE = new EventListProvider<>("chat_message");
 
 
 }
