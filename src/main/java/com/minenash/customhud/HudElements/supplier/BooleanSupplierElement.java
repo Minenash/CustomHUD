@@ -39,6 +39,8 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> SWIMMING = () -> client.player.isSwimming();
     public static final Supplier<Boolean> ON_GROUND = () -> client.player.isOnGround();
 
+    public static final Supplier<Boolean> SPRINT_HELD = client.options.sprintKey::isPressed;
+
     public static final Supplier<Boolean> FISHING_IS_CAST = () -> client.player.fishHook != null;
     public static final Supplier<Boolean> FISHING_IS_HOOKED = () -> client.player.fishHook != null && client.player.fishHook.getHookedEntity() != null;
     public static final Supplier<Boolean> FISHING_HAS_CAUGHT = () -> client.player.fishHook != null && client.player.fishHook.getDataTracker().get(FishingBobberEntity.CAUGHT_FISH);

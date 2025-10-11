@@ -377,6 +377,7 @@ public class VariableParser {
             case "sneaking" -> SNEAKING;
             case "swimming" -> SWIMMING;
             case "on_ground" -> ON_GROUND;
+            case "sprint_held" -> SPRINT_HELD;
             case "item_has_durability", "item_has_dur" -> ITEM_HAS_DURABILITY;
             case "offhand_item_has_durability", "oitem_has_dur" -> OFFHAND_ITEM_HAS_DURABILITY;
             case "fishing_is_cast" -> FISHING_IS_CAST;
