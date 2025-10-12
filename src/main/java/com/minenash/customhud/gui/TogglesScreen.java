@@ -69,7 +69,7 @@ public class TogglesScreen extends Screen {
         super.render(context, mouseX, mouseY, delta);
 
         this.listWidget.render(context, mouseX, mouseY, delta);
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 11, 16777215);
+        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 11, 0xFFFFFFFF);
     }
 
     @Override

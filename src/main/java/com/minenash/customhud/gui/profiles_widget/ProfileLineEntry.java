@@ -108,7 +108,7 @@ public class ProfileLineEntry extends LineEntry {
                 ProfileManager.rename(profile, editName.getText());
                 displayName = profile.name;
             }
-            context.drawTextWithShadow(CLIENT.textRenderer, truncateName(x, eWidth), x + 16 + 20 + 4, y + 4, 0xFFFFFF);
+            context.drawTextWithShadow(CLIENT.textRenderer, truncateName(x, eWidth), x + 16 + 20 + 4, y + 4, 0xFFFFFFFF);
         }
 
         selected.setMessage(Text.literal(ProfileManager.getActive() == profile ? "☑" : "☐"));

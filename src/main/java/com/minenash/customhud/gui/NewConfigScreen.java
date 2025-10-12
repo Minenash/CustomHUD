@@ -55,7 +55,7 @@ public class NewConfigScreen extends Screen {
     public void init() {
         clearChildren();
         profiles = new ProfileLinesWidget(this,30, height-32);
-        addSelectableChild(profiles);
+        addDrawableChild(profiles);
 
         this.addDrawableChild( ButtonWidget.builder(Text.literal("Open Folder"),
                 button -> new Thread(() -> Util.getOperatingSystem().open(CustomHud.PROFILE_FOLDER.toFile())).start())
@@ -93,9 +93,8 @@ public class NewConfigScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        context.drawCenteredTextWithShadow(font, Text.translatable("config.custom_hud.title"), this.width / 2, 11, 0xFFFFFF);
-        profiles.render(context, mouseX, mouseY, delta);
-        context.drawCenteredTextWithShadow(font, "§oDrag and drop profile files here to add it", this.width / 2, this.height-46, 0x888888);
+        context.drawCenteredTextWithShadow(font, Text.translatable("config.custom_hud.title"), this.width / 2, 11, 0xFFFFFFFF);
+        context.drawCenteredTextWithShadow(font, "§oDrag and drop profile files here to add it", this.width / 2, this.height-46, 0xFF888888);
 
     }
 

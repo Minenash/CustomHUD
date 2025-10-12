@@ -101,7 +101,7 @@ public class ErrorsScreen extends Screen {
 
         y_offset = 0;
         this.listWidget.render(context, mouseX, mouseY, delta);
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 11, 16777215);
+        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 11, 0xFFFFFFFF);
 
         for (var d : drawables)
             d.render(context, mouseX, mouseY, delta);
