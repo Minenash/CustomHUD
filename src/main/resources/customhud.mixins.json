@@ -25,7 +25,10 @@
     "accessors.GameOptionsAccessor",
     "accessors.KeyBindingAccessor",
     "accessors.PlayerListHudAccess",
+    "disable.ExperienceBarMixin",
     "disable.InGameHudMixin",
+    "disable.JumpBarMixin",
+    "disable.LocatorBarMixin",
     "events.ChatHudMixin",
     "fonts.TextHandlerMixin",
     "fonts.TextRendererMixin",
@@ -37,6 +40,6 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "accessors.BlockPredicatesCheckerAccessor"
+    "accessors.BlockPredicatesComponentAccessor"
   ]
 }

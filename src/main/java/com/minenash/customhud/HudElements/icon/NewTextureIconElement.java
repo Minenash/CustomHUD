@@ -5,16 +5,16 @@ import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class NewTextureIconElement extends IconElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -30,7 +30,7 @@ public class NewTextureIconElement extends IconElement {
     private final Operation width;
     private final Operation height;
     private final int textWidth;
-    private final Function<Identifier,RenderLayer> renderLayer;
+    private final RenderPipeline pipeline;
 
     private final boolean iconAvailable;
 
@@ -41,7 +41,7 @@ public class NewTextureIconElement extends IconElement {
         this.v = v != null ? v : new Operation.Literal(0);
         this.width = width;
         this.height = height;
-        this.renderLayer = crosshair? RenderLayer::getCrosshair : RenderLayer::getGuiTexturedOverlay;
+        this.pipeline = crosshair? RenderPipelines.CROSSHAIR : RenderPipelines.GUI_TEXTURED;
 
         NativeImage img = null;
         try {
@@ -93,11 +93,11 @@ public class NewTextureIconElement extends IconElement {
     public void render(DrawContext context, RenderPiece piece) {
         if (calcWidth == 0 || calcHeight == 0)
             return;
-        context.getMatrices().push();
-        context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-2 - (referenceCorner? 0 : (calcHeight*scale-calcHeight)/(scale*2)), 0);
+        context.getMatrices().pushMatrix();
+        context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-2 - (referenceCorner? 0 : (calcHeight*scale-calcHeight)/(scale*2)));
         rotate(context.getMatrices(), calcWidth, calcHeight);
-        context.drawTexture(renderLayer, texture, 0, 0,  calcU, calcV, calcWidth, calcHeight, (int) calcRegionWidth, (int) calcRegionHeight, textureWidth, textureHeight);
-        context.getMatrices().pop();
+        context.drawTexture(pipeline, texture, 0, 0,  calcU, calcV, calcWidth, calcHeight, (int) calcRegionWidth, (int) calcRegionHeight, textureWidth, textureHeight);
+        context.getMatrices().popMatrix();
     }
 
     int calcU = 0;

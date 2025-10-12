@@ -24,15 +24,15 @@ public class GameRendererMixin {
             return;
         }
 
-        double originalScale = CLIENT.getWindow().getScaleFactor();
-        double target = p.baseTheme.getTargetGuiScale();
+        int originalScale = CLIENT.getWindow().getScaleFactor();
+        int target = p.baseTheme.getTargetGuiScale();
         float scale = (float) (target/originalScale);
         CLIENT.getWindow().setScaleFactor(target);
 
-        context.getMatrices().push();
-        context.getMatrices().scale(scale, scale, 1);
+        context.getMatrices().pushMatrix();
+        context.getMatrices().scale(scale, scale);
         original.call(instance, context, tickCounter);
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
 
         CLIENT.getWindow().setScaleFactor(originalScale);
 

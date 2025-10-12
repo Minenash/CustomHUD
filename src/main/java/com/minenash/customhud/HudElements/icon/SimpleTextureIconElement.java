@@ -3,16 +3,16 @@ package com.minenash.customhud.HudElements.icon;
 import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class SimpleTextureIconElement extends IconElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
@@ -25,14 +25,14 @@ public class SimpleTextureIconElement extends IconElement {
     private final int height;
     private final int yOffset;
     private final int textWidth;
-    private final Function<Identifier,RenderLayer> renderLayer;
+    private final RenderPipeline pipeline;
 
     private final boolean iconAvailable;
 
 
     public SimpleTextureIconElement(Identifier texture, boolean crosshair, Flags flags) {
         super(flags, 0);
-        this.renderLayer = crosshair ? RenderLayer::getCrosshair : RenderLayer::getGuiTexturedOverlay;
+        this.pipeline = crosshair ? RenderPipelines.CROSSHAIR : RenderPipelines.GUI_TEXTURED;
 
         NativeImage img = null;
         try {
@@ -79,11 +79,11 @@ public class SimpleTextureIconElement extends IconElement {
     public void render(DrawContext context, RenderPiece piece) {
         if (width == 0)
             return;
-        context.getMatrices().push();
-        context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-yOffset-2, 0);
+        context.getMatrices().pushMatrix();
+        context.getMatrices().translate(piece.x+shiftX, piece.y+shiftY-yOffset-2);
         rotate(context.getMatrices(), width, height);
-        context.drawTexture(renderLayer, texture, 0, 0, 0, 0, width, height, textureWidth, textureHeight, textureWidth, textureHeight);
-        context.getMatrices().pop();
+        context.drawTexture(pipeline, texture, 0, 0, 0, 0, width, height, textureWidth, textureHeight, textureWidth, textureHeight);
+        context.getMatrices().popMatrix();
     }
 
 

@@ -1,12 +1,13 @@
 package com.minenash.customhud.mixin.disable;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.minenash.customhud.CustomHud;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +24,8 @@ public abstract class InGameHudMixin {
         if (CustomHud.isDisabled(HOTBAR))
             ci.cancel();
     }
-    @Inject(method = "method_55808", at = @At(value = "HEAD"), cancellable = true)
+
+    @Inject(method = "renderBossBarHud", at = @At(value = "HEAD"), cancellable = true)
     public void customhud$disableBossBar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         if (CustomHud.isDisabled(BOSSBARS))
             ci.cancel();
@@ -65,22 +67,9 @@ public abstract class InGameHudMixin {
             ci.cancel();
     }
 
-    @Inject(method = "renderMountJumpBar", at = @At(value = "HEAD"), cancellable = true)
-    public void customhud$disableHorseJump(JumpingMount mount, DrawContext context, int x, CallbackInfo ci) {
-        if (CustomHud.isDisabled(HORSE) || CustomHud.isDisabled(HORSE_JUMP))
-            ci.cancel();
-    }
-
-    @Inject(method = "renderExperienceBar", at = @At(value = "HEAD"), cancellable = true)
-    public void customhud$disableXPBar(DrawContext context, int x, CallbackInfo ci) {
-        if (CustomHud.isDisabled(XP))
-            ci.cancel();
-    }
-
-    @Inject(method = "renderExperienceLevel", at = @At(value = "HEAD"), cancellable = true)
-    public void customhud$disableXPLvl(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        if (CustomHud.isDisabled(XP))
-            ci.cancel();
+    @WrapWithCondition(method = "renderMainHud", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/bar/Bar;drawExperienceLevel(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/font/TextRenderer;I)V"))
+    public boolean customhud$disableXPLvl(DrawContext context, TextRenderer textRenderer, int level) {
+        return CustomHud.isNotDisabled(XP);
     }
 
     @Inject(method = "renderHeldItemTooltip", at = @At(value = "HEAD"), cancellable = true)
@@ -95,7 +84,7 @@ public abstract class InGameHudMixin {
             ci.cancel();
     }
 
-    @Inject(method = "method_55806", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "renderSubtitlesHud", at = @At(value = "HEAD"), cancellable = true)
     public void customhud$disableSubtitles(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         if (CustomHud.isDisabled(SUBTITLES))
             ci.cancel();

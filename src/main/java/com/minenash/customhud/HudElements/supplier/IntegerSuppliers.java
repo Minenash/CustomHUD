@@ -78,7 +78,7 @@ public class IntegerSuppliers {
     public static final Supplier<Number> CHUNKS_LOADED = () -> worldRender().getChunkCount();
     @SuppressWarnings("Convert2MethodRef" )
     public static final Supplier<Number> RENDER_DISTANCE = () -> client.options.getClampedViewDistance();
-    public static final Supplier<Number> QUEUED_TASKS = () -> chunkBuilder().getToBatchCount();
+    public static final Supplier<Number> QUEUED_TASKS = () -> chunkBuilder().getScheduledTaskCount();
     public static final Supplier<Number> UPLOAD_QUEUE = () -> chunkBuilder().getChunksToUpload();
     public static final Supplier<Number> BUFFER_COUNT = () -> chunkBuilder().getFreeBufferCount();
     public static final Supplier<Number> ENTITIES_RENDERED = () -> worldRender().renderedEntitiesCount;
@@ -257,8 +257,8 @@ public class IntegerSuppliers {
     public static final Supplier<Number> REAL_MICROSECOND = () -> LocalTime.now().get(MICRO_OF_SECOND);
 
 
-    public static final Supplier<Number> RESOURCE_PACK_VERSION = () -> SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES);
-    public static final Supplier<Number> DATA_PACK_VERSION = () -> SharedConstants.getGameVersion().getResourceVersion(ResourceType.SERVER_DATA);
+    public static final Supplier<Number> RESOURCE_PACK_VERSION = () -> SharedConstants.getGameVersion().packVersion(ResourceType.CLIENT_RESOURCES);
+    public static final Supplier<Number> DATA_PACK_VERSION = () -> SharedConstants.getGameVersion().packVersion(ResourceType.SERVER_DATA);
 
     public static final Supplier<Number> MAINHAND_SLOT = () -> CLIENT.player.getInventory().getSelectedSlot();
 

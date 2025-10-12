@@ -1,14 +1,10 @@
 package com.minenash.customhud.HudElements.icon;
 
-import com.minenash.customhud.CustomHud;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4fStack;
 
@@ -56,11 +52,11 @@ public class DebugGizmoElement extends IconElement {
         }
 
         matrix4fStack.translate(piece.x + shiftX + x_offset, piece.y + shiftY + y_offset + (size/2), 100);
-        matrix4fStack.mul(context.getMatrices().peek().getPositionMatrix());
+        // matrix4fStack.mul(context.getMatrices().peek().getPositionMatrix());
         matrix4fStack.rotateX(-camera.getPitch() * (float) (Math.PI / 180.0));
         matrix4fStack.rotateY(camera.getYaw() * (float) (Math.PI / 180.0));
         matrix4fStack.scale(scale, scale, scale);
-        CLIENT.getDebugHud().renderDebugCrosshair();
+        CLIENT.getDebugHud().renderDebugCrosshair(camera);
         matrix4fStack.popMatrix();
     }
 

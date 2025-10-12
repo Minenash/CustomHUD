@@ -31,7 +31,7 @@ public class StringSupplierElement implements HudElement {
 
     public static final Supplier<String> PROFILE_NAME = () -> ProfileManager.getActive() == null ? null : ProfileManager.getActive().name;
 
-    public static final Supplier<String> VERSION = () -> SharedConstants.getGameVersion().getName();
+    public static final Supplier<String> VERSION = () -> SharedConstants.getGameVersion().name();
     public static final Supplier<String> CLIENT_VERSION = client::getGameVersion;
     public static final Supplier<String> MODDED_NAME = ClientBrandRetriever::getClientModName;
     public static final Supplier<String> USERNAME = () -> client.player.getGameProfile().getName() == null ? null : client.player.getGameProfile().getName();

@@ -3,14 +3,14 @@ package com.minenash.customhud.HudElements.icon;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.data.Flags;
 import com.minenash.customhud.render.RenderPiece;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.BossBar.Color;
 import net.minecraft.entity.boss.BossBar.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Matrix3x2fStack;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
 
@@ -32,17 +32,17 @@ public class ProgressBarIcon extends IconElement {
 
     @Override
     public void render(DrawContext context, RenderPiece piece) {
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.translate(piece.x + shiftX, piece.y + shiftY + 1, 0);
+        Matrix3x2fStack matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(piece.x + shiftX, piece.y + shiftY + 1);
         if (!referenceCorner)
-            matrices.translate(0, -(5*scale-5)/2, 0);
-        matrices.scale(scale, scale, 0);
+            matrices.translate(0, -(5*scale-5)/2);
+        matrices.scale(scale, scale);
         rotate(matrices, 182, 5);
 
         style.render(context, (float) MathHelper.clamp(numerator.getValue() / denominator.getValue(), 0, 1), background);
 
-        matrices.pop();
+        matrices.popMatrix();
     }
 
     public static BarStyle getStyle(String settings) {
@@ -139,9 +139,9 @@ public class ProgressBarIcon extends IconElement {
         public TextureStyle(Identifier fg, Identifier bg) {this.fg = fg; this.bg = bg;}
         public void render(DrawContext context, float progress, boolean background) {
             if (background)
-                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, bg, 0, 0, 182, 5);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, bg, 0, 0, 182, 5);
             if (progress > 0)
-                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, fg, 182, 5, 0, 0, 0, 0, (int)(progress*182), 5);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, fg, 182, 5, 0, 0, 0, 0, (int)(progress*182), 5);
 
         }
     }
@@ -152,9 +152,9 @@ public class ProgressBarIcon extends IconElement {
         public VillagerTextureStyle(Identifier fg) {this.fg = fg;}
         public void render(DrawContext context, float progress, boolean background) {
             if (background)
-                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, EXPERIENCE_BAR_BACKGROUND_TEXTURE, 0, 0, 102, 5);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND_TEXTURE, 0, 0, 102, 5);
             if (progress > 0)
-                context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, fg, 102, 5, 0, 0, 0, 0, (int)(progress*102), 5);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, fg, 102, 5, 0, 0, 0, 0, (int)(progress*102), 5);
         }
 
     }
