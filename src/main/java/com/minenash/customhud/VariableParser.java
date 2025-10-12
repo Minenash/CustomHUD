@@ -809,9 +809,11 @@ public class VariableParser {
 
         switch (part) {
             case "gizmo": {
-                if (flags.rotation != 0)
-                    Errors.addError(profile.name, debugLine, original, ErrorType.GIZMO_NO_ROTATE, null);
-                return Flags.wrap(new DebugGizmoElement(flags), flags);
+//                if (flags.rotation != 0)
+//                    Errors.addError(profile.name, debugLine, original, ErrorType.GIZMO_NO_ROTATE, null);
+//                return Flags.wrap(new DebugGizmoElement(flags), flags);
+                Errors.addError(profile.name, debugLine, original, ErrorType.GIZMO_NO_WORK, null);
+                return null;
             }
             case "record_icon": enabled.music = true; return Flags.wrap(new RecordIconElement(flags), flags);
             case "target_block_icon", "target_icon", "tbicon": enabled.targetBlock = enabled.world = true;

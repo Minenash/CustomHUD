@@ -26,6 +26,7 @@ import java.util.OptionalInt;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
 
+// No longer works
 public class DebugGizmoElement extends IconElement {
 
     private final float size;
@@ -67,43 +68,12 @@ public class DebugGizmoElement extends IconElement {
             y_offset += 0;
         }
 
-//        matrix4fStack.translate(piece.x + shiftX + x_offset, piece.y + shiftY + y_offset + (size/2), 100);
-        // matrix4fStack.mul(context.getMatrices().peek().getPositionMatrix());
-//        matrix4fStack.rotateX(-camera.getPitch() * (float) (Math.PI / 180.0));
-//        matrix4fStack.rotateY(camera.getYaw() * (float) (Math.PI / 180.0));
-//        matrix4fStack.scale(scale, scale, scale);
+        matrix4fStack.translate(piece.x + shiftX + x_offset, piece.y + shiftY + y_offset + (size/2), 100);
+//        matrix4fStack.mul(context.getMatrices().peek().getPositionMatrix());
+        matrix4fStack.rotateX(-camera.getPitch() * (float) (Math.PI / 180.0));
+        matrix4fStack.rotateY(camera.getYaw() * (float) (Math.PI / 180.0));
+        matrix4fStack.scale(scale, scale, scale);
         CLIENT.getDebugHud().renderDebugCrosshair(camera);
-        renderDebugCrosshair(camera);
-        matrix4fStack.popMatrix();
-    }
-
-    public void renderDebugCrosshair(Camera camera) {
-        var debugHud = (DebugHudAccessor) CLIENT.getDebugHud();
-        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-        matrix4fStack.pushMatrix();
-        matrix4fStack.translate(0.0F, 0.0F, -1.0F);
-        matrix4fStack.rotateX(camera.getPitch() * ((float)Math.PI / 180F));
-        matrix4fStack.rotateY(camera.getYaw() * ((float)Math.PI / 180F));
-        float f = 0.01F * (float)CLIENT.getWindow().getScaleFactor();
-//        matrix4fStack.scale(-f, f, -f);
-        RenderPipeline renderPipeline = RenderPipelines.LINES;
-        Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
-        GpuTextureView gpuTextureView = framebuffer.getColorAttachmentView();
-        GpuTextureView gpuTextureView2 = framebuffer.getDepthAttachmentView();
-        GpuBuffer gpuBuffer = debugHud.getDebugCrosshairIndexBuffer().getIndexBuffer(18);
-        GpuBufferSlice[] gpuBufferSlices = RenderSystem.getDynamicUniforms().writeAll(new DynamicUniforms.UniformValue(new Matrix4f(matrix4fStack), new Vector4f(0.0F, 0.0F, 0.0F, 1.0F), new Vector3f(), new Matrix4f(), 4.0F), new DynamicUniforms.UniformValue(new Matrix4f(matrix4fStack), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), new Vector3f(), new Matrix4f(), 2.0F));
-
-        try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(() -> "3d crosshair", gpuTextureView, OptionalInt.empty(), gpuTextureView2, OptionalDouble.empty())) {
-            renderPass.setPipeline(renderPipeline);
-            RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.setVertexBuffer(0, debugHud.getDebugCrosshairBuffer());
-            renderPass.setIndexBuffer(gpuBuffer, debugHud.getDebugCrosshairIndexBuffer().getIndexType());
-            renderPass.setUniform("DynamicTransforms", gpuBufferSlices[0]);
-            renderPass.drawIndexed(0, 0, 18, 1);
-            renderPass.setUniform("DynamicTransforms", gpuBufferSlices[1]);
-            renderPass.drawIndexed(0, 0, 18, 1);
-        }
-
         matrix4fStack.popMatrix();
     }
 
