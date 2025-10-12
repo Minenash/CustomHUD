@@ -516,7 +516,7 @@ public class VariableParser {
             String main = part.substring(0, mainEnd);
             Matcher matcher = VELOCITY_PATTERN.matcher(main);
             if (!matcher.matches()) {
-                Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_TIMER, "Invalid");
+                Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_VELOCITY, main);
                 return null;
             }
             String tracks = matcher.group(1) == null ? "" : matcher.group(1);
@@ -526,7 +526,7 @@ public class VariableParser {
             if (closeBrace != -1 && closeBrace > openBrace) {
                 List<String> parts = partitionConditional(part.substring(openBrace+1, closeBrace));
                 if (parts.size() != 1) {
-                    Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_TIMER, "Expected 1 arg, found" + parts.size());
+                    Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_VELOCITY_SMOOTHING, "Expected 1 arg, found " + parts.size());
                     return null;
                 }
                 smoothing = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProviders, false);
