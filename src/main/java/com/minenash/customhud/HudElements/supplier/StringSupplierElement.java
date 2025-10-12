@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import org.apache.commons.lang3.text.WordUtils;
@@ -49,10 +50,33 @@ public class StringSupplierElement implements HudElement {
 
     public static final Supplier<String> TIME_AM_PM = () -> ComplexData.timeOfDay < 12000 ? "am" : "pm";
 
-    public static final Supplier<String> FACING = () -> cameraEntity().getHorizontalFacing().getId();
-    public static final Supplier<String> FACING_SHORT = () -> cameraEntity().getHorizontalFacing().getId().substring(0, 1).toUpperCase();
+    public static final Supplier<String> FACING4 = () -> cameraEntity().getHorizontalFacing().getId();
+    public static final Supplier<String> FACING4_SHORT = () -> cameraEntity().getHorizontalFacing().getId().substring(0, 1).toUpperCase();
     public static final Supplier<String> FACING_TOWARDS_XZ = () ->
             cameraEntity().getHorizontalFacing() == Direction.EAST || cameraEntity().getHorizontalFacing() == Direction.WEST ? "X" : "Z";
+
+    public static final Supplier<String> FACING8 = () -> {
+        float yaw = MathHelper.wrapDegrees(cameraEntity().getYaw());
+        if (yaw > 157.5 || yaw < -157.5) return "north";
+        if (yaw > 112.5) return "northwest";
+        if (yaw > 67.5)  return "west";
+        if (yaw > 22.5)  return "southwest";
+        if (yaw < -112.5) return "northeast";
+        if (yaw < -67.5)  return "east";
+        if (yaw < -22.5)  return "southeast";
+        return "south";
+    };
+    public static final Supplier<String> FACING8_SHORT = () -> {
+        float yaw = MathHelper.wrapDegrees(cameraEntity().getYaw());
+        if (yaw > 157.5 || yaw < -157.5) return "N";
+        if (yaw > 112.5) return "NW";
+        if (yaw > 67.5)  return "W";
+        if (yaw > 22.5)  return "SW";
+        if (yaw < -112.5) return "NE";
+        if (yaw < -67.5)  return "E";
+        if (yaw < -22.5)  return "SE";
+        return "S";
+    };
 
     public static final Supplier<String> JAVA_VERSION = () -> System.getProperty("java.version");
     public static final Supplier<String> CPU_NAME = () -> ComplexData.cpu == null ? null : ((CentralProcessor)ComplexData.cpu).getProcessorIdentifier().getName().trim();

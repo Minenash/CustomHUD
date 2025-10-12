@@ -1,6 +1,7 @@
 package com.minenash.customhud.data;
 
 import com.minenash.customhud.CustomHud;
+import com.minenash.customhud.HudElements.list.ListProvider;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.conditionals.ExpressionParser;
@@ -57,6 +58,11 @@ public class Profile {
     public Map<String, Double> numValues = new LinkedHashMap<>();
     public Map<String, String> strValues = new LinkedHashMap<>();
     public Map<String, Macro> macros = new LinkedHashMap<>();
+    public Map<String, ListProvider.EventListProvider<?>> listEvents = new LinkedHashMap<>(); // Registered
+    public HashSet<String> boolEvents = new HashSet<>(); // Just putted, not registered
+
+    public Profile() { boolEvents.add("load"); }
+
 
     private MultiLineStacker stacker = new MultiLineStacker();
 

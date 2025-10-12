@@ -1,9 +1,9 @@
 package com.minenash.customhud.HudElements.list;
 
-import com.minenash.customhud.complex.ListManager;
+import com.minenash.customhud.data.Profile;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,6 +27,33 @@ public interface ListProvider {
         @Override
         public List<?> get() {
             return null;
+        }
+    }
+
+    class EventListProvider<T> implements ListProvider {
+        private final String id;
+        private final List<T> entries = new ArrayList<>();
+
+        public EventListProvider(String id) {
+            this.id = id;
+        }
+
+        public EventListProvider<?> register(Profile profile) {
+            profile.listEvents.put(id, this);
+            return this;
+        }
+
+        public void reset() {
+            entries.clear();
+        }
+
+        public void add(T entry) {
+            entries.add(entry);
+        }
+
+        @Override
+        public List<?> get() {
+            return entries;
         }
     }
 }

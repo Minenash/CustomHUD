@@ -29,6 +29,7 @@
     "disable.InGameHudMixin",
     "disable.JumpBarMixin",
     "disable.LocatorBarMixin",
+    "events.ChatHudMixin",
     "fonts.TextHandlerMixin",
     "fonts.TextRendererMixin",
     "music.MinecraftClientAccess",

@@ -15,6 +15,7 @@ import com.minenash.customhud.HudElements.text.ActionbarMsgElement;
 import com.minenash.customhud.HudElements.text.TextSupplierElement;
 import com.minenash.customhud.HudElements.text.TitleMsgElement;
 import com.minenash.customhud.complex.ComplexData;
+import com.minenash.customhud.complex.VelocityTracker;
 import com.minenash.customhud.conditionals.ExpressionParser;
 import com.minenash.customhud.conditionals.Operation;
 import com.minenash.customhud.conditionals.SudoElements;
@@ -28,7 +29,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -79,6 +79,7 @@ public class VariableParser {
     private static final Pattern ITEM_VARIABLE_PATTERN = Pattern.compile("([\\w.-]*)(?::?([\\w.: /|-]*))?.*");
     private static final Pattern SPACE_STR_PATTERN = Pattern.compile("\"(.*)\"");
     private static final Pattern IS_LIST_PATTERN = Pattern.compile("([\\w\\s:-]+),\\s*\".*");
+    private static final Pattern VELOCITY_PATTERN = Pattern.compile("(_[xyz]{1,3})?(_kph|_mph)?");
 
     public static List<HudElement> addElements(String str, Profile profile, int debugLine, ComplexData.Enabled enabled, boolean line, ListProviderSet listProviders) {
 //        System.out.println("[Line " + debugLine+ "] '" + id + "'");
@@ -503,6 +504,42 @@ public class VariableParser {
             return null;
         }
 
+
+        if (part.startsWith("velocity")) {
+            part = part.substring(8);
+
+            int openBrace = part.indexOf('[');
+            int closeBrace = part.lastIndexOf(']');
+            int flagStart = closeBrace != -1 ? closeBrace+1 : part.indexOf(' ');
+            int mainEnd = openBrace != -1 ? openBrace : flagStart != -1 ? flagStart : part.length();
+
+            String main = part.substring(0, mainEnd);
+            Matcher matcher = VELOCITY_PATTERN.matcher(main);
+            if (!matcher.matches()) {
+                Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_TIMER, "Invalid");
+                return null;
+            }
+            String tracks = matcher.group(1) == null ? "" : matcher.group(1);
+            double conversion = matcher.group(2) == null ? 1 : matcher.group(2).equals("_kph") ? 3.6 : /*_mph*/ VelocityTracker.BPS_TO_MPH;
+
+            Operation smoothing = new Operation.Literal(0);
+            if (closeBrace != -1 && closeBrace > openBrace) {
+                List<String> parts = partitionConditional(part.substring(openBrace+1, closeBrace));
+                if (parts.size() != 1) {
+                    Errors.addError(profile.name, debugLine, original, ErrorType.MALFORMED_TIMER, "Expected 1 arg, found" + parts.size());
+                    return null;
+                }
+                smoothing = ExpressionParser.parseExpression(parts.get(0), original, profile, debugLine, enabled, listProviders, false);
+            }
+
+            Flags flags = Flags.parse(profile.name, debugLine, flagStart == -1 || flagStart >= part.length() ? new String[0] : part.substring(flagStart).split(" "));
+
+            VelocityTracker tracker = new VelocityTracker(smoothing, tracks.contains("x"), tracks.contains("y"), tracks.contains("z"));
+            enabled.velocityTrackers.add(tracker);
+
+            return Flags.wrap(new NumberSupplierElement(NumberSupplierElement.of(() -> tracker.velocity * conversion, 1 ), flags), flags);
+        }
+
         el = listOnlyElement(part, profile, debugLine, enabled, original, listProviders, (p) -> {
             int collinIndex = p.indexOf(':');
             if (collinIndex == -1) return null;
@@ -909,8 +946,10 @@ public class VariableParser {
             case "username" -> USERNAME;
             case "uuid" -> UUID;
             case "dimension" -> DIMENSION;
-            case "facing" -> FACING;
-            case "facing_short" -> FACING_SHORT;
+            case "facing", "facing4" -> FACING4;
+            case "facing_short", "facing4_short" -> FACING4_SHORT;
+            case "facing8" -> FACING8;
+            case "facing8_short" -> FACING8_SHORT;
             case "facing_towards_xz" -> FACING_TOWARDS_XZ;
             case "biome" -> BIOME;
             case "moon_phase_word" -> { enabled.clientChunk = true; yield MOON_PHASE_WORD; }
@@ -993,6 +1032,9 @@ public class VariableParser {
             case "is_tick_sprinting", "tick_sprinting" -> IS_TICK_SPRINTING;
             case "is_tick_frozen", "tick_frozen" -> IS_TICK_FROZEN;
             case "is_tick_stepping", "tick_stepping" -> IS_TICK_STEPPING;
+
+            case "on_load" -> ON_LOAD;
+            case "on_join" -> ON_JOIN;
 
             case "reaL_am" -> REAL_AM;
             case "reaL_pm" -> REAL_PM;
@@ -1179,8 +1221,6 @@ public class VariableParser {
     }
 
     private static NumberSupplierElement.Entry getDecimalSupplier(String element, ComplexData.Enabled enabled) {
-        if (element.startsWith("velocity_"))
-            enabled.velocity = true;
         return switch (element) {
             case "x" -> X;
             case "y" -> Y;
@@ -1205,12 +1245,6 @@ public class VariableParser {
             case "entity_reach_distance", "reach_distance", "entity_reach", "reach" -> ENTITY_REACH_DISTANCE;
             case "block_reach_distance", "block_reach" -> BLOCK_REACH_DISTANCE;
             case "fishing_hook_distance" -> FISHING_HOOK_DISTANCE;
-            case "velocity_xz" -> VELOCITY_XZ;
-            case "velocity_y" -> VELOCITY_Y;
-            case "velocity_xyz" -> VELOCITY_XYZ;
-            case "velocity_xz_kmh" -> VELOCITY_XZ_KMH;
-            case "velocity_y_kmh" -> VELOCITY_Y_KMH;
-            case "velocity_xyz_kmh" -> VELOCITY_XYZ_KMH;
             case "yaw" -> YAW;
             case "pitch" -> PITCH;
             case "day" -> DAY;
@@ -1454,7 +1488,9 @@ public class VariableParser {
             case "records" -> {enabled.music = true; yield RECORDS;}
             case "chat_messages" -> CHAT_MESSAGES;
 
-            default -> null;
+            case "on_chat_msg", "on_chat_message" -> ON_CHAT_MESSAGE.register(profile);
+
+             default -> null;
         };
 
         if (provider == null)

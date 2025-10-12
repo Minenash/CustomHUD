@@ -86,6 +86,9 @@ public class BooleanSupplierElement implements HudElement {
     public static final Supplier<Boolean> IS_TICK_FROZEN = () -> client.getServer() != null ? client.getServer().getTickManager().isFrozen() : client.world.getTickManager().isFrozen();
     public static final Supplier<Boolean> IS_TICK_STEPPING = () -> client.getServer() != null ? client.getServer().getTickManager().isStepping() : client.world.getTickManager().isStepping();
 
+    public static final Supplier<Boolean> ON_LOAD = () -> ProfileManager.getActive().boolEvents.contains("load");
+    public static final Supplier<Boolean> ON_JOIN = () -> ProfileManager.getActive().boolEvents.contains("join");
+
     public static final Supplier<Boolean> REAL_AM = () -> LocalTime.now().getHour() < 12;
     public static final Supplier<Boolean> REAL_PM = () -> LocalTime.now().getHour() >= 12;
 
