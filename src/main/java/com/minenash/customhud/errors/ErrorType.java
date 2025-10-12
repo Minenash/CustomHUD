@@ -73,6 +73,8 @@ public enum ErrorType {
     MALFORMED_BAR ("WIP", "references/v4_wip", "Malformed bar variable: §e"),
     MALFORMED_LOOP ("WIP", "references/v4_wip", "Malformed loop: §e"),
     MALFORMED_TIMER ("WIP", "references/v4_wip", "Malformed timer: §e"),
+    MALFORMED_VELOCITY ("WIP", "references/v4_wip", "Invalid velocity option(s): §e"),
+    MALFORMED_VELOCITY_SMOOTHING ("WIP", "references/v4_wip", "Malformed velocity smoothing: §e"),
     EMPTY_TOGGLE ("WIP", "references/v4_wip", "No toggle name"),
     UNKNOWN_KEY("WIP", "references/v4_wip", "Invalid key name: §e"),
     GIZMO_NO_ROTATE("WIP", "references/v4_wip", "Gizmo can't be rotated"),
