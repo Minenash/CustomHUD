@@ -6,6 +6,7 @@ import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,7 +29,6 @@ import static com.minenash.customhud.CustomHud.CLIENT;
 public class ErrorsScreen extends Screen {
 
     private ErrorListWidget listWidget = null;
-//    private final List<ButtonWidget> profiles = new ArrayList<>();
     private final Screen parent;
     private Profile profile;
     public int y_offset = 0;
@@ -123,13 +123,10 @@ public class ErrorsScreen extends Screen {
             for (var e : Errors.getErrors(profile.name))
                 this.addEntry(new ErrorEntry(e));
 
-            if (this.getSelectedOrNull() != null)
-                this.centerScrollOn(getEntry(0));
+//            if (this.getSelectedOrNull() != null)
+//                this.centerScrollOn(ent);
 
         }
-
-        @Override
-        protected void drawSelectionHighlight(DrawContext context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {}
 
         @Override
         protected int getScrollbarX() {
@@ -138,7 +135,8 @@ public class ErrorsScreen extends Screen {
 
         @Override
         protected ErrorEntry getEntryAtPosition(double x, double y) {
-            int m = MathHelper.floor(y - (double)this.getY()) - this.headerHeight + (int)this.getScrollY() - 4;
+            // - this.headerHeight
+            int m = MathHelper.floor(y - (double)this.getY()) + (int)this.getScrollY() - 4;
             int n = m / this.itemHeight;
 
             ErrorEntry entry = getSelectedOrNull();
@@ -169,7 +167,8 @@ public class ErrorsScreen extends Screen {
             }
 
             @Override
-            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+                int y = getY();
                 context.drawCenteredTextWithShadow(textRenderer, error.line().formatted(Formatting.UNDERLINE), lineColumnX, y + y_offset, 0xFFFFFFFF);
                 context.drawTextWithShadow(textRenderer, Text.literal(collapsedSource).formatted(Formatting.UNDERLINE), 36, y + y_offset, 0xFFFFFFFF);
                 context.drawTextWithShadow(textRenderer, Text.literal(collapsedMsg).formatted(Formatting.UNDERLINE), msgX, y + y_offset, 0xFFFFFFFF);
@@ -216,7 +215,8 @@ public class ErrorsScreen extends Screen {
                 }
             }
 
-            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+                int y = getY();
                 if (hovered) {
                     int extendedHeight = ErrorListWidget.this.getSelectedOrNull() == this ? (18 * expandedMsg.size()) : 0;
                     context.fill(0, y + y_offset, width, y + y_offset + 18 + extendedHeight, 0x22FFFFFF);
@@ -252,14 +252,14 @@ public class ErrorsScreen extends Screen {
             }
 
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (mouseX >= refX && mouseX <= refX + refLength)
+            public boolean mouseClicked(Click click, boolean doubled) {
+                if (click.x() >= refX && click.x() <= refX + refLength)
                     Util.getOperatingSystem().open(error.type().link);
                 else if (expands && ErrorListWidget.this.getSelectedOrNull() != this)
                     ErrorListWidget.this.setSelected(this);
                 else
                     ErrorListWidget.this.setSelected(null);
-                return false;
+                return super.mouseClicked(click, doubled);
             }
 
         }

@@ -32,11 +32,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.PackVersion;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.scoreboard.*;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffer;
@@ -77,10 +79,10 @@ public class AttributeFunctions {
 
 
     // PLAYERS (From PlayerList)
-    public static final Function<PlayerListEntry,String> PLAYER_ENTRY_NAME = (player) -> player.getProfile().getName();
+    public static final Function<PlayerListEntry,String> PLAYER_ENTRY_NAME = (player) -> player.getProfile().name();
     public static final Function<PlayerListEntry,Text> PLAYER_ENTRY_DISPLAY_NAME = (player) -> player.getDisplayName() != null
-            ? player.getDisplayName().copy() : Team.decorateName(player.getScoreboardTeam(), Text.literal(player.getProfile().getName()));
-    public static final Function<PlayerListEntry,String> PLAYER_ENTRY_UUID = (player) -> player.getProfile().getId().toString();
+            ? player.getDisplayName().copy() : Team.decorateName(player.getScoreboardTeam(), Text.literal(player.getProfile().name()));
+    public static final Function<PlayerListEntry,String> PLAYER_ENTRY_UUID = (player) -> player.getProfile().id().toString();
     public static final Function<PlayerListEntry,String> PLAYER_ENTRY_TEAM = (player) -> player.getScoreboardTeam().getName();
     public static final Function<PlayerListEntry,Number> PLAYER_ENTRY_LATENCY = (player) -> player.getLatency();
     public static final Function<PlayerListEntry,Boolean> PLAYER_ENTRY_SURVIVAL = (player) -> player.getGameMode() == GameMode.SURVIVAL;
@@ -106,7 +108,7 @@ public class AttributeFunctions {
         int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - sound.time()) / (float)(3000.0 * d)));
         return  (p << 24);
     };
-    public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_DISTANCE = (sound) -> sound.location().distanceTo(CLIENT.cameraEntity.getEyePos());
+    public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_DISTANCE = (sound) -> sound.location().distanceTo(CLIENT.getCameraEntity().getEyePos());
     public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_X = (sound) -> sound.location().getX();
     public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_Y = (sound) -> sound.location().getY();
     public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_Z = (sound) -> sound.location().getZ();
@@ -116,8 +118,8 @@ public class AttributeFunctions {
         int dir = subtitle$getDirection(sound);
         return dir == 0 ? "=" : dir == 1 ? ">" : "<";
     };
-    public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_DIRECTION_YAW = (sound) -> AttributeHelpers.getRelativeYaw(CLIENT.cameraEntity.getPos(), sound.location());
-    public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_DIRECTION_PITCH = (sound) -> AttributeHelpers.getRelativePitch(CLIENT.cameraEntity.getEyePos(), sound.location());
+    public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_DIRECTION_YAW = (sound) -> AttributeHelpers.getRelativeYaw(CLIENT.getCameraEntity().getEntityPos(), sound.location());
+    public static final Function<SubtitlesHud.SoundEntry,Number> SUBTITLE_SOUND_DIRECTION_PITCH = (sound) -> AttributeHelpers.getRelativePitch(CLIENT.getCameraEntity().getEyePos(), sound.location());
 
 
     // SUBTITLES
@@ -423,7 +425,16 @@ public class AttributeFunctions {
     public static final Function<ResourcePackProfile,Text> PACK_NAME = (pack) -> pack.getDisplayName();
     public static final Function<ResourcePackProfile,String> PACK_ID = (pack) -> pack.getId();
     public static final Function<ResourcePackProfile,Text> PACK_DESCRIPTION = (pack) -> pack.getDescription();
-    public static final Function<ResourcePackProfile,Number> PACK_VERSION = (pack) -> ((ResourcePackProfileMetadataDuck)(Object)pack.metaData).customhud$getPackVersion();
+
+    public static final Function<ResourcePackProfile,String> MIN_PACK_VERSION = (pack) -> range(pack).minInclusive().toString();
+    public static final Function<ResourcePackProfile,String> MAX_PACK_VERSION = (pack) -> range(pack).maxInclusive().toString();
+
+    public static final Function<ResourcePackProfile,Number> MIN_PACK_VERSION_MAJOR = (pack) -> range(pack).minInclusive().major();
+    public static final Function<ResourcePackProfile,Number> MIN_PACK_VERSION_MINOR = (pack) -> range(pack).minInclusive().minor();
+    public static final Function<ResourcePackProfile,Number> MAX_PACK_VERSION_MAJOR = (pack) -> range(pack).maxInclusive().major();
+    public static final Function<ResourcePackProfile,Number> MAX_PACK_VERSION_MINOR = (pack) -> range(pack).maxInclusive().minor();
+
+    public static final Range<PackVersion> range(ResourcePackProfile pack) { return ((ResourcePackProfileMetadataDuck)(Object)pack.metaData).customhud$getPackVersionRange(); }
 
     public static final Function<ResourcePackProfile,Boolean> PACK_ALWAYS_ENABLED = (pack) -> pack.isRequired();
     public static final Function<ResourcePackProfile,Boolean> PACK_IS_PINNED = (pack) -> pack.isPinned();
@@ -504,12 +515,13 @@ public class AttributeFunctions {
     }
 
     public static int subtitle$getDirection(SubtitlesHud.SoundEntry sound) {
-        float xRotation = -CLIENT.cameraEntity.getPitch() * ((float)Math.PI / 180);
-        float yRotation = -CLIENT.cameraEntity.getYaw() * ((float)Math.PI / 180);
+        var camera = CLIENT.getCameraEntity();
+        float xRotation = -camera.getPitch() * ((float)Math.PI / 180);
+        float yRotation = -camera.getYaw() * ((float)Math.PI / 180);
 
         Vec3d vec3d2 = new Vec3d(0.0, 0.0, -1.0).rotateX(xRotation).rotateY(yRotation);
         Vec3d vec3d3 = new Vec3d(0.0, 1.0, 0.0).rotateX(xRotation).rotateY(yRotation);
-        Vec3d vec3d5 = sound.location().subtract(CLIENT.cameraEntity.getEyePos()).normalize();
+        Vec3d vec3d5 = sound.location().subtract(camera.getEyePos()).normalize();
         double e = vec3d2.crossProduct(vec3d3).dotProduct(vec3d5);
 
         return -vec3d2.dotProduct(vec3d5) > 0.5 || e == 0? 0 : e < 0 ? 1 : -1;

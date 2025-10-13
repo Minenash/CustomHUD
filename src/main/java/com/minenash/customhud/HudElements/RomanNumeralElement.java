@@ -6,13 +6,14 @@ import com.minenash.customhud.HudElements.interfaces.MultiElement;
 import com.minenash.customhud.HudElements.interfaces.NumElement;
 import com.minenash.customhud.data.HudTheme;
 import com.minenash.customhud.render.CustomHudRenderer3;
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
 
 public class RomanNumeralElement extends FunctionalElement implements HudElement, MultiElement {
 
-    private static final Identifier ROMAN_NUMERAL_FONT = Identifier.of("custom_hud", "roman");
+    private static final StyleSpriteSource ROMAN_NUMERAL_FONT = new StyleSpriteSource.Font(Identifier.of("custom_hud", "roman"));
     private final HudElement base;
     private final boolean precision;
 

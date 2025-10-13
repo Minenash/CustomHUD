@@ -1,12 +1,13 @@
 package com.minenash.customhud.render;
 
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.util.Identifier;
 
 public class RenderPiece {
 
     public final Object element;
     public final Object value;
-    public final Identifier font;
+    public final StyleSpriteSource font;
     public final int color;
     public final int bgColor;
     public final boolean shadow;
@@ -15,7 +16,7 @@ public class RenderPiece {
     public int lineWith;
     public boolean shiftTextUpOrFitItemIcon;
 
-    public RenderPiece(Object element, Object value, Identifier font, int x, int y, int color, int bgColor, boolean shadow, boolean shiftTextUpOrFitItemIcon) {
+    public RenderPiece(Object element, Object value, StyleSpriteSource font, int x, int y, int color, int bgColor, boolean shadow, boolean shiftTextUpOrFitItemIcon) {
         this.element = element;
         this.value = value;
         this.font = font;

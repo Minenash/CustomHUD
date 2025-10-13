@@ -92,7 +92,7 @@ public class SettingsElement {
         if (setting.startsWith("key_")) {
             String key = setting.substring(4);
             for (KeyBinding binding : options.allKeys)
-                if (binding.getTranslationKey().equalsIgnoreCase(key))
+                if (binding.getId().equalsIgnoreCase(key))
                     return new Pair<>(new SpecialSupplierElement(SpecialSupplierElement.of(
                             () -> binding.getBoundKeyLocalizedText().getString(),
                             () -> ((KeyBindingAccessor) binding).getBoundKey().getCode(),

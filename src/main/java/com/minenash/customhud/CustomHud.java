@@ -23,6 +23,7 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -46,16 +47,16 @@ public class CustomHud implements ModInitializer {
 	public static final Path PROFILE_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("custom-hud/profiles");
 	public static WatchService profileWatcher;
 
+	public static final KeyBinding.Category MAIN_KB_CAT = KeyBinding.Category.create(Identifier.of("customhud", "customhud"));
+	public static final KeyBinding.Category TOGGLES_KB_CAT = KeyBinding.Category.create(Identifier.of("customhud", "toggles"));
+
 	public static final KeyBinding kb_enable = registerKeyBinding("enable", GLFW.GLFW_KEY_UNKNOWN);
 	public static final KeyBinding kb_cycleProfiles = registerKeyBinding("cycle_profiles", GLFW.GLFW_KEY_GRAVE_ACCENT);
 	public static final KeyBinding kb_showErrors = registerKeyBinding("show_errors", GLFW.GLFW_KEY_B);
 	public static final KeyBinding kb_refreshProfilerTimings = registerKeyBinding("refresh_profiler_timings", GLFW.GLFW_KEY_UNKNOWN);
 
-//	public static final KeyBinding SWITCH_RENDERER = registerKeyBinding("switch_renderer", GLFW.GLFW_KEY_KP_5);
-//	public static boolean useNewRenderer = true;
-
 	private static KeyBinding registerKeyBinding(String binding, int defaultKey) {
-		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, defaultKey, "category.custom_hud"));
+		return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.custom_hud." + binding, InputUtil.Type.KEYSYM, defaultKey, MAIN_KB_CAT));
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public class CustomHud implements ModInitializer {
 
 		updateProfiles();
 		Profile profile = ProfileManager.getActive();
-		if (profile != null && client.cameraEntity != null) {
+		if (profile != null && client.getCameraEntity() != null) {
 			if (!Objects.equals(previousEnabled,profile.enabled)) {
 				ComplexData.reset();
 				previousEnabled = profile.enabled;
@@ -173,7 +174,7 @@ public class CustomHud implements ModInitializer {
 			return true;
 		if (key.boundKey.type == InputUtil.Type.MOUSE)
 			return IS_MOUSE_DOWN.getOrDefault(KeyBindingHelper.getBoundKeyOf(key).getCode(), false);
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), KeyBindingHelper.getBoundKeyOf(key).getCode());
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), KeyBindingHelper.getBoundKeyOf(key).getCode());
 	}
 
 	public static boolean isNotDisabled(DisableElement element) {

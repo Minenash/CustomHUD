@@ -11,9 +11,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.hud.debug.DebugHudProfile;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +23,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
@@ -33,8 +34,6 @@ public abstract class MinecraftClientMixin {
     @Shadow @Final public InGameHud inGameHud;
 
     @Shadow @Nullable public ClientWorld world;
-
-    @Shadow public abstract DebugHud getDebugHud();
 
     @WrapOperation(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z"))
     public boolean readClick(KeyBinding instance, Operation<Boolean> original) {
@@ -53,14 +52,14 @@ public abstract class MinecraftClientMixin {
         CustomHud.delayedInitialize();
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/String;format(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getFramebuffer()Lnet/minecraft/client/gl/Framebuffer;"))
     public void getGpuUsage(boolean tick, CallbackInfo ci) {
         ComplexData.gpuUsage = gpuUtilizationPercentage > 100 ? 100 : gpuUtilizationPercentage;
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
-    public boolean getGpuUsageAndOtherPerformanceMetrics(DebugHud hud) {
-        return hud.shouldShowDebugHud() || (ProfileManager.getActive() != null && ProfileManager.getActive().enabled.gpuMetrics);
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/debug/DebugHudProfile;isEntryVisible(Lnet/minecraft/util/Identifier;)Z"))
+    public boolean getGpuUsageAndOtherPerformanceMetrics(DebugHudProfile instance, Identifier entryId, Operation<Boolean> original) {
+        return original.call(instance, entryId) || (ProfileManager.getActive() != null && ProfileManager.getActive().enabled.gpuMetrics);
     }
 
 

@@ -56,7 +56,7 @@ public class ListSuppliers {
     public static final Comparator<PlayerListEntry> ENTRY_ORDERING =
             Comparator.comparingInt((PlayerListEntry entry) -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
                     .thenComparing((entry) -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
-                    .thenComparing((entry) -> entry.getProfile().getName(), String::compareToIgnoreCase);
+                    .thenComparing((entry) -> entry.getProfile().name(), String::compareToIgnoreCase);
 
 
     public static final List<String> IGNORE_MODS = List.of("minecraft", "fabricloader", "java");
@@ -142,7 +142,7 @@ public class ListSuppliers {
     },
 
     SCOREBOARD_OBJECTIVES = () -> Arrays.asList(scoreboard().getObjectives().toArray()),
-            PLAYER_SCOREBOARD_SCORES = () -> Arrays.asList(scoreboard().getScores(CLIENT.getGameProfile().getName()).scores.entrySet().toArray()),
+            PLAYER_SCOREBOARD_SCORES = () -> Arrays.asList(scoreboard().getScores(CLIENT.getGameProfile().name()).scores.entrySet().toArray()),
 
     BOSSBARS = () -> bossbars(false),
     ALL_BOSSBARS = () -> bossbars(true),
@@ -203,7 +203,7 @@ public class ListSuppliers {
 
         for (var player : cboss.getPlayers())
             for (var listPlayer : listPlayers)
-                if (player.getUuid().equals(((PlayerListEntry) listPlayer).getProfile().getId()))
+                if (player.getUuid().equals(((PlayerListEntry) listPlayer).getProfile().id()))
                     out.add((PlayerListEntry) listPlayer);
 
         return out;

@@ -10,7 +10,6 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +41,7 @@ public class MusicAndRecordTracker {
 
     public static RecordInstance getClosestRecord() {
         if (client.player == null) return records.get(records.size()-1);
-        Vec3d pos = client.player.getPos();
+        Vec3d pos = client.player.getEntityPos();
 
         RecordInstance closestInstance = records.get(0);
         double closestDistance = pos.squaredDistanceTo(closestInstance.sound.getX(), closestInstance.sound.getY(), closestInstance.sound.getZ());

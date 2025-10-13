@@ -6,7 +6,7 @@ import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.data.DebugCharts;
 import com.minenash.customhud.data.Profile;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.debug.PieChart;
+import net.minecraft.client.gui.hud.debug.chart.PieChart;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

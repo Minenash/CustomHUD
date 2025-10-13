@@ -2,6 +2,7 @@ package com.minenash.customhud.data;
 
 import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.util.Identifier;
 
 import java.util.regex.Matcher;
@@ -16,7 +17,7 @@ public class HudTheme {
     public int bgColor = 0x44000000;
     public CHFormatting fgColor = new CHFormatting().color(0xffffffff,0xffffffff);
     public int lineSpacing = 2;
-    public Identifier font = null;
+    public StyleSpriteSource font = null;
     public boolean textShadow = true;
     public boolean persistentFormatting = false;
 
@@ -146,7 +147,7 @@ public class HudTheme {
         }
 
         else if (( matcher = FONT_FLAG_PATTERN.matcher(line) ).matches())
-            font = Identifier.of(matcher.group(1));
+            font = new StyleSpriteSource.Font(Identifier.of(matcher.group(1)));
 
         else if (( matcher = TEXT_SHADOW_FLAG_PATTERN.matcher(line) ).matches())
             textShadow = Boolean.parseBoolean(matcher.group(1));

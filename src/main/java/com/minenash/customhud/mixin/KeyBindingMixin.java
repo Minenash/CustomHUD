@@ -3,6 +3,7 @@ package com.minenash.customhud.mixin;
 import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.data.Toggle;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,11 +16,12 @@ public class KeyBindingMixin {
 
     @Inject(method = "onKeyPressed", at = @At("TAIL"))
     private static void checkKeybinds(InputUtil.Key key, CallbackInfo ci) {
+        var input = new KeyInput(key.getCode(), key.getCode(), 0);
         for (Profile p : ProfileManager.getProfiles()) {
-            if (p.keyBinding.matchesKey(key.getCode(), key.getCode()))
+            if (p.keyBinding.matchesKey(input))
                 ++p.keyBinding.timesPressed;
             for (Toggle t : p.toggles.values()) {
-                if (t.key.matchesKey(key.getCode(), key.getCode()))
+                if (t.key.matchesKey(input))
                     ++t.key.timesPressed;
             }
         }

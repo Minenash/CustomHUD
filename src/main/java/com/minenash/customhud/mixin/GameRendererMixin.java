@@ -1,8 +1,10 @@
 package com.minenash.customhud.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.minenash.customhud.ProfileManager;
+import com.minenash.customhud.data.Crosshairs;
 import com.minenash.customhud.data.Profile;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -37,5 +39,11 @@ public class GameRendererMixin {
         CLIENT.getWindow().setScaleFactor(originalScale);
 
     }
+
+    @ModifyExpressionValue(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/debug/DebugHudProfile;isEntryVisible(Lnet/minecraft/util/Identifier;)Z"))
+    private boolean getDebugCrosshairEnable(boolean original) {
+        return original || (ProfileManager.getActive() != null && ProfileManager.getActive().crosshair == Crosshairs.DEBUG);
+    }
+
 
 }

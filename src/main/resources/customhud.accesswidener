@@ -44,9 +44,9 @@ accessible field net/minecraft/client/gui/hud/InGameHud titleFadeOutTicks I
 accessible field net/minecraft/client/gui/hud/InGameHud titleStayTicks I
 accessible field net/minecraft/client/gui/hud/InGameHud titleFadeInTicks I
 accessible field net/minecraft/resource/ResourcePackProfile metaData Lnet/minecraft/resource/ResourcePackProfile$Metadata;
-accessible class net/minecraft/client/gui/hud/DebugHud$AllocationRateCalculator
-accessible method net/minecraft/client/gui/hud/DebugHud$AllocationRateCalculator <init> ()V
-accessible method net/minecraft/client/gui/hud/DebugHud$AllocationRateCalculator get (J)J
+accessible class net/minecraft/client/gui/hud/debug/MemoryDebugHudEntry$AllocationRateCalculator
+accessible method net/minecraft/client/gui/hud/debug/MemoryDebugHudEntry$AllocationRateCalculator <init> ()V
+accessible method net/minecraft/client/gui/hud/debug/MemoryDebugHudEntry$AllocationRateCalculator get (J)J
 accessible field net/minecraft/client/util/InputUtil$Key type Lnet/minecraft/client/util/InputUtil$Type;
 accessible method net/minecraft/client/gui/hud/BossBarHud renderBossBar (Lnet/minecraft/client/gui/DrawContext;IILnet/minecraft/entity/boss/BossBar;I[Lnet/minecraft/util/Identifier;[Lnet/minecraft/util/Identifier;)V
 accessible field net/minecraft/client/gui/hud/BossBarHud BACKGROUND_TEXTURES [Lnet/minecraft/util/Identifier;
@@ -54,19 +54,17 @@ accessible field net/minecraft/client/gui/hud/BossBarHud PROGRESS_TEXTURES [Lnet
 accessible field net/minecraft/client/gui/hud/BossBarHud NOTCHED_BACKGROUND_TEXTURES [Lnet/minecraft/util/Identifier;
 accessible field net/minecraft/client/gui/hud/BossBarHud NOTCHED_PROGRESS_TEXTURES [Lnet/minecraft/util/Identifier;
 accessible field net/minecraft/client/gui/hud/ChatHud messages Ljava/util/List;
-accessible field net/minecraft/client/gui/hud/DebugHud renderingChart Lnet/minecraft/client/gui/hud/debug/RenderingChart;
-accessible field net/minecraft/client/gui/hud/DebugHud tickChart Lnet/minecraft/client/gui/hud/debug/TickChart;
-accessible field net/minecraft/client/gui/hud/DebugHud pingChart Lnet/minecraft/client/gui/hud/debug/PingChart;
-accessible field net/minecraft/client/gui/hud/DebugHud packetSizeChart Lnet/minecraft/client/gui/hud/debug/PacketSizeChart;
-#accessible field net/minecraft/client/render/item/BuiltinModelItemRenderer skullModels Ljava/util/Map;
-#accessible field net/minecraft/client/render/item/ItemRenderer builtinModelItemRenderer Lnet/minecraft/client/render/item/BuiltinModelItemRenderer;
-accessible field net/minecraft/client/gui/hud/debug/PieChart profileResult Lnet/minecraft/util/profiler/ProfileResult;
+accessible field net/minecraft/client/gui/hud/DebugHud renderingChart Lnet/minecraft/client/gui/hud/debug/chart/RenderingChart;
+accessible field net/minecraft/client/gui/hud/DebugHud tickChart Lnet/minecraft/client/gui/hud/debug/chart/TickChart;
+accessible field net/minecraft/client/gui/hud/DebugHud pingChart Lnet/minecraft/client/gui/hud/debug/chart/PingChart;
+accessible field net/minecraft/client/gui/hud/DebugHud packetSizeChart Lnet/minecraft/client/gui/hud/debug/chart/PacketSizeChart;
+accessible field net/minecraft/client/gui/hud/debug/chart/PieChart profileResult Lnet/minecraft/util/profiler/ProfileResult;
 accessible class net/minecraft/client/gui/hud/SubtitlesHud$SubtitleEntry
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SubtitleEntry sounds Ljava/util/List;
 accessible class net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry time J
 accessible field net/minecraft/client/gui/hud/SubtitlesHud$SoundEntry location Lnet/minecraft/util/math/Vec3d;
-accessible field net/minecraft/client/render/WorldRenderer renderedEntitiesCount I
 accessible field net/minecraft/entity/player/ItemCooldownManager entries Ljava/util/Map;
 accessible field net/minecraft/entity/player/ItemCooldownManager tick I
 accessible class net/minecraft/entity/player/ItemCooldownManager$Entry
+accessible field net/minecraft/client/render/WorldRenderer worldRenderState Lnet/minecraft/client/render/state/WorldRenderState;

@@ -4,6 +4,7 @@ import com.minenash.customhud.ProfileManager;
 import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.gui.NewConfigScreen;
+import com.minenash.customhud.mixin.accessors.EntryListWidgetAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -18,16 +19,21 @@ import java.util.stream.Collectors;
 
 public class ProfileLinesWidget extends ElementListWidget<LineEntry> {
 
+    public static final int ENTRY_HEIGHT = 20;
     public final NewConfigScreen screen;
 
     public ProfileLinesWidget(NewConfigScreen screen, int startY, int endY) {
-        super(MinecraftClient.getInstance(), screen.width, endY - startY, startY, 20);
+        super(MinecraftClient.getInstance(), screen.width, endY - startY, startY, ENTRY_HEIGHT);
         this.screen = screen;
 
         for (Profile p : ProfileManager.getProfiles())
             this.addEntry(new ProfileLineEntry(p, this));
 
         this.addEntry(new LineEntry.NewProfile(this));
+    }
+
+    public EntryListWidgetAccessor access() {
+        return (EntryListWidgetAccessor)this;
     }
 
     public void update() {
@@ -37,14 +43,24 @@ public class ProfileLinesWidget extends ElementListWidget<LineEntry> {
 
     public void newProfile() {
         Profile p = ProfileManager.createBlank();
-        if (p != null)
-            children().add(children().size()-1, new ProfileLineEntry(p, this));
+        if (p != null) {
+            List<LineEntry> children = access().getChildren();
+            var entry = new ProfileLineEntry(p, this);
+            entry.setHeight(ENTRY_HEIGHT);
+            entry.setWidth(getRowWidth());
+            children.add(children.size() - 1, entry);
+            access().callRecalculateAllChildrenPositions();
+        }
     }
 
     public void move(ProfileLineEntry entry, int direction) {
-        int index = MathHelper.clamp(children().indexOf(entry) + direction, 0, children().size()-1);
-        children().remove(entry);
-        children().add(index, entry);
+        List<LineEntry> children = access().getChildren();
+
+        int index = MathHelper.clamp(children.indexOf(entry) + direction, 0, children.size()-1);
+
+        children.remove(entry);
+        children.add(index, entry);
+        access().callRecalculateAllChildrenPositions();
     }
 
     public void doneMoving() {
@@ -58,7 +74,7 @@ public class ProfileLinesWidget extends ElementListWidget<LineEntry> {
 
     public void deleteProfile(ProfileLineEntry entry) {
         ProfileManager.remove(entry.profile, true);
-        children().remove(entry);
+        removeEntry(entry);
     }
 
     @Override
