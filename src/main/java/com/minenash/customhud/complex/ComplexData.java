@@ -7,6 +7,7 @@ import com.mojang.datafixers.DataFixUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -151,7 +152,7 @@ public class ComplexData {
 
         if (profile.enabled.targetBlock) {
             Profilers.get().push("targetBlock");
-            HitResult hit =  client.getCameraEntity().raycast(profile.targetDistance, 0.0F, false);
+            HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, false);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
                 targetBlockPos = ((BlockHitResult)hit).getBlockPos();
@@ -166,7 +167,7 @@ public class ComplexData {
 
         if (profile.enabled.targetFluid) {
             Profilers.get().push("targetFluid");
-            HitResult hit =  client.getCameraEntity().raycast(profile.targetDistance, 0.0F, true);
+            HitResult hit =  client.cameraEntity.raycast(profile.targetDistance, 0.0F, true);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
                 targetFluidPos = ((BlockHitResult)hit).getBlockPos();
@@ -184,15 +185,15 @@ public class ComplexData {
             Profilers.get().push("targetEntity");
             double dist = profile.targetDistance;
 
-            Vec3d min = client.getCameraEntity().getCameraPosVec(0);
-            Vec3d rot = client.getCameraEntity().getRotationVec(1.0F);
+            Vec3d min = client.cameraEntity.getCameraPosVec(0);
+            Vec3d rot = client.cameraEntity.getRotationVec(1.0F);
             Vec3d max = min.add(rot.x * dist, rot.y * dist, rot.z * dist);
-            Box box = client.getCameraEntity().getBoundingBox().stretch(rot.multiply(dist)).expand(1.0, 1.0, 1.0);
+            Box box = client.cameraEntity.getBoundingBox().stretch(rot.multiply(dist)).expand(1.0, 1.0, 1.0);
 
-            HitResult block = client.getCameraEntity().raycast(dist, 0, false);
+            HitResult block = client.cameraEntity.raycast(dist, 0, false);
             double dist2 = block == null ? dist*dist : block.getPos().squaredDistanceTo(min);
 
-            EntityHitResult result = ProjectileUtil.raycast(client.getCameraEntity(), min, max, box, (en) -> !en.isSpectator(), dist2);
+            EntityHitResult result = ProjectileUtil.raycast(client.cameraEntity, min, max, box, (en) -> !en.isSpectator(), dist2);
             targetEntity = result == null ? null : result.getEntity();
             targetEntityHitPos = result == null ? null : result.getPos();
             Profilers.get().pop();

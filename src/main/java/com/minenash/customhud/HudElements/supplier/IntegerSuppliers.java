@@ -6,7 +6,6 @@ import com.minenash.customhud.errors.Errors;
 import com.mojang.blaze3d.platform.GLX;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.ParticleRenderer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.entity.SpawnGroup;
@@ -27,6 +26,7 @@ import oshi.hardware.CentralProcessor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.function.Supplier;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
@@ -81,7 +81,7 @@ public class IntegerSuppliers {
     public static final Supplier<Number> QUEUED_TASKS = () -> chunkBuilder().getScheduledTaskCount();
     public static final Supplier<Number> UPLOAD_QUEUE = () -> chunkBuilder().getChunksToUpload();
     public static final Supplier<Number> BUFFER_COUNT = () -> chunkBuilder().getFreeBufferCount();
-    public static final Supplier<Number> ENTITIES_RENDERED = () -> worldRender().worldRenderState.entityRenderStates.size();
+    public static final Supplier<Number> ENTITIES_RENDERED = () -> worldRender().renderedEntitiesCount;
     public static final Supplier<Number> ENTITIES_LOADED = () -> client.world.getRegularEntityCount();
 
     public static final Supplier<Number> FORCED_LOADED_CHUNKS = () -> ComplexData.world instanceof ServerWorld ? ((ServerWorld)ComplexData.world).getForcedChunks().size() : null;
@@ -197,7 +197,7 @@ public class IntegerSuppliers {
     public static final Supplier<Number> SOLAR_TIME = () -> client.world.getTimeOfDay() % 24000;
     public static final Supplier<Number> LUNAR_TIME = () -> client.world.getTimeOfDay();
 
-    public static final Supplier<Number> PARTICLES = () -> client.particleManager.particles.values().stream().mapToInt(ParticleRenderer::size).sum();
+    public static final Supplier<Number> PARTICLES = () -> client.particleManager.particles.values().stream().mapToInt(Collection::size).sum();
     public static final Supplier<Number> STREAMING_SOUNDS = () -> CLIENT.getSoundManager().soundSystem.soundEngine.streamingSources.getSourceCount();
     public static final Supplier<Number> MAX_STREAMING_SOUNDS = () -> CLIENT.getSoundManager().soundSystem.soundEngine.streamingSources.getMaxSourceCount();
     public static final Supplier<Number> STATIC_SOUNDS = () -> CLIENT.getSoundManager().soundSystem.soundEngine.staticSources.getSourceCount();
@@ -257,10 +257,8 @@ public class IntegerSuppliers {
     public static final Supplier<Number> REAL_MICROSECOND = () -> LocalTime.now().get(MICRO_OF_SECOND);
 
 
-    public static final Supplier<Number> RESOURCE_PACK_VERSION_MAJOR = () -> SharedConstants.getGameVersion().packVersion(ResourceType.CLIENT_RESOURCES).major();
-    public static final Supplier<Number> RESOURCE_PACK_VERSION_MINOR = () -> SharedConstants.getGameVersion().packVersion(ResourceType.CLIENT_RESOURCES).minor();
-    public static final Supplier<Number> DATA_PACK_VERSION_MAJOR = () -> SharedConstants.getGameVersion().packVersion(ResourceType.SERVER_DATA).major();
-    public static final Supplier<Number> DATA_PACK_VERSION_MINOR = () -> SharedConstants.getGameVersion().packVersion(ResourceType.SERVER_DATA).minor();
+    public static final Supplier<Number> RESOURCE_PACK_VERSION = () -> SharedConstants.getGameVersion().packVersion(ResourceType.CLIENT_RESOURCES);
+    public static final Supplier<Number> DATA_PACK_VERSION = () -> SharedConstants.getGameVersion().packVersion(ResourceType.SERVER_DATA);
 
     public static final Supplier<Number> MAINHAND_SLOT = () -> CLIENT.player.getInventory().getSelectedSlot();
 

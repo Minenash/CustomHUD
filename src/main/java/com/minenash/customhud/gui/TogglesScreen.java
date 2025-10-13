@@ -6,7 +6,6 @@ import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.data.Toggle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -14,7 +13,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.screen.ScreenTexts;
@@ -75,29 +73,29 @@ public class TogglesScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (selectedKeybind != null) {
-            selectedKeybind.setBoundKey(InputUtil.Type.MOUSE.createFromCode(click.button()));
+            selectedKeybind.setBoundKey(InputUtil.Type.MOUSE.createFromCode(button));
             selectedKeybind = null;
             for (ToggleListWidget.TEntry e : listWidget.children())
                 e.update();
             ConfigManager.save();
             return true;
         }
-        return super.mouseClicked(click, doubled);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (selectedKeybind != null) {
-            selectedKeybind.setBoundKey(input.key() == 256 ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(input));
+            selectedKeybind.setBoundKey(keyCode == 256 ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(keyCode, scanCode));
             selectedKeybind = null;
             for (ToggleListWidget.TEntry e : listWidget.children())
                 e.update();
             ConfigManager.save();
             return true;
         }
-        return super.keyPressed(input);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     class ToggleListWidget extends ElementListWidget<ToggleListWidget.TEntry> {
@@ -112,22 +110,23 @@ public class TogglesScreen extends Screen {
             if (noEntries)
                 return;
 
-            int inProfiles = 0;
             for (var e : profile.toggles.entrySet())
-                if (e.getValue().inProfile) {
+                if (e.getValue().inProfile)
                     this.addEntry(new ToggleEntry(e.getValue(), e.getKey()));
-                    inProfiles++;
-                }
 
-            if (profile.toggles.size() > inProfiles) {
-                this.addEntry(new BlankSeparator());
-                this.addEntry(new ToggleEntrySeparator());
-                this.addEntry(new BlankSeparator());
-            }
-
+            this.addEntry(new BlankSeparator());
+            this.addEntry(new ToggleEntrySeparator());
+            this.addEntry(new BlankSeparator());
             for (var e : profile.toggles.entrySet())
                 if (!e.getValue().inProfile)
                     this.addEntry(new ToggleEntry(e.getValue(), e.getKey()));
+
+            int index = children().size()-2;
+            if (children().get(index) instanceof ToggleEntrySeparator) {
+                children().remove(index+1);
+                children().remove(index);
+                children().remove(index-1);
+            }
         }
 
         @Override
@@ -157,11 +156,7 @@ public class TogglesScreen extends Screen {
             public ToggleEntryHeader(boolean noEntries) { this.noEntries = noEntries; }
 
             @Override
-            public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                int x = getContentX();
-                int y = getContentY();
-                int entryWidth = getContentWidth();
-
+            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
                 context.drawCenteredTextWithShadow(textRenderer, LINE, x+0, y+2, 0xFFFFFFFF);
                 context.drawTextWithShadow(textRenderer, NAME, x+0+24, y+2, 0xFFFFFFFF);
                 context.drawCenteredTextWithShadow(textRenderer, MODIFIER, x+entryWidth-40-80-4+15, y+2, 0xFFFFFFFF);
@@ -173,13 +168,13 @@ public class TogglesScreen extends Screen {
 
         public class ToggleEntrySeparator extends TEntry {
             @Override
-            public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                context.drawCenteredTextWithShadow(textRenderer, "§nPrior Bound Toggles from this Profile", getContentX() + getContentWidth()/2, getContentY()+4, 0xFFFFFFFF);
+            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+                context.drawCenteredTextWithShadow(textRenderer, "§nPrior Bound Toggles from this Profile", x + entryWidth/2, y+4, 0xFFFFFFFF);
             }
         }
         public class BlankSeparator extends TEntry {
             @Override
-            public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {}
+            public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {}
         }
 
         @Environment(EnvType.CLIENT)
@@ -212,10 +207,7 @@ public class TogglesScreen extends Screen {
                 this.modifier.active = !toggle.direct;
             }
 
-            public void render(DrawContext context, int mX, int mY, boolean hovered, float delta) {
-                int x = getContentX();
-                int y = getContentY();
-                int eWidth = getContentWidth();
+            public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
                 context.drawTextWithShadow(textRenderer, toggle.getDisplayName(), x+0+24, y+4, 0xFFFFFFFF);
 
                 if (!toggle.inProfile) {

@@ -17,7 +17,7 @@ public class PlayerEntityMixin {
     private void logAttack(Entity target, CallbackInfo ci) {
         if (((Object)this) == MinecraftClient.getInstance().player && ComplexData.targetEntityHitPos != null) {
             ComplexData.lastHitEntity = target;
-            ComplexData.lastHitEntityDist = ComplexData.targetEntityHitPos.distanceTo(MinecraftClient.getInstance().getCameraEntity().getEntityPos());
+            ComplexData.lastHitEntityDist = ComplexData.targetEntityHitPos.distanceTo(MinecraftClient.getInstance().getCameraEntity().getPos());
             ComplexData.lastHitEntityTime = System.currentTimeMillis();
         }
     }

@@ -13,4 +13,7 @@ public interface DebugHudAccessor {
     @Accessor MultiValueDebugSampleLogImpl getFrameNanosLog();
     @Accessor MultiValueDebugSampleLogImpl getTickNanosLog();
 
+    @Accessor RenderSystem.ShapeIndexBuffer getDebugCrosshairIndexBuffer();
+    @Accessor GpuBuffer getDebugCrosshairBuffer();
+
 }

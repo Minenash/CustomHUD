@@ -5,7 +5,6 @@ import com.minenash.customhud.data.Profile;
 import com.minenash.customhud.data.Toggle;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
@@ -195,9 +194,9 @@ public class ConfigManager {
                 if (p.toggles.containsKey(name))
                     p.toggles.get(name).key.setBoundKey(InputUtil.fromTranslationKey(keyTranslation));
                 else {
-                    KeyBinding key = new KeyBinding("customhud_toggle_" + UUID.randomUUID(), GLFW.GLFW_KEY_UNKNOWN, CustomHud.TOGGLES_KB_CAT);
+                    KeyBinding key = new KeyBinding("customhud_toggle_" + UUID.randomUUID(), GLFW.GLFW_KEY_UNKNOWN, "customhud");
                     key.setBoundKey(InputUtil.fromTranslationKey(keyTranslation));
-                    KeyBinding modifier = new KeyBinding("customhud_toggle_" + UUID.randomUUID(), GLFW.GLFW_KEY_UNKNOWN, CustomHud.TOGGLES_KB_CAT);
+                    KeyBinding modifier = new KeyBinding("customhud_toggle_" + UUID.randomUUID(), GLFW.GLFW_KEY_UNKNOWN, "customhud");
                     if (modifierTranslation != null)
                         modifier.setBoundKey(InputUtil.fromTranslationKey(modifierTranslation));
                     p.toggles.put(name, new Toggle(name, false, -1, false, modifier, key));

@@ -6,9 +6,11 @@ import com.minenash.customhud.errors.Errors;
 import com.minenash.customhud.gui.ErrorsScreen;
 import com.minenash.customhud.gui.NewConfigScreen.Mode;
 import com.minenash.customhud.gui.TogglesScreen;
+//import com.minenash.customhud.gui.editor.EditorWindow;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -44,7 +46,9 @@ public class ProfileLineEntry extends LineEntry {
 
 //        String editText = "Will open in your text editor\n\n Not opening? Shift-click to edit in game";
 
-        this.edit = button("Edit", ProfileManager.openTooltipStr, 40, (b) -> ProfileManager.open(profile));
+        this.edit = button("Edit", ProfileManager.openTooltipStr, 40, (b) -> {
+            ProfileManager.open(profile);
+        });
         this.cycled = button(profile.cycle ? "☑" : "☐", "Include this profile in the profile cycle", 16, (b) -> {
             profile.cycle = !profile.cycle;
             b.setMessage(Text.literal(profile.cycle ? "☑" : "☐"));
@@ -92,11 +96,7 @@ public class ProfileLineEntry extends LineEntry {
     }
 
     @Override
-    public void render(DrawContext context, int mX, int mY, boolean hovered, float delta) {
-        int x = getContentX();
-        int y = getContentY();
-        int eWidth = getContentWidth();
-
+    public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
         editName.setX(x + 16 + 20);
         editName.setY(y);
         editName.setWidth(eWidth - 16 - 20 - 16 - 42 - 82 - 18 - (profile.toggles.isEmpty() ? 0 : 50) - 3);

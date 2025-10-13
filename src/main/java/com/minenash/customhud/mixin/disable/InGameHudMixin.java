@@ -85,7 +85,7 @@ public abstract class InGameHudMixin {
     }
 
     @Inject(method = "renderSubtitlesHud", at = @At(value = "HEAD"), cancellable = true)
-    public void customhud$disableSubtitles(DrawContext context, boolean defer, CallbackInfo ci) {
+    public void customhud$disableSubtitles(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         if (CustomHud.isDisabled(SUBTITLES))
             ci.cancel();
     }

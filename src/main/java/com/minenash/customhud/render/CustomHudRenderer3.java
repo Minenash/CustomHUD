@@ -16,7 +16,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.*;
-import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profilers;
@@ -30,7 +29,7 @@ public class CustomHudRenderer3 {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final Identifier defaultFont = Identifier.of("minecraft", "default");
 
-    public static StyleSpriteSource font;
+    public static Identifier font;
     public static HudTheme theme;
 
     public static void render(DrawContext context, RenderTickCounter tick) {

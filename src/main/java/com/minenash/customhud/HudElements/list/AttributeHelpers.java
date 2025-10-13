@@ -88,7 +88,7 @@ public class AttributeHelpers {
 
     public static Entity getFullEntity(Entity entity) {
         return CLIENT.getServer() == null || entity == null? entity :
-                CLIENT.getServer().getWorld(entity.getEntityWorld().getRegistryKey()).getEntity(entity.getUuid());
+                CLIENT.getServer().getWorld(entity.getWorld().getRegistryKey()).getEntity(entity.getUuid());
     }
     public static EntityAttributeInstance getEntityAttr(Entity entity, EntityAttribute attribute) {
         Entity e = getFullEntity(entity);
@@ -102,7 +102,7 @@ public class AttributeHelpers {
         AttributeContainerAccessor container = (AttributeContainerAccessor) le.getAttributes();
         Map<EntityAttribute, EntityAttributeInstance> instances = new HashMap<>(((DefaultAttributeContainerAccessor)container.getDefaultAttributes()).getInstances());
         instances.putAll(container.getCustom());
-        return Arrays.asList( (entity.getEntityWorld().isClient() ?
+        return Arrays.asList( (entity.getWorld().isClient ?
                 instances.values().stream().filter(a -> a.getAttribute().value().isTracked()) : instances.values().stream())
                 .sorted(Comparator.comparing(a -> I18n.translate(a.getAttribute().value().getTranslationKey()))).toArray() );
     }

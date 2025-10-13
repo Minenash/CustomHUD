@@ -69,7 +69,7 @@ public class EntitySuppliers {
     private static Number x(Entity e) { return e == null ? null : e.getX(); }
     private static Number y(Entity e) { return e == null ? null : e.getY(); }
     private static Number z(Entity e) { return e == null ? null : e.getZ(); }
-    private static Number dist(Entity e) { return e == null ? null : e.getEntityPos().distanceTo(CLIENT.getCameraEntity().getEntityPos()); }
-    private static Number yaw(Entity e) { return e == null ? null : AttributeHelpers.getRelativeYaw(CLIENT.getCameraEntity().getEntityPos(), e.getEyePos()); }
-    private static Number pitch(Entity e) { return e == null ? null : AttributeHelpers.getRelativePitch(CLIENT.getCameraEntity().getEntityPos(), e.getEyePos()); }
+    private static Number dist(Entity e) { return e == null ? null : e.getPos().distanceTo(CLIENT.cameraEntity.getPos()); }
+    private static Number yaw(Entity e) { return e == null ? null : AttributeHelpers.getRelativeYaw(CLIENT.cameraEntity.getPos(), e.getEyePos()); }
+    private static Number pitch(Entity e) { return e == null ? null : AttributeHelpers.getRelativePitch(CLIENT.cameraEntity.getPos(), e.getEyePos()); }
 }

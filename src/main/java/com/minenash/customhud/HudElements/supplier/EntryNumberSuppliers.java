@@ -6,7 +6,6 @@ import com.minenash.customhud.complex.MusicAndRecordTracker;
 import com.minenash.customhud.data.StatFormatters;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.DebugHud;
-import net.minecraft.client.gui.hud.debug.MemoryDebugHudEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -27,7 +26,7 @@ public class EntryNumberSuppliers {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final Runtime runtime = Runtime.getRuntime();
     public static final VanillaBiomeParameters par = new VanillaBiomeParameters();
-    public static MemoryDebugHudEntry.AllocationRateCalculator allocationRateCalculator = new MemoryDebugHudEntry.AllocationRateCalculator();
+    public static DebugHud.AllocationRateCalculator allocationRateCalculator = new DebugHud.AllocationRateCalculator();
 
     private static Entity cameraEntity() { return client.getCameraEntity(); }
     private static boolean inNether() { return client.world.getRegistryKey().getValue().equals(World.NETHER.getValue()); }
@@ -127,7 +126,7 @@ public class EntryNumberSuppliers {
     public static final Entry NOISE_ROUTER_DEPTH = of( () -> isNoise() ? sample(sampler().depth()) : Double.NaN, 3);
     public static final Entry NOISE_ROUTER_RIDGES = of( () -> isNoise() ? sample(sampler().ridges()) : Double.NaN, 3);
     public static final Entry NOISE_ROUTER_PEAKS = of( () -> isNoise() ? DensityFunctions.getPeaksValleysNoise((float)sample(sampler().ridges())) : Double.NaN, 3);
-    public static final Entry NOISE_ROUTER_INIT_DENSITY = of( () -> isNoise() ? sample(sampler().preliminarySurfaceLevel()) : Double.NaN, 3);
+    public static final Entry NOISE_ROUTER_INIT_DENSITY = of( () -> isNoise() ? sample(sampler().initialDensityWithoutJaggedness()) : Double.NaN, 3);
     public static final Entry NOISE_ROUTER_FINAL_DENSITY = of( () -> isNoise() ? sample(sampler().finalDensity()) : Double.NaN, 3);
 
     @Deprecated public static final Entry ITEM_DURABILITY_PERCENT = of( () -> client.player.getMainHandStack().getDamage() / (float) client.player.getMainHandStack().getMaxDamage() * 100, 0);

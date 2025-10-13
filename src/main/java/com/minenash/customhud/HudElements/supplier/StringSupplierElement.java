@@ -11,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -35,8 +34,8 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> VERSION = () -> SharedConstants.getGameVersion().name();
     public static final Supplier<String> CLIENT_VERSION = client::getGameVersion;
     public static final Supplier<String> MODDED_NAME = ClientBrandRetriever::getClientModName;
-    public static final Supplier<String> USERNAME = () -> client.player.getGameProfile().name() == null ? null : client.player.getGameProfile().name();
-    public static final Supplier<String> UUID = () -> client.player.getGameProfile().id().toString();
+    public static final Supplier<String> USERNAME = () -> client.player.getGameProfile().getName() == null ? null : client.player.getGameProfile().getName();
+    public static final Supplier<String> UUID = () -> client.player.getGameProfile().getId().toString();
 
     public static final Supplier<String> SERVER_BRAND = () -> client.player.networkHandler.getBrand();
     public static final Supplier<String> SERVER_NAME = () -> client.getCurrentServerEntry().name;
@@ -94,9 +93,6 @@ public class StringSupplierElement implements HudElement {
     public static final Supplier<String> VILLAGER_BIOME = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? WordUtils.capitalize(ve.getVillagerData().type().toString()) : null;
     public static final Supplier<String> VILLAGER_LEVEL_WORD = () -> ComplexData.targetEntity instanceof VillagerEntity ve ? I18n.translate("merchant.level." + ve.getVillagerData().level()) : null;
 
-
-    public static final Supplier<String> RESOURCE_PACK_VERSION = () -> SharedConstants.getGameVersion().packVersion(ResourceType.CLIENT_RESOURCES).toString();
-    public static final Supplier<String> DATA_PACK_VERSION = () -> SharedConstants.getGameVersion().packVersion(ResourceType.SERVER_DATA).toString();
 
     private final Supplier<String> supplier;
 

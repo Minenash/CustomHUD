@@ -8,19 +8,17 @@ import com.minenash.customhud.gui.profiles_widget.ProfileLineEntry;
 import com.minenash.customhud.gui.profiles_widget.ProfileLinesWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
-import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -86,8 +84,8 @@ public class NewConfigScreen extends Screen {
                 .position(this.width / 2 - 155 + 160, this.height - 26).size(150, 20).build() );
     }
 
-    private static final Style ICONS = Style.EMPTY.withFont(new StyleSpriteSource.Font(Identifier.of("custom_hud", "icons")));
-    private static final Style DEFAULT = Style.EMPTY.withFont(StyleSpriteSource.DEFAULT);
+    private static final Style ICONS = Style.EMPTY.withFont(Identifier.of("custom_hud", "icons"));
+    private static final Style DEFAULT = Style.EMPTY.withFont(Style.DEFAULT_FONT_ID);
     private Text linkText(String icon, String msg) {
         return Text.literal(icon).setStyle(ICONS).append(Text.literal(msg).setStyle(DEFAULT));
     }
@@ -101,15 +99,15 @@ public class NewConfigScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (selectedKeybind != null) {
-            selectedKeybind.setBoundKey(InputUtil.Type.MOUSE.createFromCode(click.button()));
+            selectedKeybind.setBoundKey(InputUtil.Type.MOUSE.createFromCode(button));
             selectedKeybind = null;
             profiles.update();
             return true;
         }
 
-        if (super.mouseClicked(click, doubled))
+        if (super.mouseClicked(mouseX, mouseY, button))
             return true;
 
         for (var c : profiles.children())
@@ -120,19 +118,19 @@ public class NewConfigScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (selectedKeybind != null) {
-            selectedKeybind.setBoundKey(input.key() == GLFW.GLFW_KEY_ESCAPE ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(input));
+            selectedKeybind.setBoundKey(keyCode == GLFW.GLFW_KEY_ESCAPE ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(keyCode, scanCode));
             selectedKeybind = null;
             profiles.update();
             return true;
         }
-        if (input.key() == CustomHud.kb_showErrors.boundKey.getCode() && ProfileManager.getActive() != null) {
+        if (keyCode == CustomHud.kb_showErrors.boundKey.getCode() && ProfileManager.getActive() != null) {
             client.setScreen( new ErrorsScreen(this) );
             return true;
         }
 
-        switch (input.key()) {
+        switch (keyCode) {
             case GLFW.GLFW_KEY_ESCAPE, GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> {
                 boolean wasFocused = false;
                 for (var c : profiles.children()) {
@@ -142,7 +140,7 @@ public class NewConfigScreen extends Screen {
                         e.editName.setFocused(false);
                     }
                 }
-                if (input.key() != GLFW.GLFW_KEY_ESCAPE || wasFocused)
+                if (keyCode != GLFW.GLFW_KEY_ESCAPE || wasFocused)
                     return true;
             }
             case GLFW.GLFW_KEY_LEFT -> {
@@ -185,7 +183,7 @@ public class NewConfigScreen extends Screen {
                         return move(LEFT, DOWN);
             }
         }
-        return super.keyPressed(input);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private boolean move(NavigationDirection... ds) {

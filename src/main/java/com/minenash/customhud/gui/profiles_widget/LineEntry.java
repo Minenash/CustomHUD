@@ -8,8 +8,12 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
+import java.util.Collections;
 import java.util.List;
+
+import static com.minenash.customhud.CustomHud.CLIENT;
 
 public abstract class LineEntry extends ElementListWidget.Entry<LineEntry> {
     public void update() {}
@@ -50,16 +54,13 @@ public abstract class LineEntry extends ElementListWidget.Entry<LineEntry> {
         }
 
         @Override
-        public void render(DrawContext context, int mX, int mY, boolean hovered, float delta) {
-            int x = getContentX();
-            int y = getContentY();
-            int width = getContentWidth();
+        public void render(DrawContext context, int index, int y, int x, int eWidth, int eHeight, int mX, int mY, boolean hovered, float delta) {
             if (parent.screen.mode != Mode.NORMAL)
-                posAndRender(context, mX, mY, delta, x, y, width, deleteDone, 2);
+                posAndRender(context, mX, mY, delta, x, y, eWidth, deleteDone, 2);
             else {
-                posAndRender(context, mX, mY, delta, x, y, width, newProfile, 2);
-                posAndRender(context, mX, mY, delta, x, y, width, reorderProfiles, 2 + 50);
-                posAndRender(context, mX, mY, delta, x, y, width, deleteProfiles, 2 + 50 + 74);
+                posAndRender(context, mX, mY, delta, x, y, eWidth, newProfile, 2);
+                posAndRender(context, mX, mY, delta, x, y, eWidth, reorderProfiles, 2 + 50);
+                posAndRender(context, mX, mY, delta, x, y, eWidth, deleteProfiles, 2 + 50 + 74);
             }
         }
 

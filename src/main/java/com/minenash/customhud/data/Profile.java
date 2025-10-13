@@ -10,7 +10,6 @@ import com.minenash.customhud.errors.ErrorType;
 import com.minenash.customhud.errors.Errors;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
@@ -71,7 +70,7 @@ public class Profile {
         Profile p = new Profile();
         p.name = name;
         p.updatedDateTime = LocalDateTime.now();
-        p.keyBinding = new KeyBinding("custom_hud." + name, GLFW.GLFW_KEY_UNKNOWN, CustomHud.TOGGLES_KB_CAT);
+        p.keyBinding = new KeyBinding("custom_hud." + name, GLFW.GLFW_KEY_UNKNOWN, "Toggles");
         return p;
     }
 
@@ -95,7 +94,7 @@ public class Profile {
         }
 
         if (profile != null)
-            profile.keyBinding = new KeyBinding("custom_hud." + profileName, GLFW.GLFW_KEY_UNKNOWN, CustomHud.TOGGLES_KB_CAT);
+            profile.keyBinding = new KeyBinding("custom_hud." + profileName, GLFW.GLFW_KEY_UNKNOWN, "Toggles");
         return profile;
     }
 

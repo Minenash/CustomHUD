@@ -694,7 +694,7 @@ public class VariableParser {
             GameOptions options = MinecraftClient.getInstance().options;
             String key = setting.substring(4);
             for (KeyBinding binding : options.allKeys)
-                if (binding.getId().equalsIgnoreCase(key))
+                if (binding.getTranslationKey().equalsIgnoreCase(key))
                     return Flags.wrap(new BooleanSupplierElement(binding::isPressed), flags);
 
             Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_KEYBIND, context);
@@ -711,8 +711,8 @@ public class VariableParser {
             Toggle toggle = profile.toggles.get(name);
             if (toggle == null) //Replace with saved key
                 toggle = new Toggle(name.replace('_', ' '), false, debugLine, true,
-                        new KeyBinding("customhud_toggle_" + randomUUID(), GLFW.GLFW_KEY_UNKNOWN, CustomHud.TOGGLES_KB_CAT),
-                        new KeyBinding("customhud_toggle_" + randomUUID(), GLFW.GLFW_KEY_UNKNOWN, CustomHud.TOGGLES_KB_CAT));
+                        new KeyBinding("customhud_toggle_" + randomUUID(), GLFW.GLFW_KEY_UNKNOWN, "customhud"),
+                        new KeyBinding("customhud_toggle_" + randomUUID(), GLFW.GLFW_KEY_UNKNOWN, "customhud"));
             else
                 toggle.lines.add(debugLine);
 
@@ -767,8 +767,8 @@ public class VariableParser {
             Toggle toggle = profile.toggles.get(" " + name); //Space indicates key variant
             if (toggle == null)
                 toggle = new Toggle(name, true, debugLine, true,
-                        new KeyBinding("customhud_key_toggle_" + randomUUID(), GLFW.GLFW_KEY_UNKNOWN, CustomHud.TOGGLES_KB_CAT),
-                        new KeyBinding("customhud_key_toggle_" + randomUUID(), key.getCode(), CustomHud.TOGGLES_KB_CAT));
+                        new KeyBinding("customhud_key_toggle_" + randomUUID(), GLFW.GLFW_KEY_UNKNOWN, "customhud"),
+                        new KeyBinding("customhud_key_toggle_" + randomUUID(), key.getCode(), "customhud"));
             else
                 toggle.lines.add(debugLine);
 
@@ -982,10 +982,6 @@ public class VariableParser {
             case "bb_cont","biome_builder_continents" -> {enabled.serverWorld = true; yield BIOME_BUILDER_CONTINENTS;}
 
             case "am_pm" -> { enabled.time = true; yield TIME_AM_PM; }
-
-            case "resource_pack_version", "rp_version" -> RESOURCE_PACK_VERSION;
-            case "data_pack_version", "datapack_version", "dp_version" -> DATA_PACK_VERSION;
-
             default -> null;
         };
     }
@@ -1217,10 +1213,8 @@ public class VariableParser {
             case "real_second" -> REAL_SECOND;
             case "real_millisecond", "real_ms" -> REAL_MICROSECOND;
 
-            case "resource_pack_major_version", "rp_major", "rp_major_version" -> RESOURCE_PACK_VERSION_MAJOR;
-            case "resource_pack_minor_version", "rp_minor", "rp_minor_version" -> RESOURCE_PACK_VERSION_MINOR;
-            case "data_pack_major_version", "datapack_major_version", "dp_major" -> DATA_PACK_VERSION_MAJOR;
-            case "data_pack_minor_version", "datapack_minor_version", "dp_minor" -> DATA_PACK_VERSION_MINOR;
+            case "resource_pack_version", "rp_version" -> RESOURCE_PACK_VERSION;
+            case "data_pack_version", "datapack_version", "dp_version" -> DATA_PACK_VERSION;
 
             case "mainhand_slot" -> MAINHAND_SLOT;
 

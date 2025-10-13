@@ -22,14 +22,46 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = InGameHud.class, priority = 900)
 public abstract class InGameHudMixin {
 
-    @ModifyExpressionValue(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/debug/DebugHudProfile;isEntryVisible(Lnet/minecraft/util/Identifier;)Z"))
+    @Shadow protected abstract void renderCrosshair(DrawContext context, RenderTickCounter tickCounter);
+
+    @Shadow @Final private MinecraftClient client;
+    @Unique boolean renderAttackIndicator = false;
+
+    @Inject(method = "renderCrosshair", at = @At(value = "TAIL"))
+    private void renderAttackIndicatorForDebugScreen2(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (!renderAttackIndicator && getCrosshair() == Crosshairs.DEBUG && MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
+            renderAttackIndicator = true;
+            renderCrosshair(context, tickCounter);
+            renderAttackIndicator = false;
+        }
+    }
+
+    @ModifyExpressionValue(method = "shouldRenderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
     private boolean getDebugCrosshairEnable(boolean original) {
-        return ProfileManager.getActive() != null  && ProfileManager.getActive().crosshair == Crosshairs.NONE;
+        return client.getDebugHud().shouldShowDebugHud() || ( !renderAttackIndicator && getCrosshair() == Crosshairs.DEBUG);
     }
 
     @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIII)V", ordinal = 0))
     private boolean skipNormalCrosshairRendering0(DrawContext instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height) {
-        return ProfileManager.getActive() != null  && ProfileManager.getActive().crosshair == Crosshairs.NORMAL;
+        return !renderAttackIndicator && getCrosshair() != Crosshairs.NONE;
+    }
+    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIII)V", ordinal = 1))
+    private boolean skipNormalCrosshairRendering1(DrawContext instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height) {
+        return renderAttackIndicator || getCrosshair() != Crosshairs.NONE;
+    }
+    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIII)V", ordinal = 2))
+    private boolean skipNormalCrosshairRendering2(DrawContext instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height) {
+        return renderAttackIndicator || getCrosshair() != Crosshairs.NONE;
+    }
+
+    @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIIIIIII)V"))
+    private boolean skipNormalCrosshairRendering3(DrawContext instance, RenderPipeline pipeline, Identifier sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height) {
+        return renderAttackIndicator || getCrosshair() != Crosshairs.NONE;
+    }
+
+    @Unique
+    private static Crosshairs getCrosshair() {
+        return ProfileManager.getActive() == null ? Crosshairs.NORMAL : ProfileManager.getActive().crosshair;
     }
 
 }

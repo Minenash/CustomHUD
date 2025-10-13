@@ -398,12 +398,7 @@ public class Attributers {
         case "","name" -> new Tex(sup, PACK_NAME);
         case "id" -> new Str(sup, PACK_ID);
         case "description", "desc" -> new Tex(sup, PACK_DESCRIPTION);
-        case "min", "min_version" -> new Str(sup, MIN_PACK_VERSION);
-        case "max", "max_version" -> new Str(sup, MAX_PACK_VERSION);
-        case "min_major", "min_version_major" -> new Num(sup, MIN_PACK_VERSION_MAJOR, flags);
-        case "min_minor", "min_version_minor" -> new Num(sup, MIN_PACK_VERSION_MINOR, flags);
-        case "max_major", "max_version_major" -> new Num(sup, MAX_PACK_VERSION_MAJOR, flags);
-        case "max_minor", "max_version_minor" -> new Num(sup, MAX_PACK_VERSION_MINOR, flags);
+        case "version" -> new Num(sup, PACK_VERSION, flags);
         case "always_enabled" -> new Bool(sup, PACK_ALWAYS_ENABLED);
         case "pinned" -> new Bool(sup, PACK_IS_PINNED);
         case "compatible" -> new Bool(sup, PACK_IS_COMPATIBLE);
