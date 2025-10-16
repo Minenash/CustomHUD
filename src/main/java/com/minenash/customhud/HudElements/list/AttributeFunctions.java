@@ -7,6 +7,8 @@ import com.minenash.customhud.HudElements.FuncElements.SpecialText.TextEntry;
 import com.minenash.customhud.HudElements.list.AttributeHelpers.ItemAttribute;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.complex.MusicAndRecordTracker;
+import com.minenash.customhud.data.StatFormatters;
+import com.minenash.customhud.data.StopWatch;
 import com.minenash.customhud.ducks.ResourcePackProfileMetadataDuck;
 import com.minenash.customhud.ducks.SubtitleEntryDuck;
 import com.terraformersmc.modmenu.util.mod.Mod;
@@ -141,7 +143,18 @@ public class AttributeFunctions {
 
     // BLOCK STATES
     public static final Function<Map.Entry<Property<?>,Comparable<?>>,String> BLOCK_STATE_NAME = (property) -> property == null ? null : property.getKey().getName();
-    public static final Function<Map.Entry<Property<?>,Comparable<?>>,String> BLOCK_STATE_VALUE = (property) -> property == null ? null : property.getValue().toString();
+    public static final Entry<Map.Entry<Property<?>,Comparable<?>>> BLOCK_STATE_VALUE = new Entry<>(
+        (property) -> property == null ? null : property.getValue().toString(),
+        (property) -> property == null ? null : switch (blockstate$getPropertyType(property.getKey().getType())) {
+            case 1 /* Boolean */-> ((Boolean)property.getValue()) ? 1 : 0;
+            case 2 /* Number */ -> ((Number)property.getValue());
+            case 3 /* Enum*/ -> ((Enum)property.getValue()).ordinal();
+            default /* String */ -> property.getValue().toString().length(); },
+        (property) -> property == null ? null : switch (blockstate$getPropertyType(property.getKey().getType())) {
+            case 1 /* Boolean */-> ((Boolean)property.getValue());
+            case 2 /* Number */ -> ((Number)property.getValue()).doubleValue() > 0;
+            default /* String & Enum */ -> property.getValue().toString().length() > 0; }
+    );
     public static final Function<Map.Entry<Property<?>,Comparable<?>>,String> BLOCK_STATE_FULL_TYPE = (property) -> property == null ? null : property.getKey().getType().getSimpleName();
     public static final Entry<Map.Entry<Property<?>,Comparable<?>> > BLOCK_STATE_TYPE = new Entry<> (
             (property) -> property == null ? null : switch (blockstate$getPropertyType(property.getKey().getType())) {

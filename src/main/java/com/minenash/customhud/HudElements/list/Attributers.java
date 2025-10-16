@@ -21,7 +21,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffer;
@@ -131,7 +130,7 @@ public class Attributers {
         case "", "name" -> new Str(sup, BLOCK_STATE_NAME);
         case "type" -> new Special(sup, BLOCK_STATE_TYPE);
         case "full_type" -> new Str(sup,BLOCK_STATE_FULL_TYPE);
-        case "value" -> new Str(sup, BLOCK_STATE_VALUE);
+        case "value" -> new Special(sup, BLOCK_STATE_VALUE);
         default -> null;
     };
 
