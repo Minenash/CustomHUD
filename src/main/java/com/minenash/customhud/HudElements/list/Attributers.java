@@ -475,6 +475,48 @@ public class Attributers {
         default -> null;
     };
 
+    public static final Attributer STOPWATCH_LAP = (pid, sup, name, flags, context) -> switch (name) {
+        case "" -> new Special(sup,STOPWATCH_LAP_TIME);
+
+        case "in_ms", "in_milli", "in_milliseconds" -> new Num(sup,STOPWATCH_LAP_IN_MILLI,flags);
+        case "in_s", "in_seconds" -> new Num(sup,STOPWATCH_LAP_IN_SECONDS,flags);
+        case "in_m", "in_minutes" -> new Num(sup,STOPWATCH_LAP_IN_MINUTES,flags);
+        case "in_h", "in_hours" -> new Num(sup,STOPWATCH_LAP_IN_HOURS,flags);
+        case "in_d", "in_days" -> new Num(sup,STOPWATCH_LAP_IN_DAYS,flags);
+
+        case "ms", "milli", "milliseconds" -> new Num(sup,STOPWATCH_LAP_MILLI,flags);
+        case "s", "seconds" -> new Num(sup,STOPWATCH_LAP_SECONDS,flags);
+        case "m", "minutes" -> new Num(sup,STOPWATCH_LAP_MINUTES,flags);
+        case "h", "hours" -> new Num(sup,STOPWATCH_LAP_HOURS,flags);
+        case "d", "days" -> new Num(sup,STOPWATCH_LAP_DAYS,flags);
+        default -> null;
+    };
+
+    public static final Attributer STOPWATCH = (pid, sup, name, flags, context) -> switch (name) {
+        case "" -> new Special(sup,STOPWATCH_TIME);
+
+        case "start" -> new Exec(sup, STOPWATCH_START);
+        case "restart" -> new Exec(sup, STOPWATCH_RESTART);
+        case "reset" -> new Exec(sup, STOPWATCH_RESET);
+        case "pause" -> new Exec(sup, STOPWATCH_PAUSE);
+        case "lap" -> new Exec(sup, STOPWATCH_LAP_FUNC);
+
+        case "in_ms", "in_milli", "in_milliseconds" -> new Num(sup,STOPWATCH_IN_MILLI,flags);
+        case "in_s", "in_seconds" -> new Num(sup,STOPWATCH_IN_SECONDS,flags);
+        case "in_m", "in_minutes" -> new Num(sup,STOPWATCH_IN_MINUTES,flags);
+        case "in_h", "in_hours" -> new Num(sup,STOPWATCH_IN_HOURS,flags);
+        case "in_d", "in_days" -> new Num(sup,STOPWATCH_IN_DAYS,flags);
+
+        case "ms", "milli", "milliseconds" -> new Num(sup,STOPWATCH_MILLI,flags);
+        case "s", "seconds" -> new Num(sup,STOPWATCH_SECONDS,flags);
+        case "m", "minutes" -> new Num(sup,STOPWATCH_MINUTES,flags);
+        case "h", "hours" -> new Num(sup,STOPWATCH_HOURS,flags);
+        case "d", "days" -> new Num(sup,STOPWATCH_DAYS,flags);
+
+        case "laps" -> new CreateListElement(sup, STOPWATCH_LAPS, STOPWATCH_LAP, flags);
+        default -> null;
+    };
+
 
     public static final Map<ListProvider, Attributer> ATTRIBUTER_MAP = new HashMap<>();
     public static final Map<Attributer, String> DEFAULT_PREFIX = new HashMap<>();
@@ -557,6 +599,8 @@ public class Attributers {
         DEFAULT_PREFIX.put(OFFER, "o");
         DEFAULT_PREFIX.put(ITEM_CONVERTABLE_TAG_ENTRY, "t");
         DEFAULT_PREFIX.put(CHAT_MESSAGE, "cm");
+        DEFAULT_PREFIX.put(STOPWATCH, "sw");
+        DEFAULT_PREFIX.put(STOPWATCH_LAP, "lap");
     }
 
     public static HudElement get(ListProviderSet set, String name, Flags flags, Profile profile, int line) {
@@ -573,6 +617,8 @@ public class Attributers {
             ListProviderSet.Entry entry = set.entries.get(i);
             if (entry != null && part.startsWith(entry.prefix() + ":"))
                 return get0(entry, part.substring(part.indexOf(':')+1), flags, profile, line);
+            else if (entry != null && part.equals(entry.prefix()))
+                return get0(entry, "", flags, profile, line);
         }
         return null;
     }

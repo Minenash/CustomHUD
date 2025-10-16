@@ -27,4 +27,12 @@ public class StatFormatters {
         return hours > 0 ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds);
     };
 
+    public static final StatFormatter MIL_HMS_H_REQUIRED = millisecs -> {
+        int secs = millisecs / 1000;
+        int seconds = secs % 60;
+        int minutes = (secs / 60) % 60;
+        int hours = (secs / 60 / 60);
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    };
+
 }

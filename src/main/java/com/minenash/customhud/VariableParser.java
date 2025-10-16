@@ -3,6 +3,8 @@ package com.minenash.customhud;
 import com.minenash.customhud.HudElements.*;
 import com.minenash.customhud.HudElements.functional.GetValueElement;
 import com.minenash.customhud.HudElements.functional.SetValueElement;
+import com.minenash.customhud.HudElements.interfaces.ExecuteElement;
+import com.minenash.customhud.HudElements.interfaces.ExecuteElement.ArbritaryExecuteElement;
 import com.minenash.customhud.HudElements.list.*;
 import com.minenash.customhud.HudElements.functional.FunctionalElement;
 import com.minenash.customhud.HudElements.interfaces.HudElement;
@@ -701,6 +703,41 @@ public class VariableParser {
             return null;
         }
 
+//        if (part.startsWith("stopwatch:")) {
+//            String main = part.substring(10);
+//            int colinIndex = main.lastIndexOf(':');
+//            String name = colinIndex == -1 ? main : main.substring(0, colinIndex);
+//            String method = colinIndex == -1 ? "" : main.substring(colinIndex);
+//
+//            profile.stopwatches.computeIfAbsent(name, key -> new StopWatch());
+//            return switch (method) {
+//                case "start" ->  new ArbritaryExecuteElement( () -> profile.stopwatches.get(name).start());
+//                case "restart" ->  new ArbritaryExecuteElement( () -> profile.stopwatches.get(name).restart());
+//                case "reset" ->  new ArbritaryExecuteElement( () -> profile.stopwatches.get(name).reset());
+//                case "pause" ->  new ArbritaryExecuteElement( () -> profile.stopwatches.get(name).pause());
+//                case "lap" ->  new ArbritaryExecuteElement( () -> profile.stopwatches.get(name).laps());
+//
+//                case "" -> new SpecialSupplierElement(SpecialSupplierElement.of(
+//                    () -> StatFormatters.MIL_HMS.format(profile.stopwatches.get(name).query()),
+//                    () -> profile.stopwatches.get(name).query(),
+//                    () -> profile.stopwatches.get(name).isRunning()));
+//                case "in_ms", "in_milli", "in_milliseconds" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query(), flags);
+//                case "in_s", "in_seconds" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000D, flags);
+//                case "in_m", "in_minutes" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000D / 60, flags);
+//                case "in_h", "in_hours" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000D / 60 / 60, flags);
+//                case "in_d", "in_days" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000D / 60 / 60 / 24, flags);
+//
+//                case "ms", "milli", "milliseconds" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() % 1000, flags);
+//                case "s", "seconds" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000 % 60, flags);
+//                case "m", "minutes" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000 / 60 % 60, flags);
+//                case "h", "hours" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000 / 60 / 60 % 24, flags);
+//                case "d", "days" -> new NumberSupplierElement(() -> profile.stopwatches.get(name).query() / 1000 / 60 / 60 / 24, flags);
+//                default -> {
+//                    Errors.addError(profile.name, debugLine, original, ErrorType.UNKNOWN_STOPWATCH_METHOD, method);
+//                    yield null;
+//                }
+//            };
+//        }
         if (part.startsWith("toggle:")) {
             boolean lastPressed = part.endsWith(":last_pressed");
             String name = part.substring(7, part.length() - (lastPressed ? 13 : 0) );
@@ -1749,6 +1786,10 @@ public class VariableParser {
         if (part.startsWith("bossbar:"))
             return attrElement(part, src -> src, true, (name) -> () -> AttributeHelpers.getBossBar(name),
                     BOSSBAR, null, ErrorType.UNKNOWN_BOSSBAR_METHOD, profile, debugLine, enabled, original);
+
+        if (part.startsWith("stopwatch:"))
+            return attrElement(part, src -> src, false, (name) -> () -> profile.stopwatches.computeIfAbsent(name, key -> new StopWatch()),
+                STOPWATCH, null, ErrorType.UNKNOWN_STOPWATCH_METHOD, profile, debugLine, enabled, original);
 
         if (part.startsWith("effect:"))
             return attrElement(part, src -> Registries.STATUS_EFFECT.getEntry(Identifier.tryParse(src)).orElse(null), true, (effect) -> () -> CLIENT.player.getStatusEffect(effect),

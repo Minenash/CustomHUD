@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.minenash.customhud.CustomHud.CLIENT;
@@ -508,6 +509,53 @@ public class AttributeFunctions {
     public static final Function<ComplexData.ProfilerTimingWithPath,Number> TIMING_PER_OF_PARENT = (timing) -> timing == null ? null : timing.parent();
     public static final Function<ComplexData.ProfilerTimingWithPath,Number> TIMING_PER_OF_TOTAL = (timing) -> timing == null ? null : timing.total();
     public static final Function<ComplexData.ProfilerTimingWithPath,Number> TIMING_COLOR = (timing) -> timing == null ? null : timing.color();
+
+    // STOPWATCH
+    public static Entry<StopWatch> STOPWATCH_TIME = new Entry<>(
+        stopwatch -> StatFormatters.MIL_HMS.format(stopwatch.query()),
+        StopWatch::query,
+        StopWatch::isRunning
+    );
+
+    public static final Consumer<StopWatch> STOPWATCH_START = StopWatch::start;
+    public static final Consumer<StopWatch> STOPWATCH_RESTART = StopWatch::restart;
+    public static final Consumer<StopWatch> STOPWATCH_RESET = StopWatch::reset;
+    public static final Consumer<StopWatch> STOPWATCH_PAUSE = StopWatch::pause;
+    public static final Consumer<StopWatch> STOPWATCH_LAP_FUNC = StopWatch::lap;
+
+    public static final Function<StopWatch,List<?>> STOPWATCH_LAPS = StopWatch::laps;
+
+    public static final Function<StopWatch,Number>
+        STOPWATCH_IN_MILLI = StopWatch::query,
+        STOPWATCH_IN_SECONDS = stopwatch -> stopwatch.query() / 1000D,
+        STOPWATCH_IN_MINUTES = stopwatch -> stopwatch.query() / 1000D / 60,
+        STOPWATCH_IN_HOURS = stopwatch -> stopwatch.query() / 1000D / 60 / 60,
+        STOPWATCH_IN_DAYS = stopwatch -> stopwatch.query() / 1000D / 60 / 60 / 24,
+
+        STOPWATCH_MILLI = stopwatch -> stopwatch.query() % 1000,
+        STOPWATCH_SECONDS = stopwatch -> stopwatch.query() / 1000 % 60,
+        STOPWATCH_MINUTES = stopwatch -> stopwatch.query() / 1000 / 60 % 60,
+        STOPWATCH_HOURS = stopwatch -> stopwatch.query() / 1000 / 60 / 60 % 24,
+        STOPWATCH_DAYS = stopwatch -> stopwatch.query() / 1000 / 60 / 60 / 24;
+
+    public static Entry<Integer> STOPWATCH_LAP_TIME = new Entry<>(
+        time -> StatFormatters.MIL_HMS.format(time),
+        time -> time,
+        time -> time > 0
+    );
+    public static final Function<Integer,Number>
+        STOPWATCH_LAP_IN_MILLI = ms -> ms,
+        STOPWATCH_LAP_IN_SECONDS = ms -> ms / 1000D,
+        STOPWATCH_LAP_IN_MINUTES = ms -> ms / 1000D / 60,
+        STOPWATCH_LAP_IN_HOURS = ms -> ms / 1000D / 60 / 60,
+        STOPWATCH_LAP_IN_DAYS = ms -> ms / 1000D / 60 / 60 / 24,
+
+        STOPWATCH_LAP_MILLI = ms -> ms % 1000,
+        STOPWATCH_LAP_SECONDS = ms -> ms / 1000 % 60,
+        STOPWATCH_LAP_MINUTES = ms -> ms / 1000 / 60 % 60,
+        STOPWATCH_LAP_HOURS = ms -> ms / 1000 / 60 / 60 % 24,
+        STOPWATCH_LAP_DAYS = ms -> ms / 1000 / 60 / 60 / 24;
+
 
     // HELPER METHODS
 

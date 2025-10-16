@@ -54,12 +54,14 @@ public class Profile {
     public DebugCharts rightChart = DebugCharts.NONE;
     public boolean charts = false;
     public EnumSet<DisableElement> disabled = EnumSet.noneOf(DisableElement.class);
+
     public Map<String,Toggle> toggles = new LinkedHashMap<>();
     public Map<String, Double> numValues = new LinkedHashMap<>();
     public Map<String, String> strValues = new LinkedHashMap<>();
     public Map<String, Macro> macros = new LinkedHashMap<>();
     public Map<String, ListProvider.EventListProvider<?>> listEvents = new LinkedHashMap<>(); // Registered
     public HashSet<String> boolEvents = new HashSet<>(); // Just putted, not registered
+    public Map<String,StopWatch> stopwatches = new LinkedHashMap<>();
 
     public Profile() { boolEvents.add("load"); }
 

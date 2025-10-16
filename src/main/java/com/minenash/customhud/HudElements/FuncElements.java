@@ -1,5 +1,7 @@
 package com.minenash.customhud.HudElements;
 
+import com.minenash.customhud.HudElements.functional.FunctionalElement;
+import com.minenash.customhud.HudElements.interfaces.ExecuteElement;
 import com.minenash.customhud.HudElements.interfaces.HudElement;
 import com.minenash.customhud.HudElements.interfaces.IdElement;
 import com.minenash.customhud.HudElements.interfaces.NumElement;
@@ -10,6 +12,7 @@ import net.minecraft.stat.StatFormatter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -20,6 +23,14 @@ public abstract class FuncElements<T> implements HudElement {
     Supplier<T> supplier;
     protected FuncElements(Supplier<T> supplier) {
         this.supplier = supplier;
+    }
+
+    public static class Exec<T> extends FunctionalElement.IgnoreNewLineIfSurroundedByNewLine implements ExecuteElement {
+        private final Supplier<T> supplier;
+        private final Consumer<T> function;
+        public Exec(Supplier<T> sup, Consumer<T> func) { supplier = sup; function = func;}
+
+        @Override public void run() { function.accept(supplier.get()); }
     }
 
     public static class Bool<T> extends FuncElements<T> {

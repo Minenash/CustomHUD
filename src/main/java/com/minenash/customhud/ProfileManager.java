@@ -74,6 +74,8 @@ public class ProfileManager {
                     }
                 }
 
+                profile.stopwatches.putAll(p.stopwatches);
+
                 profiles.set(i, profile);
                 if (p == active)
                     active = profile;

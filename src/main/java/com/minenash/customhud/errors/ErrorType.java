@@ -54,6 +54,7 @@ public enum ErrorType {
     UNKNOWN_SCORE_METHOD("WIP", "references/v4_wip", "Unknown Score Method: §e"),
     UNKNOWN_MOD_METHOD("WIP", "references/v4_wip", "Unknown Mod Method: §e"),
     UNKNOWN_PACK_METHOD("WIP", "references/v4_wip", "Unknown Pack Method: §e"),
+    UNKNOWN_STOPWATCH_METHOD("WIP", "references/v4_wip", "Unknown Stopwatch Method: §e"),
     UNKNOWN_PROFILER_TIMING_PROPERTY("WIP", "references/v4_wip", "Unknown Profiler Time Property: §e"),
     UNKNOWN_ICON ("Icons", "references/icons", "Unknown item/texture: §e"),
 
