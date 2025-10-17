@@ -7,8 +7,6 @@ import com.minenash.customhud.HudElements.FuncElements.SpecialText.TextEntry;
 import com.minenash.customhud.HudElements.list.AttributeHelpers.ItemAttribute;
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.complex.MusicAndRecordTracker;
-import com.minenash.customhud.data.StatFormatters;
-import com.minenash.customhud.data.StopWatch;
 import com.minenash.customhud.ducks.ResourcePackProfileMetadataDuck;
 import com.minenash.customhud.ducks.SubtitleEntryDuck;
 import com.terraformersmc.modmenu.util.mod.Mod;

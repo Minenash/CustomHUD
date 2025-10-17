@@ -136,7 +136,7 @@ public class Attributers {
 
     public static final Attributer RECEIVED_POWER = (pid, sup, name, flags, context) -> switch (name) {
         case "direction", "dir" -> new Str(sup, REC_DIRECTION);
-        case "opposite_direction", "odir" -> new Str(sup, REC_DIRECTION);
+        case "opposite_direction", "odir" -> new Str(sup, REC_OPOSITE_DIRECTION);
         case "", "power" -> new Num(sup, REC_POWER, flags);
         case "strong_power", "strong" -> new Num(sup, REC_STRONG_POWER, flags);
         default -> null;
