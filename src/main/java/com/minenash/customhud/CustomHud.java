@@ -122,7 +122,7 @@ public class CustomHud implements ModInitializer {
 
 		updateProfiles();
 		Profile profile = ProfileManager.getActive();
-		if (profile != null && client.cameraEntity != null) {
+		if (profile != null && client.cameraEntity != null && client.world != null) {
 			if (!Objects.equals(previousEnabled,profile.enabled)) {
 				ComplexData.reset();
 				previousEnabled = profile.enabled;
