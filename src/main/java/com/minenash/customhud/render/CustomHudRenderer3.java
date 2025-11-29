@@ -36,7 +36,7 @@ public class CustomHudRenderer3 {
     public static void render(DrawContext context, RenderTickCounter tick) {
 
         Profile profile = ProfileManager.getActive();
-        if (profile == null || client.getDebugHud().shouldShowDebugHud()
+        if (profile == null || client.getDebugHud().shouldShowDebugHud() && client.debugHudEntryList.isF3Enabled()
                 || (profile.hudHiddenBehavior == HudHiddenBehavior.HIDE && client.options.hudHidden)
                 || (profile.hudHiddenBehavior == HudHiddenBehavior.SHOW_IF_SCREEN && client.options.hudHidden && client.currentScreen == null))
             return;
