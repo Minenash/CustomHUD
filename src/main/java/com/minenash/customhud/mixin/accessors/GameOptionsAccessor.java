@@ -12,8 +12,13 @@ import java.util.Map;
 @Mixin(GameOptions.class)
 public interface GameOptionsAccessor {
 
-    @Invoker("accept") void invokeAccept(GameOptions.Visitor visitor);
+    @Invoker("accept")
+    void invokeAccept(GameOptions.Visitor visitor);
 
-    @Accessor Map<SoundCategory, SimpleOption<Double>> getSoundVolumeLevels();
+    @Accessor
+    Map<SoundCategory, SimpleOption<Double>> getSoundVolumeLevels();
+
+    @Accessor("cloudRenderMode")
+    SimpleOption<?> getCloudRenderMode();
 
 }

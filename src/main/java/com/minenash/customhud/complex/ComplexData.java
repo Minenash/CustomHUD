@@ -69,7 +69,7 @@ public class ComplexData {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final BlockState AIR_BLOCK_STATE = Blocks.AIR.getDefaultState();
 
-    //Chunk Data.
+    // Chunk Data.
     private static ChunkPos pos = null;
     private static CompletableFuture<WorldChunk> chunkFuture;
 
@@ -78,8 +78,8 @@ public class ComplexData {
     public static double cpuLoad = 0;
     public static double gpuUsage = 0;
 
-    public static int[] clicksSoFar = new int[]{0,0};
-    public static int[] clicksPerSeconds = new int[]{0,0};
+    public static int[] clicksSoFar = new int[] { 0, 0 };
+    public static int[] clicksPerSeconds = new int[] { 0, 0 };
     public static ArrayDeque<Integer>[] clicks = null;
 
     public static double[] frameTimeMetrics = new double[4];
@@ -102,9 +102,13 @@ public class ComplexData {
     public static long villagerLastRequested = Long.MAX_VALUE;
 
     public static boolean refreshTimings = false;
-    public record ProfilerTimingWithPath(String path, String name, double parent, double total, int color, List<ProfilerTimingWithPath> entries) {}
+
+    public record ProfilerTimingWithPath(String path, String name, double parent, double total, int color,
+            List<ProfilerTimingWithPath> entries) {
+    }
+
     public static List<ProfilerTimingWithPath> rootEntries = Collections.EMPTY_LIST;
-    public static Map<String,ProfilerTimingWithPath> allEntries = Collections.EMPTY_MAP;
+    public static Map<String, ProfilerTimingWithPath> allEntries = Collections.EMPTY_MAP;
 
     @SuppressWarnings("ConstantConditions")
     public static void update(Profile profile) {
@@ -120,7 +124,7 @@ public class ComplexData {
         if (profile.enabled.clientChunk) {
             Profilers.get().push("clientChunk");
             ChunkPos newPos = new ChunkPos(client.getCameraEntity().getBlockPos());
-            if (!Objects.equals(ComplexData.pos,newPos)) {
+            if (!Objects.equals(ComplexData.pos, newPos)) {
                 pos = newPos;
                 chunkFuture = null;
                 clientChunk = null;
@@ -134,7 +138,9 @@ public class ComplexData {
             Profilers.get().push("serverChunk");
             if (chunkFuture == null) {
                 if (serverWorld != null)
-                    chunkFuture = serverWorld.getChunkManager().getChunkFutureSyncOnMainThread(pos.x, pos.z, ChunkStatus.FULL, false).thenApply((either) -> (WorldChunk) either.orElse(null));
+                    chunkFuture = serverWorld.getChunkManager()
+                            .getChunkFutureSyncOnMainThread(pos.x, pos.z, ChunkStatus.FULL, false)
+                            .thenApply((either) -> (WorldChunk) either.orElse(null));
 
                 if (chunkFuture == null)
                     chunkFuture = CompletableFuture.completedFuture(clientChunk);
@@ -145,19 +151,22 @@ public class ComplexData {
 
         if (profile.enabled.world) {
             Profilers.get().push("world");
-            world = DataFixUtils.orElse(Optional.ofNullable(client.getServer()).flatMap((integratedServer) -> Optional.ofNullable(integratedServer.getWorld(client.world.getRegistryKey()))), client.world);
+            world = DataFixUtils.orElse(
+                    Optional.ofNullable(client.getServer())
+                            .flatMap((integratedServer) -> Optional
+                                    .ofNullable(integratedServer.getWorld(client.world.getRegistryKey()))),
+                    client.world);
             Profilers.get().pop();
         }
 
         if (profile.enabled.targetBlock) {
             Profilers.get().push("targetBlock");
-            HitResult hit =  client.getCameraEntity().raycast(profile.targetDistance, 0.0F, false);
+            HitResult hit = client.getCameraEntity().raycast(profile.targetDistance, 0.0F, false);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
-                targetBlockPos = ((BlockHitResult)hit).getBlockPos();
+                targetBlockPos = ((BlockHitResult) hit).getBlockPos();
                 targetBlock = world.getBlockState(targetBlockPos);
-            }
-            else {
+            } else {
                 targetBlockPos = null;
                 targetBlock = AIR_BLOCK_STATE;
             }
@@ -166,13 +175,12 @@ public class ComplexData {
 
         if (profile.enabled.targetFluid) {
             Profilers.get().push("targetFluid");
-            HitResult hit =  client.getCameraEntity().raycast(profile.targetDistance, 0.0F, true);
+            HitResult hit = client.getCameraEntity().raycast(profile.targetDistance, 0.0F, true);
 
             if (hit.getType() == HitResult.Type.BLOCK) {
-                targetFluidPos = ((BlockHitResult)hit).getBlockPos();
+                targetFluidPos = ((BlockHitResult) hit).getBlockPos();
                 targetFluid = world.getFluidState(targetFluidPos);
-            }
-            else {
+            } else {
                 targetFluidPos = null;
                 targetFluid = Fluids.EMPTY.getDefaultState();
             }
@@ -190,9 +198,10 @@ public class ComplexData {
             Box box = client.getCameraEntity().getBoundingBox().stretch(rot.multiply(dist)).expand(1.0, 1.0, 1.0);
 
             HitResult block = client.getCameraEntity().raycast(dist, 0, false);
-            double dist2 = block == null ? dist*dist : block.getPos().squaredDistanceTo(min);
+            double dist2 = block == null ? dist * dist : block.getPos().squaredDistanceTo(min);
 
-            EntityHitResult result = ProjectileUtil.raycast(client.getCameraEntity(), min, max, box, (en) -> !en.isSpectator(), dist2);
+            EntityHitResult result = ProjectileUtil.raycast(client.getCameraEntity(), min, max, box,
+                    (en) -> !en.isSpectator(), dist2);
             targetEntity = result == null ? null : result.getEntity();
             targetEntityHitPos = result == null ? null : result.getPos();
             Profilers.get().pop();
@@ -200,7 +209,8 @@ public class ComplexData {
 
         if (profile.enabled.localDifficulty) {
             Profilers.get().push("localDifficulty");
-            localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getMoonSize());
+            localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(),
+                    serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getTimeOfDay());
             Profilers.get().pop();
         }
 
@@ -231,7 +241,7 @@ public class ComplexData {
         if (profile.enabled.cpuUsage) {
             Profilers.get().push("cpu");
             var c = (CentralProcessor) cpu;
-            double load = c.getSystemCpuLoadBetweenTicks( prevTicks ) * 100;
+            double load = c.getSystemCpuLoadBetweenTicks(prevTicks) * 100;
             if (load > 0)
                 cpuLoad = load;
             prevTicks = c.getSystemCpuLoadTicks();
@@ -241,17 +251,17 @@ public class ComplexData {
         if (profile.enabled.updateStats) {
             Profilers.get().push("updateStats");
             if (System.currentTimeMillis() - lastStatUpdate >= 500) {
-                client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
+                client.getNetworkHandler()
+                        .sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
                 lastStatUpdate = System.currentTimeMillis();
             }
             Profilers.get().pop();
         }
 
-
         if (profile.enabled.clicksPerSeconds) {
             Profilers.get().push("clicksPerSeconds");
             if (clicks == null) {
-                clicks = new ArrayDeque[]{new ArrayDeque<Integer>(20), new ArrayDeque<Integer>(20)};
+                clicks = new ArrayDeque[] { new ArrayDeque<Integer>(20), new ArrayDeque<Integer>(20) };
                 for (int i = 0; i < 20; i++) {
                     clicks[0].add(0);
                     clicks[1].add(0);
@@ -271,12 +281,14 @@ public class ComplexData {
 
         if (profile.enabled.frameMetrics) {
             Profilers.get().push("frameMetrics");
-            processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240, frameTimeMetrics);
+            processLog(((DebugHudAccessor) client.inGameHud.getDebugHud()).getFrameNanosLog(), 0.000001, 240,
+                    frameTimeMetrics);
             Profilers.get().pop();
         }
         if (profile.enabled.tickMetrics) {
             Profilers.get().push("tickMetrics");
-            processLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), 0.000001, 120, tickTimeMetrics);
+            processLog(((DebugHudAccessor) client.inGameHud.getDebugHud()).getTickNanosLog(), 0.000001, 120,
+                    tickTimeMetrics);
             Profilers.get().pop();
         }
         if (profile.enabled.pingMetrics) {
@@ -286,12 +298,12 @@ public class ComplexData {
         }
         if (profile.enabled.packetMetrics) {
             Profilers.get().push("packetMetrics");
-            processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20/1024D, 120, packetSizeMetrics);
+            processLog(client.inGameHud.getDebugHud().getPacketSizeLog(), 20 / 1024D, 120, packetSizeMetrics);
             Profilers.get().pop();
         }
         if (profile.enabled.tpsMetrics) {
             Profilers.get().push("tpsMetrics");
-            processTPSLog(((DebugHudAccessor)client.inGameHud.getDebugHud()).getTickNanosLog(), tpsMetrics);
+            processTPSLog(((DebugHudAccessor) client.inGameHud.getDebugHud()).getTickNanosLog(), tpsMetrics);
             Profilers.get().pop();
         }
 
@@ -316,16 +328,17 @@ public class ComplexData {
 
         if (profile.enabled.targetVillager) {
             Profilers.get().push("targetVillager");
-            if ( !(targetEntity instanceof VillagerEntity) && villagerUUID != null) {
+            if (!(targetEntity instanceof VillagerEntity) && villagerUUID != null) {
                 villagerOffers.clear();
                 villagerUUID = null;
                 villagerLastRequested = Long.MAX_VALUE;
-            }
-            else if (targetEntity instanceof VillagerEntity && (villagerUUID == null ||
-                    !targetEntity.getUuid().equals(villagerUUID) || System.currentTimeMillis() - villagerLastRequested > 30_000)) {
+            } else if (targetEntity instanceof VillagerEntity && (villagerUUID == null ||
+                    !targetEntity.getUuid().equals(villagerUUID)
+                    || System.currentTimeMillis() - villagerLastRequested > 30_000)) {
                 villagerUUID = targetEntity.getUuid();
                 fakeVillagerInteract = 2;
-                CLIENT.getNetworkHandler().sendPacket(PlayerInteractEntityC2SPacket.interact(targetEntity, false, Hand.OFF_HAND));
+                CLIENT.getNetworkHandler()
+                        .sendPacket(PlayerInteractEntityC2SPacket.interact(targetEntity, false, Hand.OFF_HAND));
                 villagerLastRequested = System.currentTimeMillis();
             }
             Profilers.get().pop();
@@ -337,14 +350,13 @@ public class ComplexData {
             if (profileResult == null) {
                 rootEntries = Collections.EMPTY_LIST;
                 allEntries = Collections.EMPTY_MAP;
-            }
-            else {
+            } else {
                 rootEntries = new ArrayList<>();
                 allEntries = new HashMap<>();
                 List<ProfilerTiming> timings = profileResult.getTimings("root");
                 timings.remove(0);
                 for (var entry : timings)
-                    rootEntries.add( getEntries(profileResult, entry, "root\u001e" + entry.name) );
+                    rootEntries.add(getEntries(profileResult, entry, "root\u001e" + entry.name));
             }
             Profilers.get().pop();
         }
@@ -363,7 +375,8 @@ public class ComplexData {
         for (var entry : timings)
             entries.add(getEntries(profileResult, entry, path + "\u001e" + entry.name));
 
-        ProfilerTimingWithPath entry = new ProfilerTimingWithPath(path, timing.name, timing.parentSectionUsagePercentage, timing.totalUsagePercentage, timing.getColor(), entries);
+        ProfilerTimingWithPath entry = new ProfilerTimingWithPath(path, timing.name,
+                timing.parentSectionUsagePercentage, timing.totalUsagePercentage, timing.getColor(), entries);
         allEntries.put(path, entry);
         return entry;
     }
@@ -374,13 +387,13 @@ public class ComplexData {
             return;
         }
 
-        metrics[0] = 0; //AVG
-        metrics[1] = Integer.MAX_VALUE; //MIN
-        metrics[2] = Integer.MIN_VALUE; //MAX
-        metrics[3] = Math.min(samples, log.getLength()-1); //SAMPLES
+        metrics[0] = 0; // AVG
+        metrics[1] = Integer.MAX_VALUE; // MIN
+        metrics[2] = Integer.MIN_VALUE; // MAX
+        metrics[3] = Math.min(samples, log.getLength() - 1); // SAMPLES
 
         double avg = 0L;
-        for (int r = 0; r <  metrics[3]; ++r) {
+        for (int r = 0; r < metrics[3]; ++r) {
             double s = log.get(r) * multiplier;
             metrics[1] = Math.min(metrics[1], s);
             metrics[2] = Math.max(metrics[2], s);
@@ -395,13 +408,13 @@ public class ComplexData {
             return;
         }
 
-        metrics[0] = 0; //AVG
-        metrics[1] = Integer.MAX_VALUE; //MIN
-        metrics[2] = Integer.MIN_VALUE; //MAX
-        metrics[3] = Math.min(120, log.getLength()-1); //SAMPLES
+        metrics[0] = 0; // AVG
+        metrics[1] = Integer.MAX_VALUE; // MIN
+        metrics[2] = Integer.MIN_VALUE; // MAX
+        metrics[3] = Math.min(120, log.getLength() - 1); // SAMPLES
 
         double avg = 0L;
-        for (int r = 0; r <  metrics[3]; ++r) {
+        for (int r = 0; r < metrics[3]; ++r) {
             double s = Math.min(20, 1000F / (log.get(r) * 0.000001));
             metrics[1] = Math.min(metrics[1], s);
             metrics[2] = Math.max(metrics[2], s);
@@ -431,7 +444,7 @@ public class ComplexData {
 
     public static class Enabled {
         public static final Enabled DISABLED = new Enabled();
-        public final Map<String,Boolean> custom = new HashMap<>();
+        public final Map<String, Boolean> custom = new HashMap<>();
 
         public final List<VelocityTracker> velocityTrackers = new ArrayList<>();
 
@@ -466,12 +479,14 @@ public class ComplexData {
 
         public void merge(Enabled enabled) {
             for (Field field : this.getClass().getFields()) {
-                if (field.getType() != Boolean.TYPE) continue;
-                try { field.setBoolean(this, field.getBoolean(this) || field.getBoolean(enabled)); }
-                catch (Exception ignored) {}
+                if (field.getType() != Boolean.TYPE)
+                    continue;
+                try {
+                    field.setBoolean(this, field.getBoolean(this) || field.getBoolean(enabled));
+                } catch (Exception ignored) {
+                }
             }
             this.custom.putAll(enabled.custom);
-
 
             this.velocityTrackers.addAll(enabled.velocityTrackers);
         }
@@ -479,14 +494,14 @@ public class ComplexData {
         public boolean get(String name) {
             return custom.getOrDefault(name, false);
         }
+
         public void set(String name) {
             custom.put(name, true);
         }
+
         public void set(String name, boolean value) {
             custom.put(name, value);
         }
     }
-
-
 
 }
