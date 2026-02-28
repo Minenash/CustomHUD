@@ -170,7 +170,7 @@ public class IntegerSuppliers {
     public static final Supplier<Number> WORLD_HEIGHT = () -> ComplexData.world.getHeight();
     public static final Supplier<Number> WORLD_COORD_SCALE = () -> ComplexData.world.getDimension().coordinateScale();;
 
-    public static final Supplier<Number> MOON_PHASE = () -> ComplexData.clientChunk.isEmpty() ? null : client.world.getMoonPhase()+1;
+    public static final Supplier<Number> MOON_PHASE = () -> ComplexData.clientChunk.isEmpty() ? null : (int)(client.world.getTimeOfDay() / 24000L % 8L) + 1;
 
     public static final Supplier<Number> SPAWN_CHUNKS = () -> {
         SpawnHelper.Info info = ComplexData.serverWorld.getChunkManager().getSpawnInfo();

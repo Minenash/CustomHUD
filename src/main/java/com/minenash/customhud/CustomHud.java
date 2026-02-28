@@ -152,7 +152,11 @@ public class CustomHud implements ModInitializer {
 				ProfileManager.enabled = true;
 				saveDelay = 100;
 			}
-			for (Toggle t : p.toggles.values()) {
+		}
+		// Only check toggles for the active profile to avoid consuming key presses
+		Profile activeProfile = ProfileManager.getActive();
+		if (activeProfile != null) {
+			for (Toggle t : activeProfile.toggles.values()) {
 				boolean wasPressed = t.key.wasPressed();
 				if (isKeybindPressed(t.modifier) && wasPressed)
 					t.toggle();

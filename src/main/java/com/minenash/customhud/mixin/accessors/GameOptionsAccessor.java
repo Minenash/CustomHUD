@@ -16,4 +16,7 @@ public interface GameOptionsAccessor {
 
     @Accessor Map<SoundCategory, SimpleOption<Double>> getSoundVolumeLevels();
 
+    @Accessor("cloudRenderMode")
+    SimpleOption<?> getCloudRenderMode();
+
 }

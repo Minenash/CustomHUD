@@ -14,7 +14,6 @@ import net.minecraft.particle.ParticlesMode;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Pair;
-import net.minecraft.util.TranslatableOption;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class SettingsElement {
     public static boolean initialized = false;
 
     //Boolean, Integer, Double
-    private static final Map<String, SimpleOption<?>> simpleOptions = new HashMap<>();
+    public static final Map<String, SimpleOption<?>> simpleOptions = new HashMap<>();
     private static final Map<String, Integer> staticIntOptions = new HashMap<>();
 
     private static void init() {
@@ -132,13 +131,23 @@ public class SettingsElement {
             return new NumberSupplierElement(NumberSupplierElement.of(() -> (Number) option.getValue(), option.getValue() instanceof Integer ? 0 : 1), flags);
         if (option.getValue() instanceof String)
             return new StringSupplierElement(() -> ((String)option.getValue()).isEmpty() ? "Default" : (String)option.getValue());
-        if (option.getValue() instanceof TranslatableOption) {
-            final int falseValue = getFalseValue((TranslatableOption) option.getValue());
+        if (option.getValue() instanceof ParticlesMode) {
             return new SpecialSupplierElement(SpecialSupplierElement.of(
-                    () -> ((TranslatableOption)option.getValue()).getText().getString(),
-                    ((TranslatableOption) option.getValue())::getId,
-                    () -> ((TranslatableOption)option.getValue()).getId() != falseValue
-            ));
+                    () -> ((ParticlesMode) option.getValue()).toString().toLowerCase(),
+                    () -> ((ParticlesMode) option.getValue()).ordinal(),
+                    () -> ((ParticlesMode) option.getValue()).ordinal() != 2));
+        }
+        if (option.getValue() instanceof ChatVisibility) {
+            return new SpecialSupplierElement(SpecialSupplierElement.of(
+                    () -> ((ChatVisibility) option.getValue()).toString().toLowerCase(),
+                    () -> ((ChatVisibility) option.getValue()).ordinal(),
+                    () -> ((ChatVisibility) option.getValue()).ordinal() != 2));
+        }
+        if (option.getValue() instanceof Arm) {
+            return new SpecialSupplierElement(SpecialSupplierElement.of(
+                    () -> ((Arm) option.getValue()).toString().toLowerCase(),
+                    () -> ((Arm) option.getValue()).ordinal(),
+                    () -> ((Arm) option.getValue()).ordinal() != 1));
         }
         if (option.getValue() instanceof NarratorMode)
             return new SpecialSupplierElement(SpecialSupplierElement.of(
@@ -147,15 +156,6 @@ public class SettingsElement {
                     () -> ((NarratorMode) option.getValue()).getId() != 0
             ));
         return null;
-    }
-
-    private static int getFalseValue(TranslatableOption option) {
-        if (option instanceof ParticlesMode || option instanceof ChatVisibility)
-            return 2;
-        if (option instanceof Arm)
-            return 1;
-        return 0; // GraphicsMode, AoMode, ChunkBuilderMode, CloudRenderMode, AttackIndicator
-
     }
 
 }

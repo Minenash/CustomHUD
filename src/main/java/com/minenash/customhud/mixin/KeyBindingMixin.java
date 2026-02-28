@@ -20,7 +20,10 @@ public class KeyBindingMixin {
         for (Profile p : ProfileManager.getProfiles()) {
             if (p.keyBinding.matchesKey(input))
                 ++p.keyBinding.timesPressed;
-            for (Toggle t : p.toggles.values()) {
+        }
+        Profile activeProfile = ProfileManager.getActive();
+        if (activeProfile != null) {
+            for (Toggle t : activeProfile.toggles.values()) {
                 if (t.key.matchesKey(input))
                     ++t.key.timesPressed;
             }

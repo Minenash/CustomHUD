@@ -2,12 +2,15 @@ package com.minenash.customhud.HudElements.supplier;
 
 import com.minenash.customhud.complex.ComplexData;
 import com.minenash.customhud.HudElements.interfaces.HudElement;
+import com.minenash.customhud.HudElements.SettingsElement;
+import com.minenash.customhud.mixin.accessors.GameOptionsAccessor;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
@@ -76,13 +79,47 @@ public class SpecialSupplierElement implements HudElement {
                                                       () -> client.player.getOffHandStack().getName().getString().length(),
                                                       () -> !client.player.getOffHandStack().isEmpty());
 
-    public static final Entry GRAPHICS_MODE = of( () -> client.options.getGraphicsMode().getValue().toString(),
-                                                  () -> client.options.getGraphicsMode().getValue() == GraphicsMode.FAST ? 0 : (client.options.getGraphicsMode().getValue() == GraphicsMode.FANCY ? 1 : 2),
-                                                  () -> true);
+    public static final Entry GRAPHICS_MODE = of(() -> {
+        if (!SettingsElement.initialized)
+            return "fancy";
+        var opt = SettingsElement.simpleOptions.get("graphicsmode");
+        if (opt == null)
+            return "fancy";
+        var value = opt.getValue();
+        return value instanceof GraphicsMode ? value.toString().toLowerCase() : "fancy";
+    },
+            () -> {
+                if (!SettingsElement.initialized)
+                    return 1;
+                var opt = SettingsElement.simpleOptions.get("graphicsmode");
+                if (opt == null)
+                    return 1;
+                var value = opt.getValue();
+                if (value instanceof GraphicsMode) {
+                    return ((GraphicsMode) value) == GraphicsMode.FAST ? 0
+                            : (((GraphicsMode) value) == GraphicsMode.FANCY ? 1 : 2);
+                }
+                return 1;
+            },
+            () -> true);
 
-    public static final Entry CLOUDS = of( () -> client.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? "off" : (client.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? "fast" : "fancy"),
-                                           () -> client.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? 0 : (client.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? 1 : 2),
-                                           () -> client.options.getCloudRenderMode().getValue() != CloudRenderMode.OFF);
+    public static final Entry CLOUDS = of(
+            () -> {
+                @SuppressWarnings("unchecked")
+                var opt = (SimpleOption<CloudRenderMode>) ((GameOptionsAccessor) client.options).getCloudRenderMode();
+                return opt.getValue() == CloudRenderMode.OFF ? "off"
+                        : (opt.getValue() == CloudRenderMode.FAST ? "fast" : "fancy");
+            },
+            () -> {
+                @SuppressWarnings("unchecked")
+                var opt = (SimpleOption<CloudRenderMode>) ((GameOptionsAccessor) client.options).getCloudRenderMode();
+                return opt.getValue() == CloudRenderMode.OFF ? 0 : (opt.getValue() == CloudRenderMode.FAST ? 1 : 2);
+            },
+            () -> {
+                @SuppressWarnings("unchecked")
+                var opt = (SimpleOption<CloudRenderMode>) ((GameOptionsAccessor) client.options).getCloudRenderMode();
+                return opt.getValue() != CloudRenderMode.OFF;
+            });
 
     public static final Entry GAMEMODE = of ( () -> client.interactionManager.getCurrentGameMode().getId(),
                                               () -> client.interactionManager.getCurrentGameMode().getIndex(),

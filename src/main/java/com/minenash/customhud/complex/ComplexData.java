@@ -200,7 +200,8 @@ public class ComplexData {
 
         if (profile.enabled.localDifficulty) {
             Profilers.get().push("localDifficulty");
-            localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getMoonSize());
+            localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(),
+                    serverChunk == null ? 0 : serverChunk.getInhabitedTime(), world.getTimeOfDay());
             Profilers.get().pop();
         }
 

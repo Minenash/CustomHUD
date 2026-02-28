@@ -29,9 +29,9 @@ public abstract class InGameHudMixin {
 
     @WrapWithCondition(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIII)V", ordinal = 0))
     private boolean skipNormalCrosshairRendering0(DrawContext instance, RenderPipeline pipeline, Identifier sprite, int x, int y, int width, int height) {
-        return ProfileManager.getActive() != null  && ProfileManager.getActive().crosshair == Crosshairs.NORMAL;
+        return ProfileManager.getActive() == null  || ProfileManager.getActive().crosshair == Crosshairs.NORMAL;
     }
-
 }
+
 
 
