@@ -21,7 +21,6 @@ public class KeyBindingMixin {
             if (p.keyBinding.matchesKey(input))
                 ++p.keyBinding.timesPressed;
         }
-        // Only increment toggle keybinds for the active profile
         Profile activeProfile = ProfileManager.getActive();
         if (activeProfile != null) {
             for (Toggle t : activeProfile.toggles.values()) {

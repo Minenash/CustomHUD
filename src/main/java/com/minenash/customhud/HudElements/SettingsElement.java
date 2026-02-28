@@ -24,12 +24,12 @@ public class SettingsElement {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     public static boolean initialized = false;
 
-    // Boolean, Integer, Double
+    //Boolean, Integer, Double
     public static final Map<String, SimpleOption<?>> simpleOptions = new HashMap<>();
     private static final Map<String, Integer> staticIntOptions = new HashMap<>();
 
     private static void init() {
-        ((GameOptionsAccessor) MinecraftClient.getInstance().options).invokeAccept(new GameOptions.Visitor() {
+        ((GameOptionsAccessor)MinecraftClient.getInstance().options).invokeAccept(new GameOptions.Visitor() {
             @Override
             public <T> void accept(String key, SimpleOption<T> option) {
                 simpleOptions.put(key.toLowerCase(), option);
@@ -37,8 +37,7 @@ public class SettingsElement {
 
             @Override
             public int visitInt(String key, int current) {
-                staticIntOptions.put(key.toLowerCase(), current);
-                return current;
+                staticIntOptions.put(key.toLowerCase(), current); return current;
             }
 
             @Override
@@ -63,7 +62,7 @@ public class SettingsElement {
         });
     }
 
-    public static Pair<HudElement, Pair<ErrorType, String>> create(String setting, Flags flags) {
+    public static Pair<HudElement,Pair<ErrorType,String>> create(String setting, Flags flags) {
         if (!initialized)
             init();
         initialized = true;
@@ -76,8 +75,7 @@ public class SettingsElement {
             String code = client.getLanguageManager().getLanguage();
             HudElement element = switch (setting.substring(4)) {
                 case "" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).name());
-                case "_region" ->
-                    new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).region());
+                case "_region" -> new StringSupplierElement(() -> client.getLanguageManager().getLanguage(code).region());
                 case "_code" -> new StringSupplierElement(() -> code);
                 default -> null;
             };
@@ -97,7 +95,8 @@ public class SettingsElement {
                     return new Pair<>(new SpecialSupplierElement(SpecialSupplierElement.of(
                             () -> binding.getBoundKeyLocalizedText().getString(),
                             () -> ((KeyBindingAccessor) binding).getBoundKey().getCode(),
-                            () -> !binding.isUnbound())), null);
+                            () -> !binding.isUnbound()
+                    )), null);
             return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_KEYBIND, key));
         }
 
@@ -106,10 +105,9 @@ public class SettingsElement {
             for (SoundCategory soundCategory : SoundCategory.values())
                 if (soundCategory.getName().equalsIgnoreCase(cat))
                     return new Pair<>(new NumberSupplierElement(NumberSupplierElement.of(
-                            () -> ((GameOptionsAccessor) options).getSoundVolumeLevels().get(soundCategory).getValue()
-                                    * 100,
+                            () -> ((GameOptionsAccessor)options).getSoundVolumeLevels().get(soundCategory).getValue() * 100,
                             flags.precision != -1 ? flags.precision : 0), flags), null);
-            return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_SOUND_CATEGORY, cat));
+            return new Pair<>(null,new Pair<>(ErrorType.UNKNOWN_SOUND_CATEGORY, cat));
         }
 
         SimpleOption<?> option = simpleOptions.get(setting);
@@ -118,7 +116,7 @@ public class SettingsElement {
 
         if (staticIntOptions.containsKey(setting)) {
             int value = staticIntOptions.get(setting);
-            return new Pair<>(new NumberSupplierElement(() -> value, flags), null);
+            return new Pair<>(new NumberSupplierElement(() -> value, flags),null);
         }
 
         return new Pair<>(null, new Pair<>(ErrorType.UNKNOWN_SETTING, setting));
@@ -130,11 +128,9 @@ public class SettingsElement {
         if (option.getValue() instanceof Boolean)
             return new BooleanSupplierElement(() -> (Boolean) option.getValue());
         if (option.getValue() instanceof Number)
-            return new NumberSupplierElement(NumberSupplierElement.of(() -> (Number) option.getValue(),
-                    option.getValue() instanceof Integer ? 0 : 1), flags);
+            return new NumberSupplierElement(NumberSupplierElement.of(() -> (Number) option.getValue(), option.getValue() instanceof Integer ? 0 : 1), flags);
         if (option.getValue() instanceof String)
-            return new StringSupplierElement(
-                    () -> ((String) option.getValue()).isEmpty() ? "Default" : (String) option.getValue());
+            return new StringSupplierElement(() -> ((String)option.getValue()).isEmpty() ? "Default" : (String)option.getValue());
         if (option.getValue() instanceof ParticlesMode) {
             return new SpecialSupplierElement(SpecialSupplierElement.of(
                     () -> ((ParticlesMode) option.getValue()).toString().toLowerCase(),
@@ -157,7 +153,8 @@ public class SettingsElement {
             return new SpecialSupplierElement(SpecialSupplierElement.of(
                     () -> ((NarratorMode) option.getValue()).getName().getString(),
                     () -> ((NarratorMode) option.getValue()).getId(),
-                    () -> ((NarratorMode) option.getValue()).getId() != 0));
+                    () -> ((NarratorMode) option.getValue()).getId() != 0
+            ));
         return null;
     }
 
